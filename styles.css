@@ -44,6 +44,31 @@
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
+/* Code blocks need their own background so the SQL editor doesn't blend with surrounding dark bg */
+[data-theme="dark"] pre.code,
+[data-theme="dark"] .code-block,
+[data-theme="dark"] .sql-editor {
+  background: #050a17;
+  border: 1px solid var(--border);
+}
+
+/* Bilingual topic-tag tints — re-tint for dark mode to keep contrast */
+[data-theme="dark"] .topic-card.a2 .topic-tag { background: rgba(14,165,233,0.18); color: #7dd3fc; }
+[data-theme="dark"] .topic-card.a3 .topic-tag { background: rgba(139,92,246,0.22); color: #c4b5fd; }
+[data-theme="dark"] .topic-card.a4 .topic-tag { background: rgba(16,185,129,0.22); color: #6ee7b7; }
+[data-theme="dark"] .topic-card.quiz .topic-tag { background: rgba(245,158,11,0.22); color: #fcd34d; }
+[data-theme="dark"] .hero-eyebrow { background: rgba(56,189,248,0.15) !important; color: #7dd3fc !important; }
+
+/* Dark mode tweaks for tables/keywords/etc. that use hard-coded greens/reds in light mode */
+[data-theme="dark"] .quiz-feedback .keywords .kw { background: rgba(16,185,129,0.20); color: #6ee7b7; }
+[data-theme="dark"] .quiz-feedback .keywords .kw.missed { background: rgba(239,68,68,0.18); color: #fca5a5; }
+[data-theme="dark"] .dbtable .anomaly { background: rgba(239,68,68,0.12); }
+[data-theme="dark"] .dbtable .resolved { background: rgba(16,185,129,0.12); }
+[data-theme="dark"] .dbtable .pk { color: #c4b5fd; }
+[data-theme="dark"] .dbtable .fk { color: #7dd3fc; }
+[data-theme="dark"] .sql-msg.error { background: rgba(239,68,68,0.15); color: #fca5a5; }
+[data-theme="dark"] .sql-msg.success { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -63,6 +88,41 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 code, pre, kbd { font-family: var(--mono); }
+
+/* Accessibility: visible keyboard focus on every interactive element */
+:focus { outline: none; }
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible,
+.btn:focus-visible,
+.lang-toggle:focus-visible,
+.theme-toggle:focus-visible,
+.nav-links a:focus-visible,
+.sidebar a:focus-visible,
+.quiz-filter button:focus-visible,
+.sql-examples button:focus-visible,
+.subtopic-chip:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* ============================================
    HEADER
@@ -724,12 +784,22 @@ pre.code, .code-block {
 
 .quiz-filter {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  flex-wrap: wrap;
   margin: 18px 0;
   padding: 12px;
   background: var(--surface-2);
   border-radius: var(--radius);
+}
+.quiz-filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.quiz-filter-row.sub {
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-strong);
+  margin-top: 2px;
 }
 .quiz-filter button {
   background: var(--surface);
@@ -741,7 +811,9 @@ pre.code, .code-block {
   font-family: inherit;
   color: var(--text-muted);
   font-weight: 500;
+  white-space: nowrap;
 }
+.quiz-filter-row.sub button { font-size: 0.82rem; padding: 5px 12px; }
 .quiz-filter button:hover { color: var(--primary); border-color: var(--primary); }
 .quiz-filter button.active {
   background: var(--primary);
@@ -824,6 +896,21 @@ pre.code, .code-block {
   .nav { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
   .nav-links { gap: 0; order: 3; width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
   .nav-links a { padding: 7px 10px; font-size: 0.85rem; }
+  .sim { padding: 18px; }
+  .sim-controls { padding: 10px; gap: 6px; }
+  .sim-controls input[type="range"] { width: 110px; }
+  .sim-header h3 { font-size: 1.15rem; }
+  .sim-stats { grid-template-columns: repeat(2, 1fr); }
+  .quiz-filter-row { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .quiz-filter-row button { flex-shrink: 0; }
+  /* Canvases scale to width on mobile — fonts inside become tiny, so we let users zoom horizontally. */
+  .sim-canvas-wrap { overflow-x: auto; }
+  .sim-canvas-wrap canvas, .sim-canvas-wrap svg { min-width: 540px; }
+}
+@media (max-width: 500px) {
+  .hero h1 { font-size: 1.85rem; }
+  .section-title { font-size: 1.3rem; margin: 32px 0 14px; }
+  .sim-canvas-wrap canvas, .sim-canvas-wrap svg { min-width: 480px; }
 }
 
 /* sidebar TOC */

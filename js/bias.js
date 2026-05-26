@@ -46,13 +46,14 @@
     gapEl.style.color = gap > 0.3 ? 'var(--red)' : (gap > 0.12 ? 'var(--amber)' : 'var(--green)');
 
     // Draw
+    const T = window.Theme;
     ctx.clearRect(0, 0, W, H);
 
     // Training bar at top
     const barY = 30, barH = 30;
-    ctx.fillStyle = '#0ea5e9';
+    ctx.fillStyle = T.accent;
     ctx.fillRect(40, barY, (W - 80) * skew, barH);
-    ctx.fillStyle = '#f59e0b';
+    ctx.fillStyle = T.amber;
     ctx.fillRect(40 + (W - 80) * skew, barY, (W - 80) * (1 - skew), barH);
 
     ctx.fillStyle = '#fff';
@@ -64,8 +65,8 @@
     }
 
     // Group A row
-    drawGroup('Group A', '#0ea5e9', testA, tA, 110);
-    drawGroup('Group B', '#f59e0b', testB, tB, 230);
+    drawGroup('Group A', T.accent, testA, tA, 110);
+    drawGroup('Group B', T.amber, testB, tB, 230);
 
     // Caption
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
@@ -82,26 +83,32 @@
       ctx.fillStyle = '#047857';
       ctx.fillText(lang === 'ru' ? '✓ Разрыв небольшой' : '✓ Gap is small', 40, H - 20);
     }
+    // Illustrative-model disclaimer (the threshold is hand-wired, not learned)
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'italic 10px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText(lang === 'ru'
+      ? 'Иллюстративная модель: порог Group B сдвигается с долей в обучении.'
+      : 'Illustrative model: Group B threshold shifts with training share.',
+      W - 40, H - 8);
   }
 
   function drawGroup(label, color, group, threshold, y) {
+    const T = window.Theme;
     ctx.fillStyle = color;
     ctx.font = 'bold 14px system-ui';
     ctx.textAlign = 'left';
     ctx.fillText(label, 40, y - 8);
 
-    // Threshold marker
     const x0 = 200, w = W - 240;
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = T.textMuted;
     ctx.font = '11px system-ui';
     ctx.fillText('Threshold: ' + threshold.toFixed(0), 40, y + 8);
 
-    // Score axis from 0 to 100
     const scoreToX = s => x0 + (s / 100) * w;
-    // Background
-    ctx.fillStyle = '#f1f5f9';
+    ctx.fillStyle = T.surface2;
     ctx.fillRect(x0, y - 15, w, 85);
-    ctx.strokeStyle = '#e2e8f0';
+    ctx.strokeStyle = T.border;
     ctx.strokeRect(x0, y - 15, w, 85);
 
     // Approval region tint
@@ -109,7 +116,7 @@
     ctx.fillRect(scoreToX(threshold), y - 15, scoreToX(100) - scoreToX(threshold), 85);
 
     // Threshold line
-    ctx.strokeStyle = '#1a3a5e';
+    ctx.strokeStyle = T.primary;
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -124,13 +131,13 @@
       const dy = y + 25 + (i % 4) * 10 - 14;
       ctx.beginPath();
       ctx.arc(x, dy, 4, 0, Math.PI * 2);
-      ctx.fillStyle = p.score >= threshold ? '#10b981' : '#ef4444';
+      ctx.fillStyle = p.score >= threshold ? T.green : T.red;
       ctx.fill();
-      ctx.strokeStyle = 'white'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = T.surface; ctx.lineWidth = 1; ctx.stroke();
     });
 
     // Axis labels
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = T.textFaint;
     ctx.font = '10px ui-monospace';
     ctx.textAlign = 'center';
     [0, 50, 100].forEach(s => ctx.fillText(s, scoreToX(s), y + 80));
@@ -138,6 +145,7 @@
 
   shareInput.addEventListener('input', render);
   document.addEventListener('langchange', render);
+  document.addEventListener('themechange', render);
   init();
   render();
 })();

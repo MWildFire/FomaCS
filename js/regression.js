@@ -42,21 +42,25 @@
 
   function randomData() {
     points = [];
-    const slope = (Math.random() - 0.5) * 1.6;
-    const intercept = 30 + Math.random() * 40;
+    // Bias toward moderate slopes so the line is visually meaningful
+    // and clamp y values to keep the cluster on-canvas without distorting the trend.
+    const slope = (Math.random() < 0.5 ? -1 : 1) * (0.4 + Math.random() * 0.9);
+    const intercept = slope > 0 ? 10 + Math.random() * 20 : 60 + Math.random() * 25;
+    const noise = 10;
     for (let i = 0; i < 14; i++) {
-      const x = 10 + i * (80 / 14) + (Math.random() - 0.5) * 4;
-      const y = slope * x + intercept + (Math.random() - 0.5) * 30;
+      const x = 8 + i * (84 / 13) + (Math.random() - 0.5) * 3;
+      const y = slope * x + intercept + (Math.random() - 0.5) * 2 * noise;
       points.push({ x: Math.max(5, Math.min(95, x)), y: Math.max(5, Math.min(95, y)) });
     }
     draw();
   }
 
   function draw() {
+    const T = window.Theme;
     ctx.clearRect(0, 0, W, H);
 
     // Grid
-    ctx.strokeStyle = '#e2e8f0';
+    ctx.strokeStyle = T.border;
     ctx.lineWidth = 1;
     for (let x = 0; x <= 100; x += 10) {
       const sx = toScreenX(x);
@@ -70,14 +74,14 @@
     }
 
     // Axes
-    ctx.strokeStyle = '#1a3a5e';
+    ctx.strokeStyle = T.primary;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(M.l, M.t); ctx.lineTo(M.l, H - M.b); ctx.lineTo(W - M.r, H - M.b);
     ctx.stroke();
 
     // Labels
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = T.textMuted;
     ctx.font = '11px system-ui';
     ctx.textAlign = 'center';
     for (let x = 0; x <= 100; x += 20) {
@@ -91,7 +95,7 @@
     // Axis titles
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
     ctx.font = '12px system-ui';
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = T.text;
     ctx.textAlign = 'center';
     ctx.fillText(lang === 'ru' ? 'X (признак)' : 'X (feature)', (M.l + W - M.r) / 2, H - 12);
     ctx.save();
@@ -105,7 +109,7 @@
     if (f) {
       // Residuals
       if (showResidEl.checked) {
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.55)';
         ctx.lineWidth = 1.5;
         points.forEach(p => {
           const pred = f.m * p.x + f.b;
@@ -118,7 +122,7 @@
       // Line: y = mx + b across visible x range
       const yLeft = f.m * XMIN + f.b;
       const yRight = f.m * XMAX + f.b;
-      ctx.strokeStyle = '#0ea5e9';
+      ctx.strokeStyle = T.accent;
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.moveTo(toScreenX(XMIN), toScreenY(yLeft));
@@ -128,17 +132,24 @@
       // Equation
       ctx.font = 'bold 13px ui-monospace';
       ctx.textAlign = 'left';
-      ctx.fillStyle = '#0ea5e9';
+      ctx.fillStyle = T.accent;
       ctx.fillText('y = ' + f.m.toFixed(2) + '·x + ' + f.b.toFixed(2), M.l + 8, M.t + 18);
+    } else if (!points.length) {
+      // Empty-state hint
+      ctx.fillStyle = T.textFaint;
+      ctx.font = '14px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(lang === 'ru' ? 'Кликните в области графика, чтобы добавить точку' : 'Click in the plot area to add a point',
+                   (M.l + W - M.r) / 2, (M.t + H - M.b) / 2);
     }
 
     // Points
     points.forEach((p, i) => {
       ctx.beginPath();
       ctx.arc(toScreenX(p.x), toScreenY(p.y), i === dragIdx || i === hoverIdx ? 9 : 6, 0, Math.PI * 2);
-      ctx.fillStyle = i === dragIdx ? '#f59e0b' : '#1a3a5e';
+      ctx.fillStyle = i === dragIdx ? T.amber : T.primary;
       ctx.fill();
-      ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.strokeStyle = T.surface; ctx.lineWidth = 2; ctx.stroke();
     });
 
     // Stats
@@ -209,6 +220,7 @@
   document.getElementById('reg-clear').addEventListener('click', () => { points = []; draw(); });
   showResidEl.addEventListener('change', draw);
   document.addEventListener('langchange', draw);
+  document.addEventListener('themechange', draw);
 
   randomData();
 })();

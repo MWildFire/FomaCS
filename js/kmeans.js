@@ -76,7 +76,25 @@
     // 2. Update centroids
     for (let i = 0; i < centroids.length; i++) {
       const members = points.filter(p => p.cluster === i);
-      if (members.length === 0) continue;
+      if (members.length === 0) {
+        // Empty cluster: re-seed to the point farthest from any centroid
+        // (a common fix; prevents "dead" centroids hovering in empty space)
+        let farPoint = null, farD = -1;
+        for (const p of points) {
+          let nearest = Infinity;
+          for (const c of centroids) {
+            const d = (p.x - c.x) ** 2 + (p.y - c.y) ** 2;
+            if (d < nearest) nearest = d;
+          }
+          if (nearest > farD) { farD = nearest; farPoint = p; }
+        }
+        if (farPoint) {
+          centroids[i].x = farPoint.x;
+          centroids[i].y = farPoint.y;
+          changed = true;
+        }
+        continue;
+      }
       const mx = members.reduce((s, p) => s + p.x, 0) / members.length;
       const my = members.reduce((s, p) => s + p.y, 0) / members.length;
       if (Math.abs(centroids[i].x - mx) > 0.5 || Math.abs(centroids[i].y - my) > 0.5) changed = true;
@@ -102,15 +120,26 @@
   }
 
   function draw() {
+    const T = window.Theme;
     ctx.clearRect(0, 0, W, H);
 
     // Grid
-    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.strokeStyle = T.border; ctx.lineWidth = 1;
     for (let x = 0; x < W; x += 40) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
     }
     for (let y = 0; y < H; y += 40) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    if (!points.length) {
+      const lang = document.documentElement.getAttribute('data-lang') || 'en';
+      ctx.fillStyle = T.textFaint;
+      ctx.font = '14px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(lang === 'ru' ? 'Кликните 🎲 или по холсту, чтобы накидать точек' : 'Click 🎲 or anywhere to scatter points',
+                   W / 2, H / 2);
+      return;
     }
 
     // Faint cluster regions: voronoi-ish dots
@@ -130,12 +159,12 @@
 
     // Points
     for (const p of points) {
-      const color = p.cluster >= 0 ? centroids[p.cluster].color : '#94a3b8';
+      const color = p.cluster >= 0 ? centroids[p.cluster].color : T.textFaint;
       ctx.beginPath();
       ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
       ctx.fillStyle = color;
       ctx.fill();
-      ctx.strokeStyle = 'white'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = T.surface; ctx.lineWidth = 1; ctx.stroke();
     }
 
     // Centroids (stars)
@@ -156,17 +185,24 @@
     ctx.closePath();
     ctx.fillStyle = color;
     ctx.fill();
-    ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = window.Theme.surface; ctx.lineWidth = 2; ctx.stroke();
   }
 
   // Interactions
   document.getElementById('km-scatter').addEventListener('click', () => { scatter(); });
   document.getElementById('km-step').addEventListener('click', () => { step(); });
-  document.getElementById('km-run').addEventListener('click', () => {
-    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; return; }
+  const runBtn = document.getElementById('km-run');
+  function setRunLabel(stopping) {
+    const lang = document.documentElement.getAttribute('data-lang') || 'en';
+    if (stopping) runBtn.innerHTML = '<span class="lang-en-inline">⏹ Stop</span><span class="lang-ru-inline">⏹ Стоп</span>';
+    else runBtn.innerHTML = '<span class="lang-en-inline">⏩ Auto-run</span><span class="lang-ru-inline">⏩ Авто</span>';
+  }
+  runBtn.addEventListener('click', () => {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; setRunLabel(false); return; }
+    setRunLabel(true);
     autoTimer = setInterval(() => {
       const changed = step();
-      if (!changed) { clearInterval(autoTimer); autoTimer = null; }
+      if (!changed) { clearInterval(autoTimer); autoTimer = null; setRunLabel(false); }
     }, 600);
   });
   document.getElementById('km-reset').addEventListener('click', resetCentroids);
@@ -189,6 +225,8 @@
     updateStats();
     draw();
   });
+
+  document.addEventListener('themechange', draw);
 
   scatter();
 })();

@@ -216,8 +216,11 @@ GROUP BY Category;`
     runQuery();
   }
 
-  // Load sql.js
+  // Wait for sql.js to load. Includes a timeout so the UI never hangs forever.
+  let attempts = 0;
+  const maxAttempts = 150; // 15 seconds at 100 ms
   const wait = setInterval(() => {
+    attempts++;
     if (typeof initSqlJs === 'function') {
       clearInterval(wait);
       initSqlJs({
@@ -229,8 +232,13 @@ GROUP BY Category;`
         document.getElementById('sql-app').style.display = 'block';
         init();
       }).catch(err => {
-        document.getElementById('sql-loading').innerHTML = '<div class="sql-msg error">Failed to load sql.js: ' + err.message + '</div>';
+        document.getElementById('sql-loading').innerHTML =
+          '<div class="sql-msg error">Failed to load sql.js: ' + err.message + '</div>';
       });
+    } else if (attempts >= maxAttempts) {
+      clearInterval(wait);
+      document.getElementById('sql-loading').innerHTML =
+        '<div class="sql-msg error">SQL playground could not load. Check your network — sql.js is fetched from cdnjs.cloudflare.com.</div>';
     }
   }, 100);
 })();

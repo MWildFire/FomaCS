@@ -127,11 +127,10 @@
     return seen;
   }
 
+  // Counts "articulation nodes" — nodes whose removal would isolate
+  // more than just themselves from the target. Brute-force is fine for n≤14.
   function detectSpof() {
-    // count nodes that, if removed, would partition the graph
     let spofCount = 0;
-    const liveNodes = state.nodes.filter(n => !n.isHub || state.topology === 'star').map(n => n.id);
-    // brute force: remove each node, count reachable from target
     const baseline = reachableFrom(state.targetId).size;
     for (const n of state.nodes) {
       if (n.id === state.targetId) continue;
@@ -139,12 +138,15 @@
       state.failed.add(n.id);
       const r = reachableFrom(state.targetId).size;
       state.failed.delete(n.id);
-      if (r < baseline - 1) spofCount++; // partition created
+      // Removing a non-target node drops reachability by at least 1 (the node itself).
+      // If reach drops by MORE than 1, removing it created a partition → that's a SPOF.
+      if (r < baseline - 1) spofCount++;
     }
     return spofCount;
   }
 
   function render() {
+    const T = window.Theme;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
 
     const reach = reachableFrom(state.targetId);
@@ -157,7 +159,8 @@
       line.setAttribute('x1', na.x); line.setAttribute('y1', na.y);
       line.setAttribute('x2', nb.x); line.setAttribute('y2', nb.y);
       const dead = state.failed.has(a) || state.failed.has(b);
-      line.setAttribute('stroke', dead ? '#cbd5e1' : (reach.has(a) && reach.has(b) ? '#94a3b8' : '#cbd5e1'));
+      const live = reach.has(a) && reach.has(b);
+      line.setAttribute('stroke', dead ? T.borderStrong : (live ? T.textMuted : T.borderStrong));
       line.setAttribute('stroke-width', '2');
       line.setAttribute('stroke-dasharray', dead ? '4 4' : '');
       svg.appendChild(line);
@@ -182,14 +185,14 @@
       const baseR = isHub ? 24 : (isCore ? 20 : (isBusPoint ? 6 : 16));
       circle.setAttribute('r', baseR);
 
-      let fill = '#0ea5e9';
-      if (state.failed.has(n.id)) fill = '#ef4444';
-      else if (n.id === state.targetId) fill = '#10b981';
-      else if (!reach.has(n.id)) fill = '#94a3b8';
-      if (isBusPoint) fill = state.failed.has(n.id) ? '#ef4444' : '#64748b';
+      let fill = T.accent;
+      if (state.failed.has(n.id)) fill = T.red;
+      else if (n.id === state.targetId) fill = T.green;
+      else if (!reach.has(n.id)) fill = T.textFaint;
+      if (isBusPoint) fill = state.failed.has(n.id) ? T.red : T.textMuted;
 
       circle.setAttribute('fill', fill);
-      circle.setAttribute('stroke', 'white');
+      circle.setAttribute('stroke', T.surface);
       circle.setAttribute('stroke-width', isBusPoint ? '2' : '3');
       if (state.failed.has(n.id)) {
         circle.setAttribute('stroke-dasharray', '3 3');
@@ -273,6 +276,7 @@
     render();
   });
   document.addEventListener('langchange', render);
+  document.addEventListener('themechange', render);
 
   setTopology('star');
 })();

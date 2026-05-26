@@ -142,7 +142,7 @@
     html += '<p>' + step.body[lang] + '</p>';
     step.tables.forEach(t => {
       html += '<div class="dbtable-title">' + t.name + '</div>';
-      html += '<table class="dbtable' + (t.anomalies ? ' anomaly-host' : (t.resolved ? '' : '')) + '">';
+      html += '<table class="dbtable' + (t.anomalies ? ' anomaly-host' : '') + '">';
       html += '<thead><tr>';
       t.cols.forEach(c => html += '<th>' + c + '</th>');
       html += '</tr></thead><tbody>';

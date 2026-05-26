@@ -1,7 +1,31 @@
-// Shared app behaviour: language toggle, theme, nav highlighting
+// Shared app behaviour: language toggle, theme, nav highlighting, theme-color access
 
 (function () {
   const root = document.documentElement;
+
+  // ---- Theme colors (read from CSS variables so canvas/SVG match light/dark) ----
+  const Theme = {
+    refresh() {
+      const cs = getComputedStyle(root);
+      const get = (name, fallback) => (cs.getPropertyValue(name).trim() || fallback);
+      this.text = get('--text', '#0f172a');
+      this.textMuted = get('--text-muted', '#475569');
+      this.textFaint = get('--text-faint', '#94a3b8');
+      this.border = get('--border', '#e2e8f0');
+      this.borderStrong = get('--border-strong', '#cbd5e1');
+      this.surface = get('--surface', '#ffffff');
+      this.surface2 = get('--surface-2', '#f1f3f8');
+      this.bg = get('--bg', '#f7f8fb');
+      this.primary = get('--primary', '#1a3a5e');
+      this.accent = get('--accent', '#0ea5e9');
+      this.green = get('--green', '#10b981');
+      this.red = get('--red', '#ef4444');
+      this.amber = get('--amber', '#f59e0b');
+      this.violet = get('--violet', '#8b5cf6');
+    }
+  };
+  Theme.refresh();
+  window.Theme = Theme;
 
   // ---- Language ----
   const STORAGE_LANG = 'fomacs-lang';
@@ -25,6 +49,8 @@
     document.querySelectorAll('[data-theme-toggle]').forEach((el) => {
       el.textContent = t === 'light' ? '☽' : '☀';
     });
+    Theme.refresh();
+    document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: t } }));
   };
   root.setAttribute('data-theme', getTheme());
 

@@ -51,6 +51,7 @@
       { x: 1, y: 1, label: 'TN', val: TN, color: '#94a3b8', sub: lang === 'ru' ? 'Истинно −' : 'True Negative' }
     ];
 
+    const T = window.Theme;
     cells.forEach(c => {
       const r = document.createElementNS(NS, 'rect');
       r.setAttribute('x', x0 + c.x * cellW); r.setAttribute('y', y0 + c.y * cellH);
@@ -78,7 +79,7 @@
       v.setAttribute('text-anchor', 'middle');
       v.setAttribute('font-size', 22);
       v.setAttribute('font-weight', 700);
-      v.setAttribute('fill', '#0f172a');
+      v.setAttribute('fill', T.text);
       v.setAttribute('font-family', 'ui-monospace, monospace');
       v.textContent = c.val;
       svg.appendChild(v);
@@ -88,7 +89,7 @@
       s.setAttribute('y', y0 + c.y * cellH + 88);
       s.setAttribute('text-anchor', 'middle');
       s.setAttribute('font-size', 11);
-      s.setAttribute('fill', '#475569');
+      s.setAttribute('fill', T.textMuted);
       s.textContent = c.sub;
       svg.appendChild(s);
     });
@@ -100,7 +101,7 @@
       e.setAttribute('text-anchor', 'middle');
       e.setAttribute('font-size', 13);
       e.setAttribute('font-weight', 700);
-      e.setAttribute('fill', '#1a3a5e');
+      e.setAttribute('fill', T.primary);
       e.textContent = t;
       return e;
     };
@@ -113,7 +114,7 @@
       e.setAttribute('text-anchor', 'middle');
       e.setAttribute('font-size', 13);
       e.setAttribute('font-weight', 700);
-      e.setAttribute('fill', '#1a3a5e');
+      e.setAttribute('fill', T.primary);
       e.setAttribute('transform', 'rotate(-90 ' + x + ' ' + y + ')');
       e.textContent = t;
       return e;
@@ -124,5 +125,6 @@
 
   Object.values(inputs).forEach(i => i.addEventListener('input', render));
   document.addEventListener('langchange', render);
+  document.addEventListener('themechange', render);
   render();
 })();

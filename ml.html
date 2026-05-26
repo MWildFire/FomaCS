@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A4 Machine Learning · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=2">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -96,7 +96,8 @@
       </div>
 
       <div class="sim-canvas-wrap">
-        <canvas id="reg-canvas" width="900" height="420"></canvas>
+        <canvas id="reg-canvas" width="900" height="420"
+                role="img" aria-label="Interactive linear regression scatter plot. Click to add points and drag to move them; the least-squares line of best fit updates in real time."></canvas>
       </div>
 
       <div class="sim-stats">
@@ -145,7 +146,8 @@
       </div>
 
       <div class="sim-canvas-wrap">
-        <canvas id="km-canvas" width="900" height="420"></canvas>
+        <canvas id="km-canvas" width="900" height="420"
+                role="img" aria-label="K-means clustering visualization. Click to add points; press Step or Auto-run to iterate the algorithm."></canvas>
       </div>
 
       <div class="sim-stats">
@@ -184,7 +186,8 @@
       </div>
 
       <div class="sim-canvas-wrap" style="padding:18px">
-        <svg id="cm-svg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
+        <svg id="cm-svg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Confusion matrix showing true positives, false positives, false negatives and true negatives, with derived metrics."></svg>
       </div>
 
       <div class="sim-stats">
@@ -220,7 +223,8 @@
       </div>
 
       <div class="sim-canvas-wrap">
-        <canvas id="bias-canvas" width="900" height="360"></canvas>
+        <canvas id="bias-canvas" width="900" height="360"
+                role="img" aria-label="Illustration of how skewed training data causes a model to approve Group A applicants at a higher rate than Group B."></canvas>
       </div>
 
       <div class="sim-stats">
@@ -267,13 +271,13 @@
   </p>
 </footer>
 
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script src="js/notes-render.js"></script>
-<script src="js/regression.js"></script>
-<script src="js/kmeans.js"></script>
-<script src="js/confusion.js"></script>
-<script src="js/bias.js"></script>
+<script src="js/data.js?v=2"></script>
+<script src="js/app.js?v=2"></script>
+<script src="js/notes-render.js?v=2"></script>
+<script src="js/regression.js?v=2"></script>
+<script src="js/kmeans.js?v=2"></script>
+<script src="js/confusion.js?v=2"></script>
+<script src="js/bias.js?v=2"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     renderNotes('notes-41-content', 'a4_1');

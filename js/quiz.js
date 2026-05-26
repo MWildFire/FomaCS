@@ -3,25 +3,34 @@
   const STORAGE = 'fomacs-quiz-progress';
   const STORAGE_FILTER = 'fomacs-quiz-filter';
 
-  const TOPICS = [
-    { id: 'ALL', label: { en: 'All', ru: 'Все' } },
-    { id: 'A2', label: { en: 'A2 Networks', ru: 'A2 Сети' } },
-    { id: 'A2.1', label: { en: 'A2.1 Fundamentals', ru: 'A2.1 Основы' } },
-    { id: 'A2.2', label: { en: 'A2.2 Architecture', ru: 'A2.2 Архитектура' } },
-    { id: 'A2.3', label: { en: 'A2.3 Topologies', ru: 'A2.3 Топологии' } },
-    { id: 'A2.1.4', label: { en: 'A2.1.4 Protocols', ru: 'A2.1.4 Протоколы' } },
-    { id: 'A2.1.5', label: { en: 'A2.1.5 Mastery', ru: 'A2.1.5 Мастерство' } },
-    { id: 'A3', label: { en: 'A3 Databases', ru: 'A3 Базы данных' } },
-    { id: 'A3.1', label: { en: 'A3.1 Fundamentals', ru: 'A3.1 Основы' } },
-    { id: 'A3.2', label: { en: 'A3.2 Design', ru: 'A3.2 Проект' } },
-    { id: 'A3.3', label: { en: 'A3.3 SQL', ru: 'A3.3 SQL' } },
-    { id: 'A3.4', label: { en: 'A3.4 NoSQL & DW (HL)', ru: 'A3.4 NoSQL и DW (HL)' } },
-    { id: 'A4', label: { en: 'A4 ML', ru: 'A4 ML' } },
-    { id: 'A4.1', label: { en: 'A4.1 Fundamentals', ru: 'A4.1 Основы' } },
-    { id: 'A4.2', label: { en: 'A4.2 Preprocessing', ru: 'A4.2 Предобработка' } },
-    { id: 'A4.3', label: { en: 'A4.3 Approaches', ru: 'A4.3 Подходы' } },
-    { id: 'A4.4', label: { en: 'A4.4 Ethics & NLP', ru: 'A4.4 Этика и NLP' } }
+  // Two-level filter: top row is broad area; second row is sub-topics for the selected area.
+  const TOP_LEVEL = [
+    { id: 'ALL', label: { en: 'All',          ru: 'Все' } },
+    { id: 'A2',  label: { en: 'A2 Networks',  ru: 'A2 Сети' } },
+    { id: 'A3',  label: { en: 'A3 Databases', ru: 'A3 Базы данных' } },
+    { id: 'A4',  label: { en: 'A4 ML',        ru: 'A4 ML' } }
   ];
+  const SUB_TOPICS = {
+    A2: [
+      { id: 'A2.1',   label: { en: 'A2.1 Fundamentals',  ru: 'A2.1 Основы' } },
+      { id: 'A2.2',   label: { en: 'A2.2 Architecture',  ru: 'A2.2 Архитектура' } },
+      { id: 'A2.3',   label: { en: 'A2.3 Topologies',    ru: 'A2.3 Топологии' } },
+      { id: 'A2.1.4', label: { en: 'A2.1.4 Protocols',   ru: 'A2.1.4 Протоколы' } },
+      { id: 'A2.1.5', label: { en: 'A2.1.5 Mastery',     ru: 'A2.1.5 Мастерство' } }
+    ],
+    A3: [
+      { id: 'A3.1', label: { en: 'A3.1 Fundamentals',     ru: 'A3.1 Основы' } },
+      { id: 'A3.2', label: { en: 'A3.2 Design',           ru: 'A3.2 Проект' } },
+      { id: 'A3.3', label: { en: 'A3.3 SQL',              ru: 'A3.3 SQL' } },
+      { id: 'A3.4', label: { en: 'A3.4 NoSQL & DW (HL)',  ru: 'A3.4 NoSQL и DW (HL)' } }
+    ],
+    A4: [
+      { id: 'A4.1', label: { en: 'A4.1 Fundamentals',  ru: 'A4.1 Основы' } },
+      { id: 'A4.2', label: { en: 'A4.2 Preprocessing', ru: 'A4.2 Предобработка' } },
+      { id: 'A4.3', label: { en: 'A4.3 Approaches',    ru: 'A4.3 Подходы' } },
+      { id: 'A4.4', label: { en: 'A4.4 Ethics & NLP',  ru: 'A4.4 Этика и NLP' } }
+    ]
+  };
 
   const filterEl = document.getElementById('quiz-filter');
   const listEl = document.getElementById('quiz-list');
@@ -40,21 +49,66 @@
     localStorage.setItem(STORAGE, JSON.stringify(p));
   }
 
+  // Active top-level (ALL / A2 / A3 / A4) — derived from activeTopic
+  function rootOf(id) {
+    if (id === 'ALL') return 'ALL';
+    return id.split('.')[0]; // 'A2.1.4' -> 'A2'
+  }
+
   function renderFilter() {
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
     filterEl.innerHTML = '';
-    TOPICS.forEach(t => {
+
+    // Row 1: top-level
+    const row1 = document.createElement('div');
+    row1.className = 'quiz-filter-row';
+    TOP_LEVEL.forEach(t => {
       const b = document.createElement('button');
       b.textContent = t.label[lang];
-      if (t.id === activeTopic) b.classList.add('active');
+      b.setAttribute('aria-pressed', rootOf(activeTopic) === t.id ? 'true' : 'false');
+      if (rootOf(activeTopic) === t.id) b.classList.add('active');
       b.addEventListener('click', () => {
         activeTopic = t.id;
         localStorage.setItem(STORAGE_FILTER, t.id);
         renderFilter();
         renderList();
       });
-      filterEl.appendChild(b);
+      row1.appendChild(b);
     });
+    filterEl.appendChild(row1);
+
+    // Row 2: sub-topics for the active root
+    const root = rootOf(activeTopic);
+    if (root !== 'ALL' && SUB_TOPICS[root]) {
+      const row2 = document.createElement('div');
+      row2.className = 'quiz-filter-row sub';
+      // Pseudo "all of A2" chip
+      const allChip = document.createElement('button');
+      allChip.textContent = lang === 'ru' ? `Все ${root}` : `All of ${root}`;
+      allChip.setAttribute('aria-pressed', activeTopic === root ? 'true' : 'false');
+      if (activeTopic === root) allChip.classList.add('active');
+      allChip.addEventListener('click', () => {
+        activeTopic = root;
+        localStorage.setItem(STORAGE_FILTER, root);
+        renderFilter();
+        renderList();
+      });
+      row2.appendChild(allChip);
+      SUB_TOPICS[root].forEach(t => {
+        const b = document.createElement('button');
+        b.textContent = t.label[lang];
+        b.setAttribute('aria-pressed', t.id === activeTopic ? 'true' : 'false');
+        if (t.id === activeTopic) b.classList.add('active');
+        b.addEventListener('click', () => {
+          activeTopic = t.id;
+          localStorage.setItem(STORAGE_FILTER, t.id);
+          renderFilter();
+          renderList();
+        });
+        row2.appendChild(b);
+      });
+      filterEl.appendChild(row2);
+    }
   }
 
   function filtered() {
@@ -70,19 +124,33 @@
     return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   }
 
+  // Word-boundary match: treats "key" as a separate word, not a hit on "monkey".
+  // Falls back to substring for keywords containing a space or punctuation.
+  function kwMatches(text, kw) {
+    const k = kw.toLowerCase();
+    if (/[\s\-/]/.test(k)) return text.includes(k);
+    // Build a unicode-aware word-boundary regex. Cyrillic chars don't play with \b in JS,
+    // so we match around non-letter or string edges.
+    const escaped = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp('(^|[^\\p{L}\\p{N}])' + escaped + '($|[^\\p{L}\\p{N}])', 'iu');
+    return re.test(text);
+  }
+
   function grade(answer, q) {
     if (!answer || !answer.trim()) return null;
     const text = answer.toLowerCase();
     const isCyrillic = /[а-яё]/i.test(text);
-    const kws = isCyrillic ? (q.keywordsRu || []) : (q.keywords || []);
+    // Pick keyword set by language of the answer, fall back to the other set if empty.
+    let kws = isCyrillic ? (q.keywordsRu || []) : (q.keywords || []);
+    if (!kws.length) kws = isCyrillic ? (q.keywords || []) : (q.keywordsRu || []);
     const hits = [];
     const misses = [];
     kws.forEach(k => {
-      if (text.includes(k.toLowerCase())) hits.push(k);
+      if (kwMatches(text, k)) hits.push(k);
       else misses.push(k);
     });
     const coverage = kws.length ? hits.length / kws.length : 0;
-    // Forgiving score: any keyword = at least 1 mark; high coverage = full marks
+    // Forgiving score: any keyword = at least 1 mark; >=50% coverage = full marks.
     let score;
     if (hits.length === 0) score = 0;
     else if (q.marks === 1) score = 1;
