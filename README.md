@@ -1,5 +1,7 @@
 # IB CS · Theme A — Interactive Study Site
 
+**Live site → https://mwildfire.github.io/FomaCS/**
+
 A bilingual (English / Russian) interactive revision site for the **IB Diploma Computer Science** course, covering Theme A of the 2024 syllabus:
 
 - **A2 Networks** — LAN/WAN/VPN, TCP/IP, topologies, security
