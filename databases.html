@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A3 Databases · IB CS Theme A</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      <span class="lang-en-inline">IB CS · Theme A</span>
+      <span class="lang-ru-inline">IB CS · Тема A</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"><span class="lang-en-inline">Overview</span><span class="lang-ru-inline">Обзор</span></a>
+      <a href="networks.html"><span class="lang-en-inline">A2 Networks</span><span class="lang-ru-inline">A2 Сети</span></a>
+      <a href="databases.html"><span class="lang-en-inline">A3 Databases</span><span class="lang-ru-inline">A3 Базы данных</span></a>
+      <a href="ml.html"><span class="lang-en-inline">A4 ML</span><span class="lang-ru-inline">A4 ML</span></a>
+      <a href="quiz.html"><span class="lang-en-inline">Quiz</span><span class="lang-ru-inline">Квиз</span></a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>RU</button>
+    </div>
+  </nav>
+</header>
+
+<div class="sidebar-layout">
+
+  <aside class="sidebar">
+    <h4><span class="lang-en-inline">A3 · Databases</span><span class="lang-ru-inline">A3 · Базы данных</span></h4>
+    <a href="#sql-sim"><span class="lang-en-inline">💾 SQL playground</span><span class="lang-ru-inline">💾 SQL-песочница</span></a>
+    <a href="#norm-sim"><span class="lang-en-inline">📐 Normalization</span><span class="lang-ru-inline">📐 Нормализация</span></a>
+    <a href="#erd-sim"><span class="lang-en-inline">🔗 M:N resolver</span><span class="lang-ru-inline">🔗 M:N связь</span></a>
+    <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
+    <a href="#notes-31"><span class="lang-en-inline">A3.1 Fundamentals</span><span class="lang-ru-inline">A3.1 Основы</span></a>
+    <a href="#notes-32"><span class="lang-en-inline">A3.2 Design</span><span class="lang-ru-inline">A3.2 Проект</span></a>
+    <a href="#notes-33"><span class="lang-en-inline">A3.3 SQL</span><span class="lang-ru-inline">A3.3 SQL</span></a>
+    <a href="#notes-34"><span class="lang-en-inline">A3.4 Alternatives</span><span class="lang-ru-inline">A3.4 Альтернативы</span></a>
+    <h4><span class="lang-en-inline">Practice</span><span class="lang-ru-inline">Практика</span></h4>
+    <a href="quiz.html?topic=A3.1"><span class="lang-en-inline">A3.1 quiz →</span><span class="lang-ru-inline">A3.1 квиз →</span></a>
+    <a href="quiz.html?topic=A3.2"><span class="lang-en-inline">A3.2 quiz →</span><span class="lang-ru-inline">A3.2 квиз →</span></a>
+    <a href="quiz.html?topic=A3.3"><span class="lang-en-inline">A3.3 quiz →</span><span class="lang-ru-inline">A3.3 квиз →</span></a>
+    <a href="quiz.html?topic=A3.4"><span class="lang-en-inline">A3.4 quiz →</span><span class="lang-ru-inline">A3.4 квиз →</span></a>
+  </aside>
+
+  <main>
+
+    <section style="margin-bottom:20px">
+      <span class="hero-eyebrow" style="background:rgba(139,92,246,0.12); color:#6d28d9">
+        <span class="lang-en-inline">A3 · Databases</span><span class="lang-ru-inline">A3 · Базы данных</span>
+      </span>
+      <h1 style="font-size:2.4rem; margin:12px 0 6px; color:var(--primary)">
+        <span class="lang-en-inline">Databases</span>
+        <span class="lang-ru-inline">Базы данных</span>
+      </h1>
+      <p class="muted" style="max-width:760px">
+        <span class="lang-en-inline">The relational model, keys and integrity, schemas and ERDs, normalization, and SQL programming — with a real SQLite database compiled to WebAssembly that you can query right here in your browser.</span>
+        <span class="lang-ru-inline">Реляционная модель, ключи и целостность, схемы и ERD, нормализация и программирование на SQL. Внутри — настоящий SQLite, скомпилированный в WebAssembly: запросы выполняются прямо в браузере.</span>
+      </p>
+    </section>
+
+    <!-- ============ SQL PLAYGROUND ============ -->
+    <section id="sql-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A3.3</span>
+          <h3>
+            <span class="lang-en-inline">Live SQL playground</span>
+            <span class="lang-ru-inline">Живая SQL-песочница</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">SQLite running in your browser. Sample tables <code>PATIENT</code>, <code>APPOINTMENT</code>, <code>PRODUCT</code> and <code>SALE</code> are pre-loaded. Try the example queries or write your own.</span>
+            <span class="lang-ru-inline">SQLite прямо в браузере. Таблицы <code>PATIENT</code>, <code>APPOINTMENT</code>, <code>PRODUCT</code>, <code>SALE</code> уже загружены. Откройте примеры или пишите свои запросы.</span>
+          </p>
+        </div>
+      </div>
+
+      <div id="sql-loading" class="muted" style="padding:14px 0">
+        <span class="lang-en-inline">⏳ Loading SQLite (sql.js)…</span>
+        <span class="lang-ru-inline">⏳ Загружаем SQLite (sql.js)…</span>
+      </div>
+
+      <div id="sql-app" style="display:none">
+        <div class="sql-examples" id="sql-examples"></div>
+        <textarea class="sql-editor" id="sql-query" spellcheck="false">SELECT FirstName, LastName FROM PATIENT
+JOIN APPOINTMENT ON PATIENT.PatientID = APPOINTMENT.PatientID
+WHERE APPOINTMENT.DoctorName = 'Dr. Smith';</textarea>
+
+        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" id="sql-run">
+            <span class="lang-en-inline">▶ Run query</span><span class="lang-ru-inline">▶ Запустить</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="sql-reset-db">
+            <span class="lang-en-inline">Reset database</span><span class="lang-ru-inline">Сбросить БД</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="sql-show-schema">
+            <span class="lang-en-inline">Show schema</span><span class="lang-ru-inline">Показать схему</span>
+          </button>
+        </div>
+
+        <div id="sql-msg"></div>
+        <div id="sql-result"></div>
+      </div>
+    </section>
+
+    <!-- ============ NORMALIZATION ============ -->
+    <section id="norm-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A3.2</span>
+          <h3>
+            <span class="lang-en-inline">Normalization — step by step</span>
+            <span class="lang-ru-inline">Нормализация — пошагово</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Start with a messy flat file and apply 1NF → 2NF → 3NF. Watch repeating groups, partial dependencies and transitive dependencies disappear.</span>
+            <span class="lang-ru-inline">Начните с грязного «плоского файла» и примените 1НФ → 2НФ → 3НФ. Смотрите, как уходят повторяющиеся группы, частичные и транзитивные зависимости.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <button class="btn btn-ghost btn-sm" id="norm-step-0">
+          <span class="lang-en-inline">0 · Flat file</span><span class="lang-ru-inline">0 · Плоский файл</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="norm-step-1">→ 1NF</button>
+        <button class="btn btn-ghost btn-sm" id="norm-step-2">→ 2NF</button>
+        <button class="btn btn-ghost btn-sm" id="norm-step-3">→ 3NF</button>
+      </div>
+
+      <div id="norm-content"></div>
+    </section>
+
+    <!-- ============ ERD M:N ============ -->
+    <section id="erd-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A3.1 · A3.2</span>
+          <h3>
+            <span class="lang-en-inline">M:N resolved via junction table</span>
+            <span class="lang-ru-inline">Связь M:N через связующую таблицу</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Press the button to watch a many-to-many between Student and Course break apart into two one-to-many relationships via an Enrollment link table.</span>
+            <span class="lang-ru-inline">Нажмите кнопку — связь «многие-ко-многим» между Студентом и Курсом распадётся на две связи «один-ко-многим» через связующую таблицу.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <button class="btn btn-primary btn-sm" id="erd-toggle">
+          <span class="lang-en-inline">▶ Resolve M:N</span><span class="lang-ru-inline">▶ Разрешить M:N</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="erd-reset">
+          <span class="lang-en-inline">Back to M:N</span><span class="lang-ru-inline">Назад к M:N</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap" style="padding:18px">
+        <svg id="erd-svg" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </section>
+
+    <!-- ============ STUDY NOTES ============ -->
+    <section id="notes-31">
+      <h2 class="section-title">A3.1 <span class="lang-en-inline">Database fundamentals</span><span class="lang-ru-inline">Основы БД</span></h2>
+      <div id="notes-31-content"></div>
+    </section>
+    <section id="notes-32">
+      <h2 class="section-title">A3.2 <span class="lang-en-inline">Design & normalization</span><span class="lang-ru-inline">Проектирование и нормализация</span></h2>
+      <div id="notes-32-content"></div>
+    </section>
+    <section id="notes-33">
+      <h2 class="section-title">A3.3 <span class="lang-en-inline">SQL programming</span><span class="lang-ru-inline">Программирование SQL</span></h2>
+      <div id="notes-33-content"></div>
+    </section>
+    <section id="notes-34">
+      <h2 class="section-title">A3.4 <span class="lang-en-inline">Alternative DBs & warehouses (HL)</span><span class="lang-ru-inline">Альтернативные БД и хранилища (HL)</span></h2>
+      <div id="notes-34-content"></div>
+    </section>
+
+    <div style="margin-top: 40px; text-align:center">
+      <a class="btn btn-primary" href="quiz.html?topic=A3">
+        <span class="lang-en-inline">Practice all A3 questions →</span>
+        <span class="lang-ru-inline">Все вопросы A3 в квизе →</span>
+      </a>
+    </div>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <p>
+    <span class="lang-en-inline">IB CS Theme A · A3 Databases · Bilingual EN / RU · </span>
+    <span class="lang-ru-inline">IB CS Тема A · A3 Базы данных · EN / RU · </span>
+    <a href="index.html">← <span class="lang-en-inline">Back to overview</span><span class="lang-ru-inline">К обзору</span></a>
+  </p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/notes-render.js"></script>
+<!-- sql.js from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+<script src="js/sql-playground.js"></script>
+<script src="js/normalization.js"></script>
+<script src="js/erd.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    renderNotes('notes-31-content', 'a3_1');
+    renderNotes('notes-32-content', 'a3_2');
+    renderNotes('notes-33-content', 'a3_3');
+    renderNotes('notes-34-content', 'a3_4');
+  });
+</script>
+
+</body>
+</html>

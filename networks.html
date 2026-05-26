@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2 Networks · IB CS Theme A</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      <span class="lang-en-inline">IB CS · Theme A</span>
+      <span class="lang-ru-inline">IB CS · Тема A</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"><span class="lang-en-inline">Overview</span><span class="lang-ru-inline">Обзор</span></a>
+      <a href="networks.html"><span class="lang-en-inline">A2 Networks</span><span class="lang-ru-inline">A2 Сети</span></a>
+      <a href="databases.html"><span class="lang-en-inline">A3 Databases</span><span class="lang-ru-inline">A3 Базы данных</span></a>
+      <a href="ml.html"><span class="lang-en-inline">A4 ML</span><span class="lang-ru-inline">A4 ML</span></a>
+      <a href="quiz.html"><span class="lang-en-inline">Quiz</span><span class="lang-ru-inline">Квиз</span></a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>RU</button>
+    </div>
+  </nav>
+</header>
+
+<div class="sidebar-layout">
+
+  <aside class="sidebar">
+    <h4><span class="lang-en-inline">A2 · Networks</span><span class="lang-ru-inline">A2 · Сети</span></h4>
+    <a href="#topology-sim"><span class="lang-en-inline">🌐 Topology sim</span><span class="lang-ru-inline">🌐 Топологии</span></a>
+    <a href="#protocols-sim"><span class="lang-en-inline">📦 TCP vs UDP</span><span class="lang-ru-inline">📦 TCP vs UDP</span></a>
+    <a href="#layers-sim"><span class="lang-en-inline">🧱 TCP/IP layers</span><span class="lang-ru-inline">🧱 Уровни TCP/IP</span></a>
+    <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
+    <a href="#notes-21"><span class="lang-en-inline">A2.1 Fundamentals</span><span class="lang-ru-inline">A2.1 Основы</span></a>
+    <a href="#notes-22"><span class="lang-en-inline">A2.2 Architecture</span><span class="lang-ru-inline">A2.2 Архитектура</span></a>
+    <a href="#notes-23"><span class="lang-en-inline">A2.3 Security</span><span class="lang-ru-inline">A2.3 Безопасность</span></a>
+    <h4><span class="lang-en-inline">Practice</span><span class="lang-ru-inline">Практика</span></h4>
+    <a href="quiz.html?topic=A2.1"><span class="lang-en-inline">A2.1 quiz →</span><span class="lang-ru-inline">A2.1 квиз →</span></a>
+    <a href="quiz.html?topic=A2.2"><span class="lang-en-inline">A2.2 quiz →</span><span class="lang-ru-inline">A2.2 квиз →</span></a>
+    <a href="quiz.html?topic=A2.3"><span class="lang-en-inline">A2.3 quiz →</span><span class="lang-ru-inline">A2.3 квиз →</span></a>
+    <a href="quiz.html?topic=A2.1.4"><span class="lang-en-inline">A2.1.4 quiz →</span><span class="lang-ru-inline">A2.1.4 квиз →</span></a>
+  </aside>
+
+  <main>
+
+    <section style="margin-bottom:20px">
+      <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+        <span class="lang-en-inline">A2 · Networks</span><span class="lang-ru-inline">A2 · Сети</span>
+      </span>
+      <h1 style="font-size:2.4rem; margin:12px 0 6px; color:var(--primary)">
+        <span class="lang-en-inline">Networks</span>
+        <span class="lang-ru-inline">Сети</span>
+      </h1>
+      <p class="muted" style="max-width:760px">
+        <span class="lang-en-inline">Networks let independent devices share data and resources. This chapter covers types, infrastructure, devices, TCP/IP, topologies, models, segmentation, IP addressing, transmission media, packet switching, routing and security.</span>
+        <span class="lang-ru-inline">Сети позволяют независимым устройствам обмениваться данными. Эта глава — типы сетей, инфраструктура, устройства, TCP/IP, топологии, модели, сегментация, IP-адресация, среды передачи, коммутация пакетов, маршрутизация и безопасность.</span>
+      </p>
+    </section>
+
+    <!-- ============ TOPOLOGY SIMULATION ============ -->
+    <section id="topology-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.2 · A2.3</span>
+          <h3>
+            <span class="lang-en-inline">Network topology playground</span>
+            <span class="lang-ru-inline">Песочница сетевых топологий</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Switch between Star, Bus, Ring, Mesh and Hybrid. <b>Click a node to fail it</b> and see which devices can still reach the green target. Mesh reroutes; Star collapses when the centre falls.</span>
+            <span class="lang-ru-inline">Переключайте Звезда / Шина / Кольцо / Mesh / Гибрид. <b>Кликните по узлу — он «упадёт»</b>, и видно, кто ещё может достучаться до зелёной цели. Mesh перенаправит трафик, а звезда падает с центром.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Topology:</span><span class="lang-ru-inline">Топология:</span>
+          <select id="topo-select">
+            <option value="star">Star</option>
+            <option value="bus">Bus</option>
+            <option value="ring">Ring</option>
+            <option value="mesh">Mesh (full)</option>
+            <option value="hybrid">Hybrid (star + mesh core)</option>
+          </select>
+        </label>
+        <button class="btn btn-ghost btn-sm" id="topo-reset">
+          <span class="lang-en-inline">Reset failures</span><span class="lang-ru-inline">Восстановить</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="topo-randfail">
+          <span class="lang-en-inline">Random failure</span><span class="lang-ru-inline">Случайный отказ</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <svg id="topo-svg" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div class="sim-legend">
+        <span><span class="dot" style="background:#0ea5e9"></span> <span class="lang-en-inline">Reachable</span><span class="lang-ru-inline">Достижим</span></span>
+        <span><span class="dot" style="background:#10b981"></span> <span class="lang-en-inline">Target</span><span class="lang-ru-inline">Цель</span></span>
+        <span><span class="dot" style="background:#ef4444"></span> <span class="lang-en-inline">Failed</span><span class="lang-ru-inline">Отказ</span></span>
+        <span><span class="dot" style="background:#94a3b8"></span> <span class="lang-en-inline">Isolated</span><span class="lang-ru-inline">Изолирован</span></span>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Links</span><span class="lang-ru-inline">Связи</span></div><div class="value" id="topo-stat-links">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Reachable</span><span class="lang-ru-inline">Достижимы</span></div><div class="value" id="topo-stat-reach">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Failed</span><span class="lang-ru-inline">Отказы</span></div><div class="value" id="topo-stat-failed">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">SPOF risk</span><span class="lang-ru-inline">SPOF риск</span></div><div class="value" id="topo-stat-spof">—</div></div>
+      </div>
+
+      <div id="topo-note" class="notes-block" style="margin-top:18px; border-left-color:var(--accent)"></div>
+    </section>
+
+    <!-- ============ TCP/UDP SIMULATION ============ -->
+    <section id="protocols-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.1.4</span>
+          <h3>
+            <span class="lang-en-inline">TCP vs UDP — packet animation</span>
+            <span class="lang-ru-inline">TCP vs UDP — анимация пакетов</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Watch both protocols send 12 packets side-by-side. Crank the <b>loss rate</b> — TCP retransmits and re-orders, UDP just drops what is lost. The arrival lanes show order: green = in order, amber = out of order.</span>
+            <span class="lang-ru-inline">Оба протокола отправляют по 12 пакетов параллельно. Двиньте ползунок <b>потерь</b> — TCP переотправит и упорядочит, UDP просто потеряет. В нижних дорожках зелёные пакеты — по порядку, янтарные — пришли не по очереди.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Loss rate:</span><span class="lang-ru-inline">Потери:</span>
+          <input type="range" id="proto-loss" min="0" max="60" value="25" step="5">
+          <span id="proto-loss-val">25%</span>
+        </label>
+        <label>
+          <span class="lang-en-inline">Speed:</span><span class="lang-ru-inline">Скорость:</span>
+          <input type="range" id="proto-speed" min="1" max="5" value="3" step="1">
+        </label>
+        <button class="btn btn-primary btn-sm" id="proto-start">
+          <span class="lang-en-inline">▶ Start</span><span class="lang-ru-inline">▶ Старт</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="proto-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="proto-canvas" width="900" height="420"></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label">TCP <span class="lang-en-inline">received</span><span class="lang-ru-inline">принято</span></div><div class="value" id="tcp-recv" style="color:var(--green)">0 / 12</div></div>
+        <div class="sim-stat"><div class="label">TCP <span class="lang-en-inline">retrans.</span><span class="lang-ru-inline">повторов</span></div><div class="value" id="tcp-retr" style="color:var(--amber)">0</div></div>
+        <div class="sim-stat"><div class="label">UDP <span class="lang-en-inline">received</span><span class="lang-ru-inline">принято</span></div><div class="value" id="udp-recv" style="color:var(--green)">0 / 12</div></div>
+        <div class="sim-stat"><div class="label">UDP <span class="lang-en-inline">lost</span><span class="lang-ru-inline">потеряно</span></div><div class="value" id="udp-lost" style="color:var(--red)">0</div></div>
+      </div>
+    </section>
+
+    <!-- ============ TCP/IP LAYERS SIM ============ -->
+    <section id="layers-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.1 · A2.2</span>
+          <h3>
+            <span class="lang-en-inline">TCP/IP encapsulation</span>
+            <span class="lang-ru-inline">Инкапсуляция TCP/IP</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Press <b>Send</b> to watch data picking up headers as it descends the 4-layer TCP/IP stack — and shedding them as it climbs back up at the receiver.</span>
+            <span class="lang-ru-inline">Нажмите <b>Отправить</b> — данные «обрастают» заголовками, спускаясь по 4 уровням TCP/IP, и теряют их, поднимаясь у получателя.</span>
+          </p>
+        </div>
+      </div>
+      <div class="sim-controls">
+        <button class="btn btn-primary btn-sm" id="layers-send">
+          <span class="lang-en-inline">▶ Send packet</span><span class="lang-ru-inline">▶ Отправить</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="layers-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <svg id="layers-svg" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </section>
+
+    <!-- ============ STUDY NOTES ============ -->
+    <section id="notes-21">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.1 Network fundamentals — notes</span>
+        <span class="lang-ru-inline">A2.1 Основы сетей — конспект</span>
+      </h2>
+      <div id="notes-21-content"></div>
+    </section>
+
+    <section id="notes-22">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.2 Architecture & topologies</span>
+        <span class="lang-ru-inline">A2.2 Архитектура и топологии</span>
+      </h2>
+      <div id="notes-22-content"></div>
+    </section>
+
+    <section id="notes-23">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.3 Transmission & security</span>
+        <span class="lang-ru-inline">A2.3 Передача и безопасность</span>
+      </h2>
+      <div id="notes-23-content"></div>
+    </section>
+
+    <div style="margin-top: 40px; text-align:center">
+      <a class="btn btn-primary" href="quiz.html?topic=A2">
+        <span class="lang-en-inline">Practice all A2 questions →</span>
+        <span class="lang-ru-inline">Все вопросы A2 в квизе →</span>
+      </a>
+    </div>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <p>
+    <span class="lang-en-inline">IB CS Theme A · A2 Networks · Bilingual EN / RU · </span>
+    <span class="lang-ru-inline">IB CS Тема A · A2 Сети · EN / RU · </span>
+    <a href="index.html">← <span class="lang-en-inline">Back to overview</span><span class="lang-ru-inline">К обзору</span></a>
+  </p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/notes-render.js"></script>
+<script src="js/topology.js"></script>
+<script src="js/protocols.js"></script>
+<script src="js/layers.js"></script>
+<script>
+  // Render the study notes
+  document.addEventListener('DOMContentLoaded', () => {
+    renderNotes('notes-21-content', 'a2_1');
+    renderNotes('notes-22-content', 'a2_2');
+    renderNotes('notes-23-content', 'a2_3');
+  });
+</script>
+
+</body>
+</html>

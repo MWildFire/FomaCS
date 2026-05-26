@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IB CS · Theme A — Interactive Study</title>
+<meta name="description" content="Interactive IB Computer Science Theme A study site — Networks, Databases, Machine Learning. Bilingual EN/RU.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      <span class="lang-en-inline">IB CS · Theme A</span>
+      <span class="lang-ru-inline">IB CS · Тема A</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">
+        <span class="lang-en-inline">Overview</span>
+        <span class="lang-ru-inline">Обзор</span>
+      </a>
+      <a href="networks.html">
+        <span class="lang-en-inline">A2 Networks</span>
+        <span class="lang-ru-inline">A2 Сети</span>
+      </a>
+      <a href="databases.html">
+        <span class="lang-en-inline">A3 Databases</span>
+        <span class="lang-ru-inline">A3 Базы данных</span>
+      </a>
+      <a href="ml.html">
+        <span class="lang-en-inline">A4 ML</span>
+        <span class="lang-ru-inline">A4 ML</span>
+      </a>
+      <a href="quiz.html">
+        <span class="lang-en-inline">Quiz</span>
+        <span class="lang-ru-inline">Квиз</span>
+      </a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle title="Toggle theme">☽</button>
+      <button class="lang-toggle" data-lang-toggle title="Switch language">RU</button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <span class="hero-eyebrow">
+    <span class="lang-en-inline">IB Diploma · Computer Science</span>
+    <span class="lang-ru-inline">IB Diploma · Computer Science</span>
+  </span>
+  <h1>
+    <span class="lang-en-inline">Theme A — Concepts of Computer Science</span>
+    <span class="lang-ru-inline">Тема А — Концепции информатики</span>
+  </h1>
+  <p>
+    <span class="lang-en-inline">Interactive notes, simulations and exam-style practice for A2 Networks, A3 Databases and A4 Machine Learning. 77 self-graded exam-style questions with model answers.</span>
+    <span class="lang-ru-inline">Интерактивные конспекты, симуляции и практика в формате экзамена по A2 Сети, A3 Базы данных и A4 Машинное обучение. 77 экзамен-вопросов с самопроверкой и идеальными ответами.</span>
+  </p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="networks.html">
+      <span class="lang-en-inline">Start with A2 Networks →</span>
+      <span class="lang-ru-inline">Начать с A2 Сети →</span>
+    </a>
+    <a class="btn btn-secondary" href="quiz.html">
+      <span class="lang-en-inline">Jump into the quiz</span>
+      <span class="lang-ru-inline">Сразу к квизу</span>
+    </a>
+  </div>
+</section>
+
+<div class="container">
+
+  <h2 class="section-title">
+    <span class="lang-en-inline">Pick a topic</span>
+    <span class="lang-ru-inline">Выберите тему</span>
+  </h2>
+
+  <div class="topic-grid">
+    <a class="card card-hover topic-card a2" href="networks.html">
+      <span class="topic-tag">A2 · NETWORKS</span>
+      <h3 class="lang-en-inline">Networks</h3>
+      <h3 class="lang-ru-inline">Сети</h3>
+      <p class="lang-en-inline">LAN/WAN/VPN, TCP-IP, topologies, packet switching, security. Try the topology visualizer and the TCP-vs-UDP packet animation.</p>
+      <p class="lang-ru-inline">LAN/WAN/VPN, TCP-IP, топологии, коммутация пакетов, безопасность. Попробуйте визуализатор топологий и анимацию TCP-vs-UDP.</p>
+      <span class="topic-arrow">→</span>
+    </a>
+
+    <a class="card card-hover topic-card a3" href="databases.html">
+      <span class="topic-tag">A3 · DATABASES</span>
+      <h3 class="lang-en-inline">Databases</h3>
+      <h3 class="lang-ru-inline">Базы данных</h3>
+      <p class="lang-en-inline">Relational model, normalization, SQL. Includes a live SQL playground (SQLite in your browser) and a normalization walk-through.</p>
+      <p class="lang-ru-inline">Реляционная модель, нормализация, SQL. Включает SQL-песочницу (SQLite прямо в браузере) и пошаговую нормализацию.</p>
+      <span class="topic-arrow">→</span>
+    </a>
+
+    <a class="card card-hover topic-card a4" href="ml.html">
+      <span class="topic-tag">A4 · MACHINE LEARNING</span>
+      <h3 class="lang-en-inline">Machine Learning</h3>
+      <h3 class="lang-ru-inline">Машинное обучение</h3>
+      <p class="lang-en-inline">Supervised, unsupervised, RL, deep learning. Drag-the-points linear regression and a step-through K-means clustering demo.</p>
+      <p class="lang-ru-inline">Обучение с учителем, без учителя, RL, глубокое. Линейная регрессия (тащите точки) и пошаговая K-means кластеризация.</p>
+      <span class="topic-arrow">→</span>
+    </a>
+
+    <a class="card card-hover topic-card quiz" href="quiz.html">
+      <span class="topic-tag">QUIZ · ALL TOPICS</span>
+      <h3 class="lang-en-inline">Self-graded exam practice</h3>
+      <h3 class="lang-ru-inline">Самопроверка по экзамену</h3>
+      <p class="lang-en-inline">Type your answer and get instant feedback on which mark-scheme keywords you hit. Compare against the model answer.</p>
+      <p class="lang-ru-inline">Введите ответ — получите мгновенную проверку по ключевым словам схемы оценивания. Сравните с идеальным ответом.</p>
+      <span class="topic-arrow">→</span>
+    </a>
+  </div>
+
+  <h2 class="section-title">
+    <span class="lang-en-inline">What's inside</span>
+    <span class="lang-ru-inline">Что внутри</span>
+  </h2>
+
+  <div class="topic-grid">
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--primary)">
+        <span class="lang-en-inline">🌐 Network topology playground</span>
+        <span class="lang-ru-inline">🌐 Песочница сетевых топологий</span>
+      </h3>
+      <p class="muted">
+        <span class="lang-en-inline">Switch between Star / Bus / Ring / Mesh / Hybrid. Click a node to "fail" it — see how Mesh reroutes while Star collapses.</span>
+        <span class="lang-ru-inline">Переключайте Звезда / Шина / Кольцо / Mesh / Гибрид. Кликните по узлу — увидите, как Mesh перенаправит трафик, а Звезда упадёт.</span>
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--primary)">
+        <span class="lang-en-inline">📦 TCP vs UDP under packet loss</span>
+        <span class="lang-ru-inline">📦 TCP vs UDP при потерях</span>
+      </h3>
+      <p class="muted">
+        <span class="lang-en-inline">Animate both protocols side-by-side. Crank the loss slider — watch TCP retransmit and re-order while UDP just drops packets.</span>
+        <span class="lang-ru-inline">Анимация обоих протоколов рядом. Двиньте ползунок потерь — TCP переотправит и упорядочит, а UDP просто потеряет.</span>
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--primary)">
+        <span class="lang-en-inline">💾 Real SQL playground</span>
+        <span class="lang-ru-inline">💾 Настоящий SQL в браузере</span>
+      </h3>
+      <p class="muted">
+        <span class="lang-en-inline">SQLite compiled to WebAssembly. PATIENT, APPOINTMENT, PRODUCT, SALE tables pre-loaded. Run any query you like.</span>
+        <span class="lang-ru-inline">SQLite, скомпилированный в WebAssembly. Таблицы PATIENT, APPOINTMENT, PRODUCT, SALE загружены. Запускайте любые запросы.</span>
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--primary)">
+        <span class="lang-en-inline">📐 Linear regression you can shape</span>
+        <span class="lang-ru-inline">📐 Линейная регрессия, которую тащишь руками</span>
+      </h3>
+      <p class="muted">
+        <span class="lang-en-inline">Drag points on a canvas. The line of best fit, slope, intercept and R² update in real time.</span>
+        <span class="lang-ru-inline">Тащите точки по холсту. Линия наилучшего соответствия, наклон и R² обновляются в реальном времени.</span>
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--primary)">
+        <span class="lang-en-inline">🎯 K-means clustering, step by step</span>
+        <span class="lang-ru-inline">🎯 K-means — шаг за шагом</span>
+      </h3>
+      <p class="muted">
+        <span class="lang-en-inline">Pick K, scatter points, then watch the centroids move toward convergence one iteration at a time.</span>
+        <span class="lang-ru-inline">Выберите K, разбросайте точки и смотрите, как центроиды сходятся за каждую итерацию.</span>
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0; color:var(--primary)">
+        <span class="lang-en-inline">📝 Self-graded exam-style questions</span>
+        <span class="lang-ru-inline">📝 Самопроверка по экзамен-вопросам</span>
+      </h3>
+      <p class="muted">
+        <span class="lang-en-inline">Type a free-text answer; the grader scores your keyword coverage against the official mark scheme.</span>
+        <span class="lang-ru-inline">Введите свободный ответ — оценщик сравнит ваши ключевые слова со схемой оценивания.</span>
+      </p>
+    </div>
+  </div>
+
+  <h2 class="section-title">
+    <span class="lang-en-inline">How to use this guide</span>
+    <span class="lang-ru-inline">Как пользоваться</span>
+  </h2>
+  <div class="notes-block">
+    <span class="badge">EN — Study tips</span>
+    <ul>
+      <li>Each topic page has <strong>study notes</strong> (EN + RU side by side) followed by <strong>interactive simulations</strong>.</li>
+      <li>Use the <strong>RU / EN toggle</strong> in the header to switch language. Your preference is remembered.</li>
+      <li>The <strong>Quiz page</strong> lets you filter by sub-topic (A2.1, A3.2, A4.4, …) and type answers in either language.</li>
+      <li>Higher-Level-only material is marked <strong>(HL)</strong>. Look for the mark-scheme keywords listed in each question's feedback.</li>
+    </ul>
+  </div>
+  <div class="notes-block ru">
+    <span class="badge">RU — Советы</span>
+    <ul>
+      <li>На странице каждой темы — <strong>конспекты</strong> (EN + RU рядом) и <strong>интерактивные симуляции</strong>.</li>
+      <li>Кнопка <strong>RU / EN</strong> в шапке меняет язык. Выбор сохраняется.</li>
+      <li>На странице <strong>Квиз</strong> можно фильтровать по подтемам (A2.1, A3.2, A4.4, …) и отвечать на любом языке.</li>
+      <li>Материал только для <strong>Higher Level</strong> помечен <strong>(HL)</strong>. В разборе видно, какие ключевые слова ищет экзаменатор.</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>
+    <span class="lang-en-inline">Made for IB CS Theme A revision · 2024 syllabus · Bilingual EN / RU · </span>
+    <span class="lang-ru-inline">Сделано для подготовки к IB CS Тема A · программа 2024 · Двуязычно EN / RU · </span>
+    <a href="https://github.com/MWildFire" target="_blank" rel="noopener">GitHub</a>
+  </p>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

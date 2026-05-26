@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4 Machine Learning · IB CS Theme A</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      <span class="lang-en-inline">IB CS · Theme A</span>
+      <span class="lang-ru-inline">IB CS · Тема A</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"><span class="lang-en-inline">Overview</span><span class="lang-ru-inline">Обзор</span></a>
+      <a href="networks.html"><span class="lang-en-inline">A2 Networks</span><span class="lang-ru-inline">A2 Сети</span></a>
+      <a href="databases.html"><span class="lang-en-inline">A3 Databases</span><span class="lang-ru-inline">A3 Базы данных</span></a>
+      <a href="ml.html"><span class="lang-en-inline">A4 ML</span><span class="lang-ru-inline">A4 ML</span></a>
+      <a href="quiz.html"><span class="lang-en-inline">Quiz</span><span class="lang-ru-inline">Квиз</span></a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>RU</button>
+    </div>
+  </nav>
+</header>
+
+<div class="sidebar-layout">
+
+  <aside class="sidebar">
+    <h4><span class="lang-en-inline">A4 · ML</span><span class="lang-ru-inline">A4 · ML</span></h4>
+    <a href="#regression-sim"><span class="lang-en-inline">📐 Linear regression</span><span class="lang-ru-inline">📐 Линейная регрессия</span></a>
+    <a href="#kmeans-sim"><span class="lang-en-inline">🎯 K-means clustering</span><span class="lang-ru-inline">🎯 K-means кластеризация</span></a>
+    <a href="#classifier-sim"><span class="lang-en-inline">📊 Confusion matrix</span><span class="lang-ru-inline">📊 Матрица ошибок</span></a>
+    <a href="#bias-sim"><span class="lang-en-inline">⚖️ Bias visualization</span><span class="lang-ru-inline">⚖️ Предвзятость данных</span></a>
+    <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
+    <a href="#notes-41"><span class="lang-en-inline">A4.1 Fundamentals</span><span class="lang-ru-inline">A4.1 Основы</span></a>
+    <a href="#notes-42"><span class="lang-en-inline">A4.2 Preprocessing (HL)</span><span class="lang-ru-inline">A4.2 Предобработка (HL)</span></a>
+    <a href="#notes-43"><span class="lang-en-inline">A4.3 Approaches (HL)</span><span class="lang-ru-inline">A4.3 Подходы (HL)</span></a>
+    <a href="#notes-44"><span class="lang-en-inline">A4.4 Ethics & NLP</span><span class="lang-ru-inline">A4.4 Этика и NLP</span></a>
+    <h4><span class="lang-en-inline">Practice</span><span class="lang-ru-inline">Практика</span></h4>
+    <a href="quiz.html?topic=A4.1"><span class="lang-en-inline">A4.1 quiz →</span><span class="lang-ru-inline">A4.1 квиз →</span></a>
+    <a href="quiz.html?topic=A4.2"><span class="lang-en-inline">A4.2 quiz →</span><span class="lang-ru-inline">A4.2 квиз →</span></a>
+    <a href="quiz.html?topic=A4.3"><span class="lang-en-inline">A4.3 quiz →</span><span class="lang-ru-inline">A4.3 квиз →</span></a>
+    <a href="quiz.html?topic=A4.4"><span class="lang-en-inline">A4.4 quiz →</span><span class="lang-ru-inline">A4.4 квиз →</span></a>
+  </aside>
+
+  <main>
+
+    <section style="margin-bottom:20px">
+      <span class="hero-eyebrow" style="background:rgba(16,185,129,0.12); color:#047857">
+        <span class="lang-en-inline">A4 · Machine Learning</span><span class="lang-ru-inline">A4 · Машинное обучение</span>
+      </span>
+      <h1 style="font-size:2.4rem; margin:12px 0 6px; color:var(--primary)">
+        <span class="lang-en-inline">Machine Learning</span>
+        <span class="lang-ru-inline">Машинное обучение</span>
+      </h1>
+      <p class="muted" style="max-width:760px">
+        <span class="lang-en-inline">From supervised classification and regression to unsupervised clustering, reinforcement learning, neural networks and the ethics of AI. Play with a live linear regression, watch K-means converge step by step, and see how training bias warps decisions.</span>
+        <span class="lang-ru-inline">От обучения с учителем и без, до подкрепления, нейросетей и этики ИИ. Игра с линейной регрессией, пошаговая сходимость K-means и наглядное искажение решений из-за предвзятых данных.</span>
+      </p>
+    </section>
+
+    <!-- ============ LINEAR REGRESSION ============ -->
+    <section id="regression-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A4.1 · A4.3</span>
+          <h3>
+            <span class="lang-en-inline">Linear regression you can shape</span>
+            <span class="lang-ru-inline">Линейная регрессия — можно тащить точки</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline"><b>Click empty space</b> to add a point. <b>Drag a point</b> to move it. The line of best fit (least squares) is recomputed live, alongside the slope, intercept and R² goodness-of-fit.</span>
+            <span class="lang-ru-inline"><b>Кликните в пустом месте</b> — добавится точка. <b>Тащите точку</b>, чтобы её переместить. Линия наилучшего соответствия (метод наименьших квадратов), наклон, сдвиг и R² пересчитываются в реальном времени.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <button class="btn btn-ghost btn-sm" id="reg-random">
+          <span class="lang-en-inline">🎲 Random data</span><span class="lang-ru-inline">🎲 Случайные данные</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="reg-clear">
+          <span class="lang-en-inline">Clear all</span><span class="lang-ru-inline">Очистить</span>
+        </button>
+        <label>
+          <input type="checkbox" id="reg-show-resid" checked>
+          <span class="lang-en-inline">Show residuals</span><span class="lang-ru-inline">Показывать остатки</span>
+        </label>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="reg-canvas" width="900" height="420"></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label">n</div><div class="value" id="reg-n">0</div></div>
+        <div class="sim-stat"><div class="label">slope (m)</div><div class="value" id="reg-slope">—</div></div>
+        <div class="sim-stat"><div class="label">intercept (b)</div><div class="value" id="reg-intercept">—</div></div>
+        <div class="sim-stat"><div class="label">R²</div><div class="value" id="reg-r2">—</div></div>
+      </div>
+    </section>
+
+    <!-- ============ K-MEANS ============ -->
+    <section id="kmeans-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A4.3</span>
+          <h3>
+            <span class="lang-en-inline">K-means clustering — one step at a time</span>
+            <span class="lang-ru-inline">K-means — пошаговая кластеризация</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Choose K, sprinkle some points, then press <b>Step</b> to iterate: each round (1) assigns every point to the nearest centroid, then (2) re-computes each centroid as the mean of its cluster. Watch them stabilise.</span>
+            <span class="lang-ru-inline">Выберите K, накидайте точек и жмите <b>Шаг</b>: каждая итерация — (1) точки переходят к ближайшему центроиду, (2) центроиды пересчитываются как среднее своего кластера. Дойдёт до стабильности.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>K:
+          <input type="number" id="km-k" min="2" max="6" value="3">
+        </label>
+        <button class="btn btn-ghost btn-sm" id="km-scatter">
+          <span class="lang-en-inline">🎲 Scatter 60 points</span><span class="lang-ru-inline">🎲 60 точек</span>
+        </button>
+        <button class="btn btn-primary btn-sm" id="km-step">
+          <span class="lang-en-inline">▶ Step</span><span class="lang-ru-inline">▶ Шаг</span>
+        </button>
+        <button class="btn btn-accent btn-sm" id="km-run">
+          <span class="lang-en-inline">⏩ Auto-run</span><span class="lang-ru-inline">⏩ Авто</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="km-reset">
+          <span class="lang-en-inline">Reset centroids</span><span class="lang-ru-inline">Новые центроиды</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="km-clear">
+          <span class="lang-en-inline">Clear</span><span class="lang-ru-inline">Очистить</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="km-canvas" width="900" height="420"></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label">k</div><div class="value" id="km-stat-k">3</div></div>
+        <div class="sim-stat"><div class="label">points</div><div class="value" id="km-stat-n">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Iteration</span><span class="lang-ru-inline">Итерация</span></div><div class="value" id="km-stat-iter">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Inertia</span><span class="lang-ru-inline">Инерция</span></div><div class="value" id="km-stat-inertia">—</div></div>
+      </div>
+      <p class="muted" style="font-size:0.9rem; margin-top:10px">
+        <span class="lang-en-inline">Tip: click on the canvas to add a point of your own. Centroids are shown as ★.</span>
+        <span class="lang-ru-inline">Подсказка: клик по холсту добавляет точку. Центроиды отмечены ★.</span>
+      </p>
+    </section>
+
+    <!-- ============ CONFUSION MATRIX ============ -->
+    <section id="classifier-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A4.3 · A4.4</span>
+          <h3>
+            <span class="lang-en-inline">Confusion matrix — accuracy isn't enough</span>
+            <span class="lang-ru-inline">Матрица ошибок — accuracy не всё</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Slide the counts of <b>true positives</b>, <b>false positives</b>, <b>false negatives</b> and <b>true negatives</b>. Watch precision, recall and F1 update. Imagine a bullying-detection or storm-warning system — which errors hurt most?</span>
+            <span class="lang-ru-inline">Двигайте число <b>истинно-положительных</b>, <b>ложно-положительных</b>, <b>ложно-отрицательных</b> и <b>истинно-отрицательных</b>. Precision, recall, F1 пересчитываются. Подумайте: в системе выявления травли или прогноза штормов — какие ошибки опаснее?</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>TP <input type="range" id="cm-tp" min="0" max="100" value="50"><span id="cm-tp-v">50</span></label>
+        <label>FP <input type="range" id="cm-fp" min="0" max="100" value="10"><span id="cm-fp-v">10</span></label>
+        <label>FN <input type="range" id="cm-fn" min="0" max="100" value="20"><span id="cm-fn-v">20</span></label>
+        <label>TN <input type="range" id="cm-tn" min="0" max="100" value="200"><span id="cm-tn-v">200</span></label>
+      </div>
+
+      <div class="sim-canvas-wrap" style="padding:18px">
+        <svg id="cm-svg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label">Accuracy</div><div class="value" id="cm-acc">—</div></div>
+        <div class="sim-stat"><div class="label">Precision</div><div class="value" id="cm-prec">—</div></div>
+        <div class="sim-stat"><div class="label">Recall</div><div class="value" id="cm-rec">—</div></div>
+        <div class="sim-stat"><div class="label">F1</div><div class="value" id="cm-f1">—</div></div>
+      </div>
+    </section>
+
+    <!-- ============ BIAS VISUALIZATION ============ -->
+    <section id="bias-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A4.4</span>
+          <h3>
+            <span class="lang-en-inline">Training bias → discriminatory outcomes</span>
+            <span class="lang-ru-inline">Смещение обучения → дискриминация</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Two groups apply for mortgages. Drag the slider to skew which group dominates the <b>training data</b>. The model "approves" applicants similar to the majority — even when both groups are equally creditworthy. This is how historical bias becomes algorithmic bias.</span>
+            <span class="lang-ru-inline">Две группы подают заявки на ипотеку. Двигайте ползунок — какая группа доминирует в <b>обучающих данных</b>. Модель «одобряет» похожих на большинство, даже когда обе группы равнокредитоспособны. Так историческая предвзятость становится алгоритмической.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Group A share in training:</span><span class="lang-ru-inline">Доля группы A в обучении:</span>
+          <input type="range" id="bias-share" min="50" max="98" value="85">
+          <span id="bias-share-v">85%</span>
+        </label>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="bias-canvas" width="900" height="360"></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label">Group A <span class="lang-en-inline">approved</span><span class="lang-ru-inline">одобрено</span></div><div class="value" id="bias-a-rate" style="color:var(--green)">—</div></div>
+        <div class="sim-stat"><div class="label">Group B <span class="lang-en-inline">approved</span><span class="lang-ru-inline">одобрено</span></div><div class="value" id="bias-b-rate" style="color:var(--red)">—</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Gap</span><span class="lang-ru-inline">Разрыв</span></div><div class="value" id="bias-gap">—</div></div>
+      </div>
+    </section>
+
+    <!-- ============ STUDY NOTES ============ -->
+    <section id="notes-41">
+      <h2 class="section-title">A4.1 <span class="lang-en-inline">ML fundamentals</span><span class="lang-ru-inline">Основы ML</span></h2>
+      <div id="notes-41-content"></div>
+    </section>
+    <section id="notes-42">
+      <h2 class="section-title">A4.2 <span class="lang-en-inline">Data preprocessing (HL)</span><span class="lang-ru-inline">Предобработка (HL)</span></h2>
+      <div id="notes-42-content"></div>
+    </section>
+    <section id="notes-43">
+      <h2 class="section-title">A4.3 <span class="lang-en-inline">ML approaches (HL)</span><span class="lang-ru-inline">Подходы ML (HL)</span></h2>
+      <div id="notes-43-content"></div>
+    </section>
+    <section id="notes-44">
+      <h2 class="section-title">A4.4 <span class="lang-en-inline">Ethics & NLP</span><span class="lang-ru-inline">Этика и NLP</span></h2>
+      <div id="notes-44-content"></div>
+    </section>
+
+    <div style="margin-top: 40px; text-align:center">
+      <a class="btn btn-primary" href="quiz.html?topic=A4">
+        <span class="lang-en-inline">Practice all A4 questions →</span>
+        <span class="lang-ru-inline">Все вопросы A4 в квизе →</span>
+      </a>
+    </div>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <p>
+    <span class="lang-en-inline">IB CS Theme A · A4 Machine Learning · Bilingual EN / RU · </span>
+    <span class="lang-ru-inline">IB CS Тема A · A4 ML · EN / RU · </span>
+    <a href="index.html">← <span class="lang-en-inline">Back to overview</span><span class="lang-ru-inline">К обзору</span></a>
+  </p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/notes-render.js"></script>
+<script src="js/regression.js"></script>
+<script src="js/kmeans.js"></script>
+<script src="js/confusion.js"></script>
+<script src="js/bias.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    renderNotes('notes-41-content', 'a4_1');
+    renderNotes('notes-42-content', 'a4_2');
+    renderNotes('notes-43-content', 'a4_3');
+    renderNotes('notes-44-content', 'a4_4');
+  });
+</script>
+
+</body>
+</html>
