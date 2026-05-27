@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2.1.3 Сетевые устройства · IB CS Theme A</title>
+<meta name="description" content="A2.1.3 Функции сетевых устройств — подробный разбор на русском: модем, коммутатор, точка доступа, маршрутизатор, межсетевой экран, шлюз. Привязка к слоям TCP/IP, разбор задач и аналогии.">
+<link rel="stylesheet" href="styles.css?v=8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .analogy-list ul { margin: 4px 0; }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A2.1.3 · Function of Network Devices
+  </span>
+
+  <h1>Функции сетевых устройств</h1>
+
+  <p class="lede">
+    Эта тема (<b>A2.1.3</b>) — про то, какие железки стоят между твоим компьютером и интернетом, и зачем каждая нужна. Модем, коммутатор, точка доступа, маршрутизатор, межсетевой экран и шлюз — все они <b>передают, направляют, преобразуют, фильтруют и распределяют пакеты данных</b>. У каждого устройства своя роль и свой «уровень» в модели TCP/IP.
+  </p>
+
+  <!-- ============ SECTION 1: SUMMARY ============ -->
+  <h2>1. Кратко: что какое устройство делает</h2>
+
+  <p>
+    Сетевые устройства — это специализированное «железо», которое управляет движением данных по цифровым каналам. Каждое из них работает на определённом <b>уровне модели TCP/IP</b>: чем ниже уровень, тем ближе к физическим сигналам; чем выше — тем ближе к смыслу данных (например, веб-страницам или почте).
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Устройство</th>
+        <th>Основная функция</th>
+        <th>Уровень TCP/IP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Модем</td>
+        <td>Преобразует сигналы для передачи по физическим линиям (модуляция / демодуляция).</td>
+        <td>Физический</td>
+      </tr>
+      <tr>
+        <td>Коммутатор (Switch)</td>
+        <td>Управляет потоком данных внутри одной локальной сети, используя MAC-адреса.</td>
+        <td>Канальный (Link)</td>
+      </tr>
+      <tr>
+        <td>Точка доступа (WAP)</td>
+        <td>Подключает беспроводные устройства к проводной сети, расширяя её.</td>
+        <td>Канальный (Link)</td>
+      </tr>
+      <tr>
+        <td>Маршрутизатор (Router)</td>
+        <td>Соединяет разные сети и пересылает пакеты по IP-адресам.</td>
+        <td>Интернет (Internet)</td>
+      </tr>
+      <tr>
+        <td>Межсетевой экран (Firewall)</td>
+        <td>Фильтрует сетевой трафик по правилам — IP-адреса, порты.</td>
+        <td>Интернет (Internet)</td>
+      </tr>
+      <tr>
+        <td>Шлюз (Gateway)</td>
+        <td>Мост между сетями, которые работают на разных протоколах.</td>
+        <td>В основном Прикладной (Application)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Подсказка для запоминания:</b> модем = «переводчик» цифровое↔аналоговое. Коммутатор = «почтальон внутри дома» (раздаёт по MAC). Маршрутизатор = «почтальон между городами» (раздаёт по IP). Файрвол = «охранник на воротах». Шлюз = «переводчик с одного языка на другой».
+  </div>
+
+  <!-- ============ SECTION 2: DETAILED BREAKDOWN ============ -->
+  <h2>2. Подробно про каждое устройство</h2>
+
+  <!-- Modem -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📞</span> A. Модем (Modem, от «Modulator/Demodulator»)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Позволяет цифровым устройствам общаться по аналоговым каналам связи — например, по обычным телефонным линиям.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Модуляция</b> — превращает цифровой сигнал компьютера (двоичные 0 и 1) в аналоговый сигнал, который можно передавать по проводу или эфиру.</li>
+          <li><b>Демодуляция</b> — превращает входящий аналоговый сигнал обратно в цифровой, понятный компьютеру.</li>
+        </ul>
+      </div>
+      <div class="label">Уровень TCP/IP</div>
+      <div><span class="layer-pill">Физический (Physical)</span></div>
+    </div>
+  </div>
+
+  <!-- Switch -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔀</span> B. Коммутатор (Switch)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Эффективно управляет передачей данных внутри одной локальной сети (LAN).</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Передаёт <b>кадры данных</b> между устройствами в одной и той же сети.</li>
+          <li>Использует <b>MAC-адреса</b>, чтобы доставлять данные строго тому устройству, кому они адресованы. Лишний трафик не идёт «всем подряд» — экономия канала и приватности.</li>
+        </ul>
+      </div>
+      <div class="label">Уровень TCP/IP</div>
+      <div><span class="layer-pill">Канальный (Link)</span></div>
+    </div>
+  </div>
+
+  <!-- WAP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📶</span> C. Беспроводная точка доступа (WAP — Wireless Access Point)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Даёт сети беспроводное подключение и расширяет её на мобильные и беспроводные устройства.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Управляет радиоволнами для связи по Wi-Fi.</li>
+          <li>Работает как мост: подключает беспроводные устройства к <b>проводной</b> сети.</li>
+          <li>Поддерживает множество устройств в локальной зоне — смартфоны, планшеты, элементы умного дома и т.д.</li>
+        </ul>
+      </div>
+      <div class="label">Уровень TCP/IP</div>
+      <div><span class="layer-pill">Канальный (Link)</span></div>
+    </div>
+  </div>
+
+  <!-- Router -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🌐</span> D. Маршрутизатор (Router)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Соединяет <b>две и более разных сетей</b> — например, корпоративную локальную сеть с публичным интернетом.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Маршрутизирует</b> трафик: читает IP-адрес назначения пакета.</li>
+          <li>Определяет <b>наиболее эффективный путь</b> доставки пакета через множество сетей.</li>
+          <li>Выгода: две и более сети могут общаться, а данные пересылаются быстро и эффективно.</li>
+        </ul>
+      </div>
+      <div class="label">Уровень TCP/IP</div>
+      <div><span class="layer-pill">Интернет (Internet)</span></div>
+    </div>
+  </div>
+
+  <!-- Firewall -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🛡️</span> E. Аппаратный межсетевой экран (Hardware Firewall)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Поднимает <b>барьер безопасности</b> между доверенной внутренней сетью и недоверенной внешней (например, интернетом).</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Контролирует и фильтрует <b>входящий и исходящий</b> сетевой трафик на уровне пакетов.</li>
+          <li>Изучает <b>заголовки пакетов</b> и принимает решение пропустить или отбросить — на основе IP-адресов и портов.</li>
+        </ul>
+      </div>
+      <div class="label">Уровень TCP/IP</div>
+      <div><span class="layer-pill">Интернет (Internet)</span></div>
+    </div>
+  </div>
+
+  <!-- Gateway -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🚪</span> F. Шлюз (Gateway)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Работает как мост между двумя сетями, которые используют <b>разные протоколы</b>.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Обеспечивает связь, часто <b>переводя форматы данных</b> между разными сетевыми стандартами.</li>
+          <li>Пример: шлюз между корпоративной электронной почтой и SMS-системой переводит email-протокол в SMS-протокол.</li>
+        </ul>
+      </div>
+      <div class="label">Уровень TCP/IP</div>
+      <div><span class="layer-pill">Прикладной (в основном); может работать на нескольких уровнях</span></div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 3: PRACTICE QUESTIONS ============ -->
+  <h2>3. Тренировочные вопросы (нажми, чтобы увидеть подсказку к ответу)</h2>
+
+  <p class="muted" style="font-size:0.92rem">
+    Вопросы — из учебных материалов NLCS Dubai. Ответы здесь — это <b>подсказки в моём изложении</b>, а не «официальные» mark schemes. Цель — дать понятную опору, чтобы ты мог сформулировать свой ответ.
+  </p>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши функцию сетевого коммутатора и укажи, на каком уровне TCP/IP он работает. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Коммутатор <b>передаёт кадры данных</b> внутри одной локальной сети (LAN).</li>
+        <li>Он направляет данные <b>только тому устройству, кому они адресованы</b>, используя <b>MAC-адреса</b> — а не рассылает всем подряд.</li>
+        <li>Работает на <b>канальном (Link) уровне</b> TCP/IP.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Каждый пункт = 1 балл. Не путать с маршрутизатором (тот работает с IP-адресами и между сетями).</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Объясни процесс преобразования, который выполняет модем, и обоснуй, почему этот процесс необходим для передачи данных по обычным телефонным линиям. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Модем выполняет <b>модуляцию</b>: цифровой сигнал (биты 0/1) превращается в <b>аналоговый</b> сигнал (плавно меняющийся ток/напряжение).</li>
+        <li>Модем выполняет <b>демодуляцию</b>: входящий аналоговый сигнал превращается обратно в цифровой, понятный компьютеру.</li>
+        <li>Это нужно, потому что <b>телефонные линии изначально проектировались для голоса</b>, а голос — аналоговый сигнал.</li>
+        <li>Цифровые сигналы (прямоугольные импульсы) <b>сильно искажаются</b> на длинных аналоговых линиях из-за затухания и помех — без преобразования передача невозможна.</li>
+        <li>Поэтому модем играет роль «переводчика», без которого компьютер и телефонная сеть не могут понять друг друга.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Различи первичные роли маршрутизатора и коммутатора в управлении корпоративной сетью. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по контрасту):</b></p>
+      <ul>
+        <li><b>Коммутатор</b> работает <b>внутри одной локальной сети</b> — например, на одном этаже офиса; использует <b>MAC-адреса</b>; на канальном (Link) уровне.</li>
+        <li><b>Маршрутизатор</b> соединяет <b>разные сети между собой</b> (LAN ↔ интернет, или этаж ↔ этаж); использует <b>IP-адреса</b>; на интернет-уровне.</li>
+        <li>Коммутатор смотрит «куда внутри здания»; маршрутизатор смотрит «по какому пути в другой город».</li>
+        <li>Без коммутатора компьютеры в офисе не общаются между собой; без маршрутизатора офис не выйдет в интернет.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Назови два преимущества использования маршрутизаторов в сети. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 пункта × 2 балла):</b></p>
+      <ul>
+        <li><b>Связь между разными сетями.</b> Маршрутизатор позволяет соединить локальную сеть с интернетом или соединить две локальные сети — без него они изолированы.</li>
+        <li><b>Выбор оптимального пути.</b> Маршрутизатор анализирует возможные маршруты и пересылает пакет по самому быстрому/дешёвому/менее загруженному пути.</li>
+        <li><b>Сегментация трафика.</b> Маршрутизатор изолирует широковещательный трафик внутри сегмента — это снижает нагрузку и повышает производительность.</li>
+        <li><b>Безопасность.</b> Современные маршрутизаторы умеют выполнять базовую фильтрацию (NAT, ACL), скрывают внутренние IP от внешнего мира.</li>
+        <li><b>Управление приоритетами (QoS).</b> Можно настроить, чтобы голосовой/видеотрафик шёл с большим приоритетом, чем обычный.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: PRACTICAL TASKS ============ -->
+  <h2>4. Практические задания</h2>
+
+  <p>
+    Эти задания помогают применить понятия про сетевые устройства на практике — индивидуально, в группе и в виде самостоятельной работы.
+  </p>
+
+  <!-- Individual Task -->
+  <div class="task-card">
+    <h3>🔍 Индивидуальное задание: Глубокое погружение в одно устройство (ATL — Research Skills)</h3>
+    <p><b>Цель:</b> Провести детальное исследование одного устройства, связав его функцию с реальными применениями и уязвимостями.</p>
+    <p><b>Инструкции:</b></p>
+    <ol>
+      <li><b>Выбери устройство.</b> Возьми любое, которое работает на канальном уровне или выше: Switch, WAP, Router, Firewall или Gateway.</li>
+      <li><b>Функция и протокол.</b> Опиши подробно, что делает устройство: какие <b>адреса</b> читает (MAC или IP) и какие <b>основные протоколы</b> использует.</li>
+      <li><b>Реальное применение.</b> Найди пример из жизни, где это устройство критично для работы. Например: «WAP в школе позволяет 500+ ученикам пользоваться Wi-Fi одновременно».</li>
+      <li><b>Послойная ответственность.</b> Объясни, какое преобразование данных или обработку устройство делает перед тем, как передать пакет на следующий уровень. Например: «Что маршрутизатор делает с заголовком пакета перед тем, как отдать его на канальный уровень?»</li>
+    </ol>
+  </div>
+
+  <!-- Group Task -->
+  <div class="task-card">
+    <h3>👥 Групповое задание: Проектируем сеть для малого бизнеса (ATL — Thinking & Social Skills)</h3>
+    <p><b>Цель:</b> Совместно спроектировать сетевую инфраструктуру для небольшой компании, обосновав выбор и расположение ключевых устройств.</p>
+
+    <div class="scenario">
+      <b>Сценарий:</b> Стартапу нужна сеть, которая соединяет небольшой офис (LAN) с интернетом (WAN) и обеспечивает безопасный удалённый доступ сотрудникам. Требуется: <b>15 проводных подключений</b> для ПК и принтеров и <b>полное Wi-Fi-покрытие</b> для 20 смартфонов и ноутбуков сотрудников.
+    </div>
+
+    <p><b>Инструкции (группы по 3-4 человека):</b></p>
+    <ol>
+      <li><b>Определи нужные устройства (декомпозиция).</b> Перечисли все необходимые сетевые устройства (Router, Switch, WAP, Firewall, Modem и т.д.), чтобы выполнить все требования: проводные, беспроводные, доступ в интернет, безопасность.</li>
+      <li><b>Уточни роль каждого.</b> Для каждого устройства укажи его конкретную функцию в этом сценарии. Например: «Switch должен управлять кадрами данных для 15 проводных устройств…».</li>
+      <li><b>Обоснование (AO3).</b> Напиши краткий отчёт, обосновывающий <b>архитектурную необходимость</b> Switch, Router и WAP — особенно объясни, как разделение труда между ними создаёт эффективную и масштабируемую структуру локальной сети.</li>
+      <li><b>Презентация (Communication Skills).</b> Подготовь подписанную схему (UML или блок-схема не обязательны, простой эскиз подойдёт), показывающую, как Modem, Router, Switch и WAP физически соединены и образуют полную сеть.</li>
+    </ol>
+  </div>
+
+  <!-- Homework Task -->
+  <div class="task-card">
+    <h3>🏠 Домашнее задание: Рефлексивная аналогия (ATL — Thinking Skills)</h3>
+    <p><b>Цель:</b> Понять функции сетевых устройств через аналогию — это помогает концептуальной абстракции.</p>
+
+    <p><b>Инструкции:</b></p>
+    <ol>
+      <li>
+        <b>Создание аналогии.</b> Аналогии хорошо помогают понять, как работают сложные системы. Придумай метафору (например: <b>почтовая служба, дорожная сеть, библиотека</b>), которая представляет поток данных в сети. В аналогии нужно отобразить:
+        <div class="analogy-list">
+          <ul>
+            <li><b>Маршрутизатор (Router):</b> Что это в твоей аналогии и почему?</li>
+            <li><b>Коммутатор (Switch):</b> Что это и чем отличается от маршрутизатора?</li>
+            <li><b>Шлюз (Gateway):</b> Что это и какие «протоколы» он переводит?</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <b>Ограничение безопасности.</b> В своей аналогии опиши ситуацию, когда <b>аппаратный межсетевой экран отказывает</b>, и в чём суть «взлома» (например: фильтрация ломается, потому что злоумышленник использует «легальный» номер порта; или «охранник» в аналогии пропускает несанкционированную почту). Это упражнение должно связать <b>функцию устройства</b> (фильтрация IP/портов) с её <b>эксплуатационными ограничениями</b>.
+      </li>
+    </ol>
+  </div>
+
+  <!-- Closing -->
+  <h2>Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li>Каждое сетевое устройство <b>живёт на конкретном уровне TCP/IP</b> — это определяет, с какими «адресами» и форматами данных оно работает.</li>
+    <li><b>Физический</b> уровень (модем) — про сигналы и кодирование.</li>
+    <li><b>Канальный</b> уровень (коммутатор, WAP) — про MAC-адреса и доставку внутри одного сегмента.</li>
+    <li><b>Интернет</b> уровень (маршрутизатор, файрвол) — про IP-адреса и связь между сетями.</li>
+    <li><b>Прикладной</b> уровень (шлюз) — про переводы между разными протоколами.</li>
+    <li>На экзамене часто спрашивают <b>«различи X и Y»</b> — всегда отвечай через адреса (MAC vs IP), уровень и зону действия (внутри сети vs между сетями).</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A2.1" class="back-link">К квизу A2.1 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A2.1.3 Сетевые устройства · Адаптировано с сайта NLCS Dubai · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=8"></script>
+</body>
+</html>
