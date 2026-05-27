@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1 Computer fundamentals · IB CS Theme A</title>
+<link rel="stylesheet" href="styles.css?v=6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      <span class="lang-en-inline">IB CS · Theme A</span>
+      <span class="lang-ru-inline">IB CS · Тема A</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"><span class="lang-en-inline">Overview</span><span class="lang-ru-inline">Обзор</span></a>
+      <a href="fundamentals.html"><span class="lang-en-inline">A1 Fundamentals</span><span class="lang-ru-inline">A1 Основы</span></a>
+      <a href="networks.html"><span class="lang-en-inline">A2 Networks</span><span class="lang-ru-inline">A2 Сети</span></a>
+      <a href="databases.html"><span class="lang-en-inline">A3 Databases</span><span class="lang-ru-inline">A3 Базы данных</span></a>
+      <a href="ml.html"><span class="lang-en-inline">A4 ML</span><span class="lang-ru-inline">A4 ML</span></a>
+      <a href="quiz.html"><span class="lang-en-inline">Quiz</span><span class="lang-ru-inline">Квиз</span></a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>RU</button>
+    </div>
+  </nav>
+</header>
+
+<div class="sidebar-layout">
+
+  <aside class="sidebar">
+    <h4><span class="lang-en-inline">A1 · Fundamentals</span><span class="lang-ru-inline">A1 · Основы</span></h4>
+    <a href="#binary-sim"><span class="lang-en-inline">🔢 Binary / Hex converter</span><span class="lang-ru-inline">🔢 Binary / Hex</span></a>
+    <a href="#logic-sim"><span class="lang-en-inline">⚡ Logic gates</span><span class="lang-ru-inline">⚡ Логические элементы</span></a>
+    <a href="#fde-sim"><span class="lang-en-inline">🧠 Fetch-Decode-Execute</span><span class="lang-ru-inline">🧠 Цикл ЦП</span></a>
+    <a href="#mem-sim"><span class="lang-en-inline">📚 Memory hierarchy</span><span class="lang-ru-inline">📚 Иерархия памяти</span></a>
+    <a href="#ci-sim"><span class="lang-en-inline">🔀 Compiler vs Interpreter</span><span class="lang-ru-inline">🔀 Компилятор vs интерпретатор</span></a>
+    <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
+    <a href="#notes-11"><span class="lang-en-inline">A1.1 Hardware</span><span class="lang-ru-inline">A1.1 Железо</span></a>
+    <a href="#notes-12"><span class="lang-en-inline">A1.2 Data & logic</span><span class="lang-ru-inline">A1.2 Данные и логика</span></a>
+    <a href="#notes-13"><span class="lang-en-inline">A1.3 OS & control</span><span class="lang-ru-inline">A1.3 ОС и управление</span></a>
+    <a href="#notes-14"><span class="lang-en-inline">A1.4 Translation (HL)</span><span class="lang-ru-inline">A1.4 Трансляция (HL)</span></a>
+  </aside>
+
+  <main>
+
+    <section style="margin-bottom:20px">
+      <span class="hero-eyebrow" style="background:rgba(245,158,11,0.12); color:#b45309">
+        <span class="lang-en-inline">A1 · Computer fundamentals</span><span class="lang-ru-inline">A1 · Основы информатики</span>
+      </span>
+      <h1 style="font-size:2.4rem; margin:12px 0 6px; color:var(--primary)">
+        <span class="lang-en-inline">Computer fundamentals</span>
+        <span class="lang-ru-inline">Основы информатики</span>
+      </h1>
+      <p class="muted" style="max-width:760px">
+        <span class="lang-en-inline">Hardware and software, the CPU and memory hierarchy, the fetch-decode-execute cycle, binary / hexadecimal / two's complement, logic gates, operating systems and (HL) the stages of translation from source code to machine code.</span>
+        <span class="lang-ru-inline">Железо и ПО, ЦП и иерархия памяти, цикл «выборка-декодирование-исполнение», двоичная / шестнадцатеричная / дополнительный код, логические элементы, операционные системы и (HL) стадии трансляции из исходного кода в машинный.</span>
+      </p>
+    </section>
+
+    <!-- ============ BINARY CONVERTER (A1.2) ============ -->
+    <section id="binary-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.2</span>
+          <h3>
+            <span class="lang-en-inline">Binary / Denary / Hex converter</span>
+            <span class="lang-ru-inline">Конвертер Binary / Денарная / Hex</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Click any <b>bit</b> to flip it. Or type a number in any of the three text boxes — the other two and the bit pattern update live. Try Signed mode to see how two's complement encodes negatives.</span>
+            <span class="lang-ru-inline">Кликните любой <b>бит</b>, чтобы его перевернуть. Или введите число в любое из трёх полей — два других и битовый паттерн обновятся вживую. Включите режим «знаковый», чтобы увидеть, как дополнительный код представляет отрицательные.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="bin-row">
+        <label>
+          <span class="lang-en-inline">Width:</span><span class="lang-ru-inline">Разрядность:</span>
+          <select id="bin-width">
+            <option value="4">4 bits</option>
+            <option value="8" selected>8 bits</option>
+            <option value="16">16 bits</option>
+          </select>
+        </label>
+        <label style="flex-direction:row; align-items:center; gap:6px">
+          <input type="checkbox" id="bin-signed">
+          <span class="lang-en-inline">Signed (two's complement)</span><span class="lang-ru-inline">Знаковый (дополнительный код)</span>
+        </label>
+      </div>
+
+      <div id="bin-bits" class="bin-bits" role="group" aria-label="Bit toggle row"></div>
+
+      <div class="bin-row">
+        <label>
+          <span class="lang-en-inline">Denary (base 10):</span><span class="lang-ru-inline">Десятичное (база 10):</span>
+          <input type="number" id="bin-den" value="0">
+        </label>
+        <label>
+          <span class="lang-en-inline">Hex (base 16):</span><span class="lang-ru-inline">Hex (база 16):</span>
+          <input type="text" id="bin-hex" value="00">
+        </label>
+        <label>
+          <span class="lang-en-inline">Binary:</span><span class="lang-ru-inline">Двоичное:</span>
+          <span id="bin-bin" class="bin-bin">0000 0000</span>
+        </label>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Value</span><span class="lang-ru-inline">Значение</span></div><div class="value" id="bin-val">0</div></div>
+      </div>
+
+      <div id="bin-explain" class="bin-explain" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ LOGIC GATES (A1.2) ============ -->
+    <section id="logic-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.2</span>
+          <h3>
+            <span class="lang-en-inline">Logic gates — toggle inputs, watch the output</span>
+            <span class="lang-ru-inline">Логические элементы — переключай входы, смотри выход</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Pick a gate, toggle the input switches, and the diagram + truth table light up. <b>NAND</b> and <b>NOR</b> are <i>universal</i> — every other gate can be built from just NANDs (or just NORs).</span>
+            <span class="lang-ru-inline">Выберите элемент, переключите входы — диаграмма и таблица истинности подсветятся. <b>NAND</b> и <b>NOR</b> <i>универсальны</i>: из них одних можно собрать любой другой элемент.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="logic-row">
+        <label>
+          <span class="lang-en-inline">Gate:</span><span class="lang-ru-inline">Элемент:</span>
+          <select id="logic-gate">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+            <option value="NOT">NOT</option>
+            <option value="NAND">NAND</option>
+            <option value="NOR">NOR</option>
+            <option value="XOR">XOR</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="logic-a"> A</label>
+        <label id="logic-b-wrap"><input type="checkbox" id="logic-b"> B</label>
+        <span style="margin-left:auto">
+          <span class="lang-en-inline">Output:</span><span class="lang-ru-inline">Выход:</span>
+          <b id="logic-out" style="font-family:var(--mono); font-size:1.2rem; margin-left:6px">0</b>
+          <span class="muted" style="margin-left:14px">Boolean: <code id="logic-expr">A · B</code></span>
+        </span>
+      </div>
+
+      <div class="sim-canvas-wrap" style="padding:18px">
+        <svg id="logic-svg" viewBox="0 0 500 220" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Logic gate diagram showing inputs A and (when binary) B feeding the selected gate, with the output value displayed."></svg>
+      </div>
+
+      <div id="logic-truth"></div>
+    </section>
+
+    <!-- ============ FETCH-DECODE-EXECUTE (A1.1) ============ -->
+    <section id="fde-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.1</span>
+          <h3>
+            <span class="lang-en-inline">Fetch · Decode · Execute</span>
+            <span class="lang-ru-inline">Выборка · Декодирование · Исполнение</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">A tiny program lives in memory on the right. Press <b>Step</b> to walk one phase at a time: <b>Fetch</b> the instruction at PC, <b>Decode</b> it in the CU, then <b>Execute</b> it in the ALU. Watch the registers light up.</span>
+            <span class="lang-ru-inline">Крошечная программа лежит в памяти справа. Жмите <b>«Шаг»</b>, чтобы пройти по фазам: <b>Выборка</b> инструкции по PC, <b>Декодирование</b> в CU, затем <b>Исполнение</b> в АЛУ. Смотрите, как подсвечиваются регистры.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <span class="lang-en-inline">Stage:</span><span class="lang-ru-inline">Фаза:</span>
+        <span class="fde-stage-pill" id="fde-stage">READY</span>
+        <button class="btn btn-primary btn-sm" id="fde-step">
+          <span class="lang-en-inline">▶ Step</span><span class="lang-ru-inline">▶ Шаг</span>
+        </button>
+        <button class="btn btn-accent btn-sm" id="fde-run">
+          <span class="lang-en-inline">⏩ Auto-run</span><span class="lang-ru-inline">⏩ Авто</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="fde-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <svg id="fde-svg" viewBox="0 0 800 380" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="CPU and memory diagram showing the fetch-decode-execute cycle stepping through a 4-instruction program."></svg>
+      </div>
+
+      <div id="fde-note" class="bin-explain" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ MEMORY HIERARCHY (A1.1) ============ -->
+    <section id="mem-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.1</span>
+          <h3>
+            <span class="lang-en-inline">Memory hierarchy — smaller-faster-pricier on top</span>
+            <span class="lang-ru-inline">Иерархия памяти — наверху меньше, быстрее, дороже</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Click any tier to see typical size, access latency and cost-per-GB. The pyramid shape mirrors the trade-off: capacity grows downward, speed and cost grow upward.</span>
+            <span class="lang-ru-inline">Кликните по любому уровню — увидите типовой размер, задержку и стоимость за ГБ. Форма пирамиды отражает компромисс: ёмкость растёт вниз, скорость и стоимость — вверх.</span>
+          </p>
+        </div>
+      </div>
+
+      <div id="mem-grid" class="mem-grid"></div>
+      <div id="mem-detail" class="dev-detail"></div>
+    </section>
+
+    <!-- ============ COMPILER vs INTERPRETER (A1.4 HL) ============ -->
+    <section id="ci-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.4 · HL</span>
+          <h3>
+            <span class="lang-en-inline">Compiler vs Interpreter — same program, two journeys</span>
+            <span class="lang-ru-inline">Компилятор vs интерпретатор — одна программа, два пути</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">A 3-line program is processed two different ways. Press <b>Step</b> to advance. A compiler does all the translation up-front then runs the result; an interpreter translates and runs one line at a time.</span>
+            <span class="lang-ru-inline">Программа из 3 строк обрабатывается двумя способами. Жмите <b>«Шаг»</b>, чтобы продвинуться. Компилятор переводит всё заранее, потом запускает результат; интерпретатор переводит и исполняет по строке за раз.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <button class="btn btn-primary btn-sm" id="ci-step">
+          <span class="lang-en-inline">▶ Step</span><span class="lang-ru-inline">▶ Шаг</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="ci-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div id="ci-program" class="ci-program-box"></div>
+
+      <div class="ci-cols">
+        <div class="ci-col">
+          <h4>📦 <span class="lang-en-inline">Compiler</span><span class="lang-ru-inline">Компилятор</span></h4>
+          <div id="ci-compiler"></div>
+        </div>
+        <div class="ci-col interpreter">
+          <h4>🎯 <span class="lang-en-inline">Interpreter</span><span class="lang-ru-inline">Интерпретатор</span></h4>
+          <div id="ci-interpreter"></div>
+        </div>
+      </div>
+
+      <div id="ci-note" class="bin-explain" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ STUDY NOTES ============ -->
+    <section id="notes-11">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A1.1 Computer hardware & operation</span>
+        <span class="lang-ru-inline">A1.1 Аппаратное обеспечение и работа</span>
+      </h2>
+      <div id="notes-11-content"></div>
+    </section>
+
+    <section id="notes-12">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A1.2 Data representation & computer logic</span>
+        <span class="lang-ru-inline">A1.2 Представление данных и логика</span>
+      </h2>
+      <div id="notes-12-content"></div>
+    </section>
+
+    <section id="notes-13">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A1.3 Operating systems & control systems</span>
+        <span class="lang-ru-inline">A1.3 Операционные и управляющие системы</span>
+      </h2>
+      <div id="notes-13-content"></div>
+    </section>
+
+    <section id="notes-14">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A1.4 Translation (HL)</span>
+        <span class="lang-ru-inline">A1.4 Трансляция (HL)</span>
+      </h2>
+      <div id="notes-14-content"></div>
+    </section>
+
+  </main>
+
+</div>
+
+<footer class="footer">
+  <p>
+    <span class="lang-en-inline">IB CS Theme A · A1 Computer fundamentals · Bilingual EN / RU · </span>
+    <span class="lang-ru-inline">IB CS Тема A · A1 Основы информатики · EN / RU · </span>
+    <a href="index.html">← <span class="lang-en-inline">Back to overview</span><span class="lang-ru-inline">К обзору</span></a>
+  </p>
+</footer>
+
+<script src="js/data.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
+<script src="js/notes-render.js?v=6"></script>
+<script src="js/binary.js?v=6"></script>
+<script src="js/logic-gates.js?v=6"></script>
+<script src="js/fetch-execute.js?v=6"></script>
+<script src="js/memory-hierarchy.js?v=6"></script>
+<script src="js/compiler-interp.js?v=6"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    renderNotes('notes-11-content', 'a1_1');
+    renderNotes('notes-12-content', 'a1_2');
+    renderNotes('notes-13-content', 'a1_3');
+    renderNotes('notes-14-content', 'a1_4');
+  });
+</script>
+
+</body>
+</html>

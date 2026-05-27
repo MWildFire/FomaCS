@@ -1350,6 +1350,324 @@ window.QUIZ_DATA = [
 
 // Study notes data (compact, structured)
 window.NOTES_DATA = {
+  a1_1: {
+    title: { en: 'A1.1 Computer hardware & operation', ru: 'A1.1 Аппаратное обеспечение и работа компьютера' },
+    en: {
+      'Hardware vs software': [
+        '<b>Hardware</b> — the physical components of a computer system (CPU, RAM, disks, peripherals).',
+        '<b>Software</b> — the programs and data that run on the hardware (OS, applications, drivers).',
+        'Both are needed: hardware does the work, software tells it what to do.'
+      ],
+      'CPU components': [
+        '<b>Control Unit (CU)</b> — directs operations by interpreting instructions and orchestrating data movement.',
+        '<b>Arithmetic Logic Unit (ALU)</b> — performs arithmetic (+, −, ×, ÷) and logic operations (AND, OR, NOT, comparisons).',
+        '<b>Registers</b> — tiny ultra-fast on-chip memory locations. Key ones:',
+        '• <b>PC (Program Counter)</b> — address of the next instruction to fetch.',
+        '• <b>MAR (Memory Address Register)</b> — holds the address being read/written.',
+        '• <b>MDR (Memory Data Register)</b> — holds the data being transferred.',
+        '• <b>CIR (Current Instruction Register)</b> — holds the instruction being executed.',
+        '• <b>Accumulator</b> — holds intermediate ALU results.'
+      ],
+      'Buses': [
+        '<b>Address bus</b> — carries the memory address the CPU wants to access (one-way: CPU → memory).',
+        '<b>Data bus</b> — carries the actual data being transferred (two-way).',
+        '<b>Control bus</b> — carries signals like read/write, clock, interrupt requests.',
+        'Wider buses = more data per cycle; faster clocks = more cycles per second.'
+      ],
+      'Fetch-Decode-Execute cycle': [
+        'The basic loop the CPU runs continuously:',
+        '<b>1. Fetch</b> — the instruction at the address in PC is copied from memory into CIR; PC is incremented.',
+        '<b>2. Decode</b> — the CU interprets the instruction (operation + operands).',
+        '<b>3. Execute</b> — the operation is carried out (ALU computes, or data is moved, or PC is changed for a jump).',
+        'Result is stored back in a register or memory; the cycle repeats.'
+      ],
+      'Memory hierarchy': [
+        'A pyramid: smaller, faster, more expensive at the top; larger, slower, cheaper at the bottom.',
+        '<b>Registers</b> — picoseconds; bytes.',
+        '<b>Cache</b> (L1/L2/L3) — nanoseconds; KB–MB. Caches recently/often-used data to avoid hitting slow RAM.',
+        '<b>RAM (primary memory)</b> — tens of ns; GB. <b>Volatile</b> (lost on power-off).',
+        '<b>SSD / HDD (secondary storage)</b> — microseconds to ms; TB. Non-volatile.',
+        '<b>Tape / cloud archive</b> — slow but huge and cheap.'
+      ],
+      'RAM, ROM, virtual memory': [
+        '<b>RAM</b> — read/write, volatile; stores currently-running programs and data.',
+        '<b>ROM</b> — read-only, non-volatile; stores firmware/BIOS that boots the system.',
+        '<b>Virtual memory</b> — the OS uses disk space as an extension of RAM; pages are swapped in and out so the running program "sees" more memory than physically exists.'
+      ],
+      'I/O & embedded systems': [
+        '<b>Input devices:</b> keyboard, mouse, microphone, sensors, scanner.',
+        '<b>Output devices:</b> monitor, speakers, printer, actuators.',
+        '<b>Embedded system</b> — a computer built into a larger product to do a specific job (washing machine controller, car ECU, smart thermostat). Constraints: real-time, low power, often no OS.'
+      ]
+    },
+    ru: {
+      'Hardware и software': [
+        '<b>Hardware (железо)</b> — физические компоненты компьютера (ЦП, RAM, диски, периферия).',
+        '<b>Software (ПО)</b> — программы и данные, работающие на железе (ОС, приложения, драйверы).',
+        'Нужны оба: железо выполняет работу, ПО говорит ему, что делать.'
+      ],
+      'Компоненты ЦП': [
+        '<b>Устройство управления (CU)</b> — направляет работу: интерпретирует инструкции и координирует движение данных.',
+        '<b>АЛУ (Арифметико-логическое устройство)</b> — арифметика (+, −, ×, ÷) и логика (AND, OR, NOT, сравнения).',
+        '<b>Регистры</b> — крошечные сверхбыстрые ячейки памяти на чипе. Ключевые:',
+        '• <b>PC (Program Counter)</b> — адрес следующей инструкции.',
+        '• <b>MAR (Memory Address Register)</b> — адрес, к которому идёт обращение.',
+        '• <b>MDR (Memory Data Register)</b> — данные, которые передаются.',
+        '• <b>CIR (Current Instruction Register)</b> — текущая выполняемая инструкция.',
+        '• <b>Аккумулятор</b> — промежуточный результат АЛУ.'
+      ],
+      'Шины': [
+        '<b>Шина адреса</b> — несёт адрес памяти (однонаправленная: ЦП → память).',
+        '<b>Шина данных</b> — несёт сами данные (двунаправленная).',
+        '<b>Шина управления</b> — сигналы чтения/записи, такта, прерываний.',
+        'Шире шины — больше данных за такт; быстрее частота — больше тактов в секунду.'
+      ],
+      'Цикл «выборка-декодирование-исполнение»': [
+        'Основной цикл, который ЦП крутит непрерывно:',
+        '<b>1. Выборка (Fetch)</b> — инструкция по адресу из PC копируется в CIR; PC увеличивается.',
+        '<b>2. Декодирование</b> — CU разбирает инструкцию (операция + операнды).',
+        '<b>3. Исполнение</b> — операция выполняется (АЛУ считает, данные двигаются или PC меняется на переход).',
+        'Результат сохраняется в регистр или память; цикл повторяется.'
+      ],
+      'Иерархия памяти': [
+        'Пирамида: вверху меньше, быстрее, дороже; внизу больше, медленнее, дешевле.',
+        '<b>Регистры</b> — пикосекунды; байты.',
+        '<b>Кэш</b> (L1/L2/L3) — наносекунды; КБ–МБ. Кэширует часто используемые данные.',
+        '<b>RAM (оперативная память)</b> — десятки нс; ГБ. <b>Энергозависима</b> (теряется при отключении).',
+        '<b>SSD / HDD (внешняя память)</b> — микросекунды/мс; ТБ. Не теряется.',
+        '<b>Лента / облачный архив</b> — медленно, зато огромный объём и дёшево.'
+      ],
+      'RAM, ROM, виртуальная память': [
+        '<b>RAM</b> — чтение/запись, энергозависима; хранит работающие программы и данные.',
+        '<b>ROM</b> — только чтение, не энергозависима; firmware/BIOS для запуска системы.',
+        '<b>Виртуальная память</b> — ОС использует диск как расширение RAM; страницы загружаются и выгружаются, программа «видит» больше памяти, чем физически есть.'
+      ],
+      'Ввод-вывод и встраиваемые системы': [
+        '<b>Устройства ввода:</b> клавиатура, мышь, микрофон, датчики, сканер.',
+        '<b>Устройства вывода:</b> монитор, динамики, принтер, исполнительные механизмы.',
+        '<b>Встраиваемая система</b> — компьютер внутри устройства для конкретной задачи (стиральная машина, ЭБУ авто, умный термостат). Ограничения: реальное время, малое энергопотребление, часто без ОС.'
+      ]
+    }
+  },
+
+  a1_2: {
+    title: { en: 'A1.2 Data representation & computer logic', ru: 'A1.2 Представление данных и логика' },
+    en: {
+      'Number systems': [
+        '<b>Denary (base 10)</b> — digits 0–9; how humans count.',
+        '<b>Binary (base 2)</b> — digits 0 and 1; how computers store everything (a single binary digit is a <b>bit</b>).',
+        '<b>Hexadecimal (base 16)</b> — digits 0–9 and A–F; compact way to write binary (each hex digit = 4 bits). Used for colors, memory addresses, MAC addresses.',
+        'Convert binary → denary by summing the place values: 1011₂ = 8+0+2+1 = 11₁₀.',
+        'Convert denary → binary by repeated division by 2, reading remainders bottom-up.'
+      ],
+      'Units & ranges': [
+        '<b>1 byte = 8 bits</b>. Holds 256 distinct values (0–255 unsigned, −128…127 signed).',
+        '<b>KB / MB / GB / TB</b> — 1 KB = 1024 bytes in computing (or 1000 in SI). Strictly use KiB / MiB / GiB for the binary form.',
+        'n bits → 2ⁿ distinct values. 8 bits → 256; 16 bits → 65 536; 32 bits → ~4.3×10⁹.'
+      ],
+      'Signed integers (two\'s complement)': [
+        'To represent negative numbers in <b>two\'s complement</b>: invert every bit, then add 1.',
+        'Example for 4-bit: 0011 = 3; −3 → flip to 1100, +1 → 1101.',
+        'The leftmost bit is the <b>sign bit</b>: 0 = positive, 1 = negative.',
+        'Addition and subtraction work the same as for unsigned — that\'s why two\'s complement is everywhere.'
+      ],
+      'Character encoding': [
+        '<b>ASCII</b> — 7 bits, 128 characters (English letters, digits, punctuation, control).',
+        '<b>Extended ASCII</b> — 8 bits, 256 characters (adds Western European accents).',
+        '<b>Unicode</b> — single standard mapping every script in the world. <b>UTF-8</b> encodes Unicode in 1–4 bytes; ASCII characters remain 1 byte (backward compatible).',
+        'Cyrillic, emoji, Chinese all need Unicode.'
+      ],
+      'Logic gates': [
+        '<b>AND</b> — output 1 only if both inputs are 1.',
+        '<b>OR</b> — output 1 if at least one input is 1.',
+        '<b>NOT</b> — inverts the input (a.k.a. inverter).',
+        '<b>NAND</b> — NOT AND; output 0 only when both inputs are 1. Universal gate (any circuit can be built from NANDs).',
+        '<b>NOR</b> — NOT OR. Also universal.',
+        '<b>XOR (exclusive OR)</b> — output 1 if inputs differ.',
+        '<b>Truth table</b> — lists output for every combination of inputs (2ⁿ rows for n inputs).'
+      ],
+      'Boolean algebra (HL)': [
+        '<b>Identity:</b> A·1 = A,  A+0 = A.',
+        '<b>Null:</b> A·0 = 0,  A+1 = 1.',
+        '<b>Idempotent:</b> A·A = A,  A+A = A.',
+        '<b>Complement:</b> A·Ā = 0,  A+Ā = 1.',
+        '<b>De Morgan\'s laws:</b> NOT(A·B) = (NOT A) + (NOT B); NOT(A+B) = (NOT A)·(NOT B).',
+        'Used to simplify circuits — fewer gates = cheaper, faster, less power.'
+      ]
+    },
+    ru: {
+      'Системы счисления': [
+        '<b>Десятичная (база 10)</b> — цифры 0–9; человеческий счёт.',
+        '<b>Двоичная (база 2)</b> — цифры 0 и 1; так компьютеры хранят всё (одна двоичная цифра — <b>бит</b>).',
+        '<b>Шестнадцатеричная (база 16)</b> — цифры 0–9 и A–F; компактная запись двоичного (каждая hex-цифра = 4 бита). Используется для цветов, адресов памяти, MAC.',
+        'Двоичное → десятичное: суммируем разрядные веса: 1011₂ = 8+0+2+1 = 11₁₀.',
+        'Десятичное → двоичное: делением на 2 нацело, остатки читаем снизу вверх.'
+      ],
+      'Единицы и диапазоны': [
+        '<b>1 байт = 8 бит</b>. Хранит 256 значений (0–255 беззнаковое, −128…127 знаковое).',
+        '<b>КБ / МБ / ГБ / ТБ</b> — в IT 1 КБ = 1024 байт (или 1000 в СИ). Строго: КиБ / МиБ / ГиБ для двоичной формы.',
+        'n бит → 2ⁿ значений. 8 бит → 256; 16 бит → 65 536; 32 бита → ~4,3×10⁹.'
+      ],
+      'Знаковые целые (дополнительный код)': [
+        'Для представления отрицательных в <b>дополнительном коде (two\'s complement)</b>: инвертируем все биты, затем +1.',
+        'Пример для 4 бит: 0011 = 3; −3 → инверсия 1100, +1 → 1101.',
+        'Старший бит — <b>знаковый</b>: 0 = положительное, 1 = отрицательное.',
+        'Сложение и вычитание работают так же, как для беззнакового — поэтому дополнительный код стандарт.'
+      ],
+      'Кодировка символов': [
+        '<b>ASCII</b> — 7 бит, 128 символов (английские буквы, цифры, пунктуация, управляющие).',
+        '<b>Extended ASCII</b> — 8 бит, 256 символов (добавляет западноевропейские акценты).',
+        '<b>Unicode</b> — единый стандарт для всех письменностей мира. <b>UTF-8</b> кодирует Unicode в 1–4 байта; ASCII-символы остаются 1 байтом (совместимость).',
+        'Кириллица, эмодзи, китайский — нужен Unicode.'
+      ],
+      'Логические элементы': [
+        '<b>AND (И)</b> — выход 1 только если оба входа 1.',
+        '<b>OR (ИЛИ)</b> — выход 1, если хотя бы один вход 1.',
+        '<b>NOT (НЕ)</b> — инвертирует вход (инвертор).',
+        '<b>NAND</b> — NOT AND; выход 0 только когда оба входа 1. Универсальный элемент (любую схему можно построить из NAND).',
+        '<b>NOR</b> — NOT OR. Тоже универсальный.',
+        '<b>XOR (исключающее ИЛИ)</b> — выход 1, если входы различаются.',
+        '<b>Таблица истинности</b> — выход для каждой комбинации входов (2ⁿ строк при n входах).'
+      ],
+      'Булева алгебра (HL)': [
+        '<b>Тождество:</b> A·1 = A,  A+0 = A.',
+        '<b>Поглощение нуля/единицы:</b> A·0 = 0,  A+1 = 1.',
+        '<b>Идемпотентность:</b> A·A = A,  A+A = A.',
+        '<b>Дополнение:</b> A·Ā = 0,  A+Ā = 1.',
+        '<b>Законы де Моргана:</b> NOT(A·B) = (NOT A) + (NOT B); NOT(A+B) = (NOT A)·(NOT B).',
+        'Применяются для упрощения схем — меньше элементов = дешевле, быстрее, меньше энергопотребление.'
+      ]
+    }
+  },
+
+  a1_3: {
+    title: { en: 'A1.3 Operating systems & control systems', ru: 'A1.3 Операционные и управляющие системы' },
+    en: {
+      'What an OS does': [
+        'The <b>Operating System</b> is the layer between hardware and user/applications. It hides hardware complexity and shares resources fairly.',
+        'Examples: Windows, macOS, Linux, Android, iOS.'
+      ],
+      'Core OS functions': [
+        '<b>Process management</b> — creates, schedules and terminates processes; switches the CPU between them so many can run "at once".',
+        '<b>Memory management</b> — allocates RAM to processes, isolates them from each other, swaps to disk via virtual memory.',
+        '<b>File management</b> — organises files and folders, handles read/write, permissions, free space.',
+        '<b>Device / I/O management</b> — drivers translate generic OS calls into specific hardware commands.',
+        '<b>Security & user management</b> — accounts, permissions, authentication, encryption.',
+        '<b>Networking</b> — TCP/IP stack, DNS lookup, firewalls.'
+      ],
+      'User interfaces': [
+        '<b>CLI (Command-Line Interface)</b> — type commands. Powerful, scriptable, low-resource; steep learning curve.',
+        '<b>GUI (Graphical User Interface)</b> — windows, icons, menus, pointer (WIMP). Friendly; heavier on resources.',
+        '<b>Touch / voice / VR</b> — newer modalities for phones, assistants, headsets.'
+      ],
+      'Scheduling': [
+        'When more processes want the CPU than there are CPU cores, the scheduler picks who runs next:',
+        '<b>FCFS (first-come-first-served)</b> — simple but slow processes block fast ones.',
+        '<b>Round-robin</b> — every process gets a fixed time slice in turn.',
+        '<b>Priority</b> — higher-priority processes run first (with risk of starvation).',
+        '<b>Shortest job first</b> — minimises average wait time but needs to know job length.'
+      ],
+      'Control systems': [
+        'A <b>control system</b> manages, commands, directs or regulates another system using sensors and actuators.',
+        '<b>Open loop</b> — runs without measuring output (e.g. a basic toaster on a timer). Simple but can\'t adapt.',
+        '<b>Closed loop</b> — uses <b>feedback</b>: a sensor measures the output and the controller adjusts the input to reach a target (thermostat, cruise control, autopilot).',
+        '<b>Real-time</b> — must respond within strict deadlines (anti-lock brakes, pacemaker, industrial robot).'
+      ]
+    },
+    ru: {
+      'Что делает ОС': [
+        '<b>Операционная система</b> — слой между железом и пользователем/приложениями. Скрывает сложность железа и справедливо распределяет ресурсы.',
+        'Примеры: Windows, macOS, Linux, Android, iOS.'
+      ],
+      'Основные функции ОС': [
+        '<b>Управление процессами</b> — создаёт, планирует и завершает процессы; переключает ЦП между ними, чтобы много задач шли «одновременно».',
+        '<b>Управление памятью</b> — выделяет RAM процессам, изолирует их, выгружает на диск через виртуальную память.',
+        '<b>Управление файлами</b> — организует файлы и папки, обрабатывает чтение/запись, права, свободное место.',
+        '<b>Управление устройствами / ввод-вывод</b> — драйверы переводят общие вызовы ОС в команды конкретного железа.',
+        '<b>Безопасность и пользователи</b> — учётные записи, права, аутентификация, шифрование.',
+        '<b>Сеть</b> — стек TCP/IP, DNS, файрвол.'
+      ],
+      'Интерфейсы пользователя': [
+        '<b>CLI (командная строка)</b> — вводим команды. Мощно, скриптуется, мало ресурсов; высокий порог входа.',
+        '<b>GUI (графический интерфейс)</b> — окна, иконки, меню, указатель (WIMP). Удобно; больше ресурсов.',
+        '<b>Тач / голос / VR</b> — новые модальности для телефонов, ассистентов, гарнитур.'
+      ],
+      'Планирование процессов': [
+        'Когда процессов больше, чем ядер ЦП, планировщик выбирает, кто выполняется:',
+        '<b>FCFS (первый пришёл — первый обслужен)</b> — просто, но медленные процессы блокируют быстрые.',
+        '<b>Round-robin</b> — каждому даётся фиксированный квант времени по кругу.',
+        '<b>По приоритету</b> — сначала более приоритетные (есть риск голодания).',
+        '<b>Кратчайшая работа первой</b> — минимизирует среднее ожидание, но нужно знать длину работы.'
+      ],
+      'Управляющие системы': [
+        '<b>Управляющая система</b> регулирует другую систему через датчики и исполнительные механизмы.',
+        '<b>Разомкнутая (open loop)</b> — работает без измерения выхода (простой тостер на таймере). Просто, но не подстраивается.',
+        '<b>Замкнутая (closed loop)</b> — использует <b>обратную связь</b>: датчик измеряет выход, контроллер подстраивает вход для достижения цели (термостат, круиз-контроль, автопилот).',
+        '<b>Реального времени</b> — должна реагировать в жёсткие сроки (ABS, кардиостимулятор, промышленный робот).'
+      ]
+    }
+  },
+
+  a1_4: {
+    title: { en: 'A1.4 Translation (HL)', ru: 'A1.4 Трансляция (HL)' },
+    en: {
+      'Why translate?': [
+        'Computers only execute <b>machine code</b> (binary instructions specific to a CPU architecture).',
+        'Programmers write in <b>high-level languages</b> (Python, Java, C++) that are readable and portable.',
+        'A <b>translator</b> turns the high-level source into machine code (or executes it directly).'
+      ],
+      'Compiler vs interpreter': [
+        '<b>Compiler</b> — translates the <b>entire program</b> to machine code <b>once</b>; the resulting executable runs fast and standalone (no compiler needed at runtime). Errors must all be fixed before you can run anything. Example: C, C++, Rust.',
+        '<b>Interpreter</b> — translates and executes <b>one statement at a time</b>. Slower at runtime but very flexible: you can test interactively and the same program runs on any platform with the interpreter installed. Example: Python, JavaScript.',
+        '<b>Bytecode + VM (Java, C#, modern Python)</b> — compiles once to a portable intermediate code, then a virtual machine interprets or JIT-compiles it.'
+      ],
+      'Stages of compilation': [
+        '<b>1. Lexical analysis</b> — splits the source into <b>tokens</b> (keywords, identifiers, numbers, operators). Strips whitespace and comments.',
+        '<b>2. Syntax analysis (parsing)</b> — builds a parse/syntax tree from the tokens according to the language grammar. Reports syntax errors.',
+        '<b>3. Semantic analysis</b> — checks meaning: types, scope, undeclared variables, mismatched arguments.',
+        '<b>4. Optimisation</b> — rewrites the intermediate code to be faster or smaller without changing behaviour (constant folding, dead-code removal, loop unrolling).',
+        '<b>5. Code generation</b> — emits the target machine code (or bytecode).'
+      ],
+      'Assembly & machine code': [
+        '<b>Machine code</b> — raw binary instructions the CPU executes directly. CPU-architecture-specific (x86 vs ARM).',
+        '<b>Assembly</b> — human-readable mnemonics (MOV, ADD, JMP) that map one-to-one to machine code. An <b>assembler</b> converts assembly to machine code.',
+        '<b>Why learn it:</b> understanding what the CPU actually does helps with performance tuning, debugging, embedded systems and reverse engineering.'
+      ],
+      'Linkers & loaders': [
+        '<b>Linker</b> — combines multiple compiled object files (and external libraries) into a single executable, resolving cross-file references.',
+        '<b>Loader</b> — part of the OS; copies the executable from disk into RAM and sets up the process so the CPU can start executing it.'
+      ]
+    },
+    ru: {
+      'Зачем переводить?': [
+        'Компьютеры исполняют только <b>машинный код</b> (двоичные инструкции конкретной архитектуры ЦП).',
+        'Программисты пишут на <b>языках высокого уровня</b> (Python, Java, C++) — читаемых и переносимых.',
+        '<b>Транслятор</b> превращает исходник в машинный код (или исполняет напрямую).'
+      ],
+      'Компилятор vs интерпретатор': [
+        '<b>Компилятор</b> — переводит <b>всю программу</b> в машинный код <b>один раз</b>; готовый exe-файл работает быстро и самостоятельно (компилятор при запуске не нужен). Все ошибки нужно исправить до запуска. Примеры: C, C++, Rust.',
+        '<b>Интерпретатор</b> — переводит и исполняет <b>по одной строке</b>. Медленнее при работе, но очень гибко: можно тестировать интерактивно, и одна и та же программа работает на любой платформе с установленным интерпретатором. Примеры: Python, JavaScript.',
+        '<b>Байт-код + ВМ (Java, C#, современный Python)</b> — компилируется один раз в портативный промежуточный код, который затем виртуальная машина интерпретирует или JIT-компилирует.'
+      ],
+      'Стадии компиляции': [
+        '<b>1. Лексический анализ</b> — разбивает исходник на <b>токены</b> (ключевые слова, идентификаторы, числа, операторы). Убирает пробелы и комментарии.',
+        '<b>2. Синтаксический анализ (парсинг)</b> — строит дерево разбора из токенов по грамматике языка. Сообщает синтаксические ошибки.',
+        '<b>3. Семантический анализ</b> — проверяет смысл: типы, область видимости, необъявленные переменные, несоответствующие аргументы.',
+        '<b>4. Оптимизация</b> — переписывает промежуточный код для скорости/размера без изменения поведения (свёртка констант, удаление мёртвого кода, разворачивание циклов).',
+        '<b>5. Кодогенерация</b> — выдаёт целевой машинный код (или байт-код).'
+      ],
+      'Ассемблер и машинный код': [
+        '<b>Машинный код</b> — сырые двоичные инструкции, которые ЦП исполняет напрямую. Зависит от архитектуры (x86 vs ARM).',
+        '<b>Ассемблер</b> — мнемонические команды (MOV, ADD, JMP), один-в-один соответствующие машинному коду. <b>Ассемблер (программа)</b> переводит assembly в машинный код.',
+        '<b>Зачем изучать:</b> понимание того, что реально делает ЦП, помогает с производительностью, отладкой, встраиваемыми системами, реверс-инжинирингом.'
+      ],
+      'Линкеры и загрузчики': [
+        '<b>Линкер</b> — собирает несколько объектных файлов (и внешние библиотеки) в один исполняемый файл, разрешая перекрёстные ссылки.',
+        '<b>Загрузчик</b> — часть ОС; копирует исполняемый файл с диска в RAM и настраивает процесс, чтобы ЦП начал его выполнять.'
+      ]
+    }
+  },
+
   a2_1: {
     title: { en: 'A2.1.1 Purpose & characteristics of networks', ru: 'A2.1.1 Назначение и характеристики сетей' },
     en: {
