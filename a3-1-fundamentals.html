@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A3.1 Основы баз данных · IB CS Theme A</title>
+<meta name="description" content="A3.1 Database fundamentals — подробный разбор на русском: что такое БД, СУБД, типы баз данных, ключи, целостность данных, аномалии, кардинальность и модальность, плюсы и минусы реляционных БД, роли DBA.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(139,92,246,0.12);
+    color: #6d28d9;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(167,139,250,0.18);
+    color: #c4b5fd;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .analogy-list ul { margin: 4px 0; }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  /* Inline mini-tables for examples */
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .mini-table th {
+    background: var(--surface-2);
+    text-align: left;
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .mini-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mini-table tr:last-child td { border-bottom: 0; }
+  .mini-table .pk-cell { color: var(--violet); font-weight: 700; }
+  .mini-table .fk-cell { color: var(--green); font-weight: 700; }
+  .key-legend {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .key-legend.pk { background: rgba(139,92,246,0.12); color: var(--violet); }
+  .key-legend.fk { background: rgba(16,185,129,0.12); color: var(--green); }
+  .sim-cta {
+    background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(14,165,233,0.10));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 18px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sim-cta a {
+    background: var(--violet);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-block;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .sim-cta a:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+  .sim-cta .sim-text { flex: 1; min-width: 250px; }
+  .sim-cta .sim-text b { color: var(--primary); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="databases.html" class="back-link">← Назад к A3 Базы данных</a>
+
+  <span class="hero-eyebrow" style="background:rgba(139,92,246,0.12); color:#6d28d9">
+    A3.1 · Database Fundamentals
+  </span>
+
+  <h1>Основы баз данных</h1>
+
+  <p class="lede">
+    Эта тема (<b>A3.1</b>) — про то, что такое <b>база данных</b> (database), зачем она нужна, и почему «просто файл» — это плохо, когда данных становится много. Ты узнаешь, что такое <b>СУБД</b> (DBMS), какие бывают типы баз, как устроены <b>таблицы, ключи и связи</b>, и почему <b>целостность данных</b> (data integrity) — главное, ради чего вообще строят базы. Каждый день ты пользуешься десятками баз, даже не замечая этого — в магазине, в банке, в школьном дневнике, в Instagram.
+  </p>
+
+  <div class="sim-cta">
+    <div class="sim-text">
+      <b>Хочешь сразу пощупать?</b> На сайте есть живая SQL-песочница — настоящий SQLite прямо в браузере, с готовыми таблицами. Попробуй <code>SELECT * FROM students;</code> и почувствуй, как «выглядит» база изнутри.
+    </div>
+    <a href="databases.html?v=9#sql-sim">💾 Открыть SQL-песочницу</a>
+  </div>
+
+  <!-- ============ SECTION 1: WHAT IS A DATABASE ============ -->
+  <h2>1. Что такое база данных и зачем она нужна</h2>
+
+  <p>
+    <b>База данных (database)</b> — это систематически организованное хранилище данных. Данные хранятся <b>логично, обычно в нескольких связанных таблицах</b>, чтобы их можно было быстро искать, обновлять, защищать и совместно использовать. Ты постоянно взаимодействуешь с базами данных, часто этого не осознавая.
+  </p>
+
+  <div class="ru-tip">
+    💡 <b>Представь библиотеку:</b> книги — это <b>записи</b> (rows), полки с разной информацией о каждой книге (автор, название, год) — это <b>поля</b> (columns), а сама полка с однотипными карточками — это <b>таблица</b> (entity). Каталог, в котором всё это устроено и можно быстро найти любую книгу, — это и есть база данных.
+  </div>
+
+  <h3>Где ты уже встречался с базами данных</h3>
+  <ul style="line-height:1.7">
+    <li><b>Розничная торговля (retail):</b> в онлайн-магазине база хранит товары, покупателей и поставщиков; пересчитывает остатки на складе после каждого заказа.</li>
+    <li><b>Социальные сети:</b> твой профиль, посты, лайки, переписки — всё это записи в базе данных Instagram/TikTok/VK.</li>
+    <li><b>Медицинские карты (medical records):</b> история болезней, назначения, результаты анализов, информация о врачах и кабинетах хранятся в больничной БД.</li>
+    <li><b>Банковские системы:</b> счета, транзакции, балансы — миллиарды записей, и каждая <b>должна быть точной до копейки</b>.</li>
+    <li><b>Игры (MMORPG):</b> в играх вроде <i>Lost Ark</i> база хранит твои достижения, инвентарь, чаты, друзей. Когда ты сохраняешь игру — твой статус записывается в БД, чтобы при возврате всё было на месте.</li>
+  </ul>
+
+  <!-- ============ SECTION 2: FLAT FILE vs RELATIONAL ============ -->
+  <h2>2. Плоский файл vs. база данных: зачем вообще нужны БД</h2>
+
+  <p>
+    Самый простой способ хранить данные — это <b>плоский файл (flat file)</b>: одна большая таблица с одной «сущностью» (<b>entity</b> = table). Звучит удобно, но на практике быстро ломается. Возьмём пример из учебника — ветеринарная клиника, где всё свалено в одну таблицу: владелец, питомец, врач, лечение.
+  </p>
+
+  <table class="mini-table">
+    <thead>
+      <tr>
+        <th>Owner_ID</th><th>Owner_Name</th><th>Address</th>
+        <th>Patient_ID</th><th>Name</th><th>Type</th>
+        <th>Vet_ID</th><th>Vet_Name</th>
+        <th>Date</th><th>Treatment</th><th>Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1029</td><td>Alison Bachman</td><td>12 Green Lane</td><td>1011</td><td>Oskar</td><td>Dog</td><td>4400</td><td>Rachel</td><td>23/05/25</td><td>Worming</td><td>50</td></tr>
+      <tr><td>1922</td><td>Aria Mathers</td><td>458 Rigistr</td><td>1012</td><td>Seb</td><td>Cat</td><td>4100</td><td>Lucy</td><td>23/05/25</td><td>Broken Tail</td><td>400</td></tr>
+      <tr><td>1029</td><td>Alison Bachman</td><td>12 Green Lane</td><td>3999</td><td>Jaques</td><td>Hamster</td><td>4400</td><td>Rachel</td><td>23/05/25</td><td>Cut Paw</td><td>50</td></tr>
+      <tr><td>2032</td><td>Theo Naidoo</td><td>45 Rue Martignac</td><td>2393</td><td>Kai</td><td>Dog</td><td>4400</td><td>Rachel</td><td>23/05/25</td><td>Broken Leg</td><td>450</td></tr>
+      <tr><td>2032</td><td>Theo Naidoo</td><td>45 Rue Martignac</td><td>2393</td><td>Kai</td><td>Dog</td><td>4400</td><td>Rachel</td><td>17/08/25</td><td>Cast Removal</td><td>200</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Видишь проблему? Имя <b>Alison Bachman</b> и её адрес повторяются для каждого её питомца. Имя врача <b>Rachel</b> и её адрес — тоже. Это называется <b>избыточность данных (data redundancy)</b>, и из-за неё возникают три классические <b>аномалии</b> (anomalies).
+  </p>
+
+  <h3>Три аномалии плоского файла</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">➕</span> Аномалия вставки (Insert anomaly)</h3>
+    <p>Нельзя добавить нового <b>врача</b>, пока он не пролечил хотя бы одного питомца. Получается абсурд: вет должен сначала кого-то полечить, чтобы попасть в базу. Невозможно вставить независимую сущность.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">➖</span> Аномалия удаления (Deletion anomaly)</h3>
+    <p>Нельзя удалить лечение, не потеряв заодно информацию о враче, питомце или владельце. Например, если ты удалишь все записи про вет-врача <b>Lucy</b>, ты потеряешь и данные про кота Seb.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">✏️</span> Аномалия обновления (Update anomaly)</h3>
+    <p>Если владелец Alison сменит адрес и ты обновишь только одну строку — в базе будут <b>две разных версии</b> её адреса, и непонятно, какая правильная. Это называется <b>data inconsistency</b> (несогласованность данных).</p>
+  </div>
+
+  <h3>Почему вообще не хранить всё в одной таблице</h3>
+  <ul style="line-height:1.7">
+    <li><b>Огромный объём.</b> Повторяющиеся данные занимают много места — и место кончается быстро.</li>
+    <li><b>Сложно масштабировать.</b> Чем больше данных, тем чаще возникают аномалии.</li>
+    <li><b>Неточные расчёты.</b> Любые SQL-запросы и аналитика дадут неправильные результаты, если базовые данные противоречат друг другу.</li>
+    <li><b>Нет совместного доступа.</b> Один файл — один пользователь за раз; никакой нормальной работы команды.</li>
+  </ul>
+
+  <p>
+    Решение — разбить плоский файл на <b>несколько связанных таблиц</b>. Это называется <b>нормализация (normalization)</b>, а получившаяся структура — <b>реляционная база данных (relational database)</b>.
+  </p>
+
+  <details class="question-card">
+    <summary>Вопрос. Опиши две аномалии, которые могут возникнуть в плоском файле. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 × 2 балла):</b></p>
+      <ul>
+        <li><b>Аномалия вставки (Insert):</b> нельзя добавить новую сущность, пока она не связана с другой. Пример: нельзя добавить врача в БД, пока он не провёл хотя бы одно лечение.</li>
+        <li><b>Аномалия удаления (Deletion):</b> удаление одной записи уничтожает несвязанные данные. Пример: удаляя всю информацию о враче, ты теряешь и данные о его пациентах.</li>
+        <li><b>Аномалия обновления (Update):</b> при изменении данных надо обновить все повторяющиеся копии; иначе в базе будут <b>разные версии</b> одного и того же — несогласованность данных.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Каждая аномалия: 1 балл за название + 1 балл за пример/описание.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос. Объясни, почему хранение данных в одном плоском файле приводит к избыточности данных. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>В плоском файле все данные лежат в одной таблице. Если одной сущности (например, одному владельцу) принадлежит много объектов (питомцев), то его данные (имя, адрес) <b>повторяются в каждой строке</b>.</li>
+        <li>Это занимает много места и создаёт риск несогласованности — изменение в одной строке не отражается в других.</li>
+        <li>Решение — <b>разделить на связанные таблицы</b> (нормализация), чтобы каждая часть информации хранилась один раз и связывалась через ключи.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 3: DBMS ============ -->
+  <h2>3. СУБД (DBMS) — что управляет базой</h2>
+
+  <p>
+    Сама база данных — это просто структурированные файлы на диске. Чтобы их создавать, изменять, искать в них и защищать, нужен специальный софт — <b>система управления базами данных (Database Management System, DBMS)</b>. СУБД — это посредник между пользователем (или приложением) и реальными данными.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> Что делает СУБД</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Управляет хранением, поиском, обновлением и безопасностью данных в базе.</div>
+      <div class="label">Основные функции</div>
+      <div>
+        <ul>
+          <li><b>Хранение данных</b> на диске в эффективном формате (индексы, страницы, журналы).</li>
+          <li><b>Выполнение запросов</b> на языке SQL — SELECT, INSERT, UPDATE, DELETE.</li>
+          <li><b>Контроль одновременного доступа (concurrency control)</b> — несколько пользователей могут работать без конфликтов.</li>
+          <li><b>Безопасность и права доступа</b> — кто что может видеть и менять.</li>
+          <li><b>Резервное копирование (backup) и восстановление</b> после сбоев.</li>
+          <li><b>Поддержка целостности (integrity)</b> — данные не противоречат правилам базы.</li>
+        </ul>
+      </div>
+      <div class="label">Популярные примеры</div>
+      <div>
+        <ul>
+          <li><b>MySQL</b> — самая популярная open-source реляционная СУБД; стоит за миллионами сайтов.</li>
+          <li><b>PostgreSQL</b> — мощная open-source СУБД, любима за расширяемость и стандартизацию.</li>
+          <li><b>SQLite</b> — лёгкая встраиваемая СУБД; работает в одном файле, без отдельного сервера (используется в браузерах, телефонах, нашей SQL-песочнице).</li>
+          <li><b>Oracle Database</b> — мощная корпоративная СУБД, часто в банках и крупных компаниях.</li>
+          <li><b>Microsoft SQL Server</b> — корпоративная СУБД от Microsoft.</li>
+          <li><b>MongoDB</b> — пример NoSQL СУБД (документная).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="ru-tip">
+    💡 <b>Аналогия:</b> база данных — это книжный склад. СУБД — это менеджер склада: он знает, где что лежит, выдаёт книги по запросу, следит, чтобы никто не унёс лишнего, и ведёт журнал, кто что взял и вернул.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос. Что такое СУБД (DBMS) и какие задачи она решает? <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>DBMS</b> — это программное обеспечение, которое управляет базой данных: создаёт её структуру, хранит данные, выполняет запросы и защищает их.</li>
+        <li>Обеспечивает <b>одновременный доступ (concurrency)</b> для нескольких пользователей без конфликтов.</li>
+        <li>Поддерживает <b>безопасность</b> (права доступа, шифрование) и <b>резервное копирование</b>.</li>
+        <li>Гарантирует <b>целостность данных (data integrity)</b> через правила и ограничения.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Примеры: MySQL, PostgreSQL, SQLite, Oracle, MS SQL Server.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: DATABASE TYPES ============ -->
+  <h2>4. Типы баз данных</h2>
+
+  <p>
+    Не все базы устроены одинаково. Реляционная — самая популярная, но не единственная. Вот основные модели, с которыми ты можешь встретиться:
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Тип</th>
+        <th>Как хранит данные</th>
+        <th>Где применяют</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Реляционная (Relational)</td>
+        <td>Таблицы со строками и столбцами, связанные через ключи. Язык запросов — SQL.</td>
+        <td>Бизнес, школа, банк, e-commerce — везде, где данные структурированы.</td>
+      </tr>
+      <tr>
+        <td>NoSQL (документная, ключ-значение, графовая, колоночная)</td>
+        <td>Гибкие схемы: документы (JSON), пары ключ-значение, графы или колоночные форматы.</td>
+        <td>Большие данные, реальное время, аналитика, соцсети (MongoDB, Redis, Neo4j, Cassandra).</td>
+      </tr>
+      <tr>
+        <td>Объектно-ориентированная (Object-oriented)</td>
+        <td>Хранит объекты целиком (как в Java/Python), с их полями и методами.</td>
+        <td>Сложные данные с поведением — CAD-системы, мультимедиа, научные симуляции.</td>
+      </tr>
+      <tr>
+        <td>Иерархическая (Hierarchical)</td>
+        <td>Данные в виде дерева: «родитель → дети». Каждая запись имеет одного родителя.</td>
+        <td>Файловые системы, организационные структуры, старые мейнфреймы (IBM IMS).</td>
+      </tr>
+      <tr>
+        <td>Сетевая (Network)</td>
+        <td>Как иерархическая, но запись может иметь <b>несколько</b> родителей. Граф связей.</td>
+        <td>Сложные взаимосвязи (старые ERP), где иерархия слишком ограниченна.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Когда выбирать что</h3>
+  <div class="device-card">
+    <h3><span class="device-emoji">🗂️</span> Реляционная — выбор по умолчанию</h3>
+    <p>Если данные <b>чётко структурированы</b> (имеют одинаковые поля у всех записей) и важна <b>целостность</b> — это реляционная база. Это 90% бизнес-задач: интернет-магазин, школьный журнал, банк.</p>
+  </div>
+  <div class="device-card">
+    <h3><span class="device-emoji">📄</span> NoSQL — для гибкости и масштаба</h3>
+    <p>Если структура данных <b>сильно меняется</b> (например, каждый пользователь хранит свои настройки), либо данных <b>очень много</b> (big data) — реляционная плохо тянет. Здесь приходит NoSQL: MongoDB хранит JSON-документы, Redis — пары ключ-значение для кэша, Neo4j — графы для социальных сетей.</p>
+  </div>
+  <div class="device-card">
+    <h3><span class="device-emoji">🌲</span> Иерархическая и сетевая — устаревшие</h3>
+    <p>Сейчас редко встречаются как основная БД, но <b>идея жива</b> в файловых системах, организационных деревьях и XML/JSON.</p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос. Назови три типа баз данных и приведи пример применения каждого. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Реляционная (Relational):</b> таблицы и SQL. Пример: банковская система счетов и транзакций (MySQL, PostgreSQL).</li>
+        <li><b>NoSQL (документная):</b> хранит документы JSON с гибкой структурой. Пример: соцсеть, где у каждого пользователя свой набор настроек (MongoDB).</li>
+        <li><b>Иерархическая (Hierarchical):</b> данные в виде дерева. Пример: файловая система на компьютере или организационная структура компании.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Каждый тип: 1 балл за название + 1 балл за корректный пример.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 5: KEY CONCEPTS ============ -->
+  <h2>5. Ключевые понятия реляционной БД</h2>
+
+  <p>
+    Когда плоский файл из ветклиники <b>нормализуют</b>, он превращается в четыре связанных таблицы: <b>OWNER</b>, <b>PATIENT</b>, <b>VET</b> и <b>TREATMENT</b>. Каждая таблица отвечает за одну вещь, а связи между ними строятся через <b>ключи</b>.
+  </p>
+
+  <h3>Таблица OWNER (владельцы)</h3>
+  <table class="mini-table">
+    <thead><tr><th><span class="key-legend pk">PK</span>Owner_ID</th><th>Owner_Name</th><th>Address</th></tr></thead>
+    <tbody>
+      <tr><td class="pk-cell">1029</td><td>Alison Bachman</td><td>12 Green Lane 20192</td></tr>
+      <tr><td class="pk-cell">1922</td><td>Aria Mathers</td><td>458 Rigistr 4993</td></tr>
+      <tr><td class="pk-cell">2032</td><td>Theo Naidoo</td><td>45 Rue Martignac</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Таблица PATIENT (питомцы)</h3>
+  <table class="mini-table">
+    <thead><tr><th><span class="key-legend pk">PK</span>Patient_ID</th><th>Patient_Name</th><th>Type</th><th><span class="key-legend fk">FK</span>Owner_ID</th></tr></thead>
+    <tbody>
+      <tr><td class="pk-cell">1011</td><td>Oskar</td><td>Dog</td><td class="fk-cell">1029</td></tr>
+      <tr><td class="pk-cell">1012</td><td>Seb</td><td>Cat</td><td class="fk-cell">1922</td></tr>
+      <tr><td class="pk-cell">3999</td><td>Jaques</td><td>Hamster</td><td class="fk-cell">1029</td></tr>
+      <tr><td class="pk-cell">2393</td><td>Kai</td><td>Dog</td><td class="fk-cell">2032</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Теперь имя <b>Alison Bachman</b> хранится <b>один раз</b> в таблице OWNER. В таблице PATIENT для каждого питомца есть просто <b>Owner_ID</b> — ссылка на владельца. Это и есть магия реляционной модели.
+  </p>
+
+  <!-- KEY CONCEPTS -->
+  <h3>Ключевые термины</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📋</span> Сущность / Таблица (Entity / Table / Relation)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Таблица в базе данных. Каждая сущность хранит данные об <b>одном типе объектов</b>: владельцы, питомцы, врачи, лечения.</div>
+      <div class="label">Пример</div>
+      <div>Сущность <b>PATIENT</b> хранит данные обо всех животных в клинике.</div>
+      <div class="label">Тип</div>
+      <div><span class="layer-pill">Структура</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📝</span> Запись / Кортеж (Row / Tuple / Record)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Одна строка в таблице. Содержит данные об <b>одном конкретном экземпляре</b> сущности.</div>
+      <div class="label">Пример</div>
+      <div>Строка <code>(1011, Oskar, Dog, 1029)</code> — это запись об одном питомце Оскаре.</div>
+      <div class="label">Тип</div>
+      <div><span class="layer-pill">Структура</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📐</span> Поле / Атрибут (Column / Attribute / Field)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Столбец в таблице. Представляет <b>характеристику</b> данных. У каждой записи в таблице один и тот же набор атрибутов.</div>
+      <div class="label">Пример</div>
+      <div>В PATIENT атрибуты: <b>Patient_ID, Name, Type, Owner_ID</b>.</div>
+      <div class="label">Тип</div>
+      <div><span class="layer-pill">Структура</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔑</span> Первичный ключ (Primary Key, PK)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div><b>Уникальный идентификатор</b> каждой строки в таблице. Не повторяется и не бывает пустым.</div>
+      <div class="label">Зачем</div>
+      <div>В таблице может быть несколько собак по имени Oskar. Но <b>Patient_ID = 1011</b> — только один. Это позволяет однозначно сослаться на запись.</div>
+      <div class="label">Пример</div>
+      <div><b>Patient_ID</b> в таблице PATIENT, <b>Owner_ID</b> в таблице OWNER.</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔗</span> Внешний ключ (Foreign Key, FK)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Поле в одной таблице, которое <b>ссылается на первичный ключ другой таблицы</b>. Так создаются связи между таблицами.</div>
+      <div class="label">Зачем</div>
+      <div>В PATIENT хранится <b>Owner_ID</b> — это FK, который указывает, какому владельцу из OWNER принадлежит питомец. Так мы избегаем дублирования имени и адреса хозяина.</div>
+      <div class="label">Пример</div>
+      <div>В PATIENT: Owner_ID = 1029 → указывает на запись Alison Bachman в OWNER.</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎯</span> Кандидатный ключ (Candidate Key)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Любое поле (или комбинация полей), которое <b>могло бы стать первичным ключом</b> — то есть однозначно идентифицирует запись.</div>
+      <div class="label">Зачем</div>
+      <div>В таблице может быть несколько уникальных полей: например, в таблице студентов уникальны и <b>Student_ID</b>, и <b>email</b>. Оба — кандидатные ключи. Первичным выбирают только один из них.</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🧩</span> Составной ключ (Composite Key)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Первичный ключ, состоящий из <b>двух или более полей</b> — потому что ни одно поле по отдельности не уникально.</div>
+      <div class="label">Пример</div>
+      <div>В таблице TREATMENT поле Patient_ID не уникально (у одного питомца много лечений), но <b>Patient_ID + Date</b> уже уникально — питомец не получает два лечения в один день.</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🪢</span> Конкатенированный ключ (Concatenated Key)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Ключ, собранный из <b>фрагментов нескольких атрибутов</b>, чтобы получить уникальное значение.</div>
+      <div class="label">Пример</div>
+      <div>В таблице людей: <b>первые 3 буквы имени + первые 3 буквы фамилии + дата рождения</b> = почти всегда уникально.</div>
+    </div>
+  </div>
+
+  <!-- RELATIONSHIPS -->
+  <h3>Связи между таблицами (Relationships)</h3>
+
+  <p>
+    Если у таблиц нет связей, данные «лежат в одиночестве» и пользы от них немного. Связь обозначает, <b>как записи в одной таблице соотносятся с записями в другой</b>.
+  </p>
+
+  <h3>Кардинальность (Cardinality) — тип связи</h3>
+  <div class="device-card">
+    <h3><span class="device-emoji">1️⃣</span> Один-к-одному (One-to-One, 1:1)</h3>
+    <p>Одной записи в одной таблице соответствует <b>ровно одна</b> запись в другой. Пример: один питомец имеет ровно одного владельца (в нашей упрощённой модели).</p>
+  </div>
+  <div class="device-card">
+    <h3><span class="device-emoji">1️⃣Ⓜ️</span> Один-ко-многим (One-to-Many, 1:N)</h3>
+    <p>Одной записи в первой таблице соответствует <b>много</b> записей во второй. Пример: один вет выполняет много лечений; один владелец имеет много питомцев.</p>
+  </div>
+  <div class="device-card">
+    <h3><span class="device-emoji">Ⓜ️Ⓜ️</span> Многие-ко-многим (Many-to-Many, M:N)</h3>
+    <p><b>Много</b> записей в первой связаны с <b>многими</b> во второй. Пример: много студентов записаны на много курсов. Реализуется через промежуточную таблицу-связку.</p>
+  </div>
+
+  <h3>Модальность (Modality) — обязательность связи</h3>
+  <div class="device-card">
+    <h3><span class="device-emoji">❓</span> Опциональная связь (Optional)</h3>
+    <p>Связь <b>может быть, а может и не быть</b>. Пример: «Актёр — ТВ-шоу». Актёр <b>не обязан</b> сниматься в сериале (может играть только в театре).</p>
+  </div>
+  <div class="device-card">
+    <h3><span class="device-emoji">❗</span> Обязательная связь (Mandatory)</h3>
+    <p>Связь <b>должна быть</b>. Пример: «Чек — Товары». Чтобы существовал чек, в нём <b>обязан быть</b> хотя бы один товар.</p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос. Объясни, как первичные и внешние ключи используются для создания связи в базе данных. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Первичный ключ (PK)</b> однозначно идентифицирует строку в своей таблице (например, Owner_ID в OWNER).</li>
+        <li><b>Внешний ключ (FK)</b> — это значение PK, помещённое в другую таблицу (Owner_ID в PATIENT).</li>
+        <li>Связь создаётся тем, что значения FK <b>совпадают с значениями PK</b> в исходной таблице — так база «знает», какой питомец какому владельцу принадлежит.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос. Приведи пример связи «один-ко-многим». <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Один учитель преподаёт <b>много</b> учеников.</li>
+        <li>Один владелец имеет <b>много</b> питомцев.</li>
+        <li>Один автор пишет <b>много</b> книг.</li>
+        <li>Один заказ содержит <b>много</b> позиций товара.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Главное — показать, что одна сущность связана с несколькими экземплярами другой.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос. Приведи пример обязательной связи (mandatory relationship). <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Чек ↔ Товары:</b> чек обязан содержать как минимум один купленный товар.</li>
+        <li><b>Студент ↔ Школа:</b> студент обязан быть зачислен в одну школу.</li>
+        <li><b>Заказ ↔ Покупатель:</b> у каждого заказа обязан быть покупатель.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 6: DATA INTEGRITY ============ -->
+  <h2>6. Целостность данных (Data Integrity)</h2>
+
+  <p>
+    <b>Целостность данных</b> — это набор правил, гарантирующих, что данные в базе <b>точные, согласованные и достоверные</b>. Без неё база — мусорка с противоречиями. Различают три классических типа.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🆔</span> Целостность сущности (Entity Integrity)</h3>
+    <div class="label-row">
+      <div class="label">Правило</div>
+      <div>Каждая строка должна иметь <b>уникальный, непустой первичный ключ</b>. Не может быть двух строк с одинаковым PK; PK не может быть NULL.</div>
+      <div class="label">Зачем</div>
+      <div>Гарантирует, что мы всегда можем однозначно сослаться на запись. Без этого нельзя сказать «удали строку с Patient_ID = 1011», если таких строк несколько.</div>
+      <div class="label">Пример нарушения</div>
+      <div>Два пациента с Patient_ID = 1011 — запутаемся, какого Оскара лечили.</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔗</span> Ссылочная целостность (Referential Integrity)</h3>
+    <div class="label-row">
+      <div class="label">Правило</div>
+      <div><b>Внешний ключ</b> должен указывать на <b>существующий</b> первичный ключ в связанной таблице (или быть NULL, если связь опциональна).</div>
+      <div class="label">Зачем</div>
+      <div>Не должно быть «висящих» ссылок: питомца, чей Owner_ID указывает на несуществующего владельца.</div>
+      <div class="label">Пример нарушения</div>
+      <div>В PATIENT записан Owner_ID = 9999, но в OWNER нет такого ID. Это <b>orphan record</b> — «сирота».</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📐</span> Доменная целостность (Domain Integrity)</h3>
+    <div class="label-row">
+      <div class="label">Правило</div>
+      <div>Значения в каждом столбце должны соответствовать <b>заданному типу и допустимому диапазону</b>. Это включает тип данных (INT, VARCHAR, DATE), ограничения (NOT NULL, CHECK), формат.</div>
+      <div class="label">Зачем</div>
+      <div>Защищает от «мусора»: возраст не может быть отрицательным, цена не может быть «hello», дата рождения не в 3025 году.</div>
+      <div class="label">Пример нарушения</div>
+      <div>В поле Cost (число) кто-то записал «бесплатно». В поле Type (Dog/Cat/Hamster) — «бутылка».</div>
+    </div>
+  </div>
+
+  <h3>Бонус: ACID — четыре буквы надёжных транзакций</h3>
+  <p>
+    Реляционные СУБД соблюдают <b>ACID-свойства</b> для транзакций (нескольких операций, выполняемых как единое целое):
+  </p>
+  <ul style="line-height:1.7">
+    <li><b>A — Atomicity (атомарность):</b> либо вся транзакция выполняется, либо ни одна её часть. Пример: при банковском переводе либо обе операции (списать у А, зачислить Б) проходят, либо ни одна.</li>
+    <li><b>C — Consistency (согласованность):</b> транзакция переводит базу из одного валидного состояния в другое.</li>
+    <li><b>I — Isolation (изолированность):</b> одновременные транзакции не мешают друг другу.</li>
+    <li><b>D — Durability (устойчивость):</b> после успешного коммита данные сохраняются даже при сбое сервера.</li>
+  </ul>
+
+  <details class="question-card">
+    <summary>Вопрос. Объясни три типа целостности данных в реляционной БД. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Целостность сущности (Entity integrity):</b> каждая запись имеет уникальный и непустой первичный ключ. Без этого нельзя однозначно ссылаться на строку.</li>
+        <li><b>Ссылочная целостность (Referential integrity):</b> внешний ключ обязан указывать на существующий первичный ключ. Не должно быть «висящих» ссылок.</li>
+        <li><b>Доменная целостность (Domain integrity):</b> значения должны соответствовать заданному типу и допустимому диапазону (например, возраст — положительное число).</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">2 балла за тип: 1 за определение + 1 за пример или объяснение.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос. Почему первичный ключ не может быть NULL? <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Первичный ключ <b>однозначно идентифицирует</b> запись. NULL означает «значение неизвестно» — следовательно, по нему нельзя идентифицировать строку.</li>
+        <li>Это нарушит <b>целостность сущности</b> (entity integrity) и сделает невозможными ссылки из других таблиц через внешний ключ.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 7: ROLES ============ -->
+  <h2>7. Кто работает с базой данных — роли</h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">👨‍💼</span> Администратор БД (DBA — Database Administrator)</h3>
+    <div class="label-row">
+      <div class="label">Кто это</div>
+      <div>Технический специалист, отвечающий за <b>работу и здоровье базы данных</b> в продакшене.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Устанавливает и настраивает СУБД.</li>
+          <li>Контролирует <b>безопасность</b>: права доступа, шифрование, аудит.</li>
+          <li>Делает <b>резервные копии (backups)</b> и проверяет их восстановление.</li>
+          <li>Оптимизирует <b>производительность</b>: индексы, запросы, нагрузка.</li>
+          <li>Следит за <b>целостностью</b> и решает проблемы при сбоях.</li>
+        </ul>
+      </div>
+      <div class="label">Когда нужен</div>
+      <div>В банках, больницах, корпорациях — везде, где база критически важна 24/7.</div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎨</span> Проектировщик БД (Database Designer)</h3>
+    <div class="label-row">
+      <div class="label">Кто это</div>
+      <div>Специалист, который <b>проектирует структуру</b> базы данных <b>до</b> того, как она будет реализована.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Анализирует требования бизнеса: какие данные хранить, какие запросы будут.</li>
+          <li>Строит <b>ER-диаграммы (Entity-Relationship Diagrams)</b>.</li>
+          <li>Определяет сущности, атрибуты, ключи и связи.</li>
+          <li>Выполняет <b>нормализацию</b>, чтобы минимизировать аномалии.</li>
+          <li>Подбирает типы данных и ограничения.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">👤</span> Конечный пользователь (End User)</h3>
+    <div class="label-row">
+      <div class="label">Кто это</div>
+      <div>Тот, кто <b>пользуется базой через приложение</b> — не пишет SQL напрямую (обычно).</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Заполняет формы (регистрация, заказ, отправка сообщения).</li>
+          <li>Ищет данные через поисковики и фильтры.</li>
+          <li>Видит отчёты и графики, основанные на запросах к БД.</li>
+        </ul>
+      </div>
+      <div class="label">Пример</div>
+      <div>Кассир в магазине, который пробивает товар; пациент в личном кабинете больницы; ученик в школьном дневнике; ты, когда листаешь Instagram.</div>
+    </div>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос. Чем отличается роль DBA от роли проектировщика БД? <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Проектировщик</b> работает <b>до запуска</b> — анализирует требования, рисует ER-диаграммы, выбирает структуру, ключи и связи. Его задача — «как должна выглядеть БД».</li>
+        <li><b>DBA</b> работает <b>после запуска</b> — обеспечивает бесперебойную работу, безопасность, бэкапы, производительность. Его задача — «чтобы БД жила и работала надёжно».</li>
+        <li>Проектировщик отвечает за <b>схему и логику</b>; DBA — за <b>эксплуатацию и инфраструктуру</b>.</li>
+        <li>В небольших проектах одна и та же команда может играть обе роли; в крупных — это разные специалисты.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 8: PROS AND CONS ============ -->
+  <h2>8. Плюсы и минусы реляционной БД</h2>
+
+  <h3>Преимущества (Benefits)</h3>
+  <table class="summary-table">
+    <thead><tr><th>Преимущество</th><th>Что это значит</th></tr></thead>
+    <tbody>
+      <tr><td>Поддержка сообщества</td><td>Огромное community: документация, форумы, готовые решения. MySQL и PostgreSQL знают миллионы разработчиков.</td></tr>
+      <tr><td>Контроль одновременного доступа</td><td>Несколько пользователей могут одновременно читать и менять данные без ошибок (благодаря ACID-свойствам).</td></tr>
+      <tr><td>Согласованность данных (Data consistency)</td><td>Меньше повторов = меньше противоречий. Адрес владельца хранится один раз и везде «правильный».</td></tr>
+      <tr><td>Целостность данных (Data integrity)</td><td>Меньше повторов = меньше ошибок. PK, FK и ограничения защищают от мусора.</td></tr>
+      <tr><td>Простой поиск (Data retrieval)</td><td>SQL — мощный язык запросов. Один запрос может перебрать миллион записей за секунды.</td></tr>
+      <tr><td>Сокращение дублирования (Reduced duplication)</td><td>Каждая часть информации хранится один раз — экономия места.</td></tr>
+      <tr><td>Сокращение избыточности (Reduced redundancy)</td><td>За счёт связей между таблицами одни и те же данные не «размножаются» по базе.</td></tr>
+      <tr><td>Надёжные транзакции</td><td>Реляционные СУБД проверяют каждую транзакцию (ACID), чтобы переводы денег и заказы не «терялись».</td></tr>
+      <tr><td>Масштабируемость</td><td>Лучше тянет рост, чем плоский файл (но хуже, чем NoSQL для big data).</td></tr>
+      <tr><td>Безопасность</td><td>Встроенные права доступа: можно дать одному пользователю только чтение, другому — изменение, третьему — полный доступ.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Недостатки (Limitations)</h3>
+  <table class="summary-table">
+    <thead><tr><th>Недостаток</th><th>В чём проблема</th></tr></thead>
+    <tbody>
+      <tr><td>Плохо тянет big data</td><td>Для аналитики на терабайтных объёмах данных реляционные модели не лучший выбор. Лучше колоночные БД или NoSQL.</td></tr>
+      <tr><td>Сложность проектирования</td><td>Спроектировать правильно нормализованную схему с десятками таблиц — нетривиальная задача.</td></tr>
+      <tr><td>Иерархические данные неудобны</td><td>Деревья (например, комментарии с ответами на ответы) хранятся плохо, обход медленный.</td></tr>
+      <tr><td>Жёсткая схема (Rigid schema)</td><td>Типы и связи зафиксированы. Если завтра нужно добавить новое поле всем пользователям — это <b>миграция</b>, а не «само».</td></tr>
+      <tr><td>Object-relational impedance mismatch</td><td>В коде программы (Java, Python) данные — это объекты; в БД — таблицы. Перевод между ними («ORM») всегда не на 100% бесшовный.</td></tr>
+      <tr><td>Неструктурированные данные</td><td>Текст письма, фотография, JSON произвольной формы — плохо ложатся в табличную модель.</td></tr>
+    </tbody>
+  </table>
+
+  <details class="question-card">
+    <summary>Вопрос. Назови два преимущества использования реляционной базы данных. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 пункта × 2 балла):</b></p>
+      <ul>
+        <li><b>Сокращение избыточности.</b> Данные хранятся один раз и связаны через ключи, поэтому одна и та же информация не повторяется в нескольких местах. Экономит место и снижает риск ошибок.</li>
+        <li><b>Целостность данных.</b> Благодаря отсутствию дублирования и применению ограничений (PK, FK, доменная целостность) данные более точны и согласованны.</li>
+        <li><b>Одновременный доступ.</b> Несколько пользователей могут одновременно работать с базой без потери данных, благодаря ACID-свойствам.</li>
+        <li><b>Простой поиск через SQL.</b> Один запрос на SQL может найти и обработать миллионы записей за секунды.</li>
+        <li><b>Безопасность.</b> Встроенный контроль доступа: разные пользователи получают разные права на разные таблицы.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">За каждое преимущество: 1 балл за название + 1 балл за объяснение.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос. Опиши два недостатка реляционной БД и приведи случай, когда стоит использовать NoSQL. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Жёсткая схема.</b> Все строки в таблице обязаны иметь одни и те же столбцы. Если у разных пользователей разный набор полей — реляционная модель неудобна.</li>
+        <li><b>Плохая работа с неструктурированными данными.</b> Картинки, видео, произвольный JSON, длинные тексты — это сложно вписать в таблицы.</li>
+        <li><b>Когда NoSQL:</b> например, чат-приложение, где у каждого сообщения могут быть разные дополнительные поля (вложения, реакции, переводы), а сообщений — миллиарды. MongoDB или Cassandra справятся лучше.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 9: REAL WORLD EXAMPLES ============ -->
+  <h2>9. Реальные примеры баз данных</h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🛒</span> Онлайн-магазин (e-commerce)</h3>
+    <p>Таблицы: <b>Users</b> (покупатели), <b>Products</b> (товары), <b>Orders</b> (заказы), <b>OrderItems</b> (позиции в заказе), <b>Categories</b> (категории).</p>
+    <p>Связи: один пользователь делает много заказов (1:N). Один заказ содержит много позиций (1:N). Каждая позиция ссылается на товар (N:1).</p>
+    <p>Целостность: нельзя оформить заказ от несуществующего пользователя (ссылочная целостность); нельзя поставить цену «hello» (доменная); каждый заказ имеет уникальный Order_ID (целостность сущности).</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🏦</span> Банк</h3>
+    <p>Таблицы: <b>Accounts</b> (счета), <b>Customers</b> (клиенты), <b>Transactions</b> (операции), <b>Branches</b> (отделения).</p>
+    <p>Здесь критически важны <b>ACID-свойства</b>: при переводе денег нужно <b>атомарно</b> списать с одного счёта и зачислить на другой — никаких «полусделок». Если сервер упал между операциями — транзакция откатывается целиком.</p>
+    <p>DBA в банке — это серьёзная работа: ошибка в БД = потерянные деньги клиентов = регулятивные штрафы.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🏥</span> Больница (медицинские записи)</h3>
+    <p>Таблицы: <b>Patients</b>, <b>Doctors</b>, <b>Appointments</b>, <b>Prescriptions</b>, <b>Diagnoses</b>, <b>Departments</b>.</p>
+    <p>Сложные связи (M:N): пациент посещает разных врачей, врач принимает множество пациентов — через промежуточную таблицу Appointments.</p>
+    <p>Безопасность критична: только лечащий врач имеет доступ к карте пациента (роль-based access). Конфиденциальность защищена законом (HIPAA в США, GDPR в ЕС).</p>
+  </div>
+
+  <!-- ============ SECTION 10: PRACTICE TASKS ============ -->
+  <h2>10. Практические задания</h2>
+
+  <p>Эти задания помогут проверить, что ты понимаешь A3.1 на уровне применения, а не только запоминания.</p>
+
+  <div class="task-card">
+    <h3>🔍 Индивидуально: нормализуй плоский файл (ATL — Thinking Skills)</h3>
+    <p><b>Цель:</b> Превратить плоскую таблицу в нормализованную реляционную модель.</p>
+    <p><b>Инструкции:</b></p>
+    <ol>
+      <li>Возьми таблицу из реального источника — например, расписание уроков в школе или меню в столовой.</li>
+      <li>Найди <b>повторяющиеся данные</b> (имя учителя, название блюда, цены) и поставь их в отдельные таблицы.</li>
+      <li>Определи <b>первичные ключи</b> для каждой таблицы.</li>
+      <li>Установи <b>внешние ключи</b>, чтобы связать таблицы.</li>
+      <li>Нарисуй <b>ER-диаграмму</b> и укажи кардинальность каждой связи (1:1, 1:N, M:N).</li>
+      <li>Объясни, какие <b>аномалии</b> (insert, delete, update) ты устранил.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>👥 В группе: спроектируй БД для библиотеки (ATL — Social & Communication)</h3>
+    <p><b>Цель:</b> Совместно спроектировать реляционную базу для школьной библиотеки.</p>
+    <div class="scenario">
+      <b>Сценарий:</b> Школьной библиотеке нужна БД для учёта книг, читателей и выдач. Каждая книга может быть выдана много раз; один читатель может одновременно держать несколько книг.
+    </div>
+    <p><b>Инструкции (группы по 3-4):</b></p>
+    <ol>
+      <li>Определи <b>сущности</b> (минимум 3-4): Book, Reader, Loan, возможно Author.</li>
+      <li>Перечисли <b>атрибуты</b> каждой сущности и выбери первичные ключи.</li>
+      <li>Установи <b>связи</b> и определи кардинальность: один читатель → много выдач (1:N); одна книга → много выдач (1:N).</li>
+      <li>Для каждой связи укажи <b>модальность</b>: обязательная или опциональная?</li>
+      <li>Подумай, какие правила <b>целостности данных</b> вы будете применять: нельзя выдать несуществующую книгу, дата возврата не может быть раньше даты выдачи и т.д.</li>
+      <li>Презентуйте решение классу: ER-диаграмма + 2-3 примера SQL-запросов, которые вы хотели бы поддерживать («показать все книги, которые читатель ещё не вернул»).</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>🏠 Домой: исследование (ATL — Research Skills)</h3>
+    <p><b>Цель:</b> Связать теорию A3.1 с реальной системой, которой ты пользуешься.</p>
+    <p><b>Инструкции:</b></p>
+    <ol>
+      <li>Выбери приложение, которым пользуешься регулярно: Telegram, Spotify, школьный электронный дневник, любимая игра.</li>
+      <li>Перечисли <b>минимум 5 сущностей</b>, которые, по твоему мнению, есть в БД этого приложения.</li>
+      <li>Определи <b>тип связей</b> между ними (1:1, 1:N, M:N) — например, в Spotify: User ↔ Playlist (1:N), Playlist ↔ Track (M:N).</li>
+      <li>Подумай: какой <b>тип БД</b> (relational / NoSQL / гибридный) лучше всего подошёл бы и почему.</li>
+      <li>Опиши одну <b>проблему целостности</b>, которая могла бы возникнуть в этой системе (например, что будет, если удалить аккаунт пользователя — что произойдёт с его плейлистами?).</li>
+    </ol>
+  </div>
+
+  <!-- ============ Closing ============ -->
+  <h2>Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><b>База данных = структурированное хранилище</b> с правилами целостности. <b>СУБД (DBMS)</b> — софт, который этим управляет (MySQL, PostgreSQL, SQLite, Oracle).</li>
+    <li><b>Плоский файл</b> приводит к трём аномалиям: <b>insert, delete, update</b>. Поэтому данные разбивают на таблицы — это <b>нормализация</b>.</li>
+    <li>Каждая таблица — <b>сущность (entity)</b>. Строки — <b>записи (tuples)</b>. Столбцы — <b>атрибуты (attributes)</b>.</li>
+    <li><b>Первичный ключ (PK)</b> — уникальный, непустой идентификатор. <b>Внешний ключ (FK)</b> — ссылка на PK другой таблицы. Так создаются связи.</li>
+    <li>Бывают также: <b>candidate key</b> (любой кандидат на PK), <b>composite key</b> (PK из нескольких полей), <b>concatenated key</b> (склейка из фрагментов).</li>
+    <li><b>Кардинальность</b>: 1:1, 1:N, M:N. <b>Модальность</b>: обязательная или опциональная.</li>
+    <li>Три типа <b>целостности</b>: entity (уникальный PK), referential (FK указывает на существующий PK), domain (значения соответствуют типу и диапазону).</li>
+    <li><b>Роли</b>: <b>DBA</b> эксплуатирует БД в проде; <b>проектировщик</b> создаёт схему; <b>конечный пользователь</b> работает через интерфейс.</li>
+    <li><b>Плюсы реляционных БД</b>: целостность, согласованность, SQL, ACID, безопасность. <b>Минусы</b>: жёсткая схема, плохо с big data и неструктурированными данными — там лучше NoSQL.</li>
+    <li>На экзамене популярные вопросы: <b>«опиши X аномалий»</b>, <b>«объясни PK и FK»</b>, <b>«приведи пример 1:N»</b>, <b>«два преимущества реляционной БД»</b>. Всегда давай <b>определение + пример</b>.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="databases.html" class="back-link">← Назад к A3 Базы данных</a>
+    &nbsp; · &nbsp;
+    <a href="databases.html?v=9#sql-sim" class="back-link">💾 Открыть SQL-песочницу →</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A3.1" class="back-link">К квизу A3.1 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A3.1 Основы баз данных · По материалам Oxford IB DP 2025 Computer Science и NLCS Dubai · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

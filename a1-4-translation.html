@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1.4 Трансляция (HL) · IB CS Theme A</title>
+<meta name="description" content="A1.4 Трансляция (HL) — глубокий разбор на русском: компилятор vs интерпретатор vs JIT, байткод, этапы компиляции (лексика → синтаксис → семантика → оптимизация → генерация кода), ассемблер, машинный код, линкеры и загрузчики. С разбором задач и аналогиями.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .analogy-list ul { margin: 4px 0; }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+
+  /* HL badge */
+  .hl-badge {
+    display: inline-block;
+    background: #dc2626;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+    text-transform: uppercase;
+  }
+  [data-theme="dark"] .hl-badge { background: #ef4444; }
+
+  /* Code blocks */
+  .code-snippet {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.9rem;
+    overflow-x: auto;
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+  .code-snippet .comment { color: var(--text-muted); font-style: italic; }
+  .code-snippet .keyword { color: var(--violet); font-weight: 600; }
+  .code-snippet .string { color: var(--green); }
+
+  /* Compilation stages diagram */
+  .stages-diagram {
+    margin: 24px 0;
+    padding: 24px;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    overflow-x: auto;
+  }
+  .stages-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    min-width: 800px;
+    flex-wrap: nowrap;
+  }
+  .stage-box {
+    flex: 1;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 14px 12px;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    font-size: 0.88rem;
+  }
+  .stage-box .stage-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  .stage-box .stage-name {
+    font-weight: 700;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+  }
+  .stage-box .stage-desc {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  .stage-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--accent);
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  /* Mini timeline at bottom of stages */
+  .stages-input-output {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Use-case chart */
+  .usecase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin: 18px 0 32px;
+  }
+  .usecase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .usecase-card h4 {
+    margin: 0 0 6px;
+    color: var(--primary);
+    font-size: 1.05rem;
+  }
+  .usecase-card .uc-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .uc-tag.compiled { background: rgba(16,185,129,0.15); color: #047857; }
+  .uc-tag.interpreted { background: rgba(14,165,233,0.15); color: #0369a1; }
+  .uc-tag.jit { background: rgba(139,92,246,0.15); color: #6d28d9; }
+  [data-theme="dark"] .uc-tag.compiled { background: rgba(16,185,129,0.22); color: #6ee7b7; }
+  [data-theme="dark"] .uc-tag.interpreted { background: rgba(56,189,248,0.22); color: #7dd3fc; }
+  [data-theme="dark"] .uc-tag.jit { background: rgba(139,92,246,0.25); color: #c4b5fd; }
+  .usecase-card p { margin: 6px 0 0; font-size: 0.92rem; line-height: 1.55; color: var(--text); }
+
+  @media (max-width: 720px) {
+    .stages-diagram { padding: 14px; }
+    .stages-flow { min-width: 720px; }
+    .device-card .label-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+
+  <span class="hero-eyebrow" style="background:rgba(220,38,38,0.10); color:#b91c1c">
+    A1.4.1 · Translation processes <span class="hl-badge">HL</span>
+  </span>
+
+  <h1>Трансляция <span class="hl-badge">HL</span></h1>
+
+  <p class="lede">
+    Эта тема (<b>A1.4 — Translation</b>, только HL) — про то, как код, который ты пишешь на Python, Java или C++, превращается в <b>машинные инструкции</b>, которые понимает процессор. Есть три основных подхода: <b>компилятор</b> (compiler) переводит всю программу заранее, <b>интерпретатор</b> (interpreter) — строка за строкой во время выполнения, а <b>JIT</b> (just-in-time) — гибрид, который компилирует «на лету». Каждый подход — это компромисс между скоростью разработки, скоростью выполнения, портируемостью и моментом обнаружения ошибок.
+  </p>
+
+  <!-- ============ SECTION 1: WHY TRANSLATION ============ -->
+  <h2>1. Что такое трансляция и зачем она нужна</h2>
+
+  <p>
+    Процессор (CPU) понимает только <b>машинный код</b> (machine code) — последовательности двоичных бит, каждая из которых кодирует одну простую операцию: «загрузи число в регистр», «сложи два числа», «прыгни на адрес». Эти команды очень близки к железу и зависят от архитектуры (x86, ARM, MIPS — у каждой свой набор инструкций).
+  </p>
+  <p>
+    Человек писать в машинных кодах не может: они нечитаемы, привязаны к конкретному процессору и громоздки. Поэтому программисты пишут на <b>языках высокого уровня</b> (Python, Java, C++, JavaScript, Rust, Go и т.д.), а специальные программы — <b>трансляторы</b> — переводят этот код в машинные инструкции. <b>Трансляция (translation)</b> — это и есть процесс превращения человеко-понятного кода в команды, которые исполняет CPU.
+  </p>
+
+  <h3>Уровни кода — от человека к процессору</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Уровень</th>
+        <th>Пример</th>
+        <th>Кто читает</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Высокоуровневый язык</td>
+        <td><code>score = 42</code></td>
+        <td>Человек</td>
+      </tr>
+      <tr>
+        <td>Ассемблер (Assembly)</td>
+        <td><code>MOV R2, #42</code></td>
+        <td>Человек (с трудом) и ассемблер</td>
+      </tr>
+      <tr>
+        <td>Машинный код (Machine code)</td>
+        <td><code>0110 0000 0100 0010</code></td>
+        <td>Только процессор</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Ассемблер (assembly language)</b> — это «чуть более читаемый» машинный код. Каждая ассемблерная команда (MOV, ADD, JMP) почти один-к-одному превращается в одну машинную инструкцию. Программист может пользоваться метками вместо адресов памяти, но всё ещё работает на уровне регистров CPU. <b>Ассемблер (assembler) как программа</b> — это переводчик из ассемблерного кода в машинный.
+  </div>
+
+  <!-- ============ SECTION 2: SUMMARY COMPARISON ============ -->
+  <h2>2. Кратко: компилятор vs интерпретатор vs JIT</h2>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Критерий</th>
+        <th>Компилятор</th>
+        <th>Интерпретатор</th>
+        <th>JIT-компилятор</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Когда переводит</td>
+        <td>Один раз, заранее (до запуска)</td>
+        <td>Строка за строкой, во время выполнения</td>
+        <td>Во время выполнения, «горячие» участки кода</td>
+      </tr>
+      <tr>
+        <td>Результат</td>
+        <td>Бинарный исполняемый файл (.exe / a.out)</td>
+        <td>Файла нет, читает исходник напрямую</td>
+        <td>Машинный код в памяти, кэшируется</td>
+      </tr>
+      <tr>
+        <td>Скорость выполнения</td>
+        <td>Очень быстрая (нативный машинный код)</td>
+        <td>Медленная (трансляция на каждый запуск)</td>
+        <td>Средняя/быстрая (после прогрева — почти как у компилятора)</td>
+      </tr>
+      <tr>
+        <td>Обнаружение ошибок</td>
+        <td>Многие ошибки видны на этапе компиляции (до запуска)</td>
+        <td>Ошибки всплывают во время выполнения, в момент исполнения строки</td>
+        <td>Гибрид: часть ошибок на этапе компиляции в байткод, часть во время JIT</td>
+      </tr>
+      <tr>
+        <td>Портируемость</td>
+        <td>Низкая: бинарь привязан к ОС и архитектуре CPU</td>
+        <td>Высокая: достаточно поставить интерпретатор на любую ОС</td>
+        <td>Высокая на уровне байткода; машинный код — для текущей платформы</td>
+      </tr>
+      <tr>
+        <td>Скорость разработки</td>
+        <td>Медленнее (нужен цикл «правка → компиляция → запуск»)</td>
+        <td>Быстрая (правка → сразу запуск)</td>
+        <td>Быстрая (правка → запуск, JIT прозрачен)</td>
+      </tr>
+      <tr>
+        <td>Типичные языки</td>
+        <td>C, C++, Rust, Go</td>
+        <td>Python, JavaScript, Ruby, PHP</td>
+        <td>Java, C#, JavaScript (V8), Python (PyPy)</td>
+      </tr>
+      <tr>
+        <td>Где применяют</td>
+        <td>Игры, ОС, системное ПО, HFT-трейдинг</td>
+        <td>Скрипты, web-бэкенд, прототипы, наука</td>
+        <td>Серверные приложения, мобильные, кроссплатформенный enterprise-софт</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Аналогия:</b> представь, что нужно перевести книгу с английского на русский. <b>Компилятор</b> = переводчик переводит всю книгу заранее, ты потом читаешь готовый русский том. <b>Интерпретатор</b> = синхронист переводит фразу за фразой, пока ты слушаешь оратора. <b>JIT</b> = синхронист, который запоминает часто повторяющиеся фразы и держит их в кармане в готовом виде.
+  </div>
+
+  <!-- ============ SECTION 3: COMPILER ============ -->
+  <h2>3. Компилятор (Compiler)</h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> A. Что делает компилятор</h3>
+    <div class="label-row">
+      <div class="label">Определение</div>
+      <div>Компилятор переводит исходный код в машинный код <b>один раз, до запуска программы</b>. Результат — бинарный исполняемый файл (binary executable), который ОС загружает в память и CPU исполняет напрямую.</div>
+      <div class="label">Этапы</div>
+      <div>Лексический анализ → синтаксический → семантический → оптимизация → генерация кода. (См. подробно ниже в разделе 6.)</div>
+      <div class="label">Что хорошо</div>
+      <div>
+        <ul>
+          <li><b>Скорость выполнения</b> — машинный код выполняется напрямую CPU без накладных расходов на трансляцию.</li>
+          <li><b>Ошибки ловятся заранее</b>: синтаксические, типовые, многие семантические — компилятор не создаст исполняемый файл, пока их не исправишь.</li>
+          <li><b>Оптимизация всей программы</b> — компилятор видит весь код и может переставлять инструкции, удалять «мёртвый» код, инлайнить функции.</li>
+          <li><b>Защита исходника</b> — пользователю отдаётся только бинарь, исходный код не нужен.</li>
+        </ul>
+      </div>
+      <div class="label">Что неудобно</div>
+      <div>
+        <ul>
+          <li><b>Цикл разработки длиннее</b>: каждое изменение требует пересборки (может занимать секунды или минуты).</li>
+          <li><b>Низкая портируемость</b>: бинарь, собранный под Windows x86, не запустится на macOS ARM — нужна отдельная компиляция под каждую платформу.</li>
+          <li>На этапе компиляции <b>больше расходуется память</b> (компилятор строит AST, таблицы символов и т.д.).</li>
+        </ul>
+      </div>
+      <div class="label">Примеры языков</div>
+      <div><b>C, C++, Rust, Go</b>. Компиляторы: GCC, Clang/LLVM, Microsoft Visual C++ (MSVC).</div>
+    </div>
+
+    <p><b>Пример исходника на Rust:</b></p>
+    <pre class="code-snippet"><span class="keyword">fn</span> main() {
+    println!(<span class="string">"Hello, world!"</span>);
+}</pre>
+    <p>После команды <code>rustc main.rs</code> компилятор создаёт исполняемый файл <code>main</code> (или <code>main.exe</code> на Windows), который при запуске напрямую выводит строку — без участия Rust-инструментов.</p>
+  </div>
+
+  <!-- ============ SECTION 4: INTERPRETER ============ -->
+  <h2>4. Интерпретатор (Interpreter)</h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📜</span> B. Что делает интерпретатор</h3>
+    <div class="label-row">
+      <div class="label">Определение</div>
+      <div>Интерпретатор читает исходный код <b>строка за строкой</b> и исполняет каждую инструкцию на лету. Бинарного файла нет — программа существует только как текст исходника плюс работающий интерпретатор.</div>
+      <div class="label">Как работает</div>
+      <div>
+        <ul>
+          <li>Берёт следующую строку.</li>
+          <li>Разбирает её (лексика, синтаксис, семантика — на лету).</li>
+          <li>Превращает в байткод или внутреннее представление.</li>
+          <li>Выполняет.</li>
+          <li>Если встретилась <b>ошибка — останавливается на этой строке</b>, всё что было до — уже исполнено.</li>
+        </ul>
+      </div>
+      <div class="label">Что хорошо</div>
+      <div>
+        <ul>
+          <li><b>Очень быстрый цикл разработки</b>: правишь файл, сразу запускаешь — без шага компиляции.</li>
+          <li><b>Высокая портируемость</b>: один и тот же скрипт работает на Windows, macOS, Linux, лишь бы стоял интерпретатор.</li>
+          <li><b>Меньше памяти под трансляцию</b> (нет промежуточного бинаря).</li>
+          <li><b>Динамическая типизация</b> чаще всего: меньше «бойлерплейта», быстрее писать.</li>
+          <li><b>Интерактивность</b>: REPL (Python, JS-консоль) позволяет пробовать код прямо в командной строке.</li>
+        </ul>
+      </div>
+      <div class="label">Что неудобно</div>
+      <div>
+        <ul>
+          <li><b>Медленнее выполняется</b>: каждая строка переводится заново при каждом запуске.</li>
+          <li><b>Ошибки всплывают поздно</b> — только когда строка реально исполнится. Опечатка в редко вызываемой функции может пройти в продакшен.</li>
+          <li><b>Нужен интерпретатор у пользователя</b> — программу нельзя просто «отдать как .exe».</li>
+        </ul>
+      </div>
+      <div class="label">Примеры языков</div>
+      <div><b>Python, JavaScript, Ruby, PHP</b>.</div>
+    </div>
+
+    <p><b>Пример на Python:</b></p>
+    <pre class="code-snippet"><span class="keyword">print</span>(<span class="string">"Hello, World!"</span>)</pre>
+    <p>Запуск: <code>python hello.py</code>. Интерпретатор сам разберёт, скомпилирует в байткод и тут же выполнит. Никакого <code>.exe</code> на диске не появится.</p>
+  </div>
+
+  <div class="ru-tip">
+    💬 <b>Реальная история (из учебника):</b> когда команда Кэти Боуман получила первое изображение чёрной дыры, обработка огромных объёмов данных с радиотелескопов делалась на <b>Python</b> — потому что интерпретируемый язык позволял быстро менять алгоритм, прогонять заново и видеть результат, не теряя время на пересборку.
+  </div>
+
+  <!-- ============ SECTION 5: JIT & BYTECODE ============ -->
+  <h2>5. JIT-компиляция и байткод-интерпретаторы</h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚡</span> C. JIT (Just-in-time compilation)</h3>
+    <div class="label-row">
+      <div class="label">Определение</div>
+      <div>Гибрид компиляции и интерпретации. Исходник <b>сначала компилируется в байткод</b> (платформо-независимое промежуточное представление), а потом <b>виртуальная машина</b> исполняет этот байткод и <b>«на лету» компилирует «горячие» куски</b> (часто исполняемые) в нативный машинный код, который кэшируется и используется в следующих вызовах.</div>
+      <div class="label">Логика</div>
+      <div>
+        <ul>
+          <li>Загрузка байткода в VM.</li>
+          <li>Сначала байткод <b>интерпретируется</b> — это даёт быстрый старт.</li>
+          <li>VM считает, сколько раз вызывается каждый кусок (метод, цикл).</li>
+          <li>Когда счётчик переваливает порог — кусок <b>компилируется в нативный код</b> и кэшируется.</li>
+          <li>Следующие вызовы того же куска идут уже через кэш — почти со скоростью полностью скомпилированного кода.</li>
+        </ul>
+      </div>
+      <div class="label">Преимущества</div>
+      <div>
+        <ul>
+          <li><b>Гибкость интерпретации + скорость компиляции</b>: горячие куски быстрые, холодные — гибкие.</li>
+          <li><b>Адаптивная оптимизация</b>: JIT видит реальное поведение программы (какие типы реально приходят) и оптимизирует под них.</li>
+          <li><b>Портируемость на уровне байткода</b>: один и тот же .class или .dll работает на любой ОС, где есть JVM/CLR.</li>
+        </ul>
+      </div>
+      <div class="label">Недостатки</div>
+      <div>
+        <ul>
+          <li><b>«Прогрев» (warm-up)</b>: в начале запуск медленнее, пока JIT не успел скомпилировать горячие части.</li>
+          <li>JIT-компилятор сам потребляет CPU и память.</li>
+          <li>Машинный код, который JIT генерирует, всё равно <b>привязан к текущей платформе</b> — портируется именно байткод.</li>
+        </ul>
+      </div>
+      <div class="label">Примеры</div>
+      <div>
+        <ul>
+          <li><b>Java</b> + JVM (HotSpot, OpenJ9): .java → javac → .class (байткод) → JVM с JIT.</li>
+          <li><b>C# / .NET</b>: .cs → csc → CIL/MSIL → CLR с JIT (RyuJIT).</li>
+          <li><b>JavaScript</b> в браузерах: V8 (Chrome), SpiderMonkey (Firefox), JavaScriptCore (Safari) — все используют JIT.</li>
+          <li><b>PyPy</b> — альтернативная реализация Python с JIT, в разы быстрее CPython на математике.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📦</span> D. Байткод-интерпретаторы (Bytecode interpreters)</h3>
+    <div class="label-row">
+      <div class="label">Определение</div>
+      <div>Байткод (bytecode) — это набор инструкций <b>низкого уровня, но платформо-независимый</b>, спроектированный для эффективного исполнения программной виртуальной машиной. Это не машинный код реального CPU, а команды для «виртуального процессора» (например, JVM или Python VM).</div>
+      <div class="label">Поток</div>
+      <div>
+        <ul>
+          <li><b>Шаг 1.</b> Исходный код компилируется в байткод (один раз, либо при первом запуске).</li>
+          <li><b>Шаг 2.</b> Байткод-интерпретатор (виртуальная машина) читает эти байты и исполняет.</li>
+        </ul>
+      </div>
+      <div class="label">Где это видно</div>
+      <div>
+        <ul>
+          <li><b>Python (CPython)</b> — при импорте модуля или повторном запуске Python кэширует скомпилированный байткод в файлах <code>.pyc</code> (папка <code>__pycache__</code>). Это <b>не</b> ускоряет выполнение самого кода, но избавляет от повторной компиляции при следующем запуске.</li>
+          <li><b>Java</b> — компилятор <code>javac</code> делает <code>.class</code>-файлы с байткодом, которые потом исполняет JVM.</li>
+          <li><b>Ruby (YARV)</b> — Yet Another Ruby VM, исполняет байткод.</li>
+          <li><b>Erlang (BEAM)</b> — виртуальная машина для байткода Erlang/Elixir.</li>
+        </ul>
+      </div>
+      <div class="label">Плюсы</div>
+      <div>
+        <ul>
+          <li><b>Портируемость</b> — байткод одинаков везде, где есть VM.</li>
+          <li><b>Быстрее «голой» интерпретации исходника</b> — байткод уже разобран, не нужно повторно делать лексику/синтаксис.</li>
+          <li><b>Меньший размер</b> — байткод компактнее исходного текста.</li>
+        </ul>
+      </div>
+      <div class="label">Минусы</div>
+      <div>
+        <ul>
+          <li>Без JIT — всё равно медленнее, чем нативный машинный код.</li>
+          <li>Часть ошибок ловится только при исполнении конкретной инструкции байткода.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="ru-tip">
+    🧩 <b>Где граница между байткодом и JIT?</b> Сам по себе байткод-интерпретатор просто исполняет байты по очереди — без перевода в нативный код. <b>JIT — это слой сверху</b>, который замечает горячие участки и компилирует их в нативный код. Java и C# почти всегда идут с JIT; стандартный CPython — это «чистый» байткод-интерпретатор без JIT (а PyPy — с JIT).
+  </div>
+
+  <!-- ============ SECTION 6: COMPILATION STAGES ============ -->
+  <h2>6. Этапы компиляции (важно для экзамена)</h2>
+
+  <p>
+    Когда компилятор превращает исходник в машинный код (или интерпретатор — в байткод), он проходит через несколько чётко определённых этапов. На экзамене часто просят описать эту цепочку. Запомни её в таком порядке:
+  </p>
+
+  <div class="stages-diagram" role="img" aria-label="Этапы компиляции: лексический анализ, синтаксический анализ, семантический анализ, оптимизация, генерация кода, исполнение">
+    <div class="stages-flow">
+      <div class="stage-box">
+        <span class="stage-num">1</span>
+        <span class="stage-name">Лексика</span>
+        <span class="stage-desc">Lexical analysis<br>Текст → токены</span>
+      </div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box">
+        <span class="stage-num">2</span>
+        <span class="stage-name">Синтаксис</span>
+        <span class="stage-desc">Syntax / parsing<br>Токены → AST</span>
+      </div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box">
+        <span class="stage-num">3</span>
+        <span class="stage-name">Семантика</span>
+        <span class="stage-desc">Semantic analysis<br>Проверка смысла, типов</span>
+      </div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box">
+        <span class="stage-num">4</span>
+        <span class="stage-name">Оптимизация</span>
+        <span class="stage-desc">Optimization<br>Ускорение, упрощение</span>
+      </div>
+      <div class="stage-arrow">→</div>
+      <div class="stage-box">
+        <span class="stage-num">5</span>
+        <span class="stage-name">Генерация кода</span>
+        <span class="stage-desc">Code generation<br>AST → машинный код</span>
+      </div>
+    </div>
+    <div class="stages-input-output">
+      <span>Вход: исходный код <code>score = 42</code></span>
+      <span>Выход: машинные инструкции <code>0110 0000 0100 0010</code></span>
+    </div>
+  </div>
+
+  <h3>Этап 1 — Лексический анализ (Lexical analysis)</h3>
+  <p>
+    Компилятор разбивает исходный текст на <b>токены</b> (tokens): ключевые слова, идентификаторы, операторы, литералы, скобки. Это как «нарезать» предложение на отдельные слова и знаки препинания. На этом этапе ловятся ошибки вроде «неизвестный символ».
+  </p>
+  <p>
+    <b>Пример.</b> Для строки <code>print("Hello World!")</code> лексер выделит токены: <code>print</code> (идентификатор/ключевое слово), <code>(</code> (открывающая скобка), <code>"Hello World!"</code> (строковый литерал), <code>)</code> (закрывающая скобка).
+  </p>
+
+  <h3>Этап 2 — Синтаксический анализ / парсинг (Syntax analysis / parsing)</h3>
+  <p>
+    Поток токенов проверяется на соответствие <b>грамматике языка</b>. Парсер (<b>parser</b>) строит из токенов иерархическую структуру — <b>дерево разбора</b> (parse tree) или <b>абстрактное синтаксическое дерево</b> (AST, abstract syntax tree). Тут ловятся ошибки вроде «не хватает закрывающей скобки» или «после <code>if</code> нет условия».
+  </p>
+  <p>
+    Например, выражение <code>print("Hello World!")</code> должно соответствовать структуре «функциональный вызов»: <i>имя функции, за ним скобки, в скобках — аргументы</i>. Если эта структура нарушена — синтаксическая ошибка.
+  </p>
+
+  <h3>Этап 3 — Семантический анализ (Semantic analysis)</h3>
+  <p>
+    Парсер уже знает <b>структуру</b> кода. Семантика — это его <b>смысл</b>. Здесь компилятор проверяет:
+  </p>
+  <ul>
+    <li>Существует ли вызываемая функция (<code>print</code> — существует).</li>
+    <li>Совпадают ли типы (нельзя сложить число и список без явного преобразования).</li>
+    <li>Объявлены ли все переменные до использования.</li>
+    <li>Совместимы ли типы аргументов с сигнатурой функции.</li>
+  </ul>
+  <p>
+    Это самый «умный» из ранних этапов. Семантические ошибки звучат как «<i>variable not declared</i>» или «<i>type mismatch: expected int, got string</i>».
+  </p>
+
+  <h3>Этап 4 — Оптимизация (Optimization)</h3>
+  <p>
+    Компилятор улучшает код, <b>не меняя его поведение</b>: переставляет инструкции, удаляет недостижимый код, разворачивает циклы, сворачивает константы (<code>2 + 3</code> сразу → <code>5</code>), инлайнит маленькие функции. Цель — чтобы исполнение шло быстрее или потребляло меньше памяти. У интерпретаторов этот этап обычно ограничен или отсутствует.
+  </p>
+  <p>
+    <b>Этого этапа нет в интерпретаторах</b> в полном объёме — или он минимальный. Полноценная оптимизация — преимущество именно компиляторов (и JIT, который оптимизирует адаптивно).
+  </p>
+
+  <h3>Этап 5 — Генерация кода (Code generation)</h3>
+  <p>
+    Финальная стадия. Оптимизированное промежуточное представление превращается в:
+  </p>
+  <ul>
+    <li><b>Машинный код</b> для конкретной архитектуры — у «полных» компиляторов (C, Rust, Go).</li>
+    <li><b>Байткод</b> — у интерпретаторов и гибридных систем (Python <code>.pyc</code>, Java <code>.class</code>).</li>
+  </ul>
+  <p>
+    После этого код готов к исполнению: либо ОС запускает бинарь напрямую, либо виртуальная машина / интерпретатор начинает исполнять байткод.
+  </p>
+
+  <div class="ru-tip">
+    🎯 <b>Запомни мнемонику:</b> «Лена Сидит Семантически и Оптимально Готовит код» — <b>Л</b>ексика → <b>С</b>интаксис → <b>С</b>емантика → <b>О</b>птимизация → <b>Г</b>енерация кода. В интерпретаторе те же первые три этапа, затем сразу генерация байткода и исполнение — без полноценной оптимизации.
+  </div>
+
+  <!-- ============ SECTION 7: LINKERS & LOADERS ============ -->
+  <h2>7. Линкеры и загрузчики (Linkers &amp; Loaders)</h2>
+
+  <p>
+    После того, как компилятор превратил каждый <code>.c</code> или <code>.cpp</code> файл в <b>объектный код</b> (<code>.o</code>, <code>.obj</code>) — это ещё не готовая программа. Современные программы состоят из множества файлов и используют <b>стандартные библиотеки</b> (standard library) и сторонние библиотеки.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔗</span> Линкер (Linker)</h3>
+    <div class="label-row">
+      <div class="label">Что делает</div>
+      <div>Берёт все объектные файлы и нужные библиотеки, <b>склеивает их в один исполняемый файл</b>. Разрешает ссылки между файлами: если в одном файле вызывается <code>printf</code>, линкер находит её в стандартной библиотеке C и подставляет правильный адрес.</div>
+      <div class="label">Виды линковки</div>
+      <div>
+        <ul>
+          <li><b>Статическая</b>: библиотека «вшивается» внутрь .exe → файл больше, но не нужны внешние зависимости.</li>
+          <li><b>Динамическая</b>: .exe ссылается на <code>.dll</code> (Windows) или <code>.so</code> (Linux) → файл меньше, но при отсутствии библиотеки программа не запустится.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📥</span> Загрузчик (Loader)</h3>
+    <div class="label-row">
+      <div class="label">Что делает</div>
+      <div>Часть ОС: когда пользователь запускает программу, загрузчик <b>читает исполняемый файл с диска, размещает его в памяти</b>, настраивает регистры, передаёт управление на первую инструкцию (entry point).</div>
+      <div class="label">Этапы</div>
+      <div>
+        <ul>
+          <li>Читает заголовок .exe / ELF.</li>
+          <li>Выделяет адресное пространство процесса.</li>
+          <li>Копирует код и данные в нужные области памяти.</li>
+          <li>При динамической линковке загружает .dll / .so в память.</li>
+          <li>Передаёт управление CPU на стартовый адрес.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 8: USE CASES ============ -->
+  <h2>8. Когда какой подход выбирать</h2>
+
+  <p>
+    Программа существует ради задачи. Выбор подхода зависит от того, что важнее: скорость выполнения, скорость разработки, портируемость или баланс.
+  </p>
+
+  <div class="usecase-grid">
+    <div class="usecase-card">
+      <span class="uc-tag interpreted">Интерпретатор</span>
+      <h4>Быстрая разработка и тестирование</h4>
+      <p>Стартап-команда прототипирует IoT-приложение для управления умными устройствами в реальном времени. <b>Python</b> или <b>JavaScript</b> позволяют быстро менять код и сразу видеть результат, без шага компиляции. На раннем этапе важна гибкость, а не скорость выполнения.</p>
+    </div>
+    <div class="usecase-card">
+      <span class="uc-tag compiled">Компилятор</span>
+      <h4>Производительность критична</h4>
+      <p>Платформа высокочастотного трейдинга (HFT), где сделки исполняются за микросекунды. <b>C++, Rust или Go</b> компилируются в нативный машинный код, который CPU исполняет напрямую. Игры и VR-приложения — та же логика: каждый кадр должен укладываться в 16 миллисекунд.</p>
+    </div>
+    <div class="usecase-card">
+      <span class="uc-tag jit">JIT + байткод</span>
+      <h4>Кроссплатформенный enterprise-софт</h4>
+      <p>Компания пишет CRM-систему, которая должна работать на Windows, macOS и Linux. <b>Java</b> компилируется в байткод, который JVM исполняет на любой ОС. Производительность достаточно высокая благодаря JIT-компиляции в JVM. То же относится к <b>C#</b> и <b>.NET</b>.</p>
+    </div>
+    <div class="usecase-card">
+      <span class="uc-tag interpreted">Интерпретатор</span>
+      <h4>Скрипты и автоматизация</h4>
+      <p>Системному администратору нужно автоматизировать ежедневные задачи: парсинг логов, копирование файлов, отправка отчётов. <b>Python</b> или <b>Bash</b> — идеальный выбор: маленькие скрипты, без сложной сборки, легко править.</p>
+    </div>
+    <div class="usecase-card">
+      <span class="uc-tag compiled">Компилятор</span>
+      <h4>Системное программирование</h4>
+      <p>Операционные системы, драйверы устройств, встраиваемые системы. Нужен прямой доступ к памяти, предсказуемое поведение, минимальные накладные расходы. <b>C</b> и <b>Rust</b> — стандарт индустрии (ядро Linux на C, всё больше частей на Rust).</p>
+    </div>
+    <div class="usecase-card">
+      <span class="uc-tag jit">JIT</span>
+      <h4>Веб-фронтенд</h4>
+      <p>JavaScript в браузере. Когда-то был чисто интерпретируемым, сейчас все движки (V8, SpiderMonkey, JavaScriptCore) используют JIT — это позволило построить сложные веб-приложения вроде Google Docs или Figma со скоростью, близкой к нативным.</p>
+    </div>
+  </div>
+
+  <h2>9. Связанные понятия</h2>
+
+  <h3>Стандартная библиотека (Standard library)</h3>
+  <p>
+    Готовый набор модулей, классов и функций, который поставляется вместе с языком. У Python это <code>os</code>, <code>json</code>, <code>math</code> и сотни других. У Java это <code>java.util</code>, <code>java.io</code>. Стандартная библиотека сильно облегчает разработку: не нужно реализовывать всё с нуля.
+  </p>
+
+  <h3>Парсер (Parser)</h3>
+  <p>
+    Программный компонент, который анализирует поток входных токенов по правилам грамматики и строит из них <b>иерархическое представление</b> — дерево разбора или AST. Парсеры используются не только в компиляторах: HTML-парсер в браузере, JSON-парсер в API, SQL-парсер в БД — все они работают по той же логике.
+  </p>
+
+  <h3>Семантика (Semantics)</h3>
+  <p>
+    Точный смысл, связанный с конкретной программной конструкцией: «что делает эта инструкция?». В отличие от синтаксиса (как должно быть написано), семантика отвечает за <b>что произойдёт</b> при исполнении. Например, синтаксически правильный код <code>x = y + z</code> семантически ошибочен, если <code>y</code> — это строка, а <code>z</code> — число (в строгом языке).
+  </p>
+
+  <h3>Бинарный исполняемый файл (Binary executable)</h3>
+  <p>
+    Файл, который содержит готовые машинные инструкции в формате, понятном конкретной ОС (PE для Windows, ELF для Linux, Mach-O для macOS). ОС умеет загружать такой файл в память и сразу передавать управление CPU.
+  </p>
+
+  <p style="margin-top: 20px">
+    <a href="fundamentals.html#ci-sim" class="back-link" style="font-size:1rem">→ Открыть симуляцию «Компилятор vs Интерпретатор» в A1 Основы</a>
+  </p>
+
+  <!-- ============ SECTION 10: PRACTICE QUESTIONS ============ -->
+  <h2>10. Тренировочные вопросы (нажми, чтобы увидеть подсказку к ответу)</h2>
+
+  <p class="muted" style="font-size:0.92rem">
+    Вопросы — из стиля экзамена IB (включая Practice questions 49–51 из учебника и расширенные авторские). Ответы — подсказки в моём изложении, а не официальные mark schemes.
+  </p>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши, как высокоуровневая инструкция переводится в машинный код. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (4 ключевых пункта):</b></p>
+      <ul>
+        <li><b>Лексический анализ:</b> исходный текст разбивается на токены (ключевые слова, операторы, идентификаторы, литералы).</li>
+        <li><b>Синтаксический анализ (парсинг):</b> токены собираются в дерево разбора (AST) согласно грамматике языка; проверяется правильность структуры.</li>
+        <li><b>Семантический анализ:</b> проверяется смысл — типы, объявленные переменные, существующие функции.</li>
+        <li><b>Генерация кода:</b> AST превращается в машинный код для конкретной архитектуры процессора (после промежуточной оптимизации в случае компилятора).</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Каждый этап = 1 балл. Если упомянуть оптимизацию пятым шагом — это плюс, но не обязательно для 4 баллов.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Обозначь роль парсера в процессе трансляции языков программирования. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Парсер <b>анализирует поток токенов</b> (полученный из лексического анализатора) согласно <b>грамматическим правилам</b> языка.</li>
+        <li>Он <b>строит иерархическую структуру</b> — дерево разбора или абстрактное синтаксическое дерево (AST), показывающее, как элементы программы связаны между собой.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">2 пункта = 2 балла. Можно добавить, что парсер ловит синтаксические ошибки (несовпадение скобок и т.д.), но это не обязательно.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Оцени использование байткода в трансляции языков программирования. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (с балансом плюсов и минусов — «evaluate»):</b></p>
+      <ul>
+        <li><b>Плюс — портируемость:</b> один и тот же байткод исполняется на любой платформе, где есть соответствующая виртуальная машина (один <code>.class</code> на Windows, macOS, Linux).</li>
+        <li><b>Плюс — компромисс скорости:</b> байткод-интерпретация быстрее, чем интерпретация исходника напрямую, потому что лексика и синтаксис уже разобраны (а с JIT — почти на уровне нативного кода).</li>
+        <li><b>Минус — нужна виртуальная машина:</b> без VM байткод не исполняется; есть накладные расходы по памяти и старту, и всё равно медленнее, чем чисто скомпилированный нативный код без JIT.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">«Evaluate» предполагает баланс — обязательно укажи и сильные, и слабые стороны.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Сравни и противопоставь компилятор и интерпретатор по четырём критериям: время трансляции, обнаружение ошибок, портируемость, применимость. <span class="marks-tag">8 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла за каждый критерий — указать оба подхода):</b></p>
+      <ul>
+        <li>
+          <b>Время трансляции.</b><br>
+          <i>Компилятор:</i> переводит весь исходник <b>один раз до запуска</b>; во время исполнения трансляции нет, но цикл «правка → компиляция → запуск» долгий.<br>
+          <i>Интерпретатор:</i> <b>нет отдельной стадии компиляции</b>; перевод происходит построчно во время выполнения — старт мгновенный, но каждое исполнение тратит время на трансляцию.
+        </li>
+        <li>
+          <b>Обнаружение ошибок.</b><br>
+          <i>Компилятор:</i> большинство ошибок (синтаксис, типы, неопределённые переменные) <b>ловятся до запуска</b> — программа просто не соберётся.<br>
+          <i>Интерпретатор:</i> ошибки всплывают <b>во время исполнения</b>, в момент, когда строка реально достигнута. Опечатка в редко вызываемой ветке может не проявиться при тестировании.
+        </li>
+        <li>
+          <b>Портируемость.</b><br>
+          <i>Компилятор:</i> исполняемый файл <b>привязан к ОС и архитектуре CPU</b>; для каждой платформы нужна отдельная сборка.<br>
+          <i>Интерпретатор:</i> один и тот же исходник работает на <b>любой ОС, где установлен интерпретатор</b> — высокая портируемость.
+        </li>
+        <li>
+          <b>Применимость.</b><br>
+          <i>Компилятор:</i> подходит для <b>производительно-критичных приложений</b> — игры, ОС, системное ПО, HFT.<br>
+          <i>Интерпретатор:</i> подходит для <b>скриптинга, веб-разработки, прототипирования, обучения</b>, где важна скорость итераций.
+        </li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">8 баллов = 4 критерия × 2 балла (по 1 баллу за каждый подход в критерии).</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Объясни, как JIT-компиляция сочетает преимущества компиляторов и интерпретаторов. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>JIT принимает на вход <b>не исходник, а байткод</b> — промежуточное платформо-независимое представление, скомпилированное заранее (например, <code>.class</code> у Java).</li>
+        <li>Сначала виртуальная машина <b>интерпретирует</b> байткод — это даёт <b>быстрый старт</b>, как у обычного интерпретатора.</li>
+        <li>VM <b>отслеживает «горячие» участки кода</b> (методы и циклы, которые вызываются много раз).</li>
+        <li>Когда счётчик превышает порог, JIT <b>компилирует эти участки в нативный машинный код</b> и кладёт в кэш.</li>
+        <li>Следующие вызовы того же кода идут уже через кэш — почти со скоростью полностью скомпилированной программы.</li>
+        <li>Бонус: JIT может <b>оптимизировать адаптивно</b> — видит реальные типы и шаблоны выполнения, чего статический компилятор сделать не может.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">6 баллов: каждый чёткий пункт ≈ 1 балл. Обязательно упомянуть «горячие участки» и кэш — это ключевая идея JIT.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 6. Различи скомпилированные программы на C++ и интерпретируемые на Python с точки зрения портируемости. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по контрасту):</b></p>
+      <ul>
+        <li><b>C++:</b> компилятор создаёт <b>бинарный файл, привязанный к конкретной ОС и архитектуре CPU</b>. Бинарь под Windows x86-64 не запустится на Linux ARM — нужна <b>отдельная компиляция</b> под каждую целевую платформу.</li>
+        <li><b>Python:</b> исходный код — обычный <b>текст</b>. Он работает на любой ОС, где установлен <b>Python-интерпретатор</b>. Разработчику не нужно собирать отдельные версии для Windows, macOS и Linux.</li>
+        <li>Следствие: <b>C++ — низкая портируемость, высокая скорость</b>. <b>Python — высокая портируемость, более низкая скорость</b>.</li>
+        <li>Дополнительно: чтобы запустить C++ программу, конечному пользователю достаточно бинаря; чтобы запустить Python — нужен установленный интерпретатор (или упаковка через PyInstaller).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7. Назови и кратко опиши пять этапов компиляции. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 1 баллу за этап с коротким описанием):</b></p>
+      <ul>
+        <li><b>Лексический анализ:</b> исходный код разбивается на <b>токены</b> (ключевые слова, операторы, литералы).</li>
+        <li><b>Синтаксический анализ:</b> токены проверяются на соответствие <b>грамматике</b>; строится <b>AST</b> (абстрактное синтаксическое дерево).</li>
+        <li><b>Семантический анализ:</b> проверяется <b>смысл</b> — типы, объявления переменных, существование функций.</li>
+        <li><b>Оптимизация:</b> код упрощается и ускоряется без изменения поведения (свёртка констант, удаление мёртвого кода).</li>
+        <li><b>Генерация кода:</b> AST превращается в <b>машинный код</b> (или байткод) для целевой платформы.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 8. Объясни, почему интерпретатор может «не заметить» ошибку в редко вызываемой части программы, а компилятор — заметит. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Компилятор обрабатывает весь исходник целиком</b> до запуска. Он проходит лексику, синтаксис и семантику по каждой строке — в том числе по тем, что лежат в редко используемых ветках. Поэтому опечатка типа <code>def calcualte():</code> вместо <code>calculate</code> будет найдена сразу при сборке.</li>
+        <li><b>Интерпретатор обрабатывает только те строки, которые реально исполняются</b>. Если ветка <code>if rare_condition:</code> не выполнилась во время теста — её содержимое никогда не было проанализировано.</li>
+        <li>Следствие: <b>в Python ошибки могут «дожить» до продакшена</b>, если код не покрыт тестами. В C++ или Rust — нет, программа просто не соберётся.</li>
+        <li>Поэтому в интерпретируемых языках критично иметь <b>полное покрытие тестами</b> и/или использовать <b>линтеры</b> (например, <code>mypy</code>, <code>pylint</code>, <code>flake8</code>), которые статически анализируют код без запуска.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 9. Какой подход к трансляции ты бы выбрал для (a) операционной системы и (b) образовательного скрипта для школьников? Обоснуй. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>
+          <b>(a) Операционная система — компилятор (C или Rust).</b>
+          <ul>
+            <li>ОС работает в самом низком слое и должна быть <b>максимально быстрой</b> — каждый системный вызов критичен.</li>
+            <li>Нужен <b>прямой доступ к памяти</b> и регистрам CPU — это есть только в скомпилированных языках низкого уровня.</li>
+            <li>На стадии загрузки ОС нет «другого интерпретатора», который мог бы её исполнить — нужен нативный машинный код.</li>
+          </ul>
+        </li>
+        <li>
+          <b>(b) Образовательный скрипт — интерпретатор (Python).</b>
+          <ul>
+            <li>Школьник может <b>сразу видеть результат</b> — нет шага компиляции, что снижает порог входа.</li>
+            <li>Синтаксис Python <b>близок к псевдокоду</b>, что облегчает обучение.</li>
+            <li>Один и тот же файл <b>работает на Windows, macOS, Linux</b> — учителю не нужно собирать разные версии для разных школьных компьютеров.</li>
+            <li>Скорость выполнения не важна — учебный скрипт обычно небольшой.</li>
+          </ul>
+        </li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">3 балла за (a), 3 балла за (b). Главное — обосновать каждый выбор минимум двумя аргументами.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 10. Объясни роль линкера и загрузчика в превращении исходного кода в работающую программу. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Линкер (linker)</b> берёт <b>объектные файлы</b> (результат компиляции каждого исходника отдельно) и <b>склеивает их в единый исполняемый файл</b>; разрешает ссылки между файлами (если в одном вызывается функция из другого).</li>
+        <li>Линкер также <b>подключает библиотеки</b> — статически (вшивает код внутрь .exe) или динамически (оставляет ссылку на .dll/.so).</li>
+        <li><b>Загрузчик (loader)</b> — часть ОС: при запуске программы <b>читает .exe с диска, размещает в памяти, настраивает регистры, передаёт управление на entry point</b>.</li>
+        <li>Без линкера у тебя только разрозненные .o-файлы; без загрузчика готовый .exe не будет исполняться — это два разных, но необходимых шага между «скомпилировано» и «работает».</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 11: TASK ============ -->
+  <h2>11. Практическое задание</h2>
+
+  <div class="task-card">
+    <h3>🔬 Сравни три подхода на одной задаче</h3>
+    <p><b>Цель:</b> прочувствовать разницу между компилятором, интерпретатором и JIT на одной и той же программе.</p>
+
+    <div class="scenario">
+      <b>Сценарий:</b> возьми классическую программу «вычисли N-е число Фибоначчи рекурсивно» (намеренно медленный алгоритм). Запусти три версии: на C++, Python и Java. Замерь время для <code>N = 35</code>.
+    </div>
+
+    <p><b>Инструкции:</b></p>
+    <ol>
+      <li>Напиши одну и ту же рекурсивную функцию Фибоначчи на трёх языках: <b>C++</b>, <b>Python</b>, <b>Java</b>.</li>
+      <li><b>C++.</b> Скомпилируй командой <code>g++ -O2 fib.cpp -o fib</code>, запусти <code>time ./fib</code>. Запиши время.</li>
+      <li><b>Python.</b> Просто запусти <code>time python fib.py</code>. Запиши время.</li>
+      <li><b>Java.</b> Скомпилируй <code>javac Fib.java</code> (получишь <code>Fib.class</code> — байткод). Запусти <code>time java Fib</code>. Запиши время.</li>
+      <li>Сравни три числа. Обычно: C++ — десятые доли секунды, Java — секунды (но быстрее Python после прогрева JIT), Python — десятки секунд.</li>
+      <li>Объясни в одном абзаце, <b>почему</b> такая разница. Используй термины: <i>нативный машинный код</i>, <i>JIT</i>, <i>интерпретация байткода</i>, <i>динамическая типизация</i>.</li>
+    </ol>
+  </div>
+
+  <!-- ============ CLOSING ============ -->
+  <h2>Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><b>Трансляция</b> = превращение человеко-понятного кода в команды для CPU. Три основных подхода: <b>компилятор, интерпретатор, JIT</b>.</li>
+    <li><b>Компилятор</b> переводит весь код один раз → быстрое исполнение, ранние ошибки, низкая портируемость. Языки: <b>C, C++, Rust, Go</b>.</li>
+    <li><b>Интерпретатор</b> переводит строка за строкой во время выполнения → медленное исполнение, поздние ошибки, высокая портируемость. Языки: <b>Python, JavaScript, Ruby, PHP</b>.</li>
+    <li><b>JIT</b> = байткод + компиляция «на лету» горячих участков → гибрид. Языки: <b>Java, C#, JavaScript (V8), PyPy</b>.</li>
+    <li><b>Байткод</b> — платформо-независимое промежуточное представление, исполняется виртуальной машиной (JVM, CLR, Python VM, BEAM).</li>
+    <li><b>Пять этапов компиляции:</b> Лексика → Синтаксис → Семантика → Оптимизация → Генерация кода.</li>
+    <li><b>Парсер</b> строит AST из токенов и проверяет соответствие грамматике; <b>семантика</b> отвечает за смысл (типы, существование функций).</li>
+    <li><b>Линкер</b> склеивает объектные файлы и библиотеки в один .exe; <b>загрузчик</b> (часть ОС) запускает .exe в памяти.</li>
+    <li>На экзамене вопрос «<i>evaluate</i>» — это всегда <b>сильные и слабые стороны</b>. «<i>Distinguish</i>» — контраст по чётким критериям (время, ошибки, портируемость, применимость).</li>
+    <li><b>Машинный код</b> — это бинарные команды, привязанные к архитектуре CPU (x86, ARM, MIPS). <b>Ассемблер</b> — почти один-к-один с машинным кодом, но с читаемыми мнемониками (MOV, ADD, JMP).</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+    &nbsp; · &nbsp;
+    <a href="fundamentals.html#ci-sim" class="back-link">→ Симуляция Compiler vs Interpreter</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A1.4" class="back-link">К квизу A1.4 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A1.4 Трансляция (HL) · Источник: Oxford IB DP Computer Science 2025 · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

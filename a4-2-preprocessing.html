@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4.2 Предобработка данных (HL) · IB CS Theme A</title>
+<meta name="description" content="A4.2 Предобработка данных (HL only) — подробный разбор на русском: очистка данных, выбросы, нормализация и стандартизация, кодирование категорий, отбор и инженерия признаков, понижение размерности, разделение на train/test/validation, кросс-валидация, утечки данных.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 24px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table.data-table td:first-child { color: var(--text-muted); font-weight: 500; }
+  .summary-table.compare td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .data-mini {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.88rem;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+  }
+  .data-mini th, .data-mini td {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .data-mini th {
+    background: var(--surface-2);
+    font-weight: 600;
+    font-family: inherit;
+  }
+  .data-mini .bad { color: #dc2626; background: rgba(220,38,38,0.06); }
+  .data-mini .good { color: #059669; background: rgba(16,185,129,0.06); }
+  [data-theme="dark"] .data-mini .bad { color: #f87171; background: rgba(220,38,38,0.12); }
+  [data-theme="dark"] .data-mini .good { color: #34d399; background: rgba(16,185,129,0.12); }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji { font-size: 1.6rem; }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card ul, .device-card ol {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .formula-box {
+    background: var(--surface-2);
+    border-left: 4px solid var(--primary);
+    padding: 14px 18px;
+    margin: 12px 0;
+    border-radius: var(--radius-sm);
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 1.02rem;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .formula-box .label {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .hl-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border-radius: 99px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .real-world {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .real-world { background: rgba(16,185,129,0.10); }
+  .real-world h4 {
+    margin: 0 0 6px;
+    color: var(--green);
+    font-size: 1.05rem;
+  }
+  .real-world p { margin: 6px 0; line-height: 1.6; }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .danger-tip {
+    background: rgba(220,38,38,0.08);
+    border-left: 4px solid #dc2626;
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .danger-tip { background: rgba(220,38,38,0.14); }
+  .sim-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    margin: 6px 6px 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background 0.15s;
+  }
+  .sim-link:hover { background: var(--border); }
+  .sim-link .icon {
+    font-size: 1.1rem;
+    margin-right: 6px;
+  }
+  .split-vis {
+    display: flex;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .split-vis div {
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .split-train { background: #0ea5e9; }
+  .split-val { background: #f59e0b; }
+  .split-test { background: #8b5cf6; }
+  .hero-eyebrow {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+
+  <span class="hero-eyebrow" style="background:rgba(239,68,68,0.12); color:#b91c1c">
+    A4.2 · Data preprocessing
+  </span>
+  <span class="hl-badge" style="margin-left:8px">HL only</span>
+
+  <h1>Предобработка данных <span class="hl-badge" style="vertical-align:middle">HL</span></h1>
+
+  <p class="lede">
+    Эта тема (<b>A4.2</b>) — про то, что нужно сделать с данными <b>до того, как ты отдашь их модели машинного обучения</b>. Сырые данные почти всегда грязные: пропуски, дубликаты, выбросы, разные масштабы, текстовые категории, лишние столбцы. Главный принцип всего раздела: <b>«garbage in, garbage out»</b> — мусор на входе даёт мусор на выходе. Хорошие данные = хорошие предсказания.
+  </p>
+
+  <div class="ru-tip">
+    💡 <b>Покрытие по программе IB:</b> A4.2.1 — значимость очистки данных; A4.2.2 — роль отбора признаков (feature selection); A4.2.3 — важность понижения размерности. Все три подпункта — <b>HL only</b>. Эта страница покрывает их и связанные темы (нормализация, кодирование категорий, разделение выборок, кросс-валидация, утечки данных).
+  </div>
+
+  <p>
+    <a class="sim-link" href="ml.html#regression-sim"><span class="icon">📈</span>Симуляция: линейная регрессия (что модель учит из подготовленных данных)</a>
+    <a class="sim-link" href="ml.html#bias-sim"><span class="icon">⚖️</span>Симуляция: смещение в обучении (что бывает с плохими/смещёнными данными)</a>
+  </p>
+
+  <!-- ============ SECTION 0: WORKFLOW ============ -->
+  <h2>0. Где предобработка живёт в пайплайне ML <span class="hl-badge">HL</span></h2>
+
+  <p>
+    Полный рабочий процесс машинного обучения (ML workflow) — это цикл из 10 шагов. Предобработка стоит в начале, сразу после сбора данных, и без неё всё остальное не имеет смысла.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Шаг (англ.)</th>
+        <th>Что происходит</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Define the problem</td><td>Сформулировать задачу: что предсказываем, какая метрика успеха.</td></tr>
+      <tr><td>2</td><td>Gather data</td><td>Собрать сырые данные из баз, API, датчиков, логов.</td></tr>
+      <tr><td>3</td><td><b>Data preprocessing</b></td><td><b>Очистка, нормализация, кодирование — фокус этой темы.</b></td></tr>
+      <tr><td>4</td><td>Exploratory data analysis (EDA)</td><td>Графики, статистика, поиск аномалий.</td></tr>
+      <tr><td>5</td><td>Feature engineering and selection</td><td>Создать новые признаки и отобрать самые информативные.</td></tr>
+      <tr><td>6</td><td>Choose a model</td><td>Регрессия, дерево, нейросеть и т.д.</td></tr>
+      <tr><td>7</td><td>Split the data</td><td>Разделить на train / validation / test.</td></tr>
+      <tr><td>8</td><td>Train the model</td><td>Обучение на train-выборке.</td></tr>
+      <tr><td>9</td><td>Model evaluation + Parameter tuning</td><td>Замер качества на validation, настройка гиперпараметров.</td></tr>
+      <tr><td>10</td><td>Deployment + Monitor and maintain</td><td>Запуск в продакшен, мониторинг качества во времени.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ SECTION 1: WHY IT MATTERS ============ -->
+  <h2>1. 🗑️ Почему предобработка критична: garbage in, garbage out <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚠️</span> A4.2.1 — Значимость очистки данных</h3>
+    <p>
+      <b>Очистка данных (data cleaning)</b> стандартизирует данные так, чтобы они были согласованными, без ошибок, точными и соответствующими нормативным и юридическим требованиям. Когда данные впервые попадают в ML-пайплайн, они обычно <b>неупорядоченные и полны ошибок</b>. Термин <b>«шум» (noise / noisy data)</b> означает данные с лишней или неточной информацией.
+    </p>
+    <p>
+      Качество данных напрямую влияет на <b>точность, надёжность и устойчивость</b> предсказательных моделей. Главный принцип:
+    </p>
+    <div class="formula-box" style="text-align:center; font-size:1.2rem">
+      good data = good predictions
+    </div>
+    <p>
+      Модель, обученная на качественных данных, лучше <b>обобщается (generalizes)</b> на новые, невиданные ранее наблюдения. А вот шумные, неполные или нерепрезентативные данные приводят к <b>переобучению (overfitting)</b>: модель запоминает шум и аномалии тренировочного набора и плохо работает на новых данных. И последнее, но важное: репрезентативные и непредвзятые данные не дают моделям <b>усиливать существующие смещения</b>.
+    </p>
+  </div>
+
+  <div class="real-world">
+    <h4>🏠 Реальный пример: предсказание цен на жильё</h4>
+    <p>
+      Допустим, ты обучаешь модель предсказывать цену дома. В сырых данных у тебя: 5% домов без указанной площади, 12 дубликатов одного объекта, цена одного дома записана как «−500 000» (опечатка), даты постройки в трёх разных форматах. Если отдать это «как есть» — модель выучит ерунду: например, что «дома без площади стоят 0», или что «отрицательная цена — это нормально».
+    </p>
+  </div>
+
+  <div class="real-world">
+    <h4>📧 Реальный пример: классификация спама</h4>
+    <p>
+      Спам-фильтру скармливают письма. Если 30% писем в тренировочном наборе — дубликаты одного и того же спам-рассылочного письма, модель «привыкнет» считать спамом только этот шаблон и пропустит другие виды спама. Очистка от дубликатов — обязательна.
+    </p>
+  </div>
+
+  <h3>Worked Example 1 (из учебника, AHL)</h3>
+  <div class="device-card">
+    <p>
+      <b>Сценарий:</b> Компания разрабатывает ML-модель для отбора резюме на работу. Тренировочный набор — резюме за последние 10 лет, в основном от мужчин (исторический гендерный дисбаланс компании).
+    </p>
+    <p><b>1. Как поведёт себя модель?</b><br>
+      Модель будет <b>смещена в пользу мужчин-кандидатов</b>, даже когда женщина-кандидат подходит намного лучше.</p>
+    <p><b>2. Как улучшить?</b><br>
+      Расширить набор, добавив больше резюме от женщин (балансировка классов), или изменить веса разных критериев. Это часть предобработки — обеспечение <b>разнообразия и репрезентативности</b> данных.</p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши роль предобработки данных в ML-пайплайне. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Предобработка — это шаг между сбором сырых данных и обучением модели; она <b>повышает качество данных</b>, делая их пригодными для построения модели <b>(1 балл).</b></li>
+        <li>Цель — <b>улучшить точность и производительность алгоритмов</b> ML за счёт устранения ошибок, пропусков, шума, дубликатов и приведения данных к единому формату <b>(1 балл).</b></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Опиши значимость очистки данных и влияние плохих данных на качество модели. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 3 пункта):</b></p>
+      <ul>
+        <li>Очистка стандартизирует данные — делает их согласованными, без ошибок, в одном формате.</li>
+        <li>Качественные данные = точные и надёжные предсказания; плохие = модель учится на ошибках.</li>
+        <li>Шумные/неполные данные приводят к <b>переобучению</b>: модель запоминает шум и плохо обобщается на новые данные.</li>
+        <li>Нерепрезентативные или предвзятые данные приводят к <b>смещению модели</b> — например, дискриминация определённых групп пользователей.</li>
+        <li>Принцип «garbage in, garbage out» — что засунули, то и получили.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 2: CLEANING ============ -->
+  <h2>2. 🧹 Очистка данных: пропуски, дубликаты, форматы <span class="hl-badge">HL</span></h2>
+
+  <h3>2.1 Пример очистки (прямо из учебника)</h3>
+
+  <p><b>До очистки</b> (Figure 9 из источника):</p>
+  <table class="data-mini">
+    <thead><tr><th>Customer ID</th><th>Age</th><th>Email</th><th>Income</th><th>Last Purchase Date</th></tr></thead>
+    <tbody>
+      <tr><td>001</td><td>35</td><td>john.doe@domain.com</td><td>54000</td><td>01-02-2020</td></tr>
+      <tr><td>002</td><td class="bad">−25</td><td>jane_smith@domain.com</td><td>58000</td><td class="bad">(пусто)</td></tr>
+      <tr><td>003</td><td>45</td><td class="bad">n/a</td><td>62000</td><td>12/15/2019</td></tr>
+      <tr><td>004</td><td class="bad">thirty</td><td class="bad">annetom@domaincom</td><td class="bad">−5000</td><td>20-10-2019</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>Что не так:</b></p>
+  <ul>
+    <li>Недопустимый возраст (отрицательное число).</li>
+    <li>Пропущенная информация о e-mail («n/a») и недопустимый формат e-mail.</li>
+    <li>Несогласованные форматы даты в столбце Last Purchase Date.</li>
+    <li>Пропущенная дата у клиента 002.</li>
+    <li>Отрицательный доход — неправдоподобно.</li>
+    <li>Несогласованная запись возраста («thirty» — текст вместо числа).</li>
+  </ul>
+
+  <p><b>После очистки</b> (Figure 10 из источника):</p>
+  <table class="data-mini">
+    <thead><tr><th>Customer ID</th><th>Age</th><th>Email</th><th>Income</th><th>Last Purchase Date</th></tr></thead>
+    <tbody>
+      <tr><td>001</td><td>35</td><td>john.doe@domain.com</td><td>54000</td><td class="good">2020-01-02</td></tr>
+      <tr><td>002</td><td class="good">25</td><td>jane_smith@domain.com</td><td>58000</td><td class="good">Data Not Available</td></tr>
+      <tr><td>003</td><td>45</td><td class="good">Data Not Available</td><td>62000</td><td class="good">2019-12-15</td></tr>
+      <tr><td>004</td><td class="good">30</td><td class="good">annetom@domain.com</td><td class="good">50000</td><td class="good">2019-10-20</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>Какие действия по очистке выполнены:</b></p>
+  <ul>
+    <li>Отрицательный возраст исправлен с −25 на 25 (предполагается опечатка).</li>
+    <li>«n/a» заменено на «Data Not Available» для более ясной индикации отсутствия данных.</li>
+    <li>Формат даты стандартизирован к YYYY-MM-DD.</li>
+    <li>Пропущенная дата заменена текстовой заглушкой.</li>
+    <li>Синтаксис e-mail исправлен, удалены недопустимые символы.</li>
+    <li>Отрицательный доход нормализован — переведён в положительное значение.</li>
+    <li>Текстовое числовое значение («thirty») переведено в число (30).</li>
+  </ul>
+
+  <h3>2.2 Обработка пропущенных значений (missing data)</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">❓</span> Три стратегии (из учебника)</h3>
+    <ol>
+      <li><b>Imputation (заполнение):</b>
+        <ul>
+          <li>Заменить пропуск на <b>mean (среднее), median (медиана) или mode (мода)</b> столбца.</li>
+          <li>Использовать алгоритм <b>K-NN (K-Nearest Neighbours)</b>, чтобы заполнить пропуски на основе схожести с другими записями в пространстве признаков (parameter / feature space).</li>
+        </ul>
+      </li>
+      <li><b>Deletion (удаление):</b>
+        <ul>
+          <li><b>Listwise deletion</b> — удалить всю строку, если в ней есть хоть один пропуск.</li>
+          <li><b>Pairwise deletion</b> — использовать доступные данные, игнорируя только конкретные пропуски, а не строку целиком.</li>
+        </ul>
+      </li>
+      <li><b>Predictive modelling (предсказание):</b>
+        <ul>
+          <li>Использовать <b>регрессию</b> для предсказания пропущенных значений на основе других данных в наборе.</li>
+          <li>Использовать <b>деревья решений</b> или <b>нейросети</b> для предсказания пропущенных значений.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Тип данных</th><th>Чем заполнять</th><th>Почему</th></tr></thead>
+    <tbody>
+      <tr><td>Числовое, симметричное</td><td>Mean (среднее)</td><td>Хорошее «среднее представление».</td></tr>
+      <tr><td>Числовое, со скосом / выбросами</td><td>Median (медиана)</td><td>Медиана устойчива к выбросам.</td></tr>
+      <tr><td>Категориальное</td><td>Mode (наиболее частая категория)</td><td>Среднего у категорий нет.</td></tr>
+      <tr><td>Когда много пропусков (>50%)</td><td>Удалить весь столбец</td><td>Признак вряд ли информативен.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.3 Дубликаты, ошибки, форматы, нерелевантные данные</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Проблема</th><th>Что делать (из учебника)</th></tr></thead>
+    <tbody>
+      <tr><td>Duplicates</td><td>SQL/скриптом найти и удалить по ключу или комбинации полей. Если дубликаты «почти», но не точные — объединить (consolidate) усреднением чисел или взятием самой частой категории. Маленькие наборы — ручной просмотр.</td></tr>
+      <tr><td>Incorrect data</td><td>Правила валидации (диапазоны, форматы), кросс-проверка с внешними источниками, ML-методы для обнаружения аномалий.</td></tr>
+      <tr><td>Improperly formatted</td><td>Парсинг (даты к YYYY-MM-DD, имя на first/last), регулярные выражения, единый формат валюты.</td></tr>
+      <tr><td>Irrelevant data</td><td>Feature selection (корреляции, backward elimination, важность из random forest), консультации с экспертами предметной области.</td></tr>
+    </tbody>
+  </table>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Опиши три техники, используемые при очистке данных. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 3 техники × 1 балл):</b></p>
+      <ul>
+        <li><b>Imputation</b> — заполнение пропусков средним / медианой / модой столбца или с помощью K-NN.</li>
+        <li><b>Deletion</b> — удаление строк с пропусками (listwise) или игнорирование конкретных пропусков (pairwise).</li>
+        <li><b>Removing duplicates</b> — поиск и удаление повторяющихся записей запросами в БД или скриптами.</li>
+        <li><b>Reformatting</b> — приведение дат, валюты, имён к единому стандартизированному формату.</li>
+        <li><b>Outlier handling</b> — trim, cap или transform (log / sqrt) экстремальных значений.</li>
+        <li><b>Validation rules</b> — правила на диапазоны и форматы для выявления неправильных значений.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Объясни разницу между listwise deletion и pairwise deletion и в каких случаях каждый предпочтителен. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Listwise</b> удаляет всю строку, если в ней есть хоть один пропуск — простой, но теряет много данных, если пропусков много.</li>
+        <li><b>Pairwise</b> использует все доступные значения для каждого расчёта, игнорируя только конкретные пропуски — сохраняет больше данных.</li>
+        <li>Listwise хорош, когда пропусков мало (<5%) и данных много.</li>
+        <li>Pairwise хорош, когда удалять строки целиком — слишком дорого; но может давать несогласованные статистики между разными парами признаков.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 3: OUTLIERS ============ -->
+  <h2>3. 📊 Выбросы (outliers): обнаружение и обработка <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎯</span> Что такое выброс</h3>
+    <p>
+      <b>Выброс (outlier)</b> — это наблюдение в наборе данных, которое <b>сильно удалено от остальных</b>. Статистически выбросы выявляют через:
+    </p>
+    <ul>
+      <li><b>IQR (interquartile range) — межквартильный размах.</b> IQR = Q3 − Q1. Точка считается выбросом, если она ниже Q1 − 1.5·IQR или выше Q3 + 1.5·IQR.</li>
+      <li><b>Z-score.</b> z = (x − μ) / σ. Обычно |z| > 3 — выброс.</li>
+      <li><b>Визуальные инструменты:</b> box plots (диаграммы размаха), scatter plots.</li>
+    </ul>
+  </div>
+
+  <h3>3.1 Формулы</h3>
+
+  <div class="formula-box">
+    <span class="label">IQR-метод</span>
+    IQR = Q3 − Q1<br>
+    Нижняя граница = Q1 − 1.5 × IQR<br>
+    Верхняя граница = Q3 + 1.5 × IQR<br>
+    Если x &lt; нижней или x &gt; верхней → выброс
+  </div>
+
+  <div class="formula-box">
+    <span class="label">Z-score</span>
+    z = (x − μ) / σ<br>
+    где μ — среднее, σ — стандартное отклонение.<br>
+    Если |z| &gt; 3 → выброс
+  </div>
+
+  <h3>3.2 Что делать с выбросом (из учебника)</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Стратегия</th><th>Что делать</th></tr></thead>
+    <tbody>
+      <tr><td><b>Trim</b> (отсечение)</td><td>Удалить выбросы полностью из набора данных.</td></tr>
+      <tr><td><b>Cap</b> (ограничение)</td><td>Заменить выброс на ближайшее значение в допустимом диапазоне (winsorization).</td></tr>
+      <tr><td><b>Transform</b> (преобразование)</td><td>Применить log или √ — снижает влияние экстремальных значений.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.3 Worked example: выбросы в зарплатах</h3>
+
+  <div class="device-card">
+    <p>Зарплаты сотрудников (USD/год): <code>30 000, 32 000, 31 000, 35 000, 33 000, 34 000, 500 000</code>.</p>
+    <p>Без обработки среднее = <b>$99 286</b> — но 6 из 7 людей зарабатывают меньше. Это «среднее» совершенно не отражает реальность.</p>
+    <p><b>Что делать:</b></p>
+    <ul>
+      <li><b>Trim</b> 500 000 → среднее = $32 500 (адекватно).</li>
+      <li><b>Cap</b> 500 000 до 95-го перцентиля (например, $40 000).</li>
+      <li><b>Log-transform</b> весь столбец → log-зарплата подчиняется более «нормальному» распределению, гигант становится не таким экстремальным.</li>
+      <li>Использовать <b>медиану</b> ($33 000) вместо среднего как меру центра.</li>
+    </ul>
+  </div>
+
+  <div class="ru-tip">
+    💡 <b>Важно:</b> не всегда нужно «убивать» выбросы. Иногда выброс — это самая важная информация (мошенничество, поломка датчика, болезнь). Решение «удалять или оставить» — всегда зависит от контекста задачи.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Объясни, что такое выброс, как его можно обнаружить и какие три стратегии обработки существуют. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Выброс</b> — наблюдение, сильно удалённое от остальных в наборе данных <b>(1 балл).</b></li>
+        <li><b>Обнаружение:</b> IQR-метод (вне Q1 − 1.5·IQR … Q3 + 1.5·IQR), Z-score (|z| > 3), визуально через box plots <b>(1 балл).</b></li>
+        <li><b>Trim</b> — полное удаление; <b>Cap</b> — замена на ближайшее допустимое значение; <b>Transform</b> — применение log / sqrt для сжатия диапазона <b>(2 балла за описание 2-3 стратегий).</b></li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: NORMALIZATION vs STANDARDIZATION ============ -->
+  <h2>4. 📏 Нормализация vs Стандартизация <span class="hl-badge">HL</span></h2>
+
+  <p>
+    <b>Нормализация (normalization)</b> и <b>стандартизация (standardization)</b> — две техники предобработки, которые подгоняют <b>масштаб и распределение</b> переменных в наборе данных, прежде чем применить ML-алгоритмы. Обе делают данные более подходящими для моделирования, но <b>по-разному</b>.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📐</span> Нормализация (Normalization, Min-Max Scaling)</h3>
+    <p>
+      Также называется <b>min-max scaling</b>. Перешкалирует признаки в фиксированный диапазон, обычно <b>[0, 1]</b> или <b>[−1, 1]</b>.
+    </p>
+    <div class="formula-box">
+      <span class="label">Формула min-max</span>
+      x' = (x − min(X)) / (max(X) − min(X))
+    </div>
+    <p>
+      <b>Когда полезна:</b> для алгоритмов, чувствительных к масштабу входных данных, например <b>градиентного спуска</b>. Помогает ускорить сходимость. Гарантирует, что все признаки одинаково влияют на результат и модель не «переоценивает» признак с большим масштабом просто потому, что числа крупнее.
+    </p>
+    <p>
+      <b>Минус:</b> сильно чувствительна к выбросам — один экстремум сжимает все остальные данные в крошечный интервал.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📊</span> Стандартизация (Standardization, Z-score)</h3>
+    <p>
+      Также называется <b>Z-score normalization</b>. Перешкалирует признаки так, чтобы у них были свойства <b>стандартного нормального распределения</b>: среднее = 0, стандартное отклонение = 1.
+    </p>
+    <div class="formula-box">
+      <span class="label">Формула Z-score</span>
+      x' = (x − μ) / σ<br>
+      где μ — среднее по столбцу, σ — стандартное отклонение
+    </div>
+    <p>
+      <b>Когда полезна:</b> для данных с неизвестными min/max, для данных с выбросами (стандартизация искажает данные меньше, чем min-max), для техник, которые предполагают нормально распределённые данные (например, <b>логистическая регрессия</b>).
+    </p>
+    <p>
+      <b>Плюс:</b> сохраняет полезную информацию о выбросах и делает алгоритм менее к ним чувствительным.
+    </p>
+  </div>
+
+  <h3>4.1 Ключевые различия (из учебника)</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Свойство</th><th>Нормализация (min-max)</th><th>Стандартизация (Z-score)</th></tr></thead>
+    <tbody>
+      <tr><td>Диапазон</td><td>[0, 1] или [−1, 1] — жёстко ограничен</td><td>Без ограничения, но mean = 0, std = 1</td></tr>
+      <tr><td>Формула</td><td>(x − min) / (max − min)</td><td>(x − μ) / σ</td></tr>
+      <tr><td>Чувствительность к выбросам</td><td><b>Высокая</b> — выброс сжимает остальные данные в крошечный интервал</td><td><b>Низкая</b> — основана на mean/std, выбросы влияют меньше</td></tr>
+      <tr><td>Когда выбрать</td><td>Известны min/max, нет сильных выбросов, нужен фиксированный диапазон (например, изображения 0-255)</td><td>Неизвестны min/max, есть выбросы, или модель предполагает нормальное распределение</td></tr>
+      <tr><td>Типичные модели</td><td>Нейросети с sigmoid/tanh, K-NN, K-Means</td><td>Логистическая регрессия, SVM с линейным ядром, PCA</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 Числовой пример</h3>
+
+  <div class="device-card">
+    <p>Возраст клиентов: <code>20, 25, 30, 35, 80</code> (80 — пожилой клиент, потенциальный выброс).</p>
+
+    <p><b>Min-Max → [0, 1]:</b><br>
+      min = 20, max = 80, диапазон = 60<br>
+      20 → (20−20)/60 = <b>0.00</b><br>
+      25 → 5/60 = <b>0.083</b><br>
+      30 → 10/60 = <b>0.167</b><br>
+      35 → 15/60 = <b>0.250</b><br>
+      80 → 60/60 = <b>1.000</b><br>
+      Замечаешь? Все «обычные» значения зажаты в первой четверти, а 80 один на верхней границе.
+    </p>
+
+    <p><b>Z-score:</b><br>
+      μ = (20+25+30+35+80)/5 = 38<br>
+      σ ≈ 21.4<br>
+      20 → (20−38)/21.4 ≈ <b>−0.84</b><br>
+      25 → <b>−0.61</b><br>
+      30 → <b>−0.37</b><br>
+      35 → <b>−0.14</b><br>
+      80 → <b>+1.96</b><br>
+      Распределение более равномерное, выброс выделяется, но не «душит» остальные данные.
+    </p>
+  </div>
+
+  <div class="real-world">
+    <h4>🔊 Реальный пример: нормализация громкости звука</h4>
+    <p>
+      Из учебника (Figure 12): громкость аудио нормализуют так, чтобы пиковый звук не был «слишком громким», а тихий — «не слишком тихим». Сигнал перешкалируется в фиксированный диапазон, и алгоритмы распознавания речи работают стабильнее.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 6. (a) Определи понятия нормализация и стандартизация. (b) Объясни, почему они важны в предобработке данных. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Определения (2 балла):</b></p>
+      <ul>
+        <li><b>Нормализация (min-max scaling)</b> — перешкалирование признаков в фиксированный диапазон, обычно [0, 1] или [−1, 1], по формуле (x − min) / (max − min).</li>
+        <li><b>Стандартизация (Z-score)</b> — преобразование так, что mean = 0, std = 1, по формуле (x − μ) / σ.</li>
+      </ul>
+      <p><b>(b) Зачем (2 балла):</b></p>
+      <ul>
+        <li>Они приводят признаки к <b>сопоставимому масштабу</b> — иначе признак с большими числами доминирует над остальными.</li>
+        <li>Они ускоряют <b>сходимость градиентного спуска</b> и улучшают качество моделей, чувствительных к масштабу (K-NN, нейросети, SVM).</li>
+        <li>Стандартизация — менее чувствительна к выбросам и подходит, если данные ~ нормально распределены.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7. Когда лучше использовать стандартизацию, а когда нормализацию? Приведи примеры. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Нормализация</b> — когда известны разумные min и max (например, пиксели изображений 0-255), когда нужен ограниченный диапазон, для алгоритмов с sigmoid/tanh.</li>
+        <li><b>Стандартизация</b> — когда min/max неизвестны или ненадёжны, когда есть выбросы, для логистической регрессии, SVM, PCA.</li>
+        <li><b>Пример нормализации:</b> данные о росте и весе клиентов для K-NN.</li>
+        <li><b>Пример стандартизации:</b> данные о финансовых транзакциях с потенциальными выбросами для модели обнаружения мошенничества.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 5: CATEGORICAL ENCODING ============ -->
+  <h2>5. 🔤 Кодирование категориальных признаков <span class="hl-badge">HL</span></h2>
+
+  <p>
+    Большинство ML-алгоритмов работают только с числами. Если у тебя есть столбец <code>цвет = {"красный", "зелёный", "синий"}</code> — его нужно <b>перекодировать в числа</b>. Есть три основных подхода.
+  </p>
+
+  <h3>5.1 One-hot encoding (унитарное кодирование)</h3>
+
+  <div class="device-card">
+    <p>
+      Создаёт <b>отдельный двоичный столбец</b> для каждой возможной категории. В строке стоит 1 в столбце соответствующей категории и 0 во всех остальных.
+    </p>
+    <p><b>Когда использовать:</b> для номинальных категорий <b>без порядка</b> (цвет, страна, тип товара).</p>
+
+    <p><b>До:</b></p>
+    <table class="data-mini">
+      <thead><tr><th>ID</th><th>Цвет</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>красный</td></tr>
+        <tr><td>2</td><td>зелёный</td></tr>
+        <tr><td>3</td><td>синий</td></tr>
+        <tr><td>4</td><td>красный</td></tr>
+      </tbody>
+    </table>
+
+    <p><b>После one-hot:</b></p>
+    <table class="data-mini">
+      <thead><tr><th>ID</th><th>red</th><th>green</th><th>blue</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="good">1</td><td>0</td><td>0</td></tr>
+        <tr><td>2</td><td>0</td><td class="good">1</td><td>0</td></tr>
+        <tr><td>3</td><td>0</td><td>0</td><td class="good">1</td></tr>
+        <tr><td>4</td><td class="good">1</td><td>0</td><td>0</td></tr>
+      </tbody>
+    </table>
+
+    <p><b>Плюсы:</b> модель не «изобретает» ложный порядок между категориями. <br>
+    <b>Минусы:</b> если категорий тысячи (например, почтовые индексы), таблица взрывается — <b>проклятие размерности</b>.</p>
+  </div>
+
+  <h3>5.2 Label encoding (метки числами)</h3>
+
+  <div class="device-card">
+    <p>
+      Каждой категории присваивается уникальное число: красный = 0, зелёный = 1, синий = 2.
+    </p>
+    <table class="data-mini">
+      <thead><tr><th>ID</th><th>Цвет</th><th>Label</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>красный</td><td>0</td></tr>
+        <tr><td>2</td><td>зелёный</td><td>1</td></tr>
+        <tr><td>3</td><td>синий</td><td>2</td></tr>
+      </tbody>
+    </table>
+    <p>
+      <b>Когда использовать:</b> для tree-based моделей (Random Forest, XGBoost), которым порядок безразличен. Для целевой переменной в задачах классификации.
+    </p>
+    <p>
+      <b>Опасность:</b> для линейной регрессии или K-NN модель «подумает», что синий (2) в два раза «больше» зелёного (1) — а это бессмыслица.
+    </p>
+  </div>
+
+  <h3>5.3 Ordinal encoding (порядковое кодирование)</h3>
+
+  <div class="device-card">
+    <p>
+      Числа присваиваются с учётом <b>естественного порядка</b> категорий.
+    </p>
+    <p><b>Пример:</b> размер одежды.</p>
+    <table class="data-mini">
+      <thead><tr><th>Размер</th><th>Ordinal</th></tr></thead>
+      <tbody>
+        <tr><td>XS</td><td>1</td></tr>
+        <tr><td>S</td><td>2</td></tr>
+        <tr><td>M</td><td>3</td></tr>
+        <tr><td>L</td><td>4</td></tr>
+        <tr><td>XL</td><td>5</td></tr>
+      </tbody>
+    </table>
+    <p>
+      <b>Когда использовать:</b> когда категории действительно упорядочены (оценки A/B/C/D/F, уровни образования, степени серьёзности).
+    </p>
+  </div>
+
+  <h3>5.4 Сводка: что выбрать</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Метод</th><th>Когда</th><th>Пример</th></tr></thead>
+    <tbody>
+      <tr><td>One-hot</td><td>Номинальные, без порядка, мало категорий (<50)</td><td>Цвет, страна, тип товара</td></tr>
+      <tr><td>Label</td><td>Tree-based модели или целевая переменная</td><td>Класс ириса (Setosa/Versicolor/Virginica) для Random Forest</td></tr>
+      <tr><td>Ordinal</td><td>Есть естественный порядок</td><td>Размер одежды, уровень образования, оценка</td></tr>
+    </tbody>
+  </table>
+
+  <details class="question-card">
+    <summary>Вопрос 8. Объясни разницу между one-hot encoding и label encoding. Когда какой метод предпочтителен? <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Label encoding</b>: одна категория → одно число (красный=0, зелёный=1, синий=2). Создаёт <b>искусственный порядок</b> между категориями.</li>
+        <li><b>One-hot encoding</b>: каждая категория → отдельный двоичный столбец. Порядок не подразумевается.</li>
+        <li><b>One-hot</b> предпочтителен для номинальных категорий без порядка (цвет, страна) — иначе линейная регрессия «подумает», что синий > зелёного.</li>
+        <li><b>Label</b> предпочтителен для tree-based моделей (Random Forest, XGBoost) — им порядок безразличен; и для целевой переменной в классификации.</li>
+        <li>Минус one-hot — если категорий тысячи, размерность взрывается.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 6: FEATURE ENGINEERING ============ -->
+  <h2>6. 🛠️ Инженерия признаков (feature engineering) <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <p>
+      <b>Feature engineering</b> — создание новых признаков из существующих, чтобы помочь модели лучше учить закономерности. Часто это самый важный «человеческий» шаг во всём пайплайне: хороший признак может сделать слабую модель сильной.
+    </p>
+    <p><b>Типичные приёмы:</b></p>
+    <ul>
+      <li><b>Извлечение из даты:</b> из <code>2024-03-15</code> получить <code>day_of_week=Friday</code>, <code>month=March</code>, <code>is_weekend=0</code>, <code>quarter=Q1</code>. Помогает моделям ловить недельные/сезонные паттерны.</li>
+      <li><b>Полиномиальные признаки:</b> для нелинейных эффектов — добавить x², x³, x·y.</li>
+      <li><b>Логарифмы и корни:</b> log(income) часто работает лучше, чем сам income — сжимает большие значения.</li>
+      <li><b>Биннинг (binning):</b> возраст превратить в группы — child / teen / adult / senior.</li>
+      <li><b>Комбинирование столбцов:</b> price + bedrooms → price_per_bedroom; height + weight → BMI.</li>
+      <li><b>Текст → числа:</b> bag-of-words, TF-IDF, word embeddings.</li>
+    </ul>
+  </div>
+
+  <h3>Worked example: дата → полезные признаки</h3>
+
+  <div class="device-card">
+    <p><b>До:</b></p>
+    <table class="data-mini">
+      <thead><tr><th>Order ID</th><th>Date</th><th>Amount</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2024-03-15</td><td>120</td></tr>
+        <tr><td>2</td><td>2024-12-25</td><td>450</td></tr>
+        <tr><td>3</td><td>2024-07-04</td><td>89</td></tr>
+      </tbody>
+    </table>
+    <p><b>После инженерии:</b></p>
+    <table class="data-mini">
+      <thead><tr><th>ID</th><th>Year</th><th>Month</th><th>DayOfWeek</th><th>IsWeekend</th><th>IsHoliday</th><th>Amount</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2024</td><td>3</td><td>5 (Fri)</td><td>0</td><td>0</td><td>120</td></tr>
+        <tr><td>2</td><td>2024</td><td>12</td><td>3 (Wed)</td><td>0</td><td class="good">1</td><td>450</td></tr>
+        <tr><td>3</td><td>2024</td><td>7</td><td>4 (Thu)</td><td>0</td><td class="good">1</td><td>89</td></tr>
+      </tbody>
+    </table>
+    <p>Теперь модель видит, что 25 декабря — праздник, и может выучить «в праздники чек выше».</p>
+  </div>
+
+  <!-- ============ SECTION 7: FEATURE SELECTION ============ -->
+  <h2>7. 🎯 Отбор признаков (feature selection) <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔍</span> A4.2.2 — Роль отбора признаков</h3>
+    <p>
+      <b>Feature selection</b> — процесс в ML, используемый для идентификации и сохранения <b>самых информативных атрибутов</b> набора данных, удаляя те, которые избыточны или нерелевантны. <b>Польза:</b> повышенная точность модели, меньше переобучения, быстрее обучение, лучше интерпретируемость.
+    </p>
+    <p>
+      Цель — не просто удалить данные, а <b>сохранить самые информативные атрибуты</b>. Это те, которые дают наибольшую пользу для предсказания целевой переменной. Удалённые признаки — те, которые ухудшают или не улучшают качество модели по выбранной метрике (accuracy, precision, recall).
+    </p>
+  </div>
+
+  <h3>7.1 Пример из учебника: цены на недвижимость</h3>
+
+  <p>
+    Тренируется модель для предсказания цены дома. В исходных данных:
+  </p>
+  <table class="summary-table data-table">
+    <thead><tr><th>Признак (англ.)</th><th>Что значит</th></tr></thead>
+    <tbody>
+      <tr><td>Location</td><td>Город или район</td></tr>
+      <tr><td>Size (m²)</td><td>Площадь</td></tr>
+      <tr><td>Price</td><td>Цена продажи (целевая)</td></tr>
+      <tr><td>Bedrooms</td><td>Кол-во спален</td></tr>
+      <tr><td>Bathrooms</td><td>Кол-во ванных</td></tr>
+      <tr><td>Age of property</td><td>Лет от постройки</td></tr>
+      <tr><td>Proximity to schools</td><td>Расстояние до школы</td></tr>
+      <tr><td>Proximity to highways</td><td>Расстояние до шоссе</td></tr>
+      <tr><td>Crime rate</td><td>Уровень преступности</td></tr>
+      <tr><td>Property tax rate</td><td>Налог на недвижимость</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.2 Три стратегии feature selection (из учебника)</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔬</span> A. Filter methods (методы-фильтры)</h3>
+    <p>
+      Оценивают релевантность признаков по их <b>внутренним свойствам</b> через статистику: коэффициенты корреляции, Chi-square (хи-квадрат), ANOVA, mutual information scores. Обычно <b>быстрые и эффективные</b> для сокращения признакового пространства <b>до</b> применения ML.
+    </p>
+    <p><b>Пример (из учебника):</b> для цен на жильё через коэффициенты корреляции быстро выясняем, что <i>floor area</i> и <i>number of bedrooms</i> имеют сильную положительную корреляцию с ценой — оставляем. <i>Postal code</i> прямой корреляции с ценой не показывает — можно удалить, если это не влияет на качество модели.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🧪</span> B. Wrapper methods (методы-обёртки)</h3>
+    <p>
+      Используют подмножество признаков, тренируют модель и по её качеству решают, добавить или удалить признаки. Делается <b>итеративно</b>: forward selection, backward elimination, recursive feature elimination (RFE). <b>Вычислительно дороже</b>, но часто дают лучшее качество, потому что оценивают признаки <b>в контексте конкретной модели</b>.
+    </p>
+    <p><b>Пример (из учебника):</b> RFE для предсказания цены дома. Начинаем со всех признаков, итеративно удаляем наименее важные. После нескольких итераций обучения модель определяет, что <i>age</i> и <i>postal code</i> вносят меньше всего — их удаляем, оставляя <i>floor area</i>, <i>number of bedrooms</i>, <i>proximity to schools</i> как ядро.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> C. Embedded methods (встроенные методы)</h3>
+    <p>
+      Выполняют feature selection <b>как часть процесса обучения модели</b>. Специфичны для определённых алгоритмов со встроенным отбором признаков. Например, <b>Lasso</b> и <b>Elastic Net</b> добавляют штраф к функции потерь во время обучения, который может «сжать» коэффициенты некоторых признаков до нуля — фактически выполняя feature selection, оставляя только значимые признаки.
+    </p>
+    <p><b>Пример (из учебника):</b> при использовании Lasso regression для предсказания цены дома, параметр регуляризации штрафует коэффициенты менее важных признаков, эффективно обнуляя их. Lasso может определить, что <i>proximity to schools</i> и <i>number of bedrooms</i> имеют ненулевые коэффициенты — то есть существенно влияют на цену, тогда как <i>age of the home</i> и менее значимые признаки получат коэффициенты, равные нулю.</p>
+  </div>
+
+  <h3>7.3 Избыточные vs нерелевантные признаки</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Тип</th><th>Что это</th><th>Зачем убрать</th></tr></thead>
+    <tbody>
+      <tr><td>Redundant (избыточные)</td><td>Дублируют или сильно коррелируют с другими признаками. Например, «вес в кг» и «вес в фунтах» — два столбца про одно.</td><td>Не дают новой информации; можно убрать без существенной потери, фокусируя модель на уникальных атрибутах.</td></tr>
+      <tr><td>Irrelevant (нерелевантные)</td><td>Не имеют связи с целевой переменной — модель видит в них шум.</td><td>Их удаление улучшает точность и снижает риск переобучения.</td></tr>
+    </tbody>
+  </table>
+
+  <details class="question-card">
+    <summary>Вопрос 9. (a) Определи понятие feature selection. (b) Опиши его важность в контексте ML. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Определение (1 балл):</b><br>
+      Feature selection — процесс идентификации и сохранения самых информативных признаков набора данных, при удалении тех, что избыточны или нерелевантны.</p>
+      <p><b>(b) Важность (2 балла):</b></p>
+      <ul>
+        <li>Повышает <b>точность модели</b>, убирая шум и нерелевантные атрибуты.</li>
+        <li>Снижает <b>переобучение</b> и ускоряет обучение.</li>
+        <li>Улучшает <b>интерпретируемость</b> — легче понять, какие факторы важны.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 10. Сравни filter, wrapper и embedded методы отбора признаков. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на метод):</b></p>
+      <ul>
+        <li><b>Filter:</b> используют статистику (корреляция, Chi-square, ANOVA, mutual information) до обучения. Плюс: быстрые. Минус: не учитывают конкретную модель.</li>
+        <li><b>Wrapper:</b> итеративно обучают модель на разных подмножествах признаков и решают, что добавить/удалить (forward selection, backward elimination, RFE). Плюс: лучше качество, потому что в контексте модели. Минус: дорого вычислительно.</li>
+        <li><b>Embedded:</b> отбор встроен в обучение (Lasso, Elastic Net обнуляют коэффициенты малозначимых признаков через регуляризацию). Плюс: эффективны, объединяют лучшее. Минус: специфичны для определённых алгоритмов.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 8: DIMENSIONALITY REDUCTION ============ -->
+  <h2>8. 📉 Понижение размерности (dimensionality reduction) <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔭</span> A4.2.3 — Важность понижения размерности</h3>
+    <p>
+      <b>Dimension (размерность)</b> в данных — это просто признак, атрибут или переменная. Примеры:
+    </p>
+    <ul>
+      <li>В данных о клиентах размерности — это возраст, доход, локация, история покупок и т.д.</li>
+      <li>В медицинском изображении каждый пиксель может считаться размерностью.</li>
+      <li>В текстовых данных — частоты слов в документе образуют размерности.</li>
+    </ul>
+    <p>
+      <b>Понижение размерности</b> стратегически уменьшает количество признаков в наборе данных. В процессе ты идентифицируешь и сохраняешь набор <b>значимых признаков, полученных трансформацией</b> исходных. Эти значимые признаки захватывают самую важную информацию из оригинального набора. Цель — снизить общую размерность, упрощая модели, ускоряя вычисления, снижая шум и минимизируя риск переобучения, при этом сохраняя как можно больше релевантной дисперсии (variance) данных.
+    </p>
+  </div>
+
+  <h3>8.1 «Проклятие размерности» (curse of dimensionality)</h3>
+
+  <p>
+    Термин, придуманный <b>Ричардом Беллманом</b>, описывает явления, возникающие при работе с данными высокой размерности (часто сотни или тысячи измерений), которых нет в низкоразмерных пространствах. Список проблем (из учебника):
+  </p>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Проблема</th><th>В чём суть</th></tr></thead>
+    <tbody>
+      <tr><td>Overfitting</td><td>Слишком много параметров относительно количества наблюдений. Модель запоминает шум, плохо обобщается. Способность обобщать падает с ростом размерности, если данных не становится сильно больше.</td></tr>
+      <tr><td>Computational complexity</td><td>Многие алгоритмы становятся экспоненциально медленнее с ростом числа измерений. Требуется больше вычислительных ресурсов.</td></tr>
+      <tr><td>Data sparsity</td><td>Объём пространства растёт так быстро, что данные становятся «разреженными». Точки оказываются далеко друг от друга — модели теряют способность находить похожие примеры.</td></tr>
+      <tr><td>Distance metrics effectiveness</td><td>В высоких измерениях все точки кажутся одинаково удалёнными. Евклидово расстояние теряет смысл — страдают K-NN, кластеризация.</td></tr>
+      <tr><td>Data visualization</td><td>Человек видит максимум 3 измерения. Без техник вроде PCA или t-SNE визуально найти паттерны, выбросы или кластеры — невозможно.</td></tr>
+      <tr><td>Sample size increases</td><td>Чтобы адекватно покрыть высокоразмерное пространство, объём выборки должен расти экспоненциально с числом измерений. На практике это часто недостижимо.</td></tr>
+      <tr><td>Memory usage</td><td>Хранение и обработка высокоразмерных данных требуют значительно больше памяти, что ограничивает масштабируемость приложений.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.2 Пример из учебника: цена дома в высокоразмерном пространстве</h3>
+
+  <div class="device-card">
+    <p>
+      <b>Без проклятия размерности:</b> используем только важные признаки — <i>bedrooms, floor area, location</i>. Модель легко находит паттерны, влияющие на цену. Меньше измерений = проще обучать, быстрее считать, меньше данных нужно, чтобы избежать переобучения.
+    </p>
+    <p>
+      <b>С проклятием размерности:</b> добавили сотни признаков — <i>type of door knobs, brand of kitchen appliances, wallpaper patterns, type of window treatments, detailed landscaping specifics, decorative colour schemes in each room, type of wood in the built-in cabinetry, history of all maintenance activities</i>. В этом высокоразмерном пространстве объём растёт экспоненциально с добавлением измерений — каждый дом становится <b>изолированной точкой</b>, далёкой от других. Каждый дом «уникален», у него почти нет «соседей». Модели сложно найти похожие дома — её предсказания становятся менее надёжными. Чтобы преодолеть разреженность, нужно экспоненциально больше точек данных — что часто непрактично и дорого.
+    </p>
+  </div>
+
+  <h3>8.3 PCA (Principal Component Analysis) — высокоуровневая интуиция</h3>
+
+  <div class="ru-tip">
+    💡 <b>Из учебника:</b> «Статистические техники, такие как principal component analysis (PCA) и linear discriminant analysis (LDA), <b>за пределами курса</b>». То есть для экзамена IB глубоко знать математику PCA <b>не требуется</b> — нужна только общая идея.
+  </div>
+
+  <div class="device-card">
+    <p>
+      <b>PCA — анализ главных компонент.</b> Идея: спроецировать высокоразмерные данные в пространство меньшей размерности так, чтобы <b>сохранить как можно больше дисперсии</b> (variability) исходных данных.
+    </p>
+    <p><b>Простая аналогия:</b> представь облако точек в 3D, которое имеет форму вытянутого блина. PCA находит две главные оси этого блина и «расплющивает» его в 2D, сохраняя суть формы. Третья ось (тонкая) выбрасывается — и потеря информации минимальна.</p>
+    <p><b>Что важно знать на экзамене:</b></p>
+    <ul>
+      <li>PCA <b>не выбирает</b> существующие признаки — он <b>создаёт новые</b> признаки (главные компоненты) как комбинации старых.</li>
+      <li>Цель — <b>сохранить максимум дисперсии</b> при сокращении количества измерений.</li>
+      <li>Полезен для визуализации (свести 100 признаков к 2, чтобы построить scatter plot), снижения переобучения и ускорения вычислений.</li>
+      <li>Минус: новые компоненты сложно интерпретировать (это уже не «возраст» или «доход», а смесь всего).</li>
+    </ul>
+  </div>
+
+  <h3>8.4 Как уменьшать размерность (из учебника)</h3>
+
+  <div class="device-card">
+    <p>Пример: предсказание самого популярного обеда в школьной столовой. Можно собрать данные: цвет еды, температура снаружи, цена, длина очереди, день недели.</p>
+    <ul>
+      <li><b>Подумай о важности.</b> Какие признаки скорее всего влияют? Тип еды и цена — да. Цвет — вряд ли.</li>
+      <li><b>Группируй похожие признаки.</b> Если длина очереди и время ожидания говорят про одно — оставь один.</li>
+      <li><b>Пробуй разные комбинации.</b> Сравнивай качество модели с разными наборами признаков — выбирай тот, что даёт лучший результат без избыточной сложности.</li>
+    </ul>
+  </div>
+
+  <h3>8.5 Цель понижения размерности (из учебника)</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Польза</th><th>Что даёт</th></tr></thead>
+    <tbody>
+      <tr><td>Enhancing data visualization</td><td>Возможность построить высокоразмерные данные в 2D или 3D.</td></tr>
+      <tr><td>Improving model performance</td><td>Снижает риск переобучения, убирая шум и менее информативные детали → лучше обобщение на новые данные.</td></tr>
+      <tr><td>Reducing computational resources</td><td>Меньше времени и памяти для хранения и обработки.</td></tr>
+      <tr><td>Facilitating data analysis</td><td>Распознавание паттернов и обнаружение корреляций между признаками становится проще.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="real-world">
+    <h4>🖼️ Реальный пример: классификация изображений</h4>
+    <p>
+      Картинка 1000×1000 пикселей = 1 000 000 «признаков» (3 миллиона с учётом RGB). Это огромная размерность. CNN и предобработка через PCA или autoencoders «сжимают» это в сотни «латентных» признаков, на которых классификатор работает быстро и точно.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 11. Опиши важность понижения размерности в машинном обучении. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 4 пункта):</b></p>
+      <ul>
+        <li><b>Снижает переобучение</b> — меньше признаков = меньше параметров = модель лучше обобщается.</li>
+        <li><b>Снижает «проклятие размерности»</b> — точки данных в высоких измерениях становятся слишком разреженными.</li>
+        <li><b>Ускоряет вычисления</b> — меньше признаков = быстрее обучение и предсказание.</li>
+        <li><b>Снижает потребление памяти</b> — критично для больших датасетов.</li>
+        <li><b>Делает возможной визуализацию</b> — свести 100 измерений к 2-3 для scatter plots.</li>
+        <li><b>Убирает шум и избыточность</b> — улучшает интерпретируемость и обнаружение паттернов.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 12. Объясни «проклятие размерности» и приведи минимум три проблемы, которые оно вызывает. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Определение:</b> явления, возникающие при работе с данными высокой размерности (часто сотни/тысячи измерений), которых нет в низкоразмерных пространствах <b>(1 балл, термин Беллмана).</b></li>
+        <li><b>Data sparsity:</b> объём пространства растёт экспоненциально, данные становятся разреженными.</li>
+        <li><b>Distance metrics fail:</b> в высоких измерениях все точки кажутся одинаково удалёнными.</li>
+        <li><b>Overfitting:</b> слишком много параметров относительно количества наблюдений.</li>
+        <li><b>Computational complexity:</b> алгоритмы становятся экспоненциально медленнее.</li>
+        <li><b>Sample size:</b> нужно экспоненциально больше данных для покрытия пространства.</li>
+        <li><i>(4 балла за 4 проблемы — любые 4 из списка.)</i></li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 9: TRAIN/VAL/TEST SPLIT ============ -->
+  <h2>9. ✂️ Разделение на train / validation / test <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <p>
+      Если бы ты обучил модель на всех данных и проверил её на тех же данных — она бы выглядела отлично, но в реальности на новых данных могла бы провалиться. Поэтому данные <b>обязательно делят на три части</b>.
+    </p>
+  </div>
+
+  <h3>9.1 Стандартные пропорции</h3>
+
+  <p><b>Большой датасет (>100 000 примеров):</b></p>
+  <div class="split-vis">
+    <div class="split-train" style="flex:80">Train (80%)</div>
+    <div class="split-val" style="flex:10">Val (10%)</div>
+    <div class="split-test" style="flex:10">Test (10%)</div>
+  </div>
+
+  <p><b>Средний датасет:</b></p>
+  <div class="split-vis">
+    <div class="split-train" style="flex:70">Train (70%)</div>
+    <div class="split-val" style="flex:15">Val (15%)</div>
+    <div class="split-test" style="flex:15">Test (15%)</div>
+  </div>
+
+  <p><b>Маленький датасет:</b> часто используют кросс-валидацию (см. ниже) вместо фиксированного val.</p>
+
+  <h3>9.2 Что делает каждая часть</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Выборка</th><th>Назначение</th></tr></thead>
+    <tbody>
+      <tr><td>Train (тренировочная)</td><td>На ней модель <b>учится</b> — подгоняет свои параметры.</td></tr>
+      <tr><td>Validation (валидационная)</td><td>На ней подбирают <b>гиперпараметры</b> (количество слоёв, learning rate, глубину дерева). Несколько вариантов модели сравнивают именно здесь.</td></tr>
+      <tr><td>Test (тестовая)</td><td><b>Священна.</b> Трогается <b>ровно один раз</b> в самом конце, чтобы оценить, как модель работает на полностью новых данных. Если использовать её для подбора параметров — она «загрязнится».</td></tr>
+    </tbody>
+  </table>
+
+  <h3>9.3 Зачем нужен held-out set</h3>
+
+  <div class="device-card">
+    <p>
+      Без отложенного набора (held-out set) ты не сможешь объективно оценить, насколько модель <b>обобщается</b> на невиданные данные. Это главная цель ML — работать на новых случаях, а не запомнить тренировочные.
+    </p>
+    <ul>
+      <li>Если accuracy на train высокая, а на test низкая → <b>переобучение (overfitting)</b>.</li>
+      <li>Если и на train, и на test низкая → <b>недообучение (underfitting)</b>: модель слишком простая или данных мало.</li>
+      <li>Если обе высокие → модель хорошо обобщается.</li>
+    </ul>
+  </div>
+
+  <h3>9.4 Стратифицированное разделение (stratified split)</h3>
+
+  <div class="device-card">
+    <p>
+      Если задача классификации и классы несбалансированы (например, 95% «не спам», 5% «спам»), нужно <b>сохранить пропорцию классов</b> в каждой выборке. Это и есть стратификация. Иначе test может случайно оказаться целиком из одного класса, и метрика будет бессмысленной.
+    </p>
+  </div>
+
+  <!-- ============ SECTION 10: CROSS-VALIDATION ============ -->
+  <h2>10. 🔁 Кросс-валидация (cross-validation) <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎲</span> Зачем</h3>
+    <p>
+      Если просто разделить train/val один раз, оценка качества зависит от <b>случайности разбиения</b> — особенно на маленьких датасетах. Кросс-валидация даёт более надёжную оценку.
+    </p>
+  </div>
+
+  <h3>10.1 K-fold cross-validation</h3>
+
+  <div class="device-card">
+    <p>
+      Данные делят на <b>K равных частей</b> (обычно K = 5 или 10). Модель обучают и оценивают <b>K раз</b>: каждый раз одна часть — валидация, остальные K-1 — обучение. Итоговая метрика — <b>среднее</b> по K запускам.
+    </p>
+    <p><b>Пример с K=5:</b></p>
+    <table class="data-mini">
+      <thead><tr><th>Итерация</th><th>Fold 1</th><th>Fold 2</th><th>Fold 3</th><th>Fold 4</th><th>Fold 5</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="bad">Val</td><td>Train</td><td>Train</td><td>Train</td><td>Train</td></tr>
+        <tr><td>2</td><td>Train</td><td class="bad">Val</td><td>Train</td><td>Train</td><td>Train</td></tr>
+        <tr><td>3</td><td>Train</td><td>Train</td><td class="bad">Val</td><td>Train</td><td>Train</td></tr>
+        <tr><td>4</td><td>Train</td><td>Train</td><td>Train</td><td class="bad">Val</td><td>Train</td></tr>
+        <tr><td>5</td><td>Train</td><td>Train</td><td>Train</td><td>Train</td><td class="bad">Val</td></tr>
+      </tbody>
+    </table>
+    <p>Каждая точка данных оказывается в валидации ровно один раз. Усреднение результатов по 5 запускам — более надёжная оценка.</p>
+  </div>
+
+  <h3>10.2 Stratified K-fold</h3>
+
+  <div class="device-card">
+    <p>
+      Та же идея, но при разделении на K частей сохраняется пропорция классов в каждой части. Обязательна при <b>несбалансированных классификациях</b>: иначе один fold может случайно оказаться без редкого класса.
+    </p>
+  </div>
+
+  <h3>10.3 Когда что использовать</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Когда</th><th>Что выбрать</th></tr></thead>
+    <tbody>
+      <tr><td>Большой датасет, классификация или регрессия</td><td>Простое train/val/test разделение — быстрее и достаточно точно.</td></tr>
+      <tr><td>Маленький / средний датасет</td><td>K-fold (K=5 или 10) — более надёжная оценка.</td></tr>
+      <tr><td>Несбалансированная классификация</td><td>Stratified K-fold — обязательно.</td></tr>
+      <tr><td>Временные ряды</td><td>Time-series CV (нельзя использовать «будущее» для предсказания «прошлого»).</td></tr>
+    </tbody>
+  </table>
+
+  <details class="question-card">
+    <summary>Вопрос 13. Объясни, зачем данные разделяют на train / validation / test и почему test-выборку нельзя использовать для подбора гиперпараметров. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Train</b> — на ней модель учится, подгоняя параметры.</li>
+        <li><b>Validation</b> — на ней сравниваются модели и подбираются гиперпараметры.</li>
+        <li><b>Test</b> — отложенный набор, который трогается ровно один раз для финальной оценки обобщающей способности.</li>
+        <li>Если использовать test для подбора параметров, он перестаёт быть «невидимым» — модель неявно настраивается под него, и финальная оценка перестаёт отражать реальное поведение на новых данных (это форма <b>data leakage</b>).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 14. Опиши K-fold cross-validation и объясни, в каких случаях она предпочтительна. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Данные делятся на <b>K равных частей</b> (обычно K=5 или 10).</li>
+        <li>Модель обучается K раз: каждый раз 1 fold — валидация, остальные K-1 — train.</li>
+        <li>Итоговая метрика — <b>среднее</b> по K запускам.</li>
+        <li><b>Когда использовать:</b> маленькие/средние датасеты, где результат одного train/val split слишком случайный.</li>
+        <li><b>Stratified K-fold</b> — модификация для несбалансированных классов: сохраняет долю каждого класса в каждом fold.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 11: DATA LEAKAGE ============ -->
+  <h2>11. 🚨 Утечка данных (data leakage) <span class="hl-badge">HL</span></h2>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">💧</span> Что это и почему опасно</h3>
+    <p>
+      <b>Data leakage</b> — когда информация, которой <b>не должно быть</b> во время обучения, попадает в train-выборку. Модель «подсматривает» в данные, которые в реальной жизни были бы недоступны. На train/val она показывает фантастические результаты, а в продакшене с треском проваливается.
+    </p>
+  </div>
+
+  <h3>11.1 Типичные сценарии утечки</h3>
+
+  <table class="summary-table compare">
+    <thead><tr><th>Сценарий</th><th>Что не так</th><th>Как избежать</th></tr></thead>
+    <tbody>
+      <tr><td>Предобработка <b>до</b> сплита</td><td>StandardScaler посчитал mean/std по всем данным, включая test → инфо «утекла» из test в train.</td><td><b>Сначала split, потом fit предобработки только на train</b>, а transform — на train и test отдельно.</td></tr>
+      <tr><td>Imputation по всему датасету</td><td>Среднее, которым заполняли пропуски, посчитано в том числе по test.</td><td>Imputation fit — только на train, потом apply на train и test.</td></tr>
+      <tr><td>Признак, который содержит ответ</td><td>В данных о выдаче кредита есть колонка «дата дефолта» — модель «учится» предсказывать дефолт по тому, что у клиента уже стоит дата дефолта.</td><td>Внимательно проверять, что каждый признак был бы доступен <b>в момент предсказания</b>.</td></tr>
+      <tr><td>Дубликаты между train и test</td><td>Одинаковая запись попала и туда, и туда — модель «вспомнила» ответ.</td><td>Дедупликация <b>до</b> сплита.</td></tr>
+      <tr><td>Временные данные не учитывают порядок</td><td>В тренировку попали данные «из будущего» относительно тестовых.</td><td>Time-based split: train = до даты X, test = после.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>11.2 Главное правило</h3>
+
+  <div class="danger-tip">
+    🚨 <b>Золотое правило:</b> предобработку (нормализацию, стандартизацию, imputation, one-hot encoding) <b>применяй после разделения</b> на train/test. <b>Fit (вычисление параметров) — только на train</b>. <b>Transform (применение) — на train и test отдельно</b>, используя одни и те же параметры, полученные с train.
+  </div>
+
+  <h3>11.3 Worked example: утечка через StandardScaler</h3>
+
+  <div class="device-card">
+    <p><b>Плохо (утечка):</b></p>
+    <ol>
+      <li>Стандартизируем весь датасет (1000 точек): scaler.fit_transform(X) → mean и std посчитаны по всем 1000.</li>
+      <li>Делим на train (800) / test (200).</li>
+      <li>Обучаем модель, измеряем на test — отлично!</li>
+      <li>В продакшене падает: потому что параметры стандартизации в реальности нужно считать только по train.</li>
+    </ol>
+    <p><b>Правильно (без утечки):</b></p>
+    <ol>
+      <li>Делим на train (800) / test (200).</li>
+      <li><code>scaler.fit(X_train)</code> — параметры стандартизации только по train.</li>
+      <li><code>X_train = scaler.transform(X_train)</code>.</li>
+      <li><code>X_test = scaler.transform(X_test)</code> — с теми же mean/std.</li>
+      <li>Обучаем, измеряем — оценка теперь честная.</li>
+    </ol>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 15. Объясни, что такое data leakage, приведи пример и опиши, как его избежать. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Определение:</b> data leakage — попадание в train-выборку информации, которая в реальности недоступна на момент предсказания.</li>
+        <li><b>Последствие:</b> модель искусственно завышает свои метрики на test и проваливается в продакшене.</li>
+        <li><b>Пример:</b> применили нормализацию ко всему датасету, потом разбили — параметры нормализации (min, max или mean, std) посчитаны с учётом test.</li>
+        <li><b>Другой пример:</b> признак «дата дефолта» при предсказании дефолта — модель неявно знает ответ.</li>
+        <li><b>Как избежать:</b> сначала split, потом предобработка; fit только на train; внимательно проверять, что каждый признак был бы доступен в реальный момент предсказания.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 12: SUMMARY ============ -->
+  <h2>12. 🎓 Что важно запомнить (exam tips) <span class="hl-badge">HL</span></h2>
+
+  <ul style="line-height: 1.85; font-size: 1.02rem;">
+    <li><b>Главный принцип:</b> «garbage in, garbage out» — без хорошей предобработки даже самая мощная модель будет ошибаться.</li>
+    <li><b>Очистка данных (A4.2.1)</b> = обработка пропусков (imputation: mean/median/mode/K-NN, или deletion: listwise/pairwise, или predictive modelling), удаление дубликатов, исправление ошибок, унификация форматов, фильтрация нерелевантного.</li>
+    <li><b>Выбросы:</b> обнаружение через IQR (1.5×IQR от Q1/Q3) или Z-score (|z|>3) или визуально (boxplot). Стратегии — <b>trim, cap, transform</b> (log/sqrt).</li>
+    <li><b>Нормализация vs стандартизация:</b> min-max в [0,1] = чувствительна к выбросам, фиксирует диапазон; Z-score (mean=0, std=1) = устойчива к выбросам, без жёстких границ.</li>
+    <li><b>Кодирование категорий:</b> one-hot (без порядка), label (для tree-моделей или целевой переменной), ordinal (с естественным порядком).</li>
+    <li><b>Feature engineering</b> — создание новых признаков из существующих (день недели из даты, BMI из роста/веса) — часто даёт больший эффект, чем смена модели.</li>
+    <li><b>Feature selection (A4.2.2)</b> — три семейства: <b>filter</b> (статистика: корреляция, Chi-square, ANOVA, mutual information — быстро, до обучения), <b>wrapper</b> (forward/backward/RFE — итеративно, дорого, точно), <b>embedded</b> (Lasso, Elastic Net — встроено в обучение через регуляризацию).</li>
+    <li><b>Понижение размерности (A4.2.3)</b> снижает «проклятие размерности»: переобучение, computational complexity, data sparsity, distance metrics, visualization, sample size, memory. <b>PCA / LDA — упомянуты, но за пределами курса IB.</b></li>
+    <li><b>Train / validation / test:</b> 70/15/15 или 80/10/10. Test = отложенный, трогается один раз.</li>
+    <li><b>Cross-validation:</b> K-fold (обычно K=5 или 10) даёт более надёжную оценку на маленьких данных. Stratified — для несбалансированных классов.</li>
+    <li><b>Data leakage:</b> предобработку <b>после</b> сплита; fit только на train; следить, чтобы признаки были доступны на момент предсказания.</li>
+    <li><b>Помни ATL Communication skills (из учебника):</b> отвечая на экзаменационные вопросы по A4.2, демонстрируй понимание шагов предобработки и их важности в ML-процессе. Приводи детальные примеры и объяснения. Где уместно, обсуждай этические и практические следствия решений о качестве данных.</li>
+  </ul>
+
+  <h3>Связанные симуляции</h3>
+  <p>
+    Теория хорошо ложится, когда видишь, как модель учится на подготовленных данных.
+  </p>
+  <p>
+    <a class="sim-link" href="ml.html#regression-sim"><span class="icon">📈</span>Линейная регрессия — что модель учит из чистых данных</a>
+    <a class="sim-link" href="ml.html#bias-sim"><span class="icon">⚖️</span>Смещение в обучении — что бывает с плохими/смещёнными данными</a>
+  </p>
+
+  <p style="margin-top:32px">
+    <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A4.2" class="back-link">К квизу A4.2 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A4.2 Предобработка данных (HL) · По материалам IB DP Computer Science 2025 (Oxford) · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

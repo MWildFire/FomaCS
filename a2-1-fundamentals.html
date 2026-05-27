@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2.1 Основы сетей · IB CS Theme A</title>
+<meta name="description" content="A2.1 Основы сетей — подробный разбор на русском: типы сетей (LAN/WAN/PAN/VPN), современная цифровая инфраструктура (интернет, облако, edge, fog, мобильные сети), сетевые протоколы (TCP, UDP, HTTP/HTTPS, FTP, SMTP, DNS, DHCP, ARP) и модель TCP/IP (HL).">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian deep-dive */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 56px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .device-page h4 {
+    font-size: 1.05rem;
+    color: var(--primary);
+    margin: 18px 0 6px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .hl-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(220,38,38,0.12);
+    color: #b91c1c;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 6px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  [data-theme="dark"] .hl-tag {
+    background: rgba(248,113,113,0.18);
+    color: #fca5a5;
+  }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .sim-link-card {
+    background: linear-gradient(135deg, rgba(14,165,233,0.10), rgba(139,92,246,0.10));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    margin: 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .sim-link-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .sim-link-card .sim-emoji {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  .sim-link-card .sim-text {
+    flex: 1;
+  }
+  .sim-link-card .sim-title {
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 2px;
+    font-size: 1.02rem;
+  }
+  .sim-link-card .sim-desc {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin: 0;
+  }
+  .sim-link-card .sim-arrow {
+    font-size: 1.4rem;
+    color: var(--accent);
+  }
+  .toc {
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 18px 0 28px;
+    border: 1px solid var(--border);
+  }
+  .toc h3 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .toc ol {
+    margin: 0;
+    padding-left: 22px;
+    line-height: 1.85;
+  }
+  .toc a { color: var(--primary); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  @media (max-width: 640px) {
+    .pros-cons { grid-template-columns: 1fr; }
+    .device-card .label-row { grid-template-columns: 1fr; }
+    .device-card .label-row .label { margin-top: 8px; }
+  }
+  .pros-cons .pros, .pros-cons .cons {
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+  }
+  .pros-cons .pros {
+    background: rgba(16,185,129,0.08);
+    border-left: 4px solid var(--green);
+  }
+  .pros-cons .cons {
+    background: rgba(239,68,68,0.07);
+    border-left: 4px solid #ef4444;
+  }
+  [data-theme="dark"] .pros-cons .pros { background: rgba(16,185,129,0.12); }
+  [data-theme="dark"] .pros-cons .cons { background: rgba(239,68,68,0.13); }
+  .pros-cons h4 { margin: 0 0 6px; font-size: 0.95rem; }
+  .pros-cons ul { margin: 4px 0; padding-left: 20px; line-height: 1.6; font-size: 0.92rem; }
+  .pros-cons li { margin-bottom: 4px; }
+  .layer-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 18px 0;
+    max-width: 480px;
+  }
+  .layer-stack .layer {
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-weight: 600;
+  }
+  .layer-stack .layer small {
+    display: block;
+    font-weight: 400;
+    font-size: 0.82rem;
+    opacity: 0.9;
+    margin-top: 2px;
+  }
+  .layer-app { background: #7dd3c0; color: #064e3b; }
+  .layer-trans { background: #fcd34d; color: #78350f; }
+  .layer-internet { background: #a5b4fc; color: #1e1b4b; }
+  .layer-link { background: #fca5a5; color: #7f1d1d; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A2.1 · Network Fundamentals · SL + HL
+  </span>
+
+  <h1>Основы сетей</h1>
+
+  <p class="lede">
+    Подтема <b>A2.1</b> — это фундамент всей темы «Сети». Здесь ты узнаёшь, <b>какие бывают сети</b> (LAN, WAN, PAN, VPN), <b>из чего состоит современная цифровая инфраструктура</b> (интернет, облако, распределённые системы, edge/fog, мобильные сети), <b>какие протоколы</b> заставляют всё это работать (TCP, UDP, HTTP/HTTPS, FTP, SMTP, DNS, DHCP, ARP), и <b>как устроена модель TCP/IP</b> с её четырьмя уровнями (HL). Цель страницы — чтобы после её чтения ты мог ответить на любой экзаменационный вопрос по A2.1.
+  </p>
+
+  <div class="toc">
+    <h3>Содержание</h3>
+    <ol>
+      <li><a href="#a2-1-1">A2.1.1 — Типы сетей: LAN, WAN, PAN, VPN</a></li>
+      <li><a href="#a2-1-2">A2.1.2 — Современная цифровая инфраструктура</a></li>
+      <li><a href="#a2-1-3">A2.1.3 — Сетевые устройства (отдельная страница)</a></li>
+      <li><a href="#a2-1-4">A2.1.4 — Сетевые протоколы</a></li>
+      <li><a href="#a2-1-5">A2.1.5 — Модель TCP/IP (HL)</a></li>
+      <li><a href="#remember">Что важно запомнить</a></li>
+    </ol>
+  </div>
+
+  <!-- ============ A2.1.1 ============ -->
+  <h2 id="a2-1-1">🌐 1. A2.1.1 — Типы сетей: LAN, WAN, PAN, VPN</h2>
+
+  <p>
+    Существует много разных типов сетей, и каждый создан под свою задачу. Сети могут иметь похожие черты, но <b>цели у них совершенно разные</b>. На экзамене нужно уметь определить три ключевые характеристики любой сети: <b>географический охват (distance)</b>, <b>скорость передачи данных (transfer rate)</b> и <b>задержка (latency)</b>.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Тип сети</th>
+        <th>Охват</th>
+        <th>Скорость / задержка</th>
+        <th>Зачем нужна</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>LAN</td>
+        <td>До ~1 км (один офис, школа, кампус)</td>
+        <td>Высокая скорость, низкая задержка</td>
+        <td>Делиться файлами, принтерами, ПО внутри одного места</td>
+      </tr>
+      <tr>
+        <td>WAN</td>
+        <td>Города, страны, континенты</td>
+        <td>Скорость ниже, задержка выше</td>
+        <td>Соединить географически разбросанные офисы/филиалы</td>
+      </tr>
+      <tr>
+        <td>PAN</td>
+        <td>До ~10 м (одно рабочее место)</td>
+        <td>Малая мощность, малая дальность</td>
+        <td>Связать личные гаджеты пользователя</td>
+      </tr>
+      <tr>
+        <td>VPN</td>
+        <td>Не ограничено (поверх интернета)</td>
+        <td>Зависит от интернет-канала; добавляется шифрование</td>
+        <td>Безопасный удалённый доступ к частной сети</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <a class="sim-link-card" href="networks.html#topology-sim">
+    <span class="sim-emoji">🌐</span>
+    <span class="sim-text">
+      <p class="sim-title">Симуляция: типы сетей и топологии</p>
+      <p class="sim-desc">Сравни LAN, WAN, PAN и VPN визуально на странице A2 Сети.</p>
+    </span>
+    <span class="sim-arrow">→</span>
+  </a>
+
+  <!-- LAN -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🏢</span> A. Local Area Network (LAN) — локальная сеть</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Соединяет устройства <b>на коротком расстоянии</b> — обычно не больше ~1 километра.</div>
+      <div class="label">Характеристики</div>
+      <div>
+        <ul>
+          <li><b>Высокая скорость передачи данных</b> (high data transfer rate).</li>
+          <li><b>Низкая задержка</b> (low latency) — потому что устройства физически близко.</li>
+          <li>Может быть <b>проводной, беспроводной или смешанной</b> (обычно смесь).</li>
+        </ul>
+      </div>
+      <div class="label">Главная цель</div>
+      <div>Совместное использование ресурсов — файлов, принтеров, программ — несколькими пользователями в одной местности.</div>
+      <div class="label">Примеры</div>
+      <div>Школа, университетский кампус, офисное здание, больница, гостиница, ресторан.</div>
+    </div>
+  </div>
+
+  <!-- WAN -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🗺️</span> B. Wide Area Network (WAN) — глобальная (территориальная) сеть</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Соединяет устройства <b>на больших географических расстояниях</b> — между городами, странами и даже континентами.</div>
+      <div class="label">Характеристики</div>
+      <div>
+        <ul>
+          <li>Сохраняет связь <b>на очень больших расстояниях</b>.</li>
+          <li><b>Скорость обычно ниже</b>, чем у LAN, а <b>задержка выше</b>.</li>
+          <li>Часто строится из множества меньших сетей (LAN/MAN), объединённых в единую систему.</li>
+        </ul>
+      </div>
+      <div class="label">Главная цель</div>
+      <div>Дать бизнесу, государству и другим организациям возможность работать в широком масштабе: централизованная обработка данных, совместная работа, общий доступ к ресурсам независимо от местоположения.</div>
+      <div class="label">Как строится</div>
+      <div>
+        <ul>
+          <li><b>Выделенные линии (leased lines)</b> — постоянное подключение с фиксированной полосой пропускания, эксклюзивно для одного клиента; стабильная скорость, низкая задержка, надёжность.</li>
+          <li><b>Спутниковые каналы.</b></li>
+          <li><b>Публичный интернет с VPN</b> для безопасности и приватности.</li>
+          <li>Физика: оптоволокно, медные кабели, радиосвязь — в зависимости от расстояния и местности.</li>
+        </ul>
+      </div>
+      <div class="label">Примеры</div>
+      <div>Транснациональные корпорации, соединяющие офисы по миру; государственные сервисы с централизованной базой данных для граждан в разных регионах.</div>
+    </div>
+  </div>
+
+  <!-- PAN -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📱</span> C. Personal Area Network (PAN) — персональная сеть</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Спроектирована для <b>личного использования</b>, охват обычно не больше <b>10 метров</b> (примерно 30 футов) — рабочее место одного человека или его непосредственное окружение.</div>
+      <div class="label">Характеристики</div>
+      <div>
+        <ul>
+          <li>Маленький масштаб — связь именно между <b>личными гаджетами</b> одного пользователя.</li>
+          <li>Удобство и быстрая синхронизация устройств.</li>
+          <li>Обычно <b>беспроводная</b> и <b>с низким энергопотреблением</b>.</li>
+        </ul>
+      </div>
+      <div class="label">Главная цель</div>
+      <div>Связать персональные устройства, упростить обмен данными и личными ресурсами (контакты, доступ в интернет, мультимедиа).</div>
+      <div class="label">Технологии</div>
+      <div><b>Bluetooth, Wi-Fi Direct</b> — оба специально разработаны под короткие расстояния и низкое потребление.</div>
+      <div class="label">Примеры</div>
+      <div>
+        <ul>
+          <li>Смартфон + умные часы (фитнес) + беспроводные наушники (музыка).</li>
+          <li>Ноутбук + беспроводная мышь и клавиатура.</li>
+          <li>Планшет выходит в интернет <b>через мобильные данные смартфона</b> (tethering).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- VPN -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔐</span> D. Virtual Private Network (VPN) — виртуальная частная сеть</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>«Расширяет» частную сеть <b>через публичную сеть</b> (через интернет) так, как будто твоё устройство напрямую подключено к частной сети.</div>
+      <div class="label">Характеристики</div>
+      <div>
+        <ul>
+          <li>Может работать <b>на неограниченном расстоянии</b> — поверх интернета.</li>
+          <li>Создаёт <b>безопасный зашифрованный «туннель»</b> между устройством и частной сетью.</li>
+          <li>Шифрование гарантирует, что данные защищены от несанкционированного доступа.</li>
+        </ul>
+      </div>
+      <div class="label">Главная цель</div>
+      <div><b>Безопасный удалённый доступ</b> к частной сети и её ресурсам (файлы, принтеры, приложения) из любого места с интернетом.</div>
+      <div class="label">Примеры использования</div>
+      <div>
+        <ul>
+          <li>Сотрудник из дома подключается к внутренним серверам и документам компании.</li>
+          <li>Приватный сёрфинг — без раскрытия настоящего IP-адреса и местоположения.</li>
+          <li>Доступ к гео-ограниченному контенту — выглядишь как пользователь из другой страны.</li>
+        </ul>
+      </div>
+      <div class="label">Реализация</div>
+      <div>Программное ПО на ноутбуках/смартфонах/планшетах <b>или</b> настройка на маршрутизаторе, чтобы защитить весь трафик локальной сети сразу.</div>
+    </div>
+  </div>
+
+  <h3>Сравнение по трём ключевым характеристикам</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Характеристика</th>
+        <th>LAN</th>
+        <th>WAN</th>
+        <th>PAN</th>
+        <th>VPN</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Distance</td>
+        <td>До ~1 км</td>
+        <td>Страны/континенты</td>
+        <td>До ~10 м</td>
+        <td>Не ограничено (по интернету)</td>
+      </tr>
+      <tr>
+        <td>Transfer rate</td>
+        <td>Высокая</td>
+        <td>Ниже, чем LAN</td>
+        <td>Низкая–средняя</td>
+        <td>Зависит от канала + накладные расходы шифрования</td>
+      </tr>
+      <tr>
+        <td>Latency</td>
+        <td>Низкая</td>
+        <td>Выше</td>
+        <td>Низкая (близкие устройства)</td>
+        <td>Чуть выше из-за маршрутизации и шифрования</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Подсказка:</b> запомни границы расстояний — <b>PAN ≈ 10 м, LAN ≈ 1 км, WAN — без верхней границы</b>. VPN — это <b>не отдельный тип сети по железу</b>, а способ построить «частную» сеть поверх публичной, поэтому его географический охват = охват интернета.
+  </div>
+
+  <h3>Тренировочные вопросы — A2.1.1</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 1.1. Назови два типа сетей, спроектированных для работы на коротких расстояниях. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>LAN</b> — локальная сеть (до ~1 км: школа, офис).</li>
+        <li><b>PAN</b> — персональная сеть (до ~10 м: смартфон + часы + наушники).</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">По 1 баллу за тип. WAN сюда не подходит — у неё охват большой.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 1.2. Опиши главную цель виртуальной частной сети (VPN). <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>VPN обеспечивает <b>безопасный удалённый доступ</b> к частной сети и её ресурсам (файлы, принтеры, ПО).</li>
+        <li>Делает это через <b>зашифрованный туннель поверх публичного интернета</b>, защищая данные от прослушивания и несанкционированного доступа.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 1.3. (a) Опиши, как работает глобальная сеть (WAN). (b) Приведи пример использования WAN. <span class="marks-tag">4 + 2 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Описание (4 балла — 4 пункта):</b></p>
+      <ul>
+        <li>WAN соединяет устройства <b>на больших расстояниях</b> — города, страны, континенты.</li>
+        <li>Обычно строится из соединённых <b>меньших сетей (LAN и MAN)</b> в одну систему.</li>
+        <li>Использует <b>выделенные линии, спутник или публичный интернет с VPN</b>.</li>
+        <li>Имеет <b>более низкую скорость и более высокую задержку</b>, чем LAN, потому что данные идут на большие расстояния по разным средам передачи.</li>
+      </ul>
+      <p><b>(b) Пример (2 балла):</b></p>
+      <ul>
+        <li>Транснациональная компания соединяет офисы в Дубае, Лондоне и Нью-Йорке в единую корпоративную сеть — сотрудники работают с общими ресурсами, обмениваются документами и проводят созвоны вне зависимости от местоположения.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 1.4. (a) Опиши характеристики персональной сети (PAN). (b) Приведи одно практическое применение PAN. <span class="marks-tag">4 + 2 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Характеристики:</b></p>
+      <ul>
+        <li>Охват <b>до ~10 метров</b> — рабочее место одного пользователя.</li>
+        <li>Связывает <b>персональные гаджеты</b>: смартфон, ноутбук, наушники, часы, планшет.</li>
+        <li>Обычно <b>беспроводная</b>: Bluetooth, Wi-Fi Direct.</li>
+        <li><b>Низкое энергопотребление</b> — устройства часто работают от батареи.</li>
+      </ul>
+      <p><b>(b) Применение:</b></p>
+      <ul>
+        <li>Смартфон подключается к умным часам для отслеживания фитнеса <b>и</b> к беспроводным наушникам для прослушивания музыки — оба соединения по Bluetooth внутри одной PAN.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 1.5. Опиши преимущества использования LAN в корпоративной среде. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 4 пункта × 1 балл):</b></p>
+      <ul>
+        <li><b>Совместный доступ к ресурсам.</b> Один сетевой принтер, файловый сервер и установочные пакеты ПО — на десятки сотрудников.</li>
+        <li><b>Высокая скорость и низкая задержка.</b> Большие файлы передаются быстро внутри офиса.</li>
+        <li><b>Централизованное управление и безопасность.</b> Резервное копирование, обновления, политики безопасности применяются ко всем устройствам сразу.</li>
+        <li><b>Сокращение расходов.</b> Не нужно покупать каждому сотруднику отдельный принтер или копию серверного ПО.</li>
+        <li><b>Эффективное взаимодействие.</b> Внутренняя почта, чаты, общие диски, видеосвязь работают без зависимости от внешнего интернета.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ A2.1.2 ============ -->
+  <h2 id="a2-1-2">☁️ 2. A2.1.2 — Современная цифровая инфраструктура</h2>
+
+  <p>
+    «<b>Инфраструктура</b>» — это базовые физические и виртуальные компоненты, которые обеспечивают работу и движение цифровых данных по сети. Это «дороги, мосты и развязки», по которым ездят «пакеты данных». В современную инфраструктуру входят: <b>интернет</b>, <b>облачные вычисления</b>, <b>распределённые системы</b>, <b>edge-вычисления</b>, <b>fog-вычисления</b> и <b>мобильные сети</b>.
+  </p>
+
+  <a class="sim-link-card" href="networks.html#cloud-edge-sim">
+    <span class="sim-emoji">☁️</span>
+    <span class="sim-text">
+      <p class="sim-title">Симуляция: Cloud / Fog / Edge</p>
+      <p class="sim-desc">Посмотри, где обрабатываются данные — на сервере, в тумане или на границе сети.</p>
+    </span>
+    <span class="sim-arrow">→</span>
+  </a>
+
+  <!-- Internet -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🌍</span> A. Интернет (The Internet)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Глобальная сеть взаимосвязанных устройств (маршрутизаторы, серверы, компьютеры), которые обмениваются данными <b>по стандартизированным протоколам</b>. WWW — это инфраструктура поверх интернета, использующая HTTP.</div>
+      <div class="label">Главная цель</div>
+      <div>Обеспечить <b>надёжный, устойчивый к сбоям глобальный обмен данными</b> и коммуникацию.</div>
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Плюсы (benefits)</h4>
+        <ul>
+          <li>Глобальная связь и сотрудничество.</li>
+          <li>Огромные объёмы текстовых, видео- и аудиоданных.</li>
+          <li>Лучшее общение с клиентами и партнёрами; снижение издержек; получение инсайтов о клиентах.</li>
+          <li>Делает возможным онлайн-образование и виртуальное обучение.</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Минусы / ограничения</h4>
+        <ul>
+          <li><b>Полоса пропускания сильно зависит</b> от географии, перегруженности и качества инфраструктуры.</li>
+          <li>Должен развиваться, чтобы тянуть рост объёмов данных без деградации качества.</li>
+          <li>Уязвимости создают риски для личной, организационной и национальной безопасности.</li>
+          <li>Чем больше критической инфраструктуры подключено к интернету, тем выше требования к безопасности и надёжности.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cloud computing -->
+  <div class="device-card">
+    <h3><span class="device-emoji">☁️</span> B. Облачные вычисления (Cloud computing)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Сеть <b>удалённых серверов</b>, доступная через интернет, для <b>хранения, обработки и управления данными</b>. Также — программы как сервис: пользователь работает через браузер, без локальной установки.</div>
+      <div class="label">Главная цель</div>
+      <div>Дать <b>масштабируемый доступ по запросу</b> к вычислительным ресурсам и сервисам.</div>
+      <div class="label">Модели сервиса</div>
+      <div>
+        <ul>
+          <li><b>SaaS</b> (Software as a Service) — готовое ПО через браузер. Пример: Google Docs, Office 365.</li>
+          <li><b>PaaS</b> (Platform as a Service) — платформа для разработки и развёртывания приложений без управления серверами. Пример: Heroku, Google App Engine.</li>
+          <li><b>IaaS</b> (Infrastructure as a Service) — аренда виртуальных серверов, сетей и хранилищ. Пример: AWS EC2, Azure VM.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Плюсы</h4>
+        <ul>
+          <li><b>Масштабируется вверх и вниз по требованию</b> — платишь только за то, что используешь.</li>
+          <li>Доступ к данным <b>из любой точки, в любое время</b> — удобство для распределённых команд.</li>
+          <li>Резервное копирование и аварийное восстановление от провайдера — целостность данных и минимум простоя.</li>
+          <li>Школы экономят на покупке и поддержке серверов — подписка дешевле собственного железа.</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Минусы</h4>
+        <ul>
+          <li>Нужен <b>надёжный интернет</b>; при сбое связи нет доступа к данным.</li>
+          <li>Хранение чувствительных данных вне организации — вопросы <b>безопасности, приватности и соответствия требованиям регуляторов</b>.</li>
+          <li>Большие объёмы передачи данных <b>дорого стоят</b>.</li>
+          <li>Полоса пропускания ограничивает производительность при работе с большими данными.</li>
+          <li>Физическое расстояние до серверов <b>создаёт задержку</b>, что критично для real-time приложений.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Distributed systems -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🕸️</span> C. Распределённые системы (Distributed systems)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Сеть <b>независимых компьютеров</b>, которая для пользователя выглядит как <b>единая связная система</b>. Компьютеры внутри называются <b>узлами (nodes)</b>. Узлы координируют действия, обмениваясь сообщениями. <b>Чем больше узлов — тем мощнее ресурс.</b></div>
+      <div class="label">Конфигурации</div>
+      <div>
+        <ul>
+          <li><b>Централизованная</b> (centralized) — все обращаются к одной центральной станции.</li>
+          <li><b>Децентрализованная</b> (decentralized) — несколько крупных узлов, у каждого свои клиенты.</li>
+          <li><b>Распределённая</b> (distributed) — без явного центра, узлы общаются между собой произвольно.</li>
+        </ul>
+      </div>
+      <div class="label">Главная цель</div>
+      <div>Координировать и распределять процессы и ресурсы между несколькими компьютерами, чтобы они <b>работали вместе эффективнее и надёжнее</b>, чем мог бы один компьютер.</div>
+      <div class="label">Реальный пример</div>
+      <div><b>Apache Hadoop</b> — фреймворк для распределённого хранения и обработки больших данных. Масштабируется от одного сервера до тысяч машин; добавление узлов прямо повышает вычислительную мощность, ёмкость хранилища и отказоустойчивость.</div>
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Плюсы</h4>
+        <ul>
+          <li>Совместное использование ресурсов; <b>выше вычислительная скорость</b> за счёт распараллеливания задач.</li>
+          <li><b>Надёжность</b>: если один компонент падает, остальная система продолжает работать.</li>
+          <li>Гибкое и эффективное расширение под рост нагрузки.</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Минусы</h4>
+        <ul>
+          <li><b>Сложно обеспечить надёжную связь</b> и координацию по нестабильным сетям.</li>
+          <li>Проблемы согласованности данных (consistency) и параллелизма (concurrency control) при репликации.</li>
+          <li><b>Шире поверхность атаки</b>: данные ходят по публичным сетям и хранятся на многих машинах.</li>
+          <li>Распределённая природа может вносить задержку и снижать производительность отдельных операций.</li>
+          <li>Требуются сложные алгоритмы для обработки сбоев, целостности и безопасности.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edge computing -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📡</span> D. Edge-вычисления (Edge computing)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Обработка данных <b>прямо у источника</b> (или близко к нему), а не на удалённом центральном облаке. Сокращает расстояние, которое данные должны пройти — <b>быстрее ответ, меньше задержка</b>, особенно важно для приложений реального времени.</div>
+      <div class="label">Главная цель</div>
+      <div>Приблизить обработку данных к месту их генерации, <b>снизить зависимость от центрального дата-центра</b>, ускорить отклик, сэкономить трафик.</div>
+      <div class="label">Примеры</div>
+      <div>
+        <ul>
+          <li><b>Умные светофоры:</b> датчики собирают данные о потоке машин и тут же меняют тайминг светофора — не нужно ждать ответа из удалённого ЦОД.</li>
+          <li><b>Распознавание автомобильных номеров:</b> камера обрабатывает видео локально и отправляет <b>уже распознанный номер</b>, а не сырой видеопоток.</li>
+          <li>Беспилотные автомобили, IoT-устройства.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Плюсы</h4>
+        <ul>
+          <li>Быстрая обработка и низкая задержка — идеально для real-time.</li>
+          <li>Меньше данных уходит в облако → <b>экономия трафика и денег</b>.</li>
+          <li>Локальная обработка продолжается даже при <b>обрыве связи</b> с центральным сервером — выше надёжность.</li>
+          <li>Чувствительные данные могут <b>остаться на месте</b>, уменьшая риски при передаче.</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Минусы</h4>
+        <ul>
+          <li>Управление множеством распределённых edge-устройств — сложно, нужна автоматизация.</li>
+          <li>Безопасность — двусмысленна: данные локальные, но <b>устройств много</b>, каждое — потенциальная мишень.</li>
+          <li>Высокие <b>первоначальные и операционные расходы</b> — нужно железо в каждой точке.</li>
+          <li>Несогласованность характеристик у разных edge-устройств — разная производительность.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fog computing (mentioned because requirement) -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🌫️</span> E. Fog-вычисления (Fog computing)</h3>
+    <p>
+      <b>Fog computing</b> — это «промежуточный слой» между облаком и устройствами на самой границе (edge). Если edge — это сам датчик или камера, то fog — это узлы немного выше: локальные серверы, шлюзы, маршрутизаторы внутри корпоративной сети, которые принимают данные с edge-устройств, обрабатывают, фильтруют и только важное отправляют в облако.
+    </p>
+    <div class="label-row">
+      <div class="label">Связка edge + fog + cloud</div>
+      <div>
+        <ul>
+          <li><b>Edge</b> — на самом устройстве (датчик, камера, светофор).</li>
+          <li><b>Fog</b> — на локальном узле в пределах сети (шлюз умного дома, локальный сервер фабрики).</li>
+          <li><b>Cloud</b> — в удалённом дата-центре.</li>
+        </ul>
+      </div>
+      <div class="label">Зачем нужен fog</div>
+      <div>Снижает задержку и нагрузку на канал сильнее, чем чистое облако, но даёт больше вычислительной мощности и хранения, чем маломощное edge-устройство.</div>
+      <div class="label">Пример</div>
+      <div>Умное здание: тысячи датчиков (edge) шлют данные на локальный сервер здания (fog), который усредняет, агрегирует и отправляет в облако только сводки по часам.</div>
+    </div>
+  </div>
+
+  <!-- Mobile networks -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📶</span> F. Мобильные сети (Mobile networks)</h3>
+    <div class="label-row">
+      <div class="label">Что это</div>
+      <div>Телекоммуникационные сети, спроектированные для <b>беспроводного подключения мобильных устройств</b> на больших расстояниях — голос, данные, мультимедиа. Они <b>сотовые</b> (cellular): покрывают большие площади и поддерживают <b>хэндовер</b> — бесшовное переключение между сотами при движении пользователя.</div>
+      <div class="label">Главная цель</div>
+      <div>Дать беспроводную связь и интернет <b>где угодно в зоне покрытия</b>, поддерживая мобильность общества и растущий спрос на постоянную связь.</div>
+      <div class="label">Поколения</div>
+      <div>
+        <ul>
+          <li><b>2G</b> — голос + SMS, очень медленные данные.</li>
+          <li><b>3G</b> — первая нормальная мобильная передача данных (видео, веб).</li>
+          <li><b>4G (LTE)</b> — высокоскоростной мобильный интернет, HD-стриминг.</li>
+          <li><b>5G</b> — сверхвысокая скорость и сверхнизкая задержка, плотные подключения для IoT, умных городов, автономного транспорта.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Плюсы</h4>
+        <ul>
+          <li>Связь там, где есть покрытие — без проводов.</li>
+          <li>Голос, SMS, скоростной интернет, стриминг.</li>
+          <li>От 2G к 5G — резкий рост скорости и снижение задержки.</li>
+          <li>Поддерживают мобильные приложения, мобильную коммерцию, телемедицину, удалённую работу.</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Минусы</h4>
+        <ul>
+          <li>«Мёртвые зоны» — провалы покрытия.</li>
+          <li>В местах скопления людей и в часы пик качество и скорость падают (перегрузка).</li>
+          <li>Обновление инфраструктуры (4G → 5G) <b>стоит дорого</b> и идёт постепенно — у регионов разный уровень доступа.</li>
+          <li>Уязвимости: подслушивание, утечки, кибератаки.</li>
+          <li>Конечный радиочастотный спектр ограничивает ёмкость сети.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>Тренировочные вопросы — A2.1.2</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 2.1. Назови основную цель интернета. <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Обеспечить <b>надёжный, устойчивый к сбоям глобальный обмен данными</b> и коммуникацию между связанными устройствами.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.2. Назови одно преимущество облачных вычислений. <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любое одно):</b></p>
+      <ul>
+        <li><b>Масштабируемость по требованию</b> — платишь только за то, что используешь.</li>
+        <li>Доступ к данным <b>откуда угодно и когда угодно</b>.</li>
+        <li>Резервное копирование и аварийное восстановление от провайдера.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.3. Опиши, как распределённые системы повышают производительность системы. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (4 пункта × 1 балл):</b></p>
+      <ul>
+        <li>Задачи <b>распределяются между многими узлами</b> и выполняются параллельно — общая <b>вычислительная скорость растёт</b>.</li>
+        <li>Узлы <b>совместно используют ресурсы</b> (CPU, память, хранилище), нет необходимости в одной супермашине.</li>
+        <li><b>Отказоустойчивость:</b> если один компонент выходит из строя, система продолжает работать — повышается надёжность.</li>
+        <li><b>Гибкое масштабирование:</b> можно добавлять узлы под рост нагрузки без перепроектирования системы.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.4. (a) Опиши применение edge-вычислений в приложениях реального времени. (b) Назови одно конкретное преимущество и одно потенциальное ограничение edge-вычислений. <span class="marks-tag">3 + 2 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Применение в real-time (3 балла):</b></p>
+      <ul>
+        <li>Edge обрабатывает данные <b>прямо у источника</b> (камера, датчик), не отправляя сырые данные в облако.</li>
+        <li>Это <b>резко снижает задержку</b> — отклик становится почти мгновенным, что критично для real-time систем.</li>
+        <li>Пример: <b>умные светофоры</b> — датчики считают поток машин и тут же меняют тайминг сигналов, без ожидания ответа из удалённого ЦОД.</li>
+      </ul>
+      <p><b>(b) Преимущество + ограничение (2 балла):</b></p>
+      <ul>
+        <li><b>Преимущество:</b> работа продолжается даже при обрыве связи с центральным сервером — выше надёжность.</li>
+        <li><b>Ограничение:</b> много edge-устройств = много потенциальных мишеней для атаки + высокие расходы на железо в каждой точке.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.5. Опиши проблемы, связанные с мобильными сетями, фокусируясь на качестве обслуживания и безопасности. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Качество обслуживания (2 балла):</b></p>
+      <ul>
+        <li><b>«Мёртвые зоны»</b> — провалы покрытия, где сигнал заблокирован или слишком далеко от вышки.</li>
+        <li><b>Перегруженность сети</b> в местах скопления людей и в часы пик снижает скорость данных и качество звонков. Обновление до 5G идёт неравномерно — у регионов разный уровень сервиса.</li>
+      </ul>
+      <p><b>Безопасность (2 балла):</b></p>
+      <ul>
+        <li>Уязвимости: <b>подслушивание (eavesdropping)</b>, утечки данных, прочие кибератаки.</li>
+        <li>Зависимость от конечного радиочастотного спектра ограничивает ёмкость и заставляет искать компромиссы в безопасности при росте нагрузки.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.6. Сравни модели SaaS, PaaS и IaaS облачных вычислений. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на модель — что это + пример):</b></p>
+      <ul>
+        <li><b>SaaS (Software as a Service):</b> готовое приложение через браузер. Пользователь не управляет ни ПО, ни инфраструктурой. <i>Пример: Google Docs, Office 365.</i></li>
+        <li><b>PaaS (Platform as a Service):</b> платформа для разработчиков — окружение, библиотеки, базы — без управления серверами. Разработчик пишет код, провайдер занимается остальным. <i>Пример: Heroku, Google App Engine.</i></li>
+        <li><b>IaaS (Infrastructure as a Service):</b> аренда виртуальной инфраструктуры — серверы, сети, хранилища. Клиент сам ставит ОС и ПО. <i>Пример: AWS EC2, Azure VM.</i></li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Логика «свободы»: IaaS даёт больше контроля, SaaS — больше удобства. По мере подъёма (IaaS → PaaS → SaaS) ты <b>отдаёшь больше управления провайдеру</b>.</p>
+    </div>
+  </details>
+
+  <!-- ============ A2.1.3 — link to existing page ============ -->
+  <h2 id="a2-1-3">🔌 3. A2.1.3 — Функции сетевых устройств</h2>
+
+  <p>
+    Эта тема — про сетевые устройства (модем, коммутатор, точка доступа, маршрутизатор, межсетевой экран, шлюз, NIC) и их соответствие уровням TCP/IP. Подробный разбор у нас вынесен на отдельную страницу.
+  </p>
+
+  <a class="sim-link-card" href="setevye-ustroistva.html">
+    <span class="sim-emoji">🔌</span>
+    <span class="sim-text">
+      <p class="sim-title">A2.1.3 Сетевые устройства — отдельная страница</p>
+      <p class="sim-desc">Модем, коммутатор, WAP, маршрутизатор, файрвол, шлюз — функции, уровни TCP/IP, разбор экзаменационных вопросов.</p>
+    </span>
+    <span class="sim-arrow">→</span>
+  </a>
+
+  <!-- ============ A2.1.4 ============ -->
+  <h2 id="a2-1-4">📦 4. A2.1.4 — Сетевые протоколы</h2>
+
+  <p>
+    <b>Протокол</b> — это <b>набор правил и стандартов</b>, который определяет, как данные должны быть структурированы, переданы и получены через сеть. Протоколы задают <b>формат, тайминг, последовательность и проверку ошибок</b> при передаче.
+  </p>
+
+  <p>
+    Протоколы бывают <b>с состоянием (stateful)</b> и <b>без состояния (stateless)</b>:
+  </p>
+  <ul>
+    <li><b>Stateful</b> — сервер помнит информацию о сессии клиента между запросами (TCP, FTP, SMTP).</li>
+    <li><b>Stateless</b> — каждый запрос обрабатывается независимо, сервер ничего не помнит (HTTP, UDP, DNS). Чтобы поддерживать «состояние» (например, корзину в магазине), нужны cookies или похожие механизмы.</li>
+  </ul>
+
+  <a class="sim-link-card" href="networks.html#protocols-sim">
+    <span class="sim-emoji">📦</span>
+    <span class="sim-text">
+      <p class="sim-title">Симуляция: TCP vs UDP</p>
+      <p class="sim-desc">Сравни надёжную доставку с подтверждением (TCP) и быструю доставку без гарантий (UDP).</p>
+    </span>
+    <span class="sim-arrow">→</span>
+  </a>
+
+  <h3>Сводная таблица протоколов</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Протокол</th>
+        <th>Уровень TCP/IP</th>
+        <th>Что делает</th>
+        <th>Где применяется</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TCP</td>
+        <td>Транспортный</td>
+        <td>Надёжная, упорядоченная доставка с подтверждениями и контролем потока.</td>
+        <td>Веб (HTTP/HTTPS), почта, передача файлов — там, где важна целостность.</td>
+      </tr>
+      <tr>
+        <td>UDP</td>
+        <td>Транспортный</td>
+        <td>Быстрая доставка без установки соединения и без гарантий доставки.</td>
+        <td>Видеостриминг, VoIP, онлайн-игры, DNS-запросы.</td>
+      </tr>
+      <tr>
+        <td>HTTP</td>
+        <td>Прикладной</td>
+        <td>Передача веб-страниц по модели запрос/ответ (без шифрования).</td>
+        <td>Загрузка веб-сайтов (без HTTPS).</td>
+      </tr>
+      <tr>
+        <td>HTTPS</td>
+        <td>Прикладной</td>
+        <td>HTTP + шифрование TLS/SSL — приватность и целостность.</td>
+        <td>Все современные сайты — банки, почта, соцсети.</td>
+      </tr>
+      <tr>
+        <td>FTP</td>
+        <td>Прикладной</td>
+        <td>Передача файлов между клиентом и сервером.</td>
+        <td>Загрузка/выгрузка файлов на сервер (web-хостинг, бэкап).</td>
+      </tr>
+      <tr>
+        <td>SMTP</td>
+        <td>Прикладной</td>
+        <td>Отправка электронной почты от клиента к серверу и между серверами.</td>
+        <td>Отправка email.</td>
+      </tr>
+      <tr>
+        <td>DNS</td>
+        <td>Прикладной</td>
+        <td>Преобразует доменные имена (example.com) в IP-адреса.</td>
+        <td>Любое обращение к сайту по имени.</td>
+      </tr>
+      <tr>
+        <td>DHCP</td>
+        <td>Прикладной</td>
+        <td>Автоматически выдаёт IP-адреса и сетевые настройки.</td>
+        <td>Wi-Fi-сети, корпоративные LAN, гостевые сети.</td>
+      </tr>
+      <tr>
+        <td>ARP</td>
+        <td>Канальный / Интернет</td>
+        <td>Находит MAC-адрес по известному IP внутри локальной сети.</td>
+        <td>Связывает IP-адрес назначения с конкретным «железом» в LAN.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- TCP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🤝</span> A. TCP — Transmission Control Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Транспортный (Transport)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Обеспечивает <b>надёжную, упорядоченную</b> и <b>проверенную на ошибки</b> доставку <b>потока байт</b> между хостами по IP-сети.</li>
+          <li>Использует <b>установку соединения</b> через трёхэтапный handshake (SYN → SYN-ACK → ACK).</li>
+          <li>Доставка с <b>подтверждением (acknowledgment)</b> каждого сегмента.</li>
+          <li><b>Контроль потока (flow control)</b> предотвращает перегрузку сети.</li>
+          <li>Корректное <b>завершение соединения</b> (FIN + ACK).</li>
+        </ul>
+      </div>
+      <div class="label">Когда использовать</div>
+      <div>Там, где <b>важна целостность и порядок</b> данных: загрузка веб-страниц, передача файлов, электронная почта, банковские транзакции.</div>
+    </div>
+  </div>
+
+  <!-- UDP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚡</span> B. UDP — User Datagram Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Транспортный (Transport)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Connectionless</b> — пакеты (датаграммы) отправляются <b>без установки соединения</b> и без поддержания состояния.</li>
+          <li><b>Быстрее</b> и <b>менее ресурсоёмкий</b> чем TCP — нет накладных расходов на установку/поддержание соединения.</li>
+          <li><b>Не гарантирует</b> ни доставку, ни порядок, ни проверку ошибок.</li>
+          <li>Поддерживает <b>multicast</b> — отправку одного пакета на множество адресатов за одну операцию.</li>
+        </ul>
+      </div>
+      <div class="label">Когда использовать</div>
+      <div>Когда <b>скорость и непрерывный поток важнее</b> идеальной доставки: видеостриминг, онлайн-игры, VoIP, прямые трансляции, DNS-запросы. Если пакет потеряется или придёт не в порядке — это не критично.</div>
+    </div>
+  </div>
+
+  <!-- HTTP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🌐</span> C. HTTP — Hypertext Transfer Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Прикладной (Application)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Основной протокол WWW.</b> Определяет точную структуру и кодировку данных, передаваемых между веб-сервером и браузером.</li>
+          <li>Работает по модели <b>запрос/ответ (request/response)</b>: клиент шлёт <b>HTTP request</b>, сервер отвечает <b>HTTP response</b>.</li>
+          <li>В запросе: <b>метод</b> (GET, POST), <b>заголовок</b> (content-type, авторизация и т.п.), иногда <b>тело</b> (данные для сервера).</li>
+          <li>В ответе: <b>код состояния</b>, заголовки и обычно тело с запрашиваемым ресурсом или ошибкой.</li>
+          <li><b>Stateless:</b> каждый запрос обрабатывается независимо. Для запоминания сессии используются <b>cookies</b>.</li>
+        </ul>
+      </div>
+      <div class="label">Коды ответов</div>
+      <div>
+        <ul>
+          <li><b>200 OK</b> — успех, контент получен.</li>
+          <li><b>301 Moved Permanently</b> — ресурс переехал, используй новый URL.</li>
+          <li><b>403 Forbidden</b> — сервер понял запрос, но отказал в доступе.</li>
+          <li><b>404 Not Found</b> — ресурс не найден (битая ссылка, неверный URL).</li>
+          <li><b>500 Internal Server Error</b> — общая ошибка на стороне сервера.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- HTTPS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔒</span> D. HTTPS — HTTP Secure</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Прикладной (Application)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Это <b>расширение HTTP</b>, специально разработанное для <b>безопасности</b> в WWW.</li>
+          <li>Встраивает <b>шифрование</b> в процесс передачи — защищает целостность и приватность данных между сервером и браузером.</li>
+          <li>Безопасность достигается через <b>TLS</b> (раньше — SSL). TLS шифрует данные перед отправкой и расшифровывает на получателе.</li>
+          <li>Использует комбинацию <b>асимметричного и симметричного шифрования</b>.</li>
+          <li>В URL это видно по схеме <b>«https://»</b> вместо «http://».</li>
+        </ul>
+      </div>
+      <div class="label">Зачем</div>
+      <div>Защищает от <b>прослушивания (eavesdropping)</b>, <b>подмены данных (tampering)</b> и <b>подделки сообщений (forgery)</b> — обязательно для банков, почты, соцсетей, любых форм с паролями.</div>
+    </div>
+  </div>
+
+  <!-- FTP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📂</span> E. FTP — File Transfer Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Прикладной (Application)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Передаёт <b>файлы</b> между клиентом и сервером.</li>
+          <li>Поддерживает <b>загрузку (upload)</b> на сервер и <b>скачивание (download)</b> с сервера.</li>
+          <li>Использует <b>два канала</b>: один для команд, второй для данных.</li>
+          <li>В классическом виде <b>не шифрует</b> данные. Современные варианты — <b>FTPS</b> (FTP поверх TLS) и <b>SFTP</b> (поверх SSH) — добавляют безопасность.</li>
+        </ul>
+      </div>
+      <div class="label">Когда использовать</div>
+      <div>Загрузка файлов сайта на хостинг, бэкап больших объёмов между серверами, перенос данных между организациями.</div>
+    </div>
+  </div>
+
+  <!-- SMTP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📧</span> F. SMTP — Simple Mail Transfer Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Прикладной (Application)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Отправляет</b> электронную почту: от клиента к серверу <b>и</b> между почтовыми серверами.</li>
+          <li>Работает в паре с протоколами <b>получения почты</b>: POP3 или IMAP (их клиент использует, чтобы забрать письма с сервера).</li>
+        </ul>
+      </div>
+      <div class="label">Когда использовать</div>
+      <div>Когда нажимаешь «Отправить» в почтовом клиенте — он использует SMTP, чтобы отдать письмо своему серверу, а тот по SMTP передаст письмо серверу получателя.</div>
+    </div>
+  </div>
+
+  <!-- DNS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📖</span> G. DNS — Domain Name System</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Прикладной (Application)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Переводит <b>доменные имена</b> (понятные людям: <code>example.com</code>) в <b>IP-адреса</b> (понятные сети: <code>93.184.216.34</code>).</li>
+          <li>Это «<b>телефонная книга интернета</b>» — без неё ты должен был бы помнить IP-адреса всех сайтов.</li>
+          <li>Использует <b>иерархическую систему</b> серверов (root → TLD → authoritative).</li>
+          <li>DNS-запросы обычно идут <b>по UDP</b> (быстро, мелкие сообщения).</li>
+        </ul>
+      </div>
+      <div class="label">Когда используется</div>
+      <div>Каждый раз, когда ты вводишь <code>youtube.com</code> в браузере — браузер сначала спрашивает у DNS-сервера, какой у этого имени IP.</div>
+    </div>
+  </div>
+
+  <!-- DHCP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> H. DHCP — Dynamic Host Configuration Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Прикладной (Application)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Автоматически назначает IP-адреса</b> и другие настройки сети устройствам, когда они подключаются.</li>
+          <li>Когда устройство подключается, оно отправляет <b>широковещательный запрос</b>, и DHCP-сервер выделяет ему адрес из <b>пула (scope)</b>.</li>
+          <li>Помимо IP, DHCP даёт: <b>маску подсети (subnet mask)</b>, <b>шлюз по умолчанию (default gateway)</b>, <b>адреса DNS-серверов</b>.</li>
+          <li><b>Динамическое выделение</b> — IP даётся на <b>аренду (lease)</b> на ограниченное время.</li>
+          <li><b>Статическое выделение</b> — постоянный IP по MAC-адресу (для принтеров, серверов).</li>
+        </ul>
+      </div>
+      <div class="label">Главная цель</div>
+      <div>Упростить администрирование сети — не нужно вручную прописывать IP каждому новому устройству. Предотвращает <b>конфликты IP-адресов</b>.</div>
+    </div>
+  </div>
+
+  <!-- ARP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔎</span> I. ARP — Address Resolution Protocol</h3>
+    <div class="label-row">
+      <div class="label">Уровень</div>
+      <div><span class="layer-pill">Канальный / Интернет (Link / Internet)</span></div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li><b>Связывает IP-адрес с MAC-адресом</b> внутри локальной сети.</li>
+          <li>Когда устройству нужно отправить пакет на IP в своей же LAN, но MAC получателя неизвестен, оно <b>рассылает ARP-запрос</b> (broadcast): «У кого IP 192.168.1.5? Скажи свой MAC».</li>
+          <li>Устройство с этим IP <b>отвечает</b> своим MAC-адресом.</li>
+          <li>Результат сохраняется в <b>ARP-кэше</b>, чтобы не спрашивать каждый раз.</li>
+        </ul>
+      </div>
+      <div class="label">Зачем</div>
+      <div>Внутри LAN кадры доставляются по MAC (на канальном уровне), а приложения работают с IP — ARP «склеивает» два мира.</div>
+    </div>
+  </div>
+
+  <h3>Тренировочные вопросы — A2.1.4</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 4.1. Опиши ключевые свойства TCP, которые обеспечивают надёжную передачу данных. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (4 пункта × 1 балл):</b></p>
+      <ul>
+        <li><b>Установка соединения через handshake</b> (SYN, SYN-ACK, ACK) — гарантирует, что обе стороны готовы к обмену.</li>
+        <li><b>Подтверждение получения (acknowledgments)</b> каждого сегмента — отправитель знает, что данные дошли.</li>
+        <li><b>Контроль потока (flow control)</b> — предотвращает перегрузку получателя и сети.</li>
+        <li><b>Упорядоченная доставка</b> по номерам последовательности — данные собираются в правильном порядке, даже если пакеты пришли вразнобой.</li>
+        <li><b>Контроль ошибок через контрольную сумму (checksum)</b> — повреждённые сегменты отбрасываются и пересылаются.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.2. Различи TCP и UDP по управлению соединением и типичным сценариям использования. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Управление соединением (3 балла):</b></p>
+      <ul>
+        <li><b>TCP — connection-oriented:</b> устанавливает соединение через 3-way handshake, поддерживает состояние, корректно завершает (FIN+ACK).</li>
+        <li><b>UDP — connectionless:</b> просто отправляет датаграммы без установки соединения и без состояния.</li>
+        <li><b>TCP</b> гарантирует доставку, порядок и проверку ошибок; <b>UDP</b> ничего не гарантирует.</li>
+      </ul>
+      <p><b>Сценарии (3 балла):</b></p>
+      <ul>
+        <li><b>TCP</b> — там, где <b>важна целостность</b>: загрузка веб-страницы (HTTP/HTTPS), почта (SMTP), передача файлов (FTP).</li>
+        <li><b>UDP</b> — там, где <b>важна скорость и непрерывность</b>: видеостриминг, онлайн-игры, VoIP, DNS-запросы.</li>
+        <li>UDP поддерживает <b>multicast</b> (один пакет — много получателей), что удобно для live-трансляций.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.3. Опиши, как HTTPS улучшает безопасность HTTP-коммуникации в WWW. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (4 пункта × 1 балл):</b></p>
+      <ul>
+        <li>HTTPS добавляет к HTTP <b>шифрование</b> через протокол <b>TLS</b> (раньше SSL).</li>
+        <li>Данные <b>шифруются перед отправкой</b> и расшифровываются только на получателе — даже если их перехватят, прочитать нельзя.</li>
+        <li>Использует <b>комбинацию асимметричного и симметричного шифрования</b>: сначала обмениваются ключом по асимметрии, потом быстро шифруют трафик симметрично.</li>
+        <li>Защищает от <b>прослушивания, подмены данных и подделки сообщений</b> — основа доверия для банков, почты, соцсетей.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.4. Опиши роль DHCP в настройке сети. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (4 пункта × 1 балл):</b></p>
+      <ul>
+        <li>DHCP <b>автоматически назначает IP-адреса</b> устройствам при подключении к сети.</li>
+        <li>Кроме IP выдаёт <b>маску подсети, шлюз по умолчанию и адреса DNS-серверов</b> — полный набор для работы в сети.</li>
+        <li>Использует <b>пул адресов (scope)</b> и выдаёт их <b>в аренду (lease)</b> на ограниченное время — это <b>динамическое выделение</b>.</li>
+        <li>Может также делать <b>статическое выделение</b> — постоянный IP по MAC (для серверов и принтеров).</li>
+        <li>Предотвращает <b>конфликты адресов</b> и упрощает администрирование больших сетей.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.5. Опиши плюсы и минусы использования протокола без состояния (stateless), такого как HTTP, для веб-коммуникации. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Плюсы (2 балла):</b></p>
+      <ul>
+        <li><b>Простота и масштабируемость:</b> сервер не хранит состояние клиентов, поэтому легко обрабатывает огромное число запросов и легко масштабируется горизонтально (распределение по многим серверам).</li>
+        <li><b>Устойчивость к сбоям:</b> если сервер падает и перезапускается, не теряется «состояние сессии» — каждый запрос самодостаточен.</li>
+      </ul>
+      <p><b>Минусы (2 балла):</b></p>
+      <ul>
+        <li><b>Сложнее поддерживать сессии</b> (логин, корзина, персонализация): нужно использовать <b>cookies</b>, токены или другие внешние механизмы.</li>
+        <li><b>Лишний трафик</b>: с каждым запросом приходится передавать ту же контекстную информацию (заголовки, cookies), которую сервер не помнит.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.6. Объясни роль DNS на простом примере. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>DNS — это <b>система преобразования доменных имён в IP-адреса</b>.</li>
+        <li>Когда пользователь вводит <code>www.youtube.com</code>, браузер сначала отправляет <b>DNS-запрос</b> на DNS-сервер.</li>
+        <li>DNS-сервер ищет соответствие имени и возвращает <b>IP-адрес</b> (например, <code>142.250.74.142</code>); только после этого браузер открывает TCP-соединение к серверу YouTube.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ A2.1.5 (HL) ============ -->
+  <h2 id="a2-1-5">🧱 5. A2.1.5 — Модель TCP/IP <span class="hl-tag">HL</span></h2>
+
+  <p>
+    Цифровые сети — сложные, взаимозависимые системы с разными устройствами, протоколами, средами передачи и потенциальными проблемами. Чтобы упростить понимание, отладку и стандартизацию, используют <b>концептуальные модели</b>. Самая известная — <b>TCP/IP model</b> с четырьмя уровнями.
+  </p>
+
+  <p>
+    На каждом уровне <b>с сообщением что-то происходит</b>, прежде чем оно передаётся на следующий уровень. <b>При отправке</b> данные идут <b>сверху вниз</b>, при получении — <b>снизу вверх</b>.
+  </p>
+
+  <a class="sim-link-card" href="networks.html#layers-sim">
+    <span class="sim-emoji">🧱</span>
+    <span class="sim-text">
+      <p class="sim-title">Симуляция: уровни TCP/IP и инкапсуляция</p>
+      <p class="sim-desc">Посмотри, как HTTP-запрос превращается в Ethernet-кадр, проходя через 4 уровня.</p>
+    </span>
+    <span class="sim-arrow">→</span>
+  </a>
+
+  <h3>Четыре уровня TCP/IP</h3>
+
+  <div class="layer-stack">
+    <div class="layer layer-app">Application<small>HTTP, HTTPS, FTP, SMTP, DNS, DHCP, SNMP</small></div>
+    <div class="layer layer-trans">Transport<small>TCP, UDP — сегменты, порты, контроль</small></div>
+    <div class="layer layer-internet">Internet<small>IP, ICMP, ARP — пакеты, IP-адреса, маршрутизация</small></div>
+    <div class="layer layer-link">Network Interface (Link)<small>Ethernet (802.3), Wi-Fi (802.11) — кадры, MAC-адреса, физические сигналы</small></div>
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Уровень</th>
+        <th>Что происходит</th>
+        <th>Единица данных</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Application</td>
+        <td>Интерфейс между приложениями и сетью. Определяет протоколы для обмена данными: HTTP (веб), SMTP (почта), DNS, DHCP, SNMP (мониторинг сети).</td>
+        <td>Данные (data / message)</td>
+      </tr>
+      <tr>
+        <td>Transport (TCP/UDP)</td>
+        <td>Прямая связь между процессами на хостах. TCP даёт надёжность через нумерацию, контрольные суммы, подтверждения, повторную пересылку. UDP — быстрее, но менее надёжно.</td>
+        <td>Сегмент (TCP) / Датаграмма (UDP)</td>
+      </tr>
+      <tr>
+        <td>Internet</td>
+        <td>Пакетизация, адресация и маршрутизация между разными сетями. Главный протокол — IP, который определяет IP-адреса для уникальной идентификации устройств.</td>
+        <td>Пакет (packet)</td>
+      </tr>
+      <tr>
+        <td>Network Interface (Link)</td>
+        <td>Физическая передача по среде. Кабельные спецификации, кодирование сигналов, формирование кадров, MAC-адресация. Протоколы: <b>802.3 (Ethernet)</b>, <b>802.11 (Wi-Fi)</b>.</td>
+        <td>Кадр (frame); биты на проводе</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Откуда надёжность?</b> Каждый уровень <b>точно прописывает, как обрабатывать, инкапсулировать, передавать и принимать данные</b>. Проверка ошибок, контрольные суммы, упорядочивание и подтверждения <b>на каждом уровне</b> в сумме дают надёжность всей передачи по TCP/IP.
+  </div>
+
+  <h3>Пошаговый пример: пользователь открывает веб-страницу</h3>
+
+  <p>
+    Это <b>классический сценарий</b>, который надо знать наизусть для HL-экзамена. Идём по 8 шагам.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">1️⃣</span> Шаг 1. Application layer — пользователь запрашивает страницу</h3>
+    <ul>
+      <li>Пользователь вводит URL и нажимает Enter.</li>
+      <li>Браузер на <b>прикладном уровне</b> строит <b>HTTP GET</b> запрос для получения страницы — по правилам протокола HTTP.</li>
+      <li>Запрос передаётся <b>вниз</b> — на транспортный уровень.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">2️⃣</span> Шаг 2. Transport layer — подготовка к передаче</h3>
+    <ul>
+      <li>HTTP-запрос превращается в <b>TCP-сегмент</b>. Добавляется <b>TCP-заголовок</b>: номер последовательности, <b>порт источника и назначения</b> (HTTP — порт 80, HTTPS — порт 443), контрольная сумма.</li>
+      <li>Устанавливается <b>TCP-соединение через 3-way handshake</b>:
+        <ul>
+          <li><b>SYN</b> — клиент: «Привет, я хочу поговорить, ты готов?»</li>
+          <li><b>SYN-ACK</b> — сервер: «Ок, получил, я готов слушать».</li>
+          <li><b>ACK</b> — клиент: «Отлично, начинаю слать данные!»</li>
+        </ul>
+      </li>
+      <li>После handshake соединение установлено, сегмент уходит <b>вниз</b> на интернет-уровень. Если handshake провалился, пакет <b>не пойдёт</b> дальше — пользователь увидит «connection timed out».</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">3️⃣</span> Шаг 3. Internet layer — упаковка для маршрутизации</h3>
+    <ul>
+      <li>TCP-сегмент <b>инкапсулируется в IP-пакет</b>. Добавляется <b>IP-заголовок</b>: <b>IP источника</b>, <b>IP назначения</b>, тип данных (тут — TCP), <b>TTL (time to live)</b> и checksum для заголовка.</li>
+      <li>Пакет получает <b>next hop</b> — обычно адрес маршрутизатора в твоей локальной сети.</li>
+      <li>Пакет передаётся <b>вниз</b> — на канальный уровень.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">4️⃣</span> Шаг 4. Network interface layer — финальная упаковка и сигнал</h3>
+    <ul>
+      <li>IP-пакет <b>инкапсулируется в Ethernet-кадр</b> (если сеть Ethernet). Кадр содержит <b>MAC источника</b>, <b>MAC получателя (следующего хопа)</b>, управляющую информацию и checksum.</li>
+      <li><b>NIC</b> (Network Interface Card) преобразует кадр в <b>электрические сигналы</b> (или световые импульсы для оптоволокна, или радиоволны для Wi-Fi).</li>
+      <li>Сигналы передаются по физической среде — медный кабель, оптоволокно, Wi-Fi.</li>
+      <li>На этом уровне всё <b>становится зависимо от конкретной физической сети</b>.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🌍</span> Между шагами 4 и 5 — путешествие через интернет</h3>
+    <p>Кадр <b>идёт через интернет, прыгая через множество маршрутизаторов</b>. Каждый маршрутизатор смотрит на <b>IP назначения</b> и определяет следующий хоп. На каждом хопе MAC-адреса меняются (новый отправитель, новый получатель — следующий маршрутизатор), <b>но IP-адреса источника и назначения остаются прежними</b>.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">5️⃣</span> Шаг 5. Получение на сервере — снизу вверх</h3>
+    <ul>
+      <li><b>Network interface:</b> NIC сервера получает сигналы, преобразует обратно в кадр. Проверяет checksum, проверяет MAC-адрес назначения. <b>Снимает Ethernet-заголовок и trailer</b>, передаёт пакет наверх.</li>
+      <li><b>Internet layer:</b> сервер проверяет, что IP-назначения = его собственному IP. Проверяет checksum заголовка. <b>Снимает IP-заголовок</b>, передаёт TCP-сегмент наверх.</li>
+      <li><b>Transport layer:</b> по номеру порта направляет данные нужному приложению (порт 80 = веб-сервер). Если запрос состоял из нескольких сегментов — <b>собирает их в правильном порядке</b> по номерам последовательности. Проверяет checksum. <b>Передаёт целый HTTP GET</b> приложению.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">6️⃣</span> Шаг 6. Сервер отвечает</h3>
+    <ul>
+      <li><b>Application:</b> веб-сервер формирует <b>HTTP response</b> с HTML-содержимым страницы.</li>
+      <li><b>Transport:</b> ответ упаковывается в TCP-сегменты, добавляются TCP-заголовки, сегменты отправляются клиенту.</li>
+      <li><b>Internet:</b> сегменты инкапсулируются в IP-пакеты.</li>
+      <li><b>Network interface:</b> пакеты упаковываются в кадры, превращаются в сигналы — и в путь обратно.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">7️⃣</span> Шаг 7. Клиент получает страницу</h3>
+    <ul>
+      <li><b>Network interface:</b> NIC клиента получает сигналы → кадр → проверка → пакет наверх.</li>
+      <li><b>Internet:</b> проверка IP, снятие IP-заголовка, передача TCP-сегмента наверх.</li>
+      <li><b>Transport:</b> проверка checksum, сборка сегментов по порядку, передача HTTP-ответа приложению.</li>
+      <li><b>Application:</b> браузер <b>интерпретирует HTML</b> и показывает страницу пользователю.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">8️⃣</span> Шаг 8. Завершение соединения</h3>
+    <ul>
+      <li>После успешной передачи TCP-соединение <b>корректно закрывается</b>.</li>
+      <li><b>FIN</b> — сторона говорит «я закончил отправку, хочу закрыть соединение в эту сторону».</li>
+      <li><b>ACK</b> — другая сторона подтверждает.</li>
+      <li>Соединение разрывается «вежливо», без потерь данных.</li>
+    </ul>
+  </div>
+
+  <h3>Модель TCP/IP vs модель OSI</h3>
+
+  <p>
+    На экзамене иногда сравнивают TCP/IP с моделью <b>OSI</b> (Open Systems Interconnection) — это другая, более «академическая» концептуальная модель, у которой <b>7 уровней</b> вместо 4.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>OSI (7 уровней)</th>
+        <th>Соответствующий слой TCP/IP (4 уровня)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>7. Application</td>
+        <td rowspan="3" style="vertical-align:middle">Application</td>
+      </tr>
+      <tr><td>6. Presentation</td></tr>
+      <tr><td>5. Session</td></tr>
+      <tr>
+        <td>4. Transport</td>
+        <td>Transport</td>
+      </tr>
+      <tr>
+        <td>3. Network</td>
+        <td>Internet</td>
+      </tr>
+      <tr>
+        <td>2. Data Link</td>
+        <td rowspan="2" style="vertical-align:middle">Network Interface (Link)</td>
+      </tr>
+      <tr><td>1. Physical</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <b>Ключевые отличия:</b>
+  </p>
+  <ul>
+    <li><b>Количество уровней:</b> OSI — 7, TCP/IP — 4.</li>
+    <li><b>TCP/IP объединяет</b> верхние три уровня OSI (Application, Presentation, Session) в один <b>Application</b>; нижние два уровня OSI (Data Link, Physical) объединены в один <b>Network Interface</b>.</li>
+    <li><b>OSI</b> — теоретическая модель, часто используется для обучения и анализа.</li>
+    <li><b>TCP/IP</b> — практическая, на ней реально построен интернет.</li>
+    <li>Оба <b>иерархические</b> и используют <b>инкапсуляцию</b>: каждый уровень добавляет свой заголовок при отправке и снимает его при приёме.</li>
+  </ul>
+
+  <h3>Тренировочные вопросы — A2.1.5 <span class="hl-tag">HL</span></h3>
+
+  <details class="question-card">
+    <summary>Вопрос 5.1. Опиши функцию прикладного уровня в модели TCP/IP. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Прикладной уровень обеспечивает <b>интерфейс между приложениями на компьютере и сетью</b>.</li>
+        <li>Он <b>определяет протоколы</b>, через которые приложения обмениваются данными: HTTP/HTTPS для веба, SMTP для почты, DNS, DHCP, SNMP для управления сетью.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.2. Опиши, как транспортный уровень обеспечивает надёжную передачу данных. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Транспортный уровень (через <b>TCP</b>) использует <b>нумерацию (sequencing), контрольные суммы (checksums), подтверждения (acknowledgments) и повторную пересылку (retransmissions)</b>, чтобы гарантировать упорядоченную и корректную доставку.</li>
+        <li>UDP даёт более быструю, но менее надёжную доставку — без подтверждений и проверок.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.3. Опиши роль интернет-уровня в модели TCP/IP. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (3 пункта × 1 балл):</b></p>
+      <ul>
+        <li>Интернет-уровень <b>пакетирует данные, добавляет IP-адресацию и маршрутизирует</b> пакеты между разными сетями.</li>
+        <li>Главный протокол — <b>IP (Internet Protocol)</b>; он определяет IP-адреса, уникально идентифицирующие каждое устройство в сети.</li>
+        <li>Цель — доставить пакет с устройства отправителя <b>на правильное устройство-получатель через любое количество промежуточных сетей</b>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.4. Опиши функцию уровня сетевого интерфейса в модели TCP/IP. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (3 пункта × 1 балл):</b></p>
+      <ul>
+        <li>Уровень сетевого интерфейса отвечает за <b>физические и аппаратные аспекты</b> сетевой передачи: спецификации кабеля, кодирование сигналов, формирование <b>кадров (frames)</b>, MAC-адресация.</li>
+        <li>Здесь работают <b>сетевые адаптеры (NIC)</b> и драйверы — они прямо взаимодействуют с физической средой (медь, оптика, радио).</li>
+        <li>Протоколы: <b>802.3 (Ethernet)</b> для проводных и <b>802.11 (Wi-Fi)</b> для беспроводных сетей.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.5. Опиши важность послойного подхода TCP/IP для надёжности сетевых коммуникаций. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (5 пунктов × 1 балл):</b></p>
+      <ul>
+        <li><b>Разделение ответственности (separation of concerns):</b> каждый уровень решает свою задачу, не вмешиваясь в другие — это упрощает разработку, отладку и эволюцию протоколов.</li>
+        <li><b>Стандартизация:</b> у каждого уровня есть чёткие протоколы и форматы — устройства разных производителей могут общаться, потому что соблюдают общие правила.</li>
+        <li><b>Инкапсуляция:</b> каждый уровень добавляет свой заголовок при отправке и снимает при получении — данные «оборачиваются» в правильные форматы для каждого этапа.</li>
+        <li><b>Контроль ошибок на нескольких уровнях:</b> Ethernet checksum на канальном, IP checksum на интернет-уровне, TCP checksum на транспортном — повреждённые данные обнаруживаются и переотправляются.</li>
+        <li><b>Гибкость:</b> можно менять один уровень (например, перейти с Ethernet на Wi-Fi на канальном уровне), не трогая остальные — приложения продолжают работать.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.6. Сравни модель TCP/IP с моделью OSI. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (3 сходства + 3 различия):</b></p>
+      <p><b>Сходства:</b></p>
+      <ul>
+        <li>Обе — <b>иерархические концептуальные модели</b> для понимания и стандартизации сетевой коммуникации.</li>
+        <li>Обе используют <b>инкапсуляцию</b>: каждый уровень добавляет свой заголовок при отправке.</li>
+        <li>Обе разделяют ответственность по уровням — это упрощает проектирование протоколов и устройств.</li>
+      </ul>
+      <p><b>Различия:</b></p>
+      <ul>
+        <li><b>Число уровней:</b> у OSI — 7 (Physical, Data Link, Network, Transport, Session, Presentation, Application), у TCP/IP — 4 (Network Interface, Internet, Transport, Application).</li>
+        <li><b>Группировка:</b> TCP/IP <b>объединяет три верхних уровня OSI</b> в один Application и <b>два нижних</b> — в Network Interface.</li>
+        <li><b>Практическое применение:</b> OSI — теоретическая модель, чаще для обучения; <b>TCP/IP — фактический стандарт интернета</b>, на нём построена реальная инфраструктура.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.7. Объясни, что происходит на каждом уровне TCP/IP, когда пользователь открывает веб-страницу. <span class="marks-tag">8 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (короткий ответ по 4 уровням + handshake + инкапсуляция):</b></p>
+      <ul>
+        <li><b>Application:</b> браузер формирует <b>HTTP GET</b> запрос по правилам HTTP.</li>
+        <li><b>Transport:</b> HTTP-запрос превращается в <b>TCP-сегмент</b> с портом источника/назначения, номером последовательности, checksum. Устанавливается соединение через <b>3-way handshake</b> (SYN, SYN-ACK, ACK).</li>
+        <li><b>Internet:</b> TCP-сегмент <b>инкапсулируется в IP-пакет</b> с IP-адресами источника и назначения, TTL, checksum. Определяется next hop (обычно — локальный маршрутизатор).</li>
+        <li><b>Network interface:</b> IP-пакет <b>инкапсулируется в Ethernet-кадр</b> с MAC-адресами. NIC превращает кадр в <b>электрические/оптические/радиосигналы</b> и отправляет по физической среде.</li>
+        <li>На сервере процесс <b>зеркальный, снизу вверх:</b> каждый уровень снимает свой заголовок, проверяет и передаёт наверх.</li>
+        <li>Сервер формирует HTTP-ответ, тот проходит уровни <b>сверху вниз</b>, доходит до клиента и идёт <b>снизу вверх</b> — браузер интерпретирует HTML и показывает страницу.</li>
+        <li>Соединение корректно <b>завершается через FIN + ACK</b>.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Главное: показать, что <b>при отправке</b> данные идут сверху вниз (HTTP → TCP сегмент → IP пакет → Ethernet кадр), <b>при получении</b> — снизу вверх. Это и есть <b>инкапсуляция</b>.</p>
+    </div>
+  </details>
+
+  <!-- ============ Closing ============ -->
+  <h2 id="remember">📌 Что важно запомнить</h2>
+
+  <ul style="line-height: 1.85; font-size: 1.02rem;">
+    <li><b>Типы сетей запоминай через расстояние:</b> PAN ≈ 10 м, LAN ≈ 1 км, WAN — города/страны. VPN — это <b>не отдельная сеть по железу</b>, а зашифрованный туннель поверх интернета.</li>
+    <li><b>VPN ≠ просто анонимность.</b> Главная цель — <b>безопасный удалённый доступ</b> к частной сети.</li>
+    <li><b>У каждого типа инфраструктуры свой trade-off:</b> облако = удобство против задержки и зависимости от связи; edge = скорость и автономность против сложности и стоимости; распределённые системы = мощность и отказоустойчивость против сложности согласованности.</li>
+    <li><b>SaaS/PaaS/IaaS:</b> чем выше уровень (IaaS → SaaS), тем меньше управляешь, тем больше используешь готового.</li>
+    <li><b>TCP vs UDP — самый частый вопрос:</b> TCP даёт <b>надёжность через handshake, acks, sequencing, flow control</b>; UDP даёт <b>скорость через отсутствие соединения и проверок</b>. Когда важна целостность (веб, почта, файлы) — TCP. Когда важна скорость и непрерывность (стриминг, игры, VoIP, DNS) — UDP.</li>
+    <li><b>HTTP — stateless и без шифрования; HTTPS — то же + TLS (шифрование).</b> Stateless значит, что нужны <b>cookies</b> для поддержания сессии.</li>
+    <li><b>DNS = имя → IP. DHCP = автоматическая раздача IP + настроек.</b> Не путать.</li>
+    <li><b>ARP</b> — отвечает на вопрос «у кого этот IP в моей локальной сети?» и возвращает MAC. Работает только внутри LAN.</li>
+    <li><b>4 уровня TCP/IP сверху вниз (HL):</b> Application → Transport → Internet → Network Interface. При отправке — сверху вниз, при получении — снизу вверх. На каждом уровне — <b>инкапсуляция</b>: добавляется заголовок со своими данными.</li>
+    <li><b>Знай 3-way handshake (SYN, SYN-ACK, ACK)</b> и <b>корректное закрытие (FIN, ACK)</b> — это <b>обязательно</b> для HL.</li>
+    <li><b>Сравнение TCP/IP с OSI:</b> у OSI 7 уровней, у TCP/IP 4. TCP/IP — практический стандарт, OSI — теоретическая модель. Application у TCP/IP = Application + Presentation + Session у OSI; Network Interface у TCP/IP = Data Link + Physical у OSI.</li>
+    <li><b>Послойный подход</b> = разделение ответственности + стандартизация + инкапсуляция + контроль ошибок на каждом уровне + гибкость замены протоколов = <b>надёжность всей сетевой коммуникации</b>.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+    &nbsp; · &nbsp;
+    <a href="setevye-ustroistva.html" class="back-link">A2.1.3 Сетевые устройства →</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A2.1" class="back-link">К квизу A2.1 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A2.1 Основы сетей · Адаптировано с IB DP 2025 Computer Science (Oxford), c.101–123 · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

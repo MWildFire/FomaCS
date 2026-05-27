@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подробные уроки · IB CS Theme A</title>
+<meta name="description" content="13 standalone Russian-language deep-dive lessons for IB Computer Science Theme A — built from the Oxford 2025 textbook.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  .lessons-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .lessons-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+  }
+  .lessons-page .lede {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 40px;
+  }
+  .lessons-page h2 {
+    font-size: 1.6rem;
+    color: var(--primary);
+    margin: 40px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .lesson-card {
+    display: block;
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .lesson-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-left-color: var(--primary);
+    text-decoration: none;
+  }
+  .lesson-card.hl { border-left-color: var(--red); }
+  .lesson-card.a1 { border-left-color: var(--amber); }
+  .lesson-card.a2 { border-left-color: var(--accent); }
+  .lesson-card.a3 { border-left-color: var(--violet); }
+  .lesson-card.a4 { border-left-color: var(--green); }
+  .lesson-card .lesson-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .lesson-card.hl .lesson-tag { background: rgba(239,68,68,0.12); color: var(--red); }
+  .lesson-card h3 {
+    margin: 6px 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+  }
+  .lesson-card p {
+    margin: 6px 0 0;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+  .info-banner {
+    background: rgba(14,165,233,0.08);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 0.95rem;
+  }
+  [data-theme="dark"] .info-banner { background: rgba(56,189,248,0.10); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="lessons.html">📚 Уроки</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="lessons-page">
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    📚 RUSSIAN DEEP-DIVE LESSONS
+  </span>
+  <h1>Подробные уроки</h1>
+  <p class="lede">
+    13 отдельных страниц на русском языке — по одной на каждую IB-подтему Theme A.
+    Каждый урок: <b>краткая теория → подробные карточки</b> с реальными примерами →
+    <b>раскрывающиеся экзамен-вопросы</b> с подсказками к ответам.
+    Цель: пройти урок и потом со 100% уверенностью отвечать на экзамене.
+  </p>
+
+  <div class="info-banner">
+    <b>Источник:</b> Oxford IB Diploma Programme Computer Science 2025 (Course Companion) +
+    программа NLCS Dubai IB CS. Контент адаптирован на понятный русский язык; английские термины — в скобках.
+    Каждая страница ссылается на соответствующие <b>интерактивные симуляции</b> из основных разделов сайта.
+  </div>
+
+  <!-- A1 -->
+  <h2>A1 · Основы информатики</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card a1" href="a1-1-hardware.html">
+      <span class="lesson-tag">A1.1</span>
+      <h3>Аппаратное обеспечение и работа компьютера</h3>
+      <p>CPU, GPU, регистры, шины, fetch-decode-execute, иерархия памяти, SSD/HDD, сжатие, облачные сервисы (SaaS/PaaS/IaaS).</p>
+    </a>
+    <a class="lesson-card a1" href="a1-2-data-logic.html">
+      <span class="lesson-tag">A1.2</span>
+      <h3>Представление данных и логика</h3>
+      <p>Двоичная/hex, two's complement, ASCII/Unicode, RGB-пиксели, логические элементы, таблицы истинности, K-карты, булева алгебра.</p>
+    </a>
+    <a class="lesson-card a1" href="a1-3-os.html">
+      <span class="lesson-tag">A1.3</span>
+      <h3>Операционные и управляющие системы</h3>
+      <p>Функции ОС, планировщики, polling vs interrupts, многозадачность (HL), компоненты управляющих систем (HL), реальные приложения (HL).</p>
+    </a>
+    <a class="lesson-card hl" href="a1-4-translation.html">
+      <span class="lesson-tag">A1.4 · HL</span>
+      <h3>Трансляция (HL)</h3>
+      <p>Компилятор vs интерпретатор vs JIT, стадии компиляции, байт-код, линкеры и загрузчики. Сравнительная таблица + use-case grid.</p>
+    </a>
+  </div>
+
+  <!-- A2 -->
+  <h2>A2 · Сети</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card a2" href="a2-1-fundamentals.html">
+      <span class="lesson-tag">A2.1</span>
+      <h3>Основы сетей</h3>
+      <p>LAN/WAN/PAN/VPN, интернет, облако, edge/fog, мобильные сети, протоколы TCP/UDP/HTTP/DNS/DHCP/ARP, TCP/IP слои (HL).</p>
+    </a>
+    <a class="lesson-card a2" href="setevye-ustroistva.html">
+      <span class="lesson-tag">A2.1.3</span>
+      <h3>Сетевые устройства</h3>
+      <p>Модем, коммутатор, точка доступа, маршрутизатор, межсетевой экран, шлюз — с привязкой к слоям TCP/IP.</p>
+    </a>
+    <a class="lesson-card a2" href="a2-2-architecture.html">
+      <span class="lesson-tag">A2.2</span>
+      <h3>Архитектура сетей</h3>
+      <p>Топологии (звезда/шина/кольцо/mesh/tree/hybrid), функции серверов (HL), client-server vs P2P, сегментация (VLAN, subnetting).</p>
+    </a>
+    <a class="lesson-card a2" href="a2-3-transmissions.html">
+      <span class="lesson-tag">A2.3</span>
+      <h3>Передача данных</h3>
+      <p>Среды передачи, IPv4/IPv6, packet vs circuit switching, маршрутизация, bandwidth/latency, error detection.</p>
+    </a>
+    <a class="lesson-card a2" href="a2-4-security.html">
+      <span class="lesson-tag">A2.4</span>
+      <h3>Сетевая безопасность</h3>
+      <p>Угрозы (malware, phishing, DDoS, MITM, SQL injection), защита, шифрование (symmetric/asymmetric), сертификаты, MFA, GDPR.</p>
+    </a>
+  </div>
+
+  <!-- A3 -->
+  <h2>A3 · Базы данных</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card a3" href="a3-1-fundamentals.html">
+      <span class="lesson-tag">A3.1</span>
+      <h3>Основы баз данных</h3>
+      <p>DBMS, типы БД, таблицы/ключи (PK, FK, candidate, composite), целостность данных, роли DBA / designer / end user.</p>
+    </a>
+    <a class="lesson-card a3" href="a3-2-design.html">
+      <span class="lesson-tag">A3.2</span>
+      <h3>Проектирование БД</h3>
+      <p>ER-диаграммы, разрешение M:N через junction-table, нормализация UNF → 1NF → 2NF → 3NF, аномалии, индексы.</p>
+    </a>
+    <a class="lesson-card a3" href="a3-3-sql.html">
+      <span class="lesson-tag">A3.3</span>
+      <h3>SQL и программирование БД</h3>
+      <p>DDL/DML/DCL/TCL, SELECT/WHERE/JOIN/GROUP BY, аггрегации, подзапросы, транзакции и ACID.</p>
+    </a>
+  </div>
+
+  <!-- A4 -->
+  <h2>A4 · Машинное обучение</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card hl" href="a4-2-preprocessing.html">
+      <span class="lesson-tag">A4.2 · HL</span>
+      <h3>Предобработка данных (HL)</h3>
+      <p>Чистка, выбросы (IQR, Z-score), нормализация vs стандартизация, кодирование категориальных, train/val/test split, K-fold CV, утечка данных.</p>
+    </a>
+  </div>
+
+  <h2>Как пользоваться</h2>
+  <ol style="line-height:1.8; max-width:760px">
+    <li>Открой урок по любой подтеме.</li>
+    <li>Прочитай теорию сверху вниз. Английские термины в скобках помогут на экзамене.</li>
+    <li>Каждый раз, когда увидишь ссылку на <b>симуляцию</b> — переходи и попробуй! Это самое быстрое запоминание.</li>
+    <li>В разделе «Тренировочные вопросы» нажми на каждый вопрос, попробуй ответить сам, потом раскрой подсказку.</li>
+    <li>В конце урока — раздел «Что важно запомнить» = чеклист для экзамена.</li>
+    <li>Когда чувствуешь уверенность — иди на <a href="quiz.html">страницу квиза</a> и проверь себя на 77 экзамен-вопросах с автопроверкой.</li>
+  </ol>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · Подробные уроки · Источник: Oxford 2025 Course Companion + NLCS Dubai IB CS · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

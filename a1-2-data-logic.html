@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1.2 Представление данных и компьютерная логика · IB CS Theme A</title>
+<meta name="description" content="A1.2 Представление данных и компьютерная логика — подробный разбор на русском: системы счисления (двоичная, десятичная, шестнадцатеричная), хранение данных, логические элементы, таблицы истинности, карты Карно, логические диаграммы, булева алгебра.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .device-page h4 {
+    font-size: 1.05rem;
+    color: var(--primary);
+    margin: 20px 0 6px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul, .device-card ol {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+
+  /* HL-only marker pill */
+  .hl-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(245,158,11,0.18);
+    color: #b45309;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  [data-theme="dark"] .hl-tag { background: rgba(245,158,11,0.25); color: #fbbf24; }
+
+  /* Place-value / binary breakdown tables */
+  .pv-table {
+    border-collapse: collapse;
+    margin: 12px 0 14px;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+  }
+  .pv-table th, .pv-table td {
+    border: 1px solid var(--border-strong);
+    padding: 8px 14px;
+    text-align: center;
+    min-width: 44px;
+  }
+  .pv-table th {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .pv-table td.bit-on { background: rgba(16,185,129,0.18); color: var(--text); font-weight: 700; }
+  .pv-table td.bit-off { background: rgba(148,163,184,0.08); color: var(--text-muted); }
+  .pv-row-label { background: var(--primary) !important; color: #fff !important; font-weight: 600; text-align: left !important; font-family: inherit !important; font-size: 0.85rem !important; }
+
+  /* Truth tables */
+  .truth-table {
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .truth-table th {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 16px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+  }
+  .truth-table th.input-col { background: #2c5680; }
+  .truth-table th.output-col { background: #1a3a5e; }
+  .truth-table td {
+    padding: 6px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .truth-table tr:last-child td { border-bottom: 0; }
+  .truth-table td:last-child { border-right: 0; }
+  .truth-table td.t-true { background: rgba(16,185,129,0.16); color: var(--text); font-weight: 700; }
+  .truth-table td.t-false { background: rgba(244,114,182,0.10); color: var(--text-muted); }
+  [data-theme="dark"] .truth-table td.t-true { background: rgba(16,185,129,0.24); }
+  [data-theme="dark"] .truth-table td.t-false { background: rgba(244,114,182,0.16); }
+
+  /* K-map table */
+  .kmap {
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-family: var(--mono);
+    font-size: 1rem;
+  }
+  .kmap th, .kmap td {
+    border: 1px solid var(--border-strong);
+    padding: 10px 18px;
+    text-align: center;
+    min-width: 56px;
+    min-height: 40px;
+  }
+  .kmap th {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .kmap td.km-1 { background: rgba(16,185,129,0.22); font-weight: 700; }
+  .kmap td.km-0 { background: rgba(148,163,184,0.06); color: var(--text-muted); }
+  .kmap td.km-group { outline: 3px dashed var(--violet); outline-offset: -3px; }
+
+  /* Gate visual block (text-based SVG-light) */
+  .gate-svg-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 10px 0 6px;
+  }
+  .gate-symbol {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+  }
+
+  /* "Try the simulator" callout */
+  .sim-callout {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(139,92,246,0.10));
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    padding: 14px 20px;
+    margin: 16px 0 24px;
+    border-radius: var(--radius);
+  }
+  .sim-callout .sim-emoji { font-size: 1.7rem; }
+  .sim-callout .sim-text { flex: 1; line-height: 1.5; }
+  .sim-callout .sim-text b { color: var(--primary); }
+  .sim-callout a.sim-btn {
+    background: var(--accent);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .sim-callout a.sim-btn:hover { background: #0369a1; }
+  [data-theme="dark"] .sim-callout a.sim-btn:hover { background: #38bdf8; color: #0f172a; }
+
+  /* Worked-example box */
+  .worked {
+    background: rgba(14,165,233,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    margin: 14px 0 22px;
+  }
+  [data-theme="dark"] .worked { background: rgba(14,165,233,0.10); }
+  .worked h4 {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .worked p { line-height: 1.65; margin: 6px 0; }
+  .worked code, .worked .math-line {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+  }
+  .worked .math-line {
+    display: block;
+    padding: 4px 0;
+    color: var(--primary);
+  }
+
+  .ascii-pixel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 220px;
+    gap: 2px;
+    margin: 10px 0;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+  .ascii-pixel-grid .px {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .ascii-pixel-grid .px-red { background: #ef4444; }
+  .ascii-pixel-grid .px-green { background: #16a34a; }
+  .ascii-pixel-grid .px-blue { background: #2563eb; }
+  .ascii-pixel-grid .px-white { background: #f5f5f5; color: #1f2937; text-shadow: none; border: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A1.2 · Data representation and computer logic
+  </span>
+
+  <h1>Представление данных и компьютерная логика</h1>
+
+  <p class="lede">
+    Эта тема (<b>A1.2</b>) — про то, как компьютер «думает» нулями и единицами. Мы разберём <b>системы счисления</b> (двоичная, десятичная, шестнадцатеричная), как в битах кодируются <b>числа, текст, изображения, звук и видео</b>, как из крошечных <b>логических элементов</b> (AND, OR, NOT, NAND, NOR, XOR, XNOR) собираются процессоры, и как <b>таблицы истинности</b> и <b>логические диаграммы</b> помогают проектировать и проверять цифровые схемы. На уровне HL ещё добавляются <b>карты Карно (Karnaugh maps)</b> для упрощения булевых выражений.
+  </p>
+
+  <!-- ============ SECTION A1.2.1 ============ -->
+  <h2>🔢 1. A1.2.1 Системы счисления (number systems)</h2>
+
+  <p>
+    Любая система счисления — это просто <b>способ записывать числа</b>. Привычная нам система — <b>десятичная (denary, base-10)</b> — использует 10 цифр (0–9). Компьютеры внутри работают с <b>двоичной (binary, base-2)</b> — всего 2 цифры (0 и 1). А программисты часто читают и пишут адреса памяти и цвета в <b>шестнадцатеричной (hexadecimal, base-16)</b> — 16 «цифр» (0–9 и A–F).
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Система</th>
+        <th>Основание</th>
+        <th>Цифры</th>
+        <th>Где используется</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Десятичная (denary)</td>
+        <td>10</td>
+        <td>0–9</td>
+        <td>Повседневный счёт людей</td>
+      </tr>
+      <tr>
+        <td>Двоичная (binary)</td>
+        <td>2</td>
+        <td>0, 1</td>
+        <td>Внутри компьютера (бит = вкл/выкл, заряд/нет заряда)</td>
+      </tr>
+      <tr>
+        <td>Шестнадцатеричная (hex)</td>
+        <td>16</td>
+        <td>0–9, A, B, C, D, E, F</td>
+        <td>Цвета (#FF00AA), MAC-адреса, дампы памяти, ASCII-коды</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Терминология:</b> один разряд двоичного числа называется <b>бит (bit, binary digit)</b>. 4 бита = <b>ниббл (nibble)</b> — ровно одна шестнадцатеричная цифра. 8 бит = <b>байт (byte)</b> — стандартная единица. Чтобы было видно систему счисления, рядом ставят индекс: 11<sub>10</sub>, 11<sub>2</sub> и 11<sub>16</sub> — это <b>три разных числа</b> (одиннадцать, три и семнадцать соответственно).
+  </div>
+
+  <div class="sim-callout">
+    <span class="sim-emoji">🔢</span>
+    <div class="sim-text">
+      <b>Попробуй интерактивно!</b> Конвертер Binary ↔ Денарное ↔ Hex с кликабельными битами и режимом «знаковый» (two's complement) уже встроен на странице A1.
+    </div>
+    <a href="fundamentals.html#binary-sim" class="sim-btn">Открыть конвертер →</a>
+  </div>
+
+  <!-- ====== Binary ====== -->
+  <h3>1.1 Двоичная система (binary)</h3>
+
+  <p>
+    Каждая позиция бита соответствует степени двойки. Считаем <b>справа налево</b>: самый правый бит — это 2<sup>0</sup> = 1, следующий 2<sup>1</sup> = 2, дальше 2<sup>2</sup> = 4, 2<sup>3</sup> = 8 и так далее. Чтобы получить десятичное значение — складываем все степени двойки, где стоит 1.
+  </p>
+
+  <table class="pv-table">
+    <tr>
+      <td class="pv-row-label">Степень</td>
+      <td>2<sup>7</sup></td><td>2<sup>6</sup></td><td>2<sup>5</sup></td><td>2<sup>4</sup></td>
+      <td>2<sup>3</sup></td><td>2<sup>2</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td>
+    </tr>
+    <tr>
+      <td class="pv-row-label">Значение</td>
+      <td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td>
+    </tr>
+  </table>
+
+  <div class="worked">
+    <h4>Worked example · Binary → Denary</h4>
+    <p>Переведи <code>1011<sub>2</sub></code> в десятичную систему.</p>
+    <table class="pv-table">
+      <tr><td class="pv-row-label">Степень</td><td>2<sup>3</sup></td><td>2<sup>2</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td></tr>
+      <tr><td class="pv-row-label">Значение</td><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+      <tr><td class="pv-row-label">Бит</td><td class="bit-on">1</td><td class="bit-off">0</td><td class="bit-on">1</td><td class="bit-on">1</td></tr>
+    </table>
+    <span class="math-line">1011<sub>2</sub> = 8 + 0 + 2 + 1 = <b>11<sub>10</sub></b></span>
+    <p>Где стоит 1 — складываем соответствующую степень двойки. Где 0 — пропускаем.</p>
+  </div>
+
+  <div class="worked">
+    <h4>Worked example · Denary → Binary</h4>
+    <p>Переведи <code>45<sub>10</sub></code> в двоичную систему. <b>Метод:</b> делим на 2, записываем остатки, читаем остатки <b>снизу вверх</b>.</p>
+    <pre style="font-family: var(--mono); line-height:1.7; background:var(--surface-2); padding:12px 16px; border-radius:6px; font-size:0.95rem">
+45 / 2 = 22 остаток <b>1</b>
+22 / 2 = 11 остаток <b>0</b>
+11 / 2 =  5 остаток <b>1</b>
+ 5 / 2 =  2 остаток <b>1</b>
+ 2 / 2 =  1 остаток <b>0</b>
+ 1 / 2 =  0 остаток <b>1</b>   ← стоп, когда частное = 0</pre>
+    <span class="math-line">Читаем остатки снизу вверх: <b>101101<sub>2</sub></b></span>
+    <p>В <b>8-битном регистре</b> добавляем нули слева: <code>00101101<sub>2</sub></code>.</p>
+  </div>
+
+  <h4>Сколько чисел помещается в N бит?</h4>
+  <p>
+    В <b>N бит</b> можно записать ровно <b>2<sup>N</sup></b> разных значений (от 0 до 2<sup>N</sup> − 1, если беззнаковое):
+  </p>
+  <ul>
+    <li><b>4 бита</b> → 2<sup>4</sup> = 16 значений (0–15) → один ниббл, одна hex-цифра</li>
+    <li><b>8 бит</b> → 2<sup>8</sup> = 256 значений (0–255) → один байт</li>
+    <li><b>16 бит</b> → 2<sup>16</sup> = 65 536 значений</li>
+    <li><b>32 бита</b> → 2<sup>32</sup> ≈ 4,29 млрд значений</li>
+  </ul>
+
+  <!-- ====== Hex ====== -->
+  <h3>1.2 Шестнадцатеричная система (hexadecimal)</h3>
+
+  <p>
+    Hex — это «человекочитаемая» запись двоичных чисел. <b>Каждая hex-цифра = ровно 4 бита</b>. Это очень удобно: длинная битовая строка <code>11010110</code> превращается в короткое <code>D6</code>.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Hex</th><th>Двоичное</th><th>Десятичное</th><th>Hex</th><th>Двоичное</th><th>Десятичное</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>0000</td><td>0</td><td>8</td><td>1000</td><td>8</td></tr>
+      <tr><td>1</td><td>0001</td><td>1</td><td>9</td><td>1001</td><td>9</td></tr>
+      <tr><td>2</td><td>0010</td><td>2</td><td>A</td><td>1010</td><td>10</td></tr>
+      <tr><td>3</td><td>0011</td><td>3</td><td>B</td><td>1011</td><td>11</td></tr>
+      <tr><td>4</td><td>0100</td><td>4</td><td>C</td><td>1100</td><td>12</td></tr>
+      <tr><td>5</td><td>0101</td><td>5</td><td>D</td><td>1101</td><td>13</td></tr>
+      <tr><td>6</td><td>0110</td><td>6</td><td>E</td><td>1110</td><td>14</td></tr>
+      <tr><td>7</td><td>0111</td><td>7</td><td>F</td><td>1111</td><td>15</td></tr>
+    </tbody>
+  </table>
+
+  <div class="worked">
+    <h4>Worked example · Hex → Denary</h4>
+    <p>Переведи <code>2A<sub>16</sub></code> в десятичную систему.</p>
+    <span class="math-line">2A<sub>16</sub> = 2 × 16<sup>1</sup> + A × 16<sup>0</sup></span>
+    <span class="math-line">= 2 × 16 + 10 × 1</span>
+    <span class="math-line">= 32 + 10 = <b>42<sub>10</sub></b></span>
+    <p>Помни: A = 10, B = 11, C = 12, D = 13, E = 14, F = 15.</p>
+  </div>
+
+  <div class="worked">
+    <h4>Worked example · Binary ↔ Hex</h4>
+    <p>Переведи <code>11010110<sub>2</sub></code> в hex. <b>Метод:</b> бьём биты на нибблы (по 4) <b>справа налево</b> и каждый ниббл переводим в одну hex-цифру.</p>
+    <span class="math-line"><b>1101</b> | <b>0110</b> → D | 6 → <b>D6<sub>16</sub></b></span>
+    <p>Обратно: каждая hex-цифра разворачивается в 4 бита. Например <code>CF0<sub>16</sub></code> → <b>1100 1111 0000</b><sub>2</sub>.</p>
+  </div>
+
+  <h3>1.3 Зачем вообще hex?</h3>
+  <ul>
+    <li><b>Короче.</b> 32 бита = 8 hex-цифр, а не 32 нуля и единицы — проще читать и не путать.</li>
+    <li><b>Прямая связь с битами.</b> 4 бита = 1 hex-цифра, и переход «туда-обратно» — это просто таблица.</li>
+    <li><b>Используется везде:</b> цвета в CSS (<code>#FF00AA</code>), MAC-адреса (<code>3C:22:FB:..</code>), адреса памяти, кодировки Unicode (<code>U+0041</code>).</li>
+  </ul>
+
+  <h3>1.4 Тренировочные вопросы по A1.2.1</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Переведи десятичное число 154 в 8-битное двоичное число. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Метод деления на 2:</b></p>
+      <pre style="font-family:var(--mono); line-height:1.7; background:var(--surface-2); padding:10px; border-radius:6px">
+154 / 2 = 77 R 0
+ 77 / 2 = 38 R 1
+ 38 / 2 = 19 R 0
+ 19 / 2 =  9 R 1
+  9 / 2 =  4 R 1
+  4 / 2 =  2 R 0
+  2 / 2 =  1 R 0
+  1 / 2 =  0 R 1</pre>
+      <p>Читаем остатки снизу вверх → <b>10011010<sub>2</sub></b>. Уже 8 бит — дополнять нулями не нужно.</p>
+      <p><b>Проверка через таблицу мест:</b> 128 + 16 + 8 + 2 = 154 ✓</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Переведи 11101011<sub>2</sub> в десятичное и в шестнадцатеричное число. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>В десятичное</b> — складываем степени двойки, где стоит 1:</p>
+      <span class="math-line">128 + 64 + 32 + 0 + 8 + 0 + 2 + 1 = <b>235<sub>10</sub></b></span>
+      <p><b>В шестнадцатеричное</b> — бьём на нибблы справа налево:</p>
+      <span class="math-line"><b>1110</b> | <b>1011</b> → E | B → <b>EB<sub>16</sub></b></span>
+      <p>Проверка: 14 × 16 + 11 = 224 + 11 = 235 ✓</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Объясни, почему программисты предпочитают hex двоичной записи. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Компактность.</b> Одна hex-цифра заменяет 4 бита, поэтому 32-битный адрес влезает в 8 символов вместо 32.</li>
+        <li><b>Меньше ошибок при чтении.</b> Длинная цепочка нулей и единиц легко превращается в ошибку — глаз промахивается; <code>FF7A</code> прочесть и запомнить намного проще, чем <code>1111 1111 0111 1010</code>.</li>
+        <li><b>Прямое соответствие с битами.</b> В отличие от десятичной записи, перевод hex ↔ двоичное идёт по таблице из 16 строк, без деления и умножения.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION A1.2.2 ============ -->
+  <h2>💾 2. A1.2.2 Как двоичная система хранит данные</h2>
+
+  <p>
+    Внутри компьютера <b>всё</b> — числа, текст, картинки, звук, видео — это просто последовательность бит. Различные <b>схемы кодирования</b> объясняют, как эти биты надо интерпретировать. Дальше — по типам данных.
+  </p>
+
+  <h3>2.1 Целые числа (integers): беззнаковые и со знаком</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">➕</span> A. Беззнаковое целое (unsigned integer)</h3>
+    <p>Все биты используются для самой величины. В N битах помещаются значения от <b>0 до 2<sup>N</sup> − 1</b>.</p>
+    <ul>
+      <li>4-битное беззнаковое: 0–15 (макс. 1111<sub>2</sub> = 15)</li>
+      <li>8-битное беззнаковое (один байт): 0–255</li>
+      <li>16-битное беззнаковое: 0–65 535</li>
+    </ul>
+    <p>Используется, когда отрицательные значения <b>невозможны</b> по смыслу: размер файла, индекс пикселя, код символа в ASCII.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">±</span> B. Знаковое целое: дополнительный код (two's complement)</h3>
+    <p>Старший (самый левый) бит становится <b>знаковым (sign bit)</b>: 0 = положительное, 1 = отрицательное. В N битах помещаются значения от <b>−2<sup>N−1</sup> до 2<sup>N−1</sup> − 1</b>.</p>
+    <ul>
+      <li>4-битное знаковое: от −8 до +7</li>
+      <li>8-битное знаковое: от −128 до +127</li>
+    </ul>
+    <p><b>Как получить отрицательное число в two's complement:</b></p>
+    <ol>
+      <li>Запиши абсолютную величину в двоичном виде (с нужным числом бит).</li>
+      <li><b>Инвертируй</b> все биты (0→1, 1→0) — получится «единичное дополнение» (one's complement).</li>
+      <li><b>Прибавь 1</b>.</li>
+    </ol>
+  </div>
+
+  <div class="worked">
+    <h4>Worked example · −5 в 8-битном two's complement</h4>
+    <span class="math-line">Шаг 1: запиши +5 в 8 битах → <b>0000 0101</b></span>
+    <span class="math-line">Шаг 2: инвертируй все биты → <b>1111 1010</b></span>
+    <span class="math-line">Шаг 3: прибавь 1 → <b>1111 1011</b></span>
+    <p>Значит, <b>−5 = 11111011<sub>2</sub></b> в 8-битном знаковом представлении.</p>
+    <p><b>Проверка:</b> старший бит = 1 (отрицательное). Чтобы прочитать величину обратно — снова инвертируй и прибавь 1: 11111011 → 00000100 → +1 → 00000101 = 5. ✓</p>
+  </div>
+
+  <div class="ru-tip">
+    💡 <b>Почему two's complement?</b> Потому что в этой системе сложение и вычитание работают одинаково для положительных и отрицательных чисел — процессору не нужны отдельные схемы для «минусов». Один сумматор справляется со всем.
+  </div>
+
+  <h3>2.2 Строки и символы (strings, characters)</h3>
+
+  <p>
+    Каждому символу присвоено своё число (его <b>кодовая точка / code point</b>), а число уже хранится в битах. Главные стандарты:
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Кодировка</th><th>Сколько бит</th><th>Сколько символов</th><th>Чем хороша</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ASCII</td>
+        <td>7 бит (часто хранят в байте, старший = 0)</td>
+        <td>128 символов</td>
+        <td>Английские буквы, цифры, знаки препинания. Простая, исторически универсальная.</td>
+      </tr>
+      <tr>
+        <td>Unicode</td>
+        <td>До 21 бита кодовая точка</td>
+        <td>~149 000 символов (все языки + эмодзи)</td>
+        <td>Поддерживает все письменности мира — кириллицу, китайский, арабский, эмодзи.</td>
+      </tr>
+      <tr>
+        <td>UTF-8</td>
+        <td>1–4 байта на символ (переменная длина)</td>
+        <td>Все Unicode-символы</td>
+        <td>Совместима с ASCII (английские буквы = 1 байт), экономит место, дефолт в интернете.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="worked">
+    <h4>Worked example · кодировка одного символа</h4>
+    <p>Символ <b>'A'</b> в ASCII (и UTF-8): кодовая точка 65<sub>10</sub> = <code>01000001<sub>2</sub></code> = <code>41<sub>16</sub></code>.</p>
+    <p>Символ <b>'あ'</b> (японская хирагана) в ASCII <b>не помещается</b> — нужна Unicode. В UTF-8 он занимает 3 байта: <code>11100011 10000001 10000010</code>.</p>
+    <p><b>Строка</b> «Hi» = два символа = два байта: <code>01001000 01101001</code> (H = 72, i = 105).</p>
+  </div>
+
+  <h3>2.3 Изображения (images) и цвет RGB</h3>
+
+  <p>
+    Изображение — это сетка крошечных квадратиков, <b>пикселей (pixels)</b>. Чем больше пикселей — тем выше <b>разрешение (resolution)</b> и тем больше деталей.
+  </p>
+
+  <p>
+    Цвет каждого пикселя в модели <b>RGB</b> задаётся комбинацией <b>трёх каналов</b>: красный (Red), зелёный (Green), синий (Blue). Обычно на каждый канал — 1 байт (8 бит), значит 256 уровней яркости (0–255). Итого один пиксель = <b>3 байта = 24 бита</b> — это «истинный цвет» (true colour, 24-bit colour depth).
+  </p>
+
+  <div class="ascii-pixel-grid" aria-label="2x2 пиксельная сетка для примера">
+    <div class="px px-red">КРАСНЫЙ</div>
+    <div class="px px-green">ЗЕЛЁНЫЙ</div>
+    <div class="px px-blue">СИНИЙ</div>
+    <div class="px px-white">БЕЛЫЙ</div>
+  </div>
+
+  <p>Для этой картинки 2×2 пикселя в формате 24-bit RGB биты выглядят так:</p>
+  <ul style="font-family: var(--mono); font-size:0.9rem; line-height:1.8;">
+    <li>Красный (255, 0, 0): <code>11111111 00000000 00000000</code></li>
+    <li>Зелёный (0, 255, 0): <code>00000000 11111111 00000000</code></li>
+    <li>Синий (0, 0, 255): <code>00000000 00000000 11111111</code></li>
+    <li>Белый (255, 255, 255): <code>11111111 11111111 11111111</code></li>
+  </ul>
+
+  <div class="ru-tip">
+    💡 <b>Формула размера несжатого изображения:</b> размер (бит) = ширина × высота × глубина цвета. <br>
+    Пример: 1920 × 1080 пикселей с 24-bit цветом = 1920 × 1080 × 24 ≈ 49,8 млн бит ≈ 6,2 МБ <b>на один кадр</b>.
+  </div>
+
+  <h3>2.4 Звук (audio): sampling, quantization, bit depth</h3>
+
+  <p>
+    Звук в природе — <b>аналоговый</b> (плавно меняющаяся волна). Чтобы записать его цифрой, его «нарезают» на дискретные точки.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎤</span> Три шага оцифровки звука</h3>
+    <ol>
+      <li><b>Sampling (выборка).</b> Измеряем амплитуду (громкость) волны через равные промежутки времени. <b>Частота дискретизации (sampling rate)</b> измеряется в <b>герцах (Hz)</b> — сколько замеров в секунду.
+        <ul>
+          <li>44,1 кГц — стандарт CD</li>
+          <li>48 кГц — профессиональное аудио / видео</li>
+          <li>96 кГц — high-resolution</li>
+        </ul>
+      </li>
+      <li><b>Quantization (квантование).</b> Каждый замер округляется до ближайшего значения из фиксированного набора. <b>Битовая глубина (bit depth)</b> определяет, сколько уровней доступно: 16 бит = 65 536 уровней, 24 бита = 16 777 216 уровней.</li>
+      <li><b>Encoding (кодирование).</b> Каждый квантованный замер записывается как двоичное число.</li>
+    </ol>
+    <p><b>Стерео</b> — два канала (left + right), значит данных в 2 раза больше, чем у моно. <b>5.1 surround</b> — ещё больше каналов.</p>
+  </div>
+
+  <p>
+    Чем выше частота дискретизации и битовая глубина — тем точнее цифровая копия звука, но и тем больше места он занимает.
+  </p>
+
+  <h3>2.5 Видео (video)</h3>
+
+  <p>
+    Видео = последовательность кадров (frames), каждый из которых — обычная картинка из пикселей. К кадрам добавляется <b>аудиодорожка</b> (тоже оцифрованная), потом всё это <b>мультиплексируется</b> (объединяется), чтобы аудио и видео шли синхронно.
+  </p>
+
+  <div class="worked">
+    <h4>Worked example · сколько весит несжатое HD-видео</h4>
+    <p>Видео 10 секунд, 30 кадров в секунду (fps), разрешение 1920 × 1080 (Full HD), 24-битный цвет.</p>
+    <span class="math-line">1 кадр: 1920 × 1080 = 2 073 600 пикселей × 3 байта = <b>6 220 800 байт ≈ 6,2 МБ</b></span>
+    <span class="math-line">10 секунд × 30 fps = 300 кадров</span>
+    <span class="math-line">Итого: 6,2 МБ × 300 = <b>≈ 1 860 МБ ≈ 1,86 ГБ</b> — за 10 секунд!</span>
+    <p>Поэтому видео <b>обязательно</b> сжимают форматами H.264 (AVC) или H.265 (HEVC).</p>
+  </div>
+
+  <h3>2.6 Единицы измерения данных</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Единица</th><th>В байтах</th><th>В битах</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1 бит (bit)</td><td>1/8</td><td>1</td></tr>
+      <tr><td>1 ниббл (nibble)</td><td>1/2</td><td>4</td></tr>
+      <tr><td>1 байт (byte)</td><td>1</td><td>8</td></tr>
+      <tr><td>1 KB (килобайт)</td><td>1 024</td><td>8 192</td></tr>
+      <tr><td>1 MB (мегабайт)</td><td>1 024<sup>2</sup> = 1 048 576</td><td>1 024<sup>2</sup> × 8</td></tr>
+      <tr><td>1 GB (гигабайт)</td><td>1 024<sup>3</sup></td><td>1 024<sup>3</sup> × 8</td></tr>
+      <tr><td>1 TB (терабайт)</td><td>1 024<sup>4</sup></td><td>1 024<sup>4</sup> × 8</td></tr>
+      <tr><td>1 PB (петабайт)</td><td>1 024<sup>5</sup></td><td>1 024<sup>5</sup> × 8</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.7 Тренировочные вопросы по A1.2.2</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Объясни разницу между беззнаковым целым и числом в дополнительном коде на примере 4-битного значения 1010<sub>2</sub>. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Как unsigned 4-bit:</b> все 4 бита кодируют величину → 8 + 0 + 2 + 0 = <b>10</b>.</li>
+        <li><b>Как signed 4-bit (two's complement):</b> старший бит = 1 → число <b>отрицательное</b>. Инвертируем биты 1010 → 0101, прибавляем 1 → 0110 = 6 → значит, исходное было <b>−6</b>.</li>
+        <li>Диапазон unsigned 4-bit: 0…15. Диапазон signed 4-bit: −8…+7.</li>
+        <li>Главное отличие: один и тот же набор бит даёт <b>разные значения</b> — всё зависит от того, какую схему интерпретации применить.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Объясни процесс преобразования аналогового звука в двоичное представление. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Sampling.</b> Через равные промежутки времени измеряется амплитуда звуковой волны. Частота этих измерений = sampling rate, в герцах (например, 44,1 кГц = 44 100 замеров в секунду).</li>
+        <li><b>Quantization.</b> Каждое измерение округляется до ближайшего уровня из фиксированного набора. Количество уровней определяется bit depth (16 бит = 65 536 уровней).</li>
+        <li><b>Encoding.</b> Каждый квантованный замер записывается двоичным числом длиной = bit depth.</li>
+        <li>Чем выше sampling rate и bit depth — тем точнее цифровая копия, но и тем больше места.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 6. Опиши, как изображение хранится в двоичном формате с использованием модели RGB. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Изображение — это сетка <b>пикселей</b>. Каждый пиксель хранит свой цвет.</li>
+        <li>В <b>RGB-модели</b> цвет = комбинация трёх каналов (красный, зелёный, синий). Обычно <b>1 байт на канал</b>, значит 256 уровней яркости (0–255) для каждого.</li>
+        <li>Один пиксель «истинного цвета» = <b>3 байта = 24 бита</b>. Например, чисто-красный = 11111111 00000000 00000000.</li>
+        <li>В формате BMP биты пикселей хранятся подряд, плюс короткий «заголовок» с шириной, высотой и глубиной цвета. JPEG/PNG <b>сжимают</b> эти данные.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7. Покажи, как закодировано число −12 в 8-битном two's complement. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ol>
+        <li>Запиши +12 в 8 битах → <b>0000 1100</b>.</li>
+        <li>Инвертируй все биты → <b>1111 0011</b>.</li>
+        <li>Прибавь 1 → <b>1111 0100</b>.</li>
+      </ol>
+      <p>Ответ: <b>−12<sub>10</sub> = 11110100<sub>2</sub></b> в 8-битном дополнительном коде.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION A1.2.3 ============ -->
+  <h2>⚡ 3. A1.2.3 Логические элементы (logic gates)</h2>
+
+  <p>
+    <b>Логический элемент (logic gate)</b> — это электронная схема (из транзисторов), которая берёт один или несколько двоичных входов и выдаёт один двоичный выход по строгому правилу. В мире «1» = True = on (есть напряжение), «0» = False = off (нет напряжения).
+  </p>
+
+  <p>
+    Логические элементы — это <b>физическое воплощение булевой алгебры</b>. Из их комбинаций строится <b>всё</b>: сумматоры, регистры, контроллеры, в конечном счёте — процессор.
+  </p>
+
+  <div class="sim-callout">
+    <span class="sim-emoji">⚡</span>
+    <div class="sim-text">
+      <b>Поиграй с логикой!</b> На странице A1 есть симулятор: выбираешь элемент, переключаешь входы — диаграмма и таблица истинности подсвечиваются вживую.
+    </div>
+    <a href="fundamentals.html#logic-sim" class="sim-btn">Открыть симулятор →</a>
+  </div>
+
+  <h3>3.1 Семь основных элементов</h3>
+
+  <p>В IB вы должны знать семь стандартных элементов. Главное, что нужно помнить — «что элемент спрашивает».</p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔗</span> AND (логическое И, конъюнкция)</h3>
+    <p><b>Что спрашивает:</b> «оба входа включены?»</p>
+    <p><b>Выдаёт 1</b>, только если <b>все</b> входы = 1.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">Q = A AND B</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+    </table>
+    <p><b>Пример:</b> допуск в серверную = (есть бейдж) AND (правильный код PIN). Оба условия должны быть верны.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">➕</span> OR (логическое ИЛИ, дизъюнкция)</h3>
+    <p><b>Что спрашивает:</b> «хотя бы один вход включён?»</p>
+    <p><b>Выдаёт 1</b>, если <b>хотя бы один</b> вход = 1.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">Q = A OR B</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+    </table>
+    <p><b>Пример:</b> сигнализация = (датчик дыма) OR (датчик угарного газа) OR (датчик жара). Достаточно одного срабатывания.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔄</span> NOT (логическое НЕ, инвертор)</h3>
+    <p><b>Что спрашивает:</b> «вход выключен?»</p>
+    <p><b>Выдаёт обратное</b> от входа. Это единственный <b>одновходовый</b> элемент.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="output-col">Q = NOT A</th></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td></tr>
+    </table>
+    <p><b>Пример:</b> «горит ли лампа резерва?» = NOT (горит ли основная). Когда главное выключено — включается резерв.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🚫🔗</span> NAND (NOT AND)</h3>
+    <p><b>Что спрашивает:</b> «хотя бы один вход выключен?»</p>
+    <p><b>Инверсия AND</b>: 1 везде, кроме случая, когда все входы = 1.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">Q = A NAND B</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+    </table>
+    <p><b>Свойство:</b> NAND — <b>универсальный элемент</b>. Из одних только NAND можно построить любой другой логический элемент (AND, OR, NOT и т.д.) — это часто используется в реальных микросхемах.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🚫➕</span> NOR (NOT OR)</h3>
+    <p><b>Что спрашивает:</b> «оба входа выключены?»</p>
+    <p><b>Инверсия OR</b>: 1, только если все входы = 0.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">Q = A NOR B</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+    </table>
+    <p><b>Свойство:</b> NOR — тоже <b>универсальный элемент</b> (как NAND).</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚖️</span> XOR (исключающее ИЛИ)</h3>
+    <p><b>Что спрашивает:</b> «входы разные?»</p>
+    <p><b>Выдаёт 1</b>, если ровно один вход = 1 (но не оба).</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">Q = A XOR B</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">0</td><td class="t-false">0</td></tr>
+    </table>
+    <p><b>Пример:</b> XOR — сердце <b>сумматора</b> (adder). 1 + 1 в двоичной = 10, и «единица суммы» — это как раз XOR двух бит.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🟰</span> XNOR (NOT XOR, эквивалентность)</h3>
+    <p><b>Что спрашивает:</b> «входы одинаковые?»</p>
+    <p><b>Выдаёт 1</b>, если оба входа равны (оба 0 или оба 1).</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">Q = A XNOR B</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+    </table>
+    <p><b>Пример:</b> «двое голосуют согласно» = голос1 XNOR голос2. Или: схема <b>сравнения</b> битов.</p>
+  </div>
+
+  <h3>3.2 Где используются логические элементы в компьютере</h3>
+  <ul>
+    <li><b>Принятие решений (if/else в железе).</b> AND-элемент реализует «если все условия истинны».</li>
+    <li><b>Арифметика.</b> В АЛУ процессора из AND, OR, XOR собирают сумматоры — они складывают, вычитают, умножают.</li>
+    <li><b>Память.</b> Из логических элементов собирают триггеры (flip-flops), которые удерживают 1 бит — из них строятся регистры и SRAM.</li>
+    <li><b>Системы безопасности и сигнализации.</b> OR — «сработал хоть один датчик», AND с NOT — «активировать, если нет «выключателя»».</li>
+    <li><b>Дисплеи, таймеры, коммуникации.</b> Контроль того, что показывается на экране; синхронизация тактов; обработка цифровых сигналов.</li>
+  </ul>
+
+  <h3>3.3 Тренировочные вопросы по A1.2.3</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 8. Объясни функцию NAND-элемента и почему его называют «универсальным». <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>NAND расшифровывается как «NOT AND». Он выдаёт <b>0</b>, только когда <b>все</b> входы = 1, и <b>1</b> во всех остальных случаях.</li>
+        <li>Можно понимать его как «отрицание AND»: что вернул бы AND — переворачивается.</li>
+        <li><b>Универсальность:</b> используя только NAND-элементы, можно собрать <b>любой</b> другой элемент (NOT, AND, OR, XOR, XNOR, NOR).</li>
+        <li>Это удобно при производстве микросхем: фабрика делает один тип элемента, и из него строится вся логика чипа — дешевле и проще.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 9. Опиши, как логические элементы используются в системах безопасности (например, сигнализации). <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>OR-элемент</b> часто используется, чтобы объединить несколько датчиков: достаточно сработать <b>одному</b> (дым OR жар OR CO), чтобы сигнализация заорала.</li>
+        <li><b>AND-элемент</b> — для «многофакторной» проверки доступа: дверь откроется, только если (PIN верный) AND (бейдж считан).</li>
+        <li><b>NOT-элемент</b> добавляется, чтобы реализовать переключатель «не беспокоить» — даже если все условия истинны, при активном override сигнализация молчит.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 10. Опиши роль XOR-элемента в реализации арифметики в процессоре. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>XOR выдаёт 1, только если ровно один вход = 1. Это в точности соответствует <b>биту суммы</b> при сложении двух бит без учёта переноса.</li>
+        <li>Например, 0 + 0 = 0 (XOR), 0 + 1 = 1, 1 + 0 = 1, 1 + 1 = 10 — здесь бит суммы = 0 (XOR), а «1» уходит в перенос (это уже AND двух бит).</li>
+        <li>Связка XOR + AND образует <b>полусумматор (half-adder)</b>. Из них собираются полные сумматоры, а из тех — многоразрядные сумматоры АЛУ.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION A1.2.4 ============ -->
+  <h2>📊 4. A1.2.4 Таблицы истинности (truth tables)</h2>
+
+  <p>
+    <b>Таблица истинности</b> — это полный список всех возможных комбинаций входов и соответствующих выходов схемы. Это главный инструмент, чтобы <b>предсказать поведение</b> логической схемы или <b>построить</b> схему из словесного описания.
+  </p>
+
+  <h3>4.1 Сколько строк должно быть в таблице?</h3>
+  <p>
+    Если в схеме <b>N входов</b>, то возможных комбинаций <b>2<sup>N</sup></b>:
+  </p>
+  <ul>
+    <li>1 вход → 2 строки</li>
+    <li>2 входа → 4 строки</li>
+    <li>3 входа → 8 строк</li>
+    <li>4 входа → 16 строк</li>
+  </ul>
+
+  <div class="ru-tip">
+    💡 <b>Как заполнять входы:</b> идите по строкам, как будто считаете двоично от 0. Для 3 входов A, B, C первая строка 000, потом 001, 010, 011, 100, 101, 110, 111. Так ничего не пропустите.
+  </div>
+
+  <h3>4.2 Построение таблицы из словесного описания</h3>
+
+  <div class="worked">
+    <h4>Worked example · Сигнализация с двумя датчиками</h4>
+    <p><b>Задача:</b> «Сигнализация срабатывает, если <b>оба</b> датчика — движения и двери — активированы одновременно».</p>
+    <p><b>Шаг 1 — определи входы и выходы:</b></p>
+    <ul>
+      <li>Входы: A = датчик движения, B = датчик двери</li>
+      <li>Выход: Q = «сигнализация активна»</li>
+    </ul>
+    <p><b>Шаг 2 — определи нужный логический элемент:</b> слово «оба» → <b>AND</b>.</p>
+    <p><b>Шаг 3 — построй таблицу 2<sup>2</sup> = 4 строки:</b></p>
+    <table class="truth-table">
+      <tr><th class="input-col">A (движение)</th><th class="input-col">B (дверь)</th><th class="output-col">Q (сигнализация)</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+    </table>
+  </div>
+
+  <div class="worked">
+    <h4>Worked example · Освещение с override</h4>
+    <p><b>Задача:</b> «Свет включается, если <b>хотя бы один</b> из двух датчиков детектирует темноту. Но если активирован переключатель override — свет <b>не горит</b> в любом случае».</p>
+    <p><b>Входы:</b> A = датчик 1, B = датчик 2, C = override. <b>Выход:</b> Q = «свет горит».</p>
+    <p><b>Логическое выражение:</b> Q = (A OR B) AND (NOT C). Промежуточные колонки помогают не запутаться.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="input-col">C</th><th class="output-col">A OR B</th><th class="output-col">NOT C</th><th class="output-col">Q</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+    </table>
+    <p><b>Проверка</b> (строка 8): оба датчика видят темноту, <b>но</b> override включён → Q = 0. Логика работает.</p>
+  </div>
+
+  <h3>4.3 Построение таблицы из булевого выражения</h3>
+
+  <p>
+    Если задание уже сформулировано формулой — просто разбейте её на промежуточные шаги.
+  </p>
+
+  <div class="worked">
+    <h4>Worked example · (A AND B) OR (NOT C)</h4>
+    <p>Три входа → 8 строк.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="input-col">C</th><th class="output-col">A AND B</th><th class="output-col">NOT C</th><th class="output-col">Q</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+    </table>
+  </div>
+
+  <h3>4.4 Карты Карно (Karnaugh maps, K-maps) <span class="hl-tag">HL</span></h3>
+
+  <p>
+    <b>Карта Карно (Karnaugh map / K-map)</b> — это специальный визуальный способ <b>упростить булево выражение</b>. По сути это «перерисованная» таблица истинности, но с такой раскладкой строк и колонок, чтобы соседние ячейки отличались <b>ровно одним битом</b> (это называется <b>код Грея / Gray code</b>).
+  </p>
+
+  <h4>Как построить K-map для двух переменных</h4>
+  <ol>
+    <li>Постройте обычную таблицу истинности.</li>
+    <li>Нарисуйте сетку 2 × 2. Сверху колонок — все значения переменной A (0 и 1), слева строк — все значения B.</li>
+    <li>В каждую ячейку запишите выход Q для соответствующей пары (A, B).</li>
+  </ol>
+
+  <div class="worked">
+    <h4>Worked example · K-map для функции из 3 переменных</h4>
+    <p>Дана таблица истинности:</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="input-col">C</th><th class="output-col">Q</th></tr>
+      <tr><td>0</td><td>0</td><td>0</td><td class="t-false">0</td></tr>
+      <tr><td>0</td><td>0</td><td>1</td><td class="t-true">1</td></tr>
+      <tr><td>0</td><td>1</td><td>0</td><td class="t-true">1</td></tr>
+      <tr><td>0</td><td>1</td><td>1</td><td class="t-false">0</td></tr>
+      <tr><td>1</td><td>0</td><td>0</td><td class="t-true">1</td></tr>
+      <tr><td>1</td><td>0</td><td>1</td><td class="t-false">0</td></tr>
+      <tr><td>1</td><td>1</td><td>0</td><td class="t-false">0</td></tr>
+      <tr><td>1</td><td>1</td><td>1</td><td class="t-true">1</td></tr>
+    </table>
+
+    <p>Строим K-map: колонки — это значения A (0, 1); строки — это пары BC в коде Грея (00, 01, 11, 10).</p>
+
+    <table class="kmap">
+      <tr><th>A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+      <tr><th>0</th><td class="km-0">0</td><td class="km-1">1</td><td class="km-0">0</td><td class="km-1">1</td></tr>
+      <tr><th>1</th><td class="km-1">1</td><td class="km-0">0</td><td class="km-1">1</td><td class="km-0">0</td></tr>
+    </table>
+
+    <p><b>Правила группировки единиц:</b></p>
+    <ol>
+      <li>Группы — это степени двойки (1, 2, 4, 8 единиц), <b>прямоугольной</b> формы.</li>
+      <li>Делайте группы <b>как можно больше</b>.</li>
+      <li>Группы могут <b>пересекаться</b> и «оборачиваться» через край карты.</li>
+      <li>Каждая единица должна попасть хотя бы в одну группу.</li>
+    </ol>
+    <p><b>Логика чтения групп:</b> если внутри группы переменная не меняется — она входит в терм (в прямом виде, если = 1; в инвертированном, если = 0). Если переменная меняется внутри группы — её в этот терм не включают.</p>
+  </div>
+
+  <div class="ru-tip">
+    💡 <b>Зачем это нужно?</b> K-map позволяет получить <b>самое короткое</b> булево выражение для функции. Меньше термов = меньше логических элементов в реальной схеме = дешевле, быстрее, меньше нагрева. Это часть <b>аппаратной оптимизации</b>.
+  </div>
+
+  <h3>4.5 Тренировочные вопросы по A1.2.4</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 11. Автоматическая поливалка для растений включается только тогда, когда сейчас день AND (влажность почвы низкая OR температура высокая). Составь таблицу истинности. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Входы:</b> A = день, B = низкая влажность, C = высокая температура. <b>Выход:</b> Q = поливалка работает.</p>
+      <p><b>Выражение:</b> Q = A AND (B OR C). Три входа → 2³ = 8 строк.</p>
+      <table class="truth-table">
+        <tr><th class="input-col">A</th><th class="input-col">B</th><th class="input-col">C</th><th class="output-col">B OR C</th><th class="output-col">Q</th></tr>
+        <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+        <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+        <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+        <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+        <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+        <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+        <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+        <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+      </table>
+      <p><b>Логика:</b> если день не активен (A = 0) — поливалка молчит, какие бы датчики ни сработали. Если день активен — нужен хотя бы один из триггеров.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 12. Построй таблицу истинности для выражения (A XOR B) AND (NOT C). <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <table class="truth-table">
+        <tr><th class="input-col">A</th><th class="input-col">B</th><th class="input-col">C</th><th class="output-col">A XOR B</th><th class="output-col">NOT C</th><th class="output-col">Q</th></tr>
+        <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+        <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+        <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+        <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+        <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td></tr>
+        <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+        <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+        <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td></tr>
+      </table>
+      <p><b>Совет:</b> сначала заполни промежуточные столбцы (A XOR B и NOT C), а потом «склей» их через AND — намного проще, чем считать в уме.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 13. <span class="hl-tag">HL</span> Используя K-map, упрости функцию Q = A·B + A·B'. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Расшифровка:</b> Q = (A AND B) OR (A AND NOT B). Две переменные → K-map 2×2.</p>
+      <table class="kmap">
+        <tr><th>A \ B</th><th>0</th><th>1</th></tr>
+        <tr><th>0</th><td class="km-0">0</td><td class="km-0">0</td></tr>
+        <tr><th>1</th><td class="km-1">1</td><td class="km-1">1</td></tr>
+      </table>
+      <p>Обе единицы — в строке A = 1, при этом B меняется (0 → 1). Значит, B не входит в терм, а A входит.</p>
+      <p><b>Упрощённое выражение: Q = A</b>. Это очевидно и алгебраически: A·B + A·B' = A·(B + B') = A·1 = A.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION A1.2.5 ============ -->
+  <h2>🔌 5. A1.2.5 Логические диаграммы (logic diagrams)</h2>
+
+  <p>
+    <b>Логическая диаграмма</b> — это схема, на которой нарисованы элементы (AND, OR и т.д.) с их соединениями. Это «чертёж» цифровой схемы: по нему можно собрать настоящую плату. Диаграммы читаются <b>слева направо</b>: слева входы, справа выходы.
+  </p>
+
+  <h3>5.1 Стандартные символы элементов</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Элемент</th><th>Форма</th><th>Особый знак</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AND</td><td>D-образная фигура с плоской левой стороной</td><td>—</td></tr>
+      <tr><td>OR</td><td>Изогнутая «лодочка» с вогнутой задней стенкой</td><td>—</td></tr>
+      <tr><td>NOT</td><td>Треугольник, остриём вправо</td><td>Маленький кружок на выходе (bubble)</td></tr>
+      <tr><td>NAND</td><td>Форма AND</td><td>+ кружок на выходе (= AND + NOT)</td></tr>
+      <tr><td>NOR</td><td>Форма OR</td><td>+ кружок на выходе (= OR + NOT)</td></tr>
+      <tr><td>XOR</td><td>Форма OR + дополнительная изогнутая линия слева</td><td>—</td></tr>
+      <tr><td>XNOR</td><td>Форма XOR</td><td>+ кружок на выходе (= XOR + NOT)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Запомни паттерн «N»:</b> кружок (<b>bubble</b>) на выходе всегда означает <b>NOT</b>. Поэтому NAND = AND + кружок, NOR = OR + кружок, XNOR = XOR + кружок. Один знак — один смысл, легко запомнить.
+  </div>
+
+  <h3>5.2 Создание диаграммы из словесного описания</h3>
+
+  <div class="worked">
+    <h4>Worked example · Сигнализация (AND-диаграмма)</h4>
+    <p><b>Задача:</b> «Сигнализация активируется, только когда оба датчика — движения (M) и двери (D) — сработали одновременно».</p>
+    <p><b>Решение:</b> два входа, один AND-элемент, один выход.</p>
+    <pre style="font-family:var(--mono); line-height:1.6; background:var(--surface-2); padding:14px 18px; border-radius:6px; font-size:0.95rem; overflow-x:auto">
+M ─────┐
+       ├──AND──┐── A (сигнализация)
+D ─────┘       │</pre>
+    <p>Это самая простая диаграмма: один элемент, два входа, один выход.</p>
+  </div>
+
+  <div class="worked">
+    <h4>Worked example · Поливалка (AND + OR)</h4>
+    <p><b>Задача:</b> «Поливалка работает, только если сейчас день (D) AND (низкая влажность S OR высокая температура T)».</p>
+    <p><b>Решение:</b> Сначала S и T идут в OR-элемент, его выход подаётся вместе с D в AND-элемент.</p>
+    <pre style="font-family:var(--mono); line-height:1.6; background:var(--surface-2); padding:14px 18px; border-radius:6px; font-size:0.95rem; overflow-x:auto">
+S ─────┐
+       ├──OR──┐
+T ─────┘      ├──AND──── Q (поливалка)
+              │
+D ────────────┘</pre>
+    <p>Это пример <b>комбинации</b> элементов — выход одного элемента становится входом другого.</p>
+  </div>
+
+  <h3>5.3 Чтение диаграммы и построение по ней таблицы истинности</h3>
+
+  <p>
+    Чтобы из диаграммы вывести таблицу — делайте по шагам, как с булевым выражением:
+  </p>
+  <ol>
+    <li>Подпишите все входы и определите количество строк (2<sup>N</sup>).</li>
+    <li>Идите слева направо, заполняя <b>промежуточные</b> столбцы для каждого элемента.</li>
+    <li>Последний столбец — это итоговый выход Q.</li>
+  </ol>
+
+  <div class="worked">
+    <h4>Worked example · Диаграмма AND → NOT (= NAND)</h4>
+    <p>Возьмём цепочку: A и B идут в AND, выход AND идёт в NOT.</p>
+    <table class="truth-table">
+      <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">A AND B</th><th class="output-col">NOT (A AND B)</th></tr>
+      <tr><td class="t-false">0</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-false">0</td><td class="t-true">1</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-false">0</td><td class="t-false">0</td><td class="t-true">1</td></tr>
+      <tr><td class="t-true">1</td><td class="t-true">1</td><td class="t-true">1</td><td class="t-false">0</td></tr>
+    </table>
+    <p><b>Замечаешь?</b> Этот результат идентичен таблице NAND. Значит, NAND эквивалентен «AND, у которого выход прошёл через NOT». То же логично из названия: NAND = NOT AND.</p>
+  </div>
+
+  <h3>5.4 Булева алгебра: упрощение схем</h3>
+
+  <p>
+    <b>Булева алгебра</b> позволяет упрощать сложные выражения и, как следствие, уменьшать количество элементов в реальной схеме. Несколько ключевых законов:
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Закон</th><th>Формула</th><th>Что значит</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Коммутативный (commutative)</td>
+        <td>A AND B = B AND A<br>A OR B = B OR A</td>
+        <td>Порядок входов не важен — как у обычного сложения.</td>
+      </tr>
+      <tr>
+        <td>Идемпотентности (idempotent)</td>
+        <td>A AND A = A<br>A OR A = A</td>
+        <td>Повторение переменной с самой собой ничего не меняет.</td>
+      </tr>
+      <tr>
+        <td>Двойного отрицания (involution)</td>
+        <td>NOT (NOT A) = A</td>
+        <td>Два инвертора подряд = нет инвертора.</td>
+      </tr>
+      <tr>
+        <td>Тождества (identity)</td>
+        <td>A AND 1 = A,&nbsp; A OR 0 = A</td>
+        <td>1 и 0 «нейтральны» для AND и OR соответственно.</td>
+      </tr>
+      <tr>
+        <td>Нуля и единицы (annulment)</td>
+        <td>A AND 0 = 0,&nbsp; A OR 1 = 1</td>
+        <td>0 «убивает» AND, 1 «убивает» OR.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="worked">
+    <h4>Worked example · упрощение (A AND A) OR (NOT NOT B)</h4>
+    <span class="math-line">(A AND A) OR (NOT NOT B)</span>
+    <span class="math-line">↓ применяем идемпотентность: A AND A = A</span>
+    <span class="math-line">A OR (NOT NOT B)</span>
+    <span class="math-line">↓ применяем закон двойного отрицания: NOT NOT B = B</span>
+    <span class="math-line"><b>Упрощённое: A OR B</b></span>
+    <p>Вместо четырёх операций — одна. Меньше элементов, проще схема, быстрее работает.</p>
+  </div>
+
+  <h3>5.5 Математическая и программная нотация булевых операций</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Операция</th><th>Описание</th><th>Математически</th><th>В программировании</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AND</td><td>Конъюнкция</td><td>A ∧ B</td><td>A &amp;&amp; B</td></tr>
+      <tr><td>OR</td><td>Дизъюнкция</td><td>A ∨ B</td><td>A || B</td></tr>
+      <tr><td>NOT</td><td>Отрицание</td><td><span style="text-decoration:overline">A</span></td><td>!A</td></tr>
+      <tr><td>NAND</td><td>NOT AND</td><td><span style="text-decoration:overline">A ∧ B</span></td><td>!(A &amp;&amp; B)</td></tr>
+      <tr><td>NOR</td><td>NOT OR</td><td><span style="text-decoration:overline">A ∨ B</span></td><td>!(A || B)</td></tr>
+      <tr><td>XOR</td><td>Исключающее ИЛИ</td><td>A ⊕ B</td><td>A ^ B</td></tr>
+      <tr><td>XNOR</td><td>Эквивалентность</td><td><span style="text-decoration:overline">A ⊕ B</span></td><td>!(A ^ B)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.6 Тренировочные вопросы по A1.2.5</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 14. Нарисуй (или опиши) логическую диаграмму для системы: «лифт едет, если двери закрыты (D) AND нажата кнопка этажа (B) AND нет аварии (NOT E)». <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Входы:</b> D (двери закрыты), B (кнопка нажата), E (аварийный сигнал). <b>Выход:</b> M (мотор лифта).</p>
+      <p><b>Выражение:</b> M = D AND B AND (NOT E). Сначала E проходит через NOT-инвертор, потом все три сигнала идут в общий AND-элемент (с 3 входами или две AND подряд).</p>
+      <pre style="font-family:var(--mono); line-height:1.6; background:var(--surface-2); padding:14px 18px; border-radius:6px; font-size:0.95rem; overflow-x:auto">
+D ────────┐
+          │
+B ────────┼──AND──── M (лифт едет)
+          │
+E ──NOT───┘</pre>
+      <p>Главное: <b>каждый вход подписан</b>, выход подписан, элементы стандартные, направление — слева направо.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 15. Опиши, как используются логические элементы в схемах синхронизации (clocks, timers). <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>В синхронных схемах есть <b>тактовый генератор</b> — он выдаёт сигнал 0–1–0–1 с фиксированной частотой (например, 3 ГГц = 3 миллиарда тактов в секунду).</li>
+        <li>Логические элементы <b>стробируют</b> данные — то есть пропускают сигнал только во время такта, благодаря AND-элементу: один вход — данные, другой — тактовый сигнал.</li>
+        <li>Триггеры (<b>flip-flops</b>), собранные из NAND или NOR, <b>запоминают</b> 1 бит на каждый такт. Из них строятся счётчики и регистры.</li>
+        <li>Это позволяет всем частям процессора работать <b>синхронно</b>, шаг за шагом — без чего невозможны цикл fetch-decode-execute и обработка инструкций.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 16. Используя законы булевой алгебры, упрости выражение (A AND B) OR (A AND NOT B). <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <span class="math-line">(A AND B) OR (A AND NOT B)</span>
+      <span class="math-line">↓ выносим общий множитель A (дистрибутивность):</span>
+      <span class="math-line">A AND (B OR NOT B)</span>
+      <span class="math-line">↓ закон исключённого третьего: B OR NOT B = 1</span>
+      <span class="math-line">A AND 1 = <b>A</b></span>
+      <p>Итог: схема из 4 элементов (2 AND, 1 NOT, 1 OR) <b>эквивалентна</b> просто проводу A. Это и есть смысл упрощения — экономия железа.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 17. Что выдаст схема «A → AND-элемент ← B, выход AND → XOR-элемент ← C» при A=1, B=1, C=1? <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Шаг 1:</b> A AND B = 1 AND 1 = <b>1</b>.</p>
+      <p><b>Шаг 2:</b> результат XOR с C = 1 XOR 1 = <b>0</b> (XOR даёт 1, только если входы разные).</p>
+      <p><b>Ответ:</b> Q = 0.</p>
+      <p><b>Для проверки</b> можешь построить полную таблицу из 2³ = 8 строк, выражение: (A AND B) XOR C.</p>
+    </div>
+  </details>
+
+  <!-- ============ PRACTICAL TASKS ============ -->
+  <h2>🛠 6. Практические задания</h2>
+
+  <p>
+    Эти задания помогут «уложить» материал A1.2 в голове через активное применение.
+  </p>
+
+  <div class="task-card">
+    <h3>🔍 Индивидуальное задание: Полусумматор своими руками</h3>
+    <p><b>Цель:</b> Понять, как из простых логических элементов рождается арифметика.</p>
+    <ol>
+      <li>Возьми задачу: «Сложить два однобитных числа A и B. Получить <b>S</b> (сумма по правилам двоичной арифметики, без переноса) и <b>C</b> (бит переноса)».</li>
+      <li>Составь <b>таблицу истинности</b> для S и C:
+        <table class="truth-table" style="margin-top:8px">
+          <tr><th class="input-col">A</th><th class="input-col">B</th><th class="output-col">S</th><th class="output-col">C</th></tr>
+          <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        </table>
+      </li>
+      <li>Определи, какие <b>логические элементы</b> соответствуют каждому выходу. Подсказка: один из них — XOR, другой — AND.</li>
+      <li>Нарисуй <b>логическую диаграмму</b> полусумматора. Подпиши все провода.</li>
+      <li>Объясни, почему этот блок «полу-» — почему нужен <b>полный сумматор</b> и что он добавляет.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>👥 Групповое задание: Кодируем своё имя</h3>
+    <p><b>Цель:</b> Прочувствовать, как реально работает ASCII / UTF-8.</p>
+    <p><b>Инструкции (группы по 2-3):</b></p>
+    <ol>
+      <li>Каждый член группы пишет своё <b>имя латиницей</b>. Например, «Anna».</li>
+      <li>По таблице ASCII (или найдите онлайн) переведите каждый символ в десятичный код. Для «A» это 65, для «n» — 110, и т.д.</li>
+      <li>Переведите каждый десятичный код в <b>8-битное двоичное число</b>.</li>
+      <li>Запишите результат — это и есть полная двоичная запись вашего имени в ASCII / UTF-8.</li>
+      <li><b>Бонус:</b> возьмите символ, которого нет в ASCII (например, «ё», «ñ», «あ») и сравните: в UTF-8 он займёт <b>2–3 байта</b>, а не один. Обсудите, почему UTF-8 переменной длины — удачное решение для интернета.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>🏠 Домашнее задание: Цифровая аналогия дома</h3>
+    <p><b>Цель:</b> Понять булеву логику через метафору повседневной жизни.</p>
+    <ol>
+      <li>
+        Опиши, какие правила работают в твоём собственном доме (или придумай для воображаемого) в виде логических выражений. Например:
+        <ul>
+          <li>«Свет в холле зажигается, если кто-то открыл дверь OR датчик движения сработал».</li>
+          <li>«Включить кондиционер, если температура &gt; 26 °C AND (дома кто-то есть OR подключился умный режим)».</li>
+          <li>«Сигнализация активна, если (никого нет дома) AND NOT (приехала уборщица)».</li>
+        </ul>
+      </li>
+      <li>Для каждого правила построй <b>таблицу истинности</b>.</li>
+      <li>Для одного из правил нарисуй <b>логическую диаграмму</b>.</li>
+      <li><b>Бонус:</b> где в твоих правилах появляется XOR или XNOR? Часто это «<i>либо одно, либо другое — но не оба</i>».</li>
+    </ol>
+  </div>
+
+  <!-- ============ CLOSING ============ -->
+  <h2>🎯 Что важно запомнить</h2>
+  <ul style="line-height: 1.85; font-size: 1.02rem;">
+    <li><b>Биты — это всё.</b> Числа, текст, картинки, звук, видео — в памяти лежит просто длинная последовательность 0 и 1. Разница только в <b>схеме кодирования</b>.</li>
+    <li><b>Степени двойки наизусть:</b> 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 — экономит время на экзамене.</li>
+    <li><b>Hex ↔ Binary — это таблица из 16 строк.</b> Один ниббл (4 бита) = одна hex-цифра. Никаких делений.</li>
+    <li><b>Two's complement:</b> старший бит = знак, отрицание = «инвертируй биты + 1». Диапазон N-битного знакового: от −2<sup>N−1</sup> до +2<sup>N−1</sup> − 1.</li>
+    <li><b>RGB пиксель</b> = 3 байта (24 бита) для «истинного цвета». Размер несжатой картинки = ширина × высота × глубина цвета.</li>
+    <li><b>Звук:</b> sampling (Hz) задаёт частоту замеров, bit depth — точность каждого замера. CD = 44,1 кГц, 16 бит.</li>
+    <li><b>Семь логических элементов:</b> AND (все на 1), OR (хоть один на 1), NOT (инверсия), NAND/NOR (отрицание AND/OR — универсальные), XOR (входы разные), XNOR (входы равны).</li>
+    <li><b>NAND и NOR универсальны</b> — из одних только NAND или одних только NOR можно собрать любую цифровую схему.</li>
+    <li><b>Таблица истинности:</b> N входов → 2<sup>N</sup> строк. Заполняй входы как двоичный счётчик и используй промежуточные столбцы для сложных выражений.</li>
+    <li><b>K-map (HL):</b> группы единиц степенями двойки, как можно больше; переменная исчезает из терма, если меняется внутри группы.</li>
+    <li><b>На диаграмме</b>: кружок на выходе = NOT. Подписывай все входы и выходы.</li>
+    <li><b>Булева алгебра упрощает схемы</b> — меньше элементов = быстрее, дешевле, меньше тепла.</li>
+    <li><b>На экзамене</b>: вопрос «опиши работу X» — отвечай через входы, выходы и <b>что элемент спрашивает</b>; вопрос «упрости» — выноси общий множитель, ищи (X OR NOT X) = 1.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+    &nbsp; · &nbsp;
+    <a href="fundamentals.html#binary-sim" class="back-link">🔢 Конвертер Binary/Hex</a>
+    &nbsp; · &nbsp;
+    <a href="fundamentals.html#logic-sim" class="back-link">⚡ Симулятор логических элементов</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A1.2" class="back-link">К квизу A1.2 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A1.2 Представление данных и компьютерная логика · Адаптировано из IB DP 2025 Computer Science Oxford · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

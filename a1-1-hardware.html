@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1.1 Аппаратное обеспечение и работа компьютера · IB CS Theme A</title>
+<meta name="description" content="A1.1 Computer hardware and operation — глубокий разбор на русском: ЦП и его компоненты, GPU, отличие CPU vs GPU (HL), первичная и вторичная память, цикл fetch-decode-execute, конвейеризация (HL), сжатие данных, облачные сервисы SaaS / PaaS / IaaS. Подробные конспекты, экзаменационные вопросы и связи с симуляциями.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone deep-dive page — Russian, single language, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 56px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h2 .syllabus-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-right: 10px;
+    letter-spacing: 0.04em;
+  }
+  .device-page h3 {
+    font-size: 1.22rem;
+    color: var(--text);
+    margin: 28px 0 10px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 28px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.5rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card ul, .device-card ol {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 8px 16px;
+    margin: 12px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .hl-tag {
+    display: inline-block;
+    padding: 2px 9px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-left: 8px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  [data-theme="dark"] .hl-tag {
+    background: rgba(239,68,68,0.20);
+    color: #fca5a5;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .sim-callout {
+    background: linear-gradient(135deg, rgba(14,165,233,0.10), rgba(139,92,246,0.10));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 18px 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  [data-theme="dark"] .sim-callout {
+    background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(167,139,250,0.12));
+  }
+  .sim-callout .sim-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .sim-callout .sim-text {
+    flex: 1;
+    min-width: 220px;
+  }
+  .sim-callout .sim-text strong { color: var(--primary); display: block; margin-bottom: 2px; }
+  .sim-callout .sim-text span { color: var(--text-muted); font-size: 0.92rem; }
+  .sim-callout a.sim-btn {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sim-callout a.sim-btn:hover { background: var(--primary-2); text-decoration: none; }
+  [data-theme="dark"] .sim-callout a.sim-btn { background: var(--accent); color: #0b1220; }
+  [data-theme="dark"] .sim-callout a.sim-btn:hover { background: var(--accent-2); }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .code-inline {
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+  .definition-box {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+  }
+  .definition-box b { color: var(--primary); }
+  .reg-table td:first-child { white-space: nowrap; font-family: var(--mono); font-size: 0.95rem; color: var(--primary); }
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    margin: 20px 0 36px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .toc h4 {
+    margin: 0 0 10px;
+    color: var(--primary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .toc ol { margin: 0; padding-left: 22px; line-height: 1.85; }
+  .toc a { color: var(--text); }
+  .toc a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A1.1 · Computer hardware and operation
+  </span>
+
+  <h1>Аппаратное обеспечение и работа компьютера</h1>
+
+  <p class="lede">
+    Эта тема (<b>A1.1</b>) — про то, как «железо» компьютера на самом деле работает. От крошечного <b>центрального процессора (CPU)</b>, который умеет складывать числа за наносекунды, до <b>облачных сервисов</b>, в которых лежат твои фотографии. Мы разберём 9 подтем — компоненты ЦП, графический процессор (GPU), память (RAM, ROM, кэш), знаменитый цикл fetch-decode-execute, конвейеризацию в многоядерных процессорах, вторичную память (SSD, HDD, NAS), сжатие данных и облачные модели SaaS / PaaS / IaaS.
+  </p>
+
+  <div class="toc">
+    <h4>Содержание</h4>
+    <ol>
+      <li><a href="#s111">A1.1.1 — Компоненты ЦП (ALU, CU, регистры, шины, типы процессоров)</a></li>
+      <li><a href="#s112">A1.1.2 — Роль графического процессора (GPU)</a></li>
+      <li><a href="#s113">A1.1.3 — Различия CPU и GPU <span class="hl-tag">HL</span></a></li>
+      <li><a href="#s114">A1.1.4 — Типы первичной памяти (регистры, кэш L1/L2/L3, RAM, ROM)</a></li>
+      <li><a href="#s115">A1.1.5 — Цикл выборки–декодирования–исполнения (fetch-decode-execute)</a></li>
+      <li><a href="#s116">A1.1.6 — Конвейеризация в многоядерных архитектурах <span class="hl-tag">HL</span></a></li>
+      <li><a href="#s117">A1.1.7 — Вторичная память (SSD, HDD, eMMC, оптические диски, флешки, NAS)</a></li>
+      <li><a href="#s118">A1.1.8 — Сжатие данных (lossless vs lossy, RLE, transform coding)</a></li>
+      <li><a href="#s119">A1.1.9 — Облачные сервисы (SaaS, PaaS, IaaS)</a></li>
+      <li><a href="#exam-tips">Что важно запомнить — экзаменационные подсказки</a></li>
+    </ol>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.1 CPU components ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s111"><span class="syllabus-tag">A1.1.1</span>🧠 Компоненты центрального процессора</h2>
+
+  <p>
+    <b>Центральный процессор (CPU — Central Processing Unit)</b> — это «двигатель» вычислений всей системы. Именно он выполняет инструкции программ: считает, сравнивает, перемещает данные, управляет всем остальным железом. Внутри CPU есть три большие группы элементов: <b>компоненты</b> (ALU, CU), <b>регистры</b> (быстрые ячейки для текущих данных) и <b>шины</b> (провода, по которым гуляют биты).
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Элемент</th>
+        <th>Что делает</th>
+        <th>Аналогия</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>ALU</td><td>Выполняет арифметику (+, −, ×, ÷) и логику (AND, OR, NOT).</td><td>Калькулятор внутри процессора.</td></tr>
+      <tr><td>CU</td><td>Управляет циклом fetch–decode–execute, посылает сигналы другим частям.</td><td>Дирижёр оркестра.</td></tr>
+      <tr><td>Регистры</td><td>Очень быстрые маленькие ячейки для текущих инструкций и данных.</td><td>Записная книжка под рукой.</td></tr>
+      <tr><td>Шины</td><td>Каналы передачи: адресов, данных и управляющих сигналов.</td><td>Железные дороги между блоками.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ALU and CU -->
+  <div class="device-card">
+    <h3><span class="device-emoji">➕</span> Арифметико-логическое устройство (ALU — Arithmetic Logic Unit)</h3>
+    <p>
+      ALU — это место, где <b>реально происходит вычисление</b>. Он умеет складывать, вычитать, умножать, делить, а также выполнять логические операции AND, OR, NOT и сравнения. Когда программа считает <span class="code-inline">2 + 3</span> — это работает именно ALU.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎛️</span> Устройство управления (CU — Control Unit)</h3>
+    <p>
+      CU отвечает за <b>оркестрование цикла fetch–decode–execute</b>. Его задачи:
+    </p>
+    <ul>
+      <li>Получать инструкции из памяти.</li>
+      <li>Разбирать их (декодировать) — определять <b>opcode</b> (код операции) и операнды.</li>
+      <li>Посылать управляющие сигналы нужным частям CPU: ALU, регистрам, шинам.</li>
+    </ul>
+    <p>
+      CU — это «дирижёр»: он не считает сам, но определяет, кто и когда что делает.
+    </p>
+  </div>
+
+  <!-- Registers -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📒</span> Регистры (Registers)</h3>
+    <p>
+      Регистр — это <b>крошечная, но очень быстрая ячейка памяти</b> внутри CPU. Регистры держат то, что процессор использует <i>прямо сейчас</i>: инструкции, адреса, промежуточные результаты. Пять ключевых регистров, которые надо знать на экзамене:
+    </p>
+
+    <table class="summary-table reg-table">
+      <thead>
+        <tr>
+          <th>Регистр</th>
+          <th>Расшифровка</th>
+          <th>Что хранит</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>IR</td>
+          <td>Instruction Register<br>(регистр инструкций)</td>
+          <td>Текущую инструкцию, которая выполняется. Временное «парковочное место» перед декодированием.</td>
+        </tr>
+        <tr>
+          <td>PC</td>
+          <td>Program Counter<br>(счётчик команд)</td>
+          <td>Адрес <b>следующей</b> инструкции. После каждого fetch значение автоматически увеличивается.</td>
+        </tr>
+        <tr>
+          <td>MAR</td>
+          <td>Memory Address Register<br>(регистр адреса памяти)</td>
+          <td>Адрес в памяти, по которому надо прочитать или записать данные. Связан с адресной шиной.</td>
+        </tr>
+        <tr>
+          <td>MDR</td>
+          <td>Memory Data Register<br>(регистр данных памяти)</td>
+          <td>Сами данные или инструкцию, которые передаются из/в основную память.</td>
+        </tr>
+        <tr>
+          <td>AC</td>
+          <td>Accumulator<br>(аккумулятор)</td>
+          <td>Промежуточные результаты арифметических и логических операций. Универсальное «временное хранилище».</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="ru-tip">
+      💡 <b>Мнемоника:</b> «<b>I</b> <b>P</b>ust <b>M</b>oved <b>M</b>y <b>A</b>nswer» — IR, PC, MAR, MDR, AC. На экзамене часто просят описать роль конкретного регистра в цикле — заучи их по порядку.
+    </div>
+  </div>
+
+  <!-- Buses -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🚌</span> Шины (Buses)</h3>
+    <p>
+      Шина — это <b>общий канал передачи данных</b> между компонентами. Шина — это и физические провода, и протоколы передачи. Три главные шины:
+    </p>
+    <ul>
+      <li><b>Адресная шина (Address bus)</b> — передаёт адрес ячейки памяти из CPU в контроллер памяти. <b>Однонаправленная</b>: только от CPU. Ширина шины (число проводов) определяет, сколько памяти CPU может адресовать.</li>
+      <li><b>Шина данных (Data bus)</b> — переносит сами данные и инструкции между CPU и памятью. <b>Двунаправленная</b>: данные могут идти в обе стороны. Её ширина (32 бита, 64 бита) определяет, сколько данных передаётся за одну операцию.</li>
+      <li><b>Шина управления (Control bus)</b> — передаёт сигналы управления: read, write, acknowledge, прерывания (interrupts), тактовые сигналы (clock). Может быть односторонней или двусторонней в зависимости от сигнала.</li>
+    </ul>
+    <p>Все три вместе часто называют <b>системной шиной (system bus)</b>.</p>
+  </div>
+
+  <!-- Types of processors -->
+  <h3>Типы процессоров</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">1️⃣</span> Одноядерные процессоры (Single-core)</h3>
+    <p>
+      Имеют <b>одно ядро</b> — одну единицу обработки. Выполняют инструкции <b>последовательно</b>, одну за другой. Подходили для ранних компьютеров, но сегодня плохо справляются с многозадачностью и параллельной обработкой — становятся «бутылочным горлышком».
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> Многоядерные процессоры (Multi-core)</h3>
+    <p>
+      Имеют <b>два и более независимых ядра</b> на одном кристалле. Каждое ядро может выполнять свою инструкцию одновременно с другими — это <b>параллельная обработка</b>. Современные CPU могут иметь 4, 8, 16 и больше ядер; серверные — до 128+.
+    </p>
+    <p>
+      Это даёт огромный прирост производительности для многозадачности, сложных вычислений и приложений, которые «умеют» использовать параллелизм.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🤝</span> Сопроцессоры (Co-processors)</h3>
+    <p>
+      Это <b>специализированные процессоры</b>, которые «снимают» с главного CPU определённые задачи: рендеринг графики, сложные математические расчёты, шифрование данных. Они освобождают основной CPU для общих задач. Самые известные примеры:
+    </p>
+    <ul>
+      <li><b>GPU (Graphics Processing Unit)</b> — для графики (см. A1.1.2).</li>
+      <li><b>DSP (Digital Signal Processor)</b> — для обработки сигналов (звук, видео).</li>
+    </ul>
+  </div>
+
+  <div class="definition-box">
+    <b>Параллельная обработка (Parallel processing)</b> — техника, при которой несколько процессоров или ядер одновременно выполняют разные части задачи или разные задачи, чтобы повысить общую скорость и эффективность.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши функции арифметико-логического устройства (ALU) и устройства управления (CU) внутри ЦП. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на каждое устройство):</b></p>
+      <ul>
+        <li><b>ALU:</b> выполняет арифметические операции (сложение, вычитание, умножение, деление) и логические операции (AND, OR, NOT, сравнения). Именно в ALU происходит сам акт вычисления.</li>
+        <li><b>CU:</b> орchestrates цикл fetch-decode-execute; декодирует инструкции из памяти и генерирует управляющие сигналы для остальных частей CPU. Решает, что делать дальше, но сам не считает.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Объясни роль трёх регистров: программный счётчик (PC), регистр инструкций (IR) и регистр адреса памяти (MAR). <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на каждый):</b></p>
+      <ul>
+        <li><b>PC (программный счётчик):</b> хранит адрес <i>следующей</i> инструкции в памяти. После каждой fetch-фазы автоматически инкрементируется — указывает на следующий шаг программы.</li>
+        <li><b>IR (регистр инструкций):</b> хранит <i>текущую</i> инструкцию, которая сейчас выполняется. Туда попадает инструкция после fetch и оттуда она передаётся в декодер.</li>
+        <li><b>MAR (регистр адреса памяти):</b> хранит адрес ячейки, к которой CPU собирается обратиться (для чтения или записи). MAR напрямую связан с адресной шиной.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Различи назначение адресной шины, шины данных и шины управления. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Адресная шина</b> — переносит <b>адреса памяти</b> от CPU к контроллеру памяти; <b>однонаправленная</b>; её ширина определяет максимальный объём адресуемой памяти.</li>
+        <li><b>Шина данных</b> — переносит <b>сами данные/инструкции</b> между CPU и памятью; <b>двунаправленная</b>; её ширина (например, 64 бита) определяет, сколько данных передаётся за одну операцию.</li>
+        <li><b>Шина управления</b> — переносит <b>управляющие сигналы</b> (read, write, acknowledge, прерывания, такт); может быть одно- или двунаправленной; синхронизирует работу всех компонентов.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Ключевая идея: разделяй <b>что</b> передаётся (адрес / данные / сигнал) и <b>в какую сторону</b>.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Опиши различия между одноядерным и многоядерным процессорами. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по контрасту):</b></p>
+      <ul>
+        <li><b>Одноядерный:</b> одно ядро, инструкции выполняются строго <b>последовательно</b>; плохо справляется с многозадачностью; становится узким местом при сложных современных приложениях.</li>
+        <li><b>Многоядерный:</b> два и более независимых ядер на одном чипе; <b>параллельное</b> выполнение инструкций; каждое ядро может работать над отдельным потоком; намного лучше для многозадачности и тяжёлых вычислений.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.2 GPU ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s112"><span class="syllabus-tag">A1.1.2</span>🎮 Роль графического процессора (GPU)</h2>
+
+  <p>
+    <b>Графический процессор (GPU — Graphics Processing Unit)</b> — это специализированный электронный модуль, в котором <b>тысячи маленьких ядер</b>. Например, у Nvidia GeForce RTX 4080 — 9728 ядер. Изначально GPU создавали, чтобы быстро рисовать графику для игр и видео, но сегодня GPU активно используются и для машинного обучения, научных симуляций, обработки больших данных.
+  </p>
+
+  <p>
+    GPU может быть <b>встроенным (integrated)</b> — частью CPU, или <b>дискретным (discrete)</b> — отдельной картой. С софтом GPU общается через API: <b>DirectX</b> и <b>OpenGL</b> (а в современных проектах также Vulkan, Metal, CUDA).
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Характеристика GPU</th>
+        <th>Что значит</th>
+        <th>Пример</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Параллельная обработка</td>
+        <td>Тысячи маленьких ядер выполняют одну операцию над разными данными одновременно.</td>
+        <td>Применение фильтра к фото — каждое ядро обрабатывает свой кусочек изображения.</td>
+      </tr>
+      <tr>
+        <td>Высокая пропускная способность</td>
+        <td>Может обрабатывать огромный объём данных за единицу времени.</td>
+        <td>3D-сцены в играх: цвет, позиция, текстуры тысяч пикселей в реальном времени.</td>
+      </tr>
+      <tr>
+        <td>Специальная память (VRAM)</td>
+        <td>Высокоскоростная видеопамять рядом с GPU для хранения текстур и больших массивов.</td>
+        <td>Рендеринг 4К-видео без задержек и буферизации.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Где GPU реально применяется</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🕹️</span> Видеоигры и графика</h3>
+    <p>
+      GPU рендерит сложные 3D-сцены — освещение, тени, текстуры, тысячи листьев на деревьях, отражения. Это позволяет играм идти на высокой частоте кадров и в высоком разрешении, освобождая CPU от графической нагрузки.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🤖</span> Машинное обучение и ИИ</h3>
+    <p>
+      Обучение нейросетей включает <b>огромное количество матричных умножений</b>, которые отлично распараллеливаются. GPU обрабатывает их в разы быстрее, чем CPU. Поэтому почти весь современный AI (от ChatGPT до Midjourney) обучается именно на GPU/TPU.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔬</span> Научные симуляции</h3>
+    <p>
+      Климатические модели, физика частиц, биоинформатика. Например, в <b>геномном секвенировании</b> GPU выравнивают миллионы ДНК-последовательностей с эталонным геномом — задача, идеально подходящая для параллелизма.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎬</span> Графический дизайн и видеомонтаж</h3>
+    <p>
+      Blender, Autodesk Maya, DaVinci Resolve, Adobe Premiere — все используют GPU, чтобы дизайнеры видели 3D-модели и видеоэффекты в реальном времени, без долгого ожидания рендера.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши роль графического процессора (GPU) и приведи два примера областей, где он критично важен. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>GPU — это <b>специализированный сопроцессор с тысячами малых ядер</b>, оптимизированный для параллельной обработки.</li>
+        <li>Изначально создан для <b>рендеринга графики</b> — манипулирует памятью, чтобы быстро создавать изображения для дисплея.</li>
+        <li>Использует высокоскоростную <b>VRAM</b> для хранения текстур и больших массивов.</li>
+        <li><b>Примеры применения (любые 2):</b> видеоигры (3D-сцены, освещение), машинное обучение (обучение нейросетей через матричные умножения), научные симуляции (геном, климат), графический дизайн (Blender, Maya).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Объясни, почему GPU эффективнее CPU для применения фильтра к большой фотографии. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Применение фильтра — это <b>одна и та же операция</b>, выполняемая над миллионами пикселей <b>независимо</b> друг от друга.</li>
+        <li>GPU имеет <b>тысячи ядер</b>, которые могут одновременно обрабатывать свой кусок изображения (SIMD — Single Instruction, Multiple Data).</li>
+        <li>CPU имеет лишь несколько мощных ядер и обрабатывал бы пиксели почти последовательно — гораздо медленнее.</li>
+        <li>Итог: GPU использует <b>массовую параллельность</b>, идеально подходящую под задачу.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Назови два примера, когда задача <i>не подходит</i> для GPU, и обоснуй. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Запуск операционной системы / общие управляющие задачи.</b> Это последовательные задачи с большим количеством ветвлений и логических решений — нужны мощные ядра CPU с branch prediction.</li>
+        <li><b>Чтение пользовательского ввода (клик мыши, нажатие клавиши).</b> Это очень мелкие, нерегулярные события, которые надо обрабатывать с низкой задержкой; распараллелить тут нечего.</li>
+        <li>Ключевая идея: GPU блистает, когда есть <b>много одинаковых операций над большим объёмом независимых данных</b>; CPU нужен, когда задачи сложные и последовательные.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.3 CPU vs GPU (HL) ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s113"><span class="syllabus-tag">A1.1.3</span>⚖️ Различия CPU и GPU <span class="hl-tag">HL</span></h2>
+
+  <p>
+    Тема <b>только для HL</b>. Важно понимать, что CPU и GPU — это <b>разные философии проектирования</b>, оптимизированные под разные задачи. Они не «лучше/хуже» друг друга — они <b>разные</b>.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Параметр</th>
+        <th>CPU</th>
+        <th>GPU</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Философия дизайна</td>
+        <td>Гибкость, универсальность, низкая задержка (low latency)</td>
+        <td>Высокая пропускная способность (high throughput), массовый параллелизм</td>
+      </tr>
+      <tr>
+        <td>Ядра</td>
+        <td>Мало (4–128), но каждое мощное</td>
+        <td>Тысячи мелких, простых ядер</td>
+      </tr>
+      <tr>
+        <td>Тактовая частота</td>
+        <td>Высокая (3–5 GHz)</td>
+        <td>Ниже на ядро</td>
+      </tr>
+      <tr>
+        <td>Тип инструкций</td>
+        <td>Сложные, разнообразные (полная ISA + branch prediction)</td>
+        <td>SIMD: одна инструкция на много данных; графические инструкции (текстуры, пиксели)</td>
+      </tr>
+      <tr>
+        <td>Память</td>
+        <td>Иерархия кэшей (L1/L2/L3) — оптимизирована для low latency</td>
+        <td>High-bandwidth memory + унифицированная память — оптимизирована для throughput</td>
+      </tr>
+      <tr>
+        <td>Типичные задачи</td>
+        <td>ОС, веб-браузер, офис, сложная логика, многозадачность</td>
+        <td>Графика, ML, симуляции, кодирование видео, майнинг крипты</td>
+      </tr>
+      <tr>
+        <td>Энергоэффективность</td>
+        <td>Высокая для смешанных задач (DVFS, TDP)</td>
+        <td>Высокая для параллельных задач; общее энергопотребление выше</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Подробнее: ключевые отличия</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🧩</span> Архитектура ядер и ISA</h3>
+    <p>
+      <b>ISA (Instruction Set Architecture)</b> — это набор инструкций, которые процессор может понимать и выполнять. У CPU ISA очень богатая: системные инструкции, сложные ветвления, разнообразные арифметические операции — всё, что нужно для универсального ПО.
+    </p>
+    <p>
+      У GPU ISA заточена под <b>SIMD (Single Instruction, Multiple Data)</b> — одну операцию над большим набором данных одновременно. Также GPU имеют специальные инструкции для <b>текстурирования</b>: интерполяция пикселей, выборка текстур.
+    </p>
+    <p>
+      У CPU есть <b>branch prediction</b> и <b>out-of-order execution</b> — они «угадывают», какая инструкция понадобится дальше, и подгружают её заранее. GPU этим почти не занимаются — у них и так есть, чем заполнить ядра.
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">💾</span> Память: low latency vs high throughput</h3>
+    <p>
+      <b>CPU</b> использует многоуровневую иерархию кэшей (L1, L2, L3), чтобы данные были как можно ближе. Цель — <b>минимальная задержка</b>: процессор переключается между задачами и должен мгновенно получать данные. В многоядерных CPU работает <b>cache coherence</b> — протоколы, обеспечивающие согласованность данных между кэшами.
+    </p>
+    <p>
+      <b>GPU</b> использует <b>унифицированную память</b> и память с высокой пропускной способностью (HBM). Цель — <b>прокачать огромные объёмы данных</b> в тысячи ядер. Задержка отдельного запроса не так важна, как общая «ширина канала».
+    </p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🍳</span> CPU + GPU вместе: как они работают</h3>
+    <p>
+      Хорошая аналогия — <b>профессиональная кухня</b>:
+    </p>
+    <ul>
+      <li><b>CPU = шеф-повар</b> — координирует всё, принимает решения, делает сложные задачи.</li>
+      <li><b>GPU = бригада поваров</b> — каждый делает одну простую задачу (нарезать овощи), но очень быстро и одновременно.</li>
+    </ul>
+    <p>
+      <b>Разделение задач:</b> CPU выполняет последовательные и управляющие задачи (ОС, ввод-вывод, сетевые операции). GPU получает параллельные задачи (матричные умножения, рендеринг пикселей).
+    </p>
+    <p>
+      <b>Обмен данными:</b> данные сначала лежат в основной памяти (доступной CPU). Чтобы GPU их обработал, их надо <b>скопировать в память GPU через шину PCIe</b> — это может быть узким местом. В современных архитектурах с <b>unified memory</b> CPU и GPU делят общее адресное пространство — меньше копирований.
+    </p>
+    <p>
+      <b>Координация:</b> через языки <b>CUDA</b> (Nvidia) и <b>OpenCL</b> (универсальный). Используются <b>барьеры (barriers)</b> и <b>события (events)</b> — синхронизационные примитивы, которые заставляют потоки ждать друг друга в определённых точках.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Объясни, чем отличаются философии проектирования CPU и GPU. <span class="marks-tag">6 баллов</span> <span class="hl-tag">HL</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по контрасту, минимум 3 пары):</b></p>
+      <ul>
+        <li><b>CPU — гибкость и низкая задержка:</b> мало мощных ядер; широкий набор инструкций; branch prediction; оптимизирован, чтобы быстро завершать одиночные задачи.</li>
+        <li><b>GPU — пропускная способность и параллелизм:</b> тысячи простых ядер; SIMD-инструкции; оптимизирован, чтобы одновременно обработать тысячи похожих операций.</li>
+        <li><b>CPU — универсальность:</b> может выполнять любую программу (ОС, браузер, игры), но не лучшим образом параллелит.</li>
+        <li><b>GPU — специализация:</b> блестит на задачах с массовым параллелизмом (графика, ML), но не подходит для последовательных задач с ветвлениями.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Объясни, как CPU и GPU работают вместе для запуска современной игры. <span class="marks-tag">6 баллов</span> <span class="hl-tag">HL</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>CPU</b> запускает игровую логику: ИИ врагов, физика, обработка ввода игрока, сеть, управление файлами.</li>
+        <li><b>GPU</b> получает данные о сцене (модели, текстуры, освещение) и <b>рендерит кадры</b>: рассчитывает цвет каждого пикселя параллельно.</li>
+        <li><b>Передача данных</b> идёт через шину <b>PCIe</b> (или unified memory) — это может быть узким местом, поэтому игры стараются минимизировать передачу.</li>
+        <li><b>Координация</b> через CUDA или OpenGL/Vulkan — CPU отправляет «команды отрисовки», GPU их выполняет.</li>
+        <li><b>Синхронизация:</b> барьеры/события заставляют CPU дождаться, пока GPU закончит кадр, прежде чем готовить следующий.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Объясни различия в доступе к памяти у CPU и GPU. <span class="marks-tag">5 баллов</span> <span class="hl-tag">HL</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>CPU</b> использует иерархию кэшей (L1, L2, L3), оптимизированную для <b>низкой задержки</b> — CPU часто переключается между задачами и должен мгновенно получать нужные данные.</li>
+        <li>В многоядерном CPU работает <b>cache coherence</b> — протоколы согласованности, чтобы все ядра видели одни и те же актуальные данные.</li>
+        <li><b>GPU</b> использует <b>унифицированную память</b> и память с высокой пропускной способностью (HBM).</li>
+        <li>Приоритет GPU — <b>throughput</b>: накормить тысячи параллельных ядер данными, даже если отдельный запрос идёт чуть дольше.</li>
+        <li>Итог: CPU оптимизирован для скорости отдельного доступа, GPU — для общего объёма передаваемых данных.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.4 Primary memory ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s114"><span class="syllabus-tag">A1.1.4</span>📚 Типы первичной памяти</h2>
+
+  <p>
+    <b>Первичная память (Primary memory)</b> — это рабочее пространство CPU. Здесь хранятся данные и инструкции, которые <b>прямо сейчас</b> используются. Память организована <b>иерархически</b>: чем ближе к CPU, тем быстрее, но меньше по объёму.
+  </p>
+
+  <div class="definition-box">
+    <b>Энергозависимая память (Volatile)</b> — теряет данные при отключении питания. Пример: <b>RAM</b>.<br>
+    <b>Энергонезависимая память (Non-volatile)</b> — сохраняет данные без питания. Примеры: <b>ROM</b>, <b>SSD</b>, <b>HDD</b>.
+  </div>
+
+  <div class="sim-callout">
+    <div class="sim-icon">📚</div>
+    <div class="sim-text">
+      <strong>Симуляция: Иерархия памяти</strong>
+      <span>Интерактивно сравни скорости и объёмы: регистры → кэш → RAM → SSD.</span>
+    </div>
+    <a href="fundamentals.html#mem-sim" class="sim-btn">Открыть симуляцию →</a>
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Тип</th>
+        <th>Скорость доступа</th>
+        <th>Объём</th>
+        <th>Энергозависимость</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Регистры</td><td>0.2–0.5 нс</td><td>десятки байт</td><td>Volatile</td></tr>
+      <tr><td>Кэш L1</td><td>3–7 нс</td><td>32–256 КБ на ядро</td><td>Volatile</td></tr>
+      <tr><td>Кэш L2</td><td>5–10 нс</td><td>256 КБ – 16 МБ</td><td>Volatile</td></tr>
+      <tr><td>Кэш L3</td><td>10–40 нс</td><td>2–32 МБ</td><td>Volatile</td></tr>
+      <tr><td>RAM</td><td>50–70 нс</td><td>4 ГБ – 64+ ГБ</td><td>Volatile</td></tr>
+      <tr><td>ROM</td><td>—</td><td>МБ</td><td>Non-volatile</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Registers -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📒</span> Регистры (Registers)</h3>
+    <p>
+      Самый быстрый и самый маленький тип памяти, встроенный <b>прямо в ядро CPU</b>. Хранят данные, инструкции и адреса, с которыми CPU работает прямо сейчас. <b>Энергозависимые.</b>
+    </p>
+    <p>
+      Базовая единица данных у регистра называется <b>«word size»</b> (размер машинного слова) — обычно 32 или 64 бита.
+    </p>
+  </div>
+
+  <!-- Cache -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚡</span> Кэш (Cache) L1, L2, L3</h3>
+    <p>
+      Высокоскоростная память, расположенная <b>на или возле CPU</b>. Закрывает разрыв в скорости между регистрами и RAM. Хранит часто используемые данные и инструкции для быстрого доступа. <b>Энергозависимая.</b>
+    </p>
+    <ul>
+      <li><b>L1:</b> 32–256 КБ на ядро. Самый быстрый. Часто разделён на инструкции и данные.</li>
+      <li><b>L2:</b> 256 КБ – 16 МБ на ядро или на пару ядер.</li>
+      <li><b>L3:</b> 2–32 МБ. Общий для всех ядер процессора. Медленнее L1/L2, но всё равно намного быстрее RAM.</li>
+    </ul>
+    <p>
+      Современный CPU использует умные техники для оптимизации кэша:
+    </p>
+    <ul>
+      <li><b>Prefetching</b> — предсказывает, какие данные понадобятся скоро, и подгружает их заранее.</li>
+      <li><b>Spatial locality</b> — данные рядом с недавно использованными скоро тоже могут понадобиться.</li>
+      <li><b>Temporal locality</b> — данные, которые только что использовали, скорее всего будут использованы снова.</li>
+      <li><b>Cache replacement policies</b> — алгоритмы (например LRU) решают, что выбросить из кэша, когда он полон.</li>
+    </ul>
+  </div>
+
+  <!-- Cache hit/miss -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🎯</span> Cache hit и Cache miss</h3>
+    <p>
+      Когда CPU нужны данные, он проверяет память по порядку: <b>регистры → L1 → L2 → L3 → RAM</b>.
+    </p>
+    <ul>
+      <li><b>Cache hit (попадание):</b> данные найдены в кэше. Самый быстрый случай — CPU получает данные почти мгновенно.</li>
+      <li><b>Cache miss (промах):</b> данных в кэше нет. Тогда CPU вынужден идти в более медленную память (следующий уровень кэша или RAM). Это замедляет выполнение программы.</li>
+    </ul>
+    <p>
+      Цель оптимизации памяти — <b>максимизировать hit rate</b> и минимизировать miss-ы. Для этого используют prefetching, грамотное размещение данных в памяти и подходящие политики вытеснения.
+    </p>
+  </div>
+
+  <!-- RAM -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🧠</span> RAM (Random-Access Memory — оперативная память)</h3>
+    <p>
+      Главное рабочее пространство компьютера. RAM <b>временно хранит</b> запущенную ОС, активные процессы, открытые данные и инструкции. <b>Энергозависимая</b> — при выключении всё пропадает.
+    </p>
+    <p>
+      Объём RAM измеряется в гигабайтах (ГБ). В 2024–2026:
+    </p>
+    <ul>
+      <li><b>16 ГБ</b> — достаточно для офисной работы, лёгких игр, обычного контента.</li>
+      <li><b>32+ ГБ</b> — для тяжёлых игр, монтажа видео, профессиональных приложений.</li>
+    </ul>
+    <p>
+      <b>32-битные ОС</b> могут адресовать максимум около 4 ГБ, <b>64-битные</b> — гораздо больше (теоретически до 16 эксабайт).
+    </p>
+    <p>
+      CPU общается с RAM через <b>контроллер памяти</b> — отдельный чип, который управляет всеми транзакциями. Если RAM не хватает, ОС использует часть SSD/HDD как <b>виртуальную память (virtual memory)</b> — но это в разы медленнее.
+    </p>
+  </div>
+
+  <!-- ROM -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔒</span> ROM (Read-Only Memory — постоянная память)</h3>
+    <p>
+      <b>Энергонезависимая</b> память, в которой хранятся <b>основные инструкции для запуска</b> компьютера — например, BIOS или firmware. ROM нельзя свободно перезаписывать во время обычной работы (хотя её можно «прошить» специальными процедурами).
+    </p>
+    <p>
+      ROM не участвует в повседневной иерархии «регистры → кэш → RAM». Её роль — <b>загрузить систему</b> при включении и инициализировать базовое железо.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Объясни различия между volatile и non-volatile памятью, приведи примеры. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Volatile (энергозависимая)</b> — требует питания, чтобы хранить данные. При отключении данные теряются. Пример: <b>RAM</b>, кэш, регистры.</li>
+        <li><b>Non-volatile (энергонезависимая)</b> — сохраняет данные даже без питания. Пример: <b>ROM</b>, SSD, HDD.</li>
+        <li>RAM используется для текущих процессов, потому что нужна скорость; ROM — для инструкций запуска, потому что они не должны исчезать.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Опиши иерархию первичной памяти и объясни, зачем нужны несколько уровней кэша. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Иерархия: <b>Регистры → L1 → L2 → L3 → RAM → ROM</b>. Чем ближе к CPU, тем быстрее, но меньше объёма.</li>
+        <li>Регистры — самые быстрые (~0.5 нс), но их единицы байтов.</li>
+        <li>Кэш закрывает разрыв в скорости между регистрами (~нс) и RAM (~50 нс).</li>
+        <li>Несколько уровней кэша нужны, потому что нельзя сделать большой кэш одновременно быстрым: <b>L1</b> очень маленький и очень быстрый, <b>L3</b> крупнее, но чуть медленнее.</li>
+        <li>Это компромисс между <b>скоростью</b>, <b>объёмом</b> и <b>стоимостью</b> — даёт CPU постоянный поток данных без больших задержек.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Объясни термины «cache hit» и «cache miss» и почему они влияют на производительность. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Cache hit</b> — нужные данные найдены в кэше; CPU получает их почти мгновенно.</li>
+        <li><b>Cache miss</b> — данных в кэше нет; CPU вынужден идти в более медленную память (L2/L3 → RAM).</li>
+        <li>Miss = большая задержка (latency), потому что RAM в десятки раз медленнее кэша.</li>
+        <li>Чем выше <b>hit rate</b>, тем быстрее программа работает. Поэтому CPU использует prefetching, spatial/temporal locality и политики замещения, чтобы держать «горячие» данные в кэше.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Объясни роль ROM в системе и почему она отделена от иерархии RAM/кэш. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>ROM хранит <b>firmware/BIOS</b> — низкоуровневые инструкции, нужные для запуска компьютера.</li>
+        <li>Она <b>non-volatile</b>, потому что эти инструкции должны быть доступны сразу при включении, даже если ОС ещё не загружена.</li>
+        <li>ROM не участвует в обычном цикле «CPU ↔ память» во время работы программ — она используется на этапе <b>загрузки (boot-up)</b>, чтобы инициализировать железо и подгрузить ОС из SSD/HDD в RAM.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.5 FDE cycle ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s115"><span class="syllabus-tag">A1.1.5</span>🔁 Цикл fetch–decode–execute</h2>
+
+  <p>
+    <b>Цикл fetch–decode–execute (FDE)</b> — это <b>фундаментальный цикл выполнения инструкций</b>. Также его называют instruction cycle. Каждая инструкция любой программы проходит этот цикл — и так миллиарды раз в секунду.
+  </p>
+
+  <div class="sim-callout">
+    <div class="sim-icon">🧠</div>
+    <div class="sim-text">
+      <strong>Симуляция: Fetch-Decode-Execute</strong>
+      <span>Посмотри в анимации, как инструкции «прыгают» из памяти в регистры и обратно.</span>
+    </div>
+    <a href="fundamentals.html#fde-sim" class="sim-btn">Открыть симуляцию →</a>
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Фаза</th><th>Что происходит</th><th>Главные регистры</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Fetch</td>
+        <td>CPU достаёт инструкцию из RAM по адресу из PC и кладёт её в IR.</td>
+        <td>PC → MAR → MDR → IR</td>
+      </tr>
+      <tr>
+        <td>2. Decode</td>
+        <td>CU разбирает инструкцию: определяет opcode, операнды и адресацию.</td>
+        <td>IR (читается CU)</td>
+      </tr>
+      <tr>
+        <td>3. Execute</td>
+        <td>CPU выполняет операцию: ALU считает, либо идёт обращение к памяти, либо переход.</td>
+        <td>ALU, AC, регистры данных</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Fetch -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📥</span> 1. Фаза Fetch (Выборка)</h3>
+    <p>
+      CPU «достаёт» машинную инструкцию из основной памяти (RAM). Шаги:
+    </p>
+    <ol>
+      <li><b>PC</b> содержит адрес следующей инструкции.</li>
+      <li>Этот адрес копируется в <b>MAR</b>, который выставляет его на адресной шине.</li>
+      <li>Через шину управления CPU посылает сигнал <b>read</b>.</li>
+      <li>Контроллер памяти возвращает данные по шине данных в <b>MDR</b>.</li>
+      <li>Из MDR инструкция перекладывается в <b>IR</b> (регистр инструкций).</li>
+      <li><b>PC</b> автоматически увеличивается, указывая на следующую инструкцию.</li>
+    </ol>
+  </div>
+
+  <!-- Decode -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔍</span> 2. Фаза Decode (Декодирование)</h3>
+    <p>
+      <b>Control Unit</b> разбирает инструкцию, лежащую в IR. Что анализируется:
+    </p>
+    <ul>
+      <li><b>Opcode (код операции)</b> — какой тип операции выполнить (ADD, SUB, MOV, JMP, …).</li>
+      <li><b>Операнды</b> — над какими данными выполнить операцию.</li>
+      <li><b>Режимы адресации</b> — как найти эти данные в памяти (прямой адрес, косвенный, регистровый, …).</li>
+    </ul>
+    <p>
+      На этой фазе также проверяется корректность инструкции и вычисляется <b>эффективный адрес</b> операндов.
+    </p>
+    <p>
+      Примеры опкодов: <span class="code-inline">MOV</span> (переместить), <span class="code-inline">ADD</span> (сложить), <span class="code-inline">SUB</span> (вычесть), <span class="code-inline">MUL</span> (умножить), <span class="code-inline">DIV</span> (поделить), <span class="code-inline">AND</span>/<span class="code-inline">OR</span> (логика), <span class="code-inline">JMP</span> (переход).
+    </p>
+  </div>
+
+  <!-- Execute -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚡</span> 3. Фаза Execute (Исполнение)</h3>
+    <p>
+      CPU выполняет операцию, заданную опкодом. Возможные типы операций:
+    </p>
+    <ul>
+      <li><b>Арифметические:</b> сложение, вычитание, умножение, деление — в ALU.</li>
+      <li><b>Логические:</b> AND, OR, NOT — тоже в ALU.</li>
+      <li><b>Доступ к памяти:</b> Load (прочитать данные в регистр) и Store (записать данные из регистра в память).</li>
+      <li><b>Управляющие:</b> условные и безусловные переходы (jumps) — меняют значение PC, отправляя программу в другое место.</li>
+    </ul>
+  </div>
+
+  <!-- Worked example -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🧮</span> Пример: цикл ADD R1, R2, R3</h3>
+    <p>
+      Инструкция <span class="code-inline">ADD R1, R2, R3</span> складывает значения регистров R2 и R3, результат пишет в R1.
+    </p>
+    <p><b>Fetch:</b></p>
+    <ol>
+      <li>PC указывает на адрес инструкции в памяти.</li>
+      <li>CPU выбирает инструкцию <span class="code-inline">ADD R1, R2, R3</span> из этого адреса.</li>
+      <li>Инструкция помещается в IR.</li>
+    </ol>
+    <p><b>Decode:</b></p>
+    <ol>
+      <li>CU читает инструкцию из IR.</li>
+      <li>Определяет: операция = сложение; операнды = R2 и R3; назначение = R1.</li>
+    </ol>
+    <p><b>Execute:</b></p>
+    <ol>
+      <li>ALU получает значения из R2 и R3.</li>
+      <li>ALU складывает: <i>значение(R2) + значение(R3)</i>.</li>
+      <li>Результат сохраняется в R1.</li>
+    </ol>
+  </div>
+
+  <!-- Buses again -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🚌</span> Роль шин в FDE-цикле</h3>
+    <p>
+      Каждый шаг fetch–decode–execute использует все три шины:
+    </p>
+    <ul>
+      <li><b>Адресная шина</b> — передаёт адрес инструкции/данных из CPU в контроллер памяти.</li>
+      <li><b>Шина данных</b> — передаёт саму инструкцию или данные обратно в CPU.</li>
+      <li><b>Шина управления</b> — посылает сигналы read/write/acknowledge, синхронизирует операции.</li>
+    </ul>
+    <p>
+      Например, <b>чтение значения по адресу 0x1A3B:</b>
+    </p>
+    <ol>
+      <li>Адрес 0x1A3B → по адресной шине в контроллер памяти.</li>
+      <li>Сигнал «read» → по шине управления.</li>
+      <li>Данные из памяти → по шине данных обратно в CPU.</li>
+      <li>Сигнал «acknowledge» → по шине управления подтверждает завершение.</li>
+    </ol>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши три фазы цикла fetch–decode–execute. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на каждую фазу):</b></p>
+      <ul>
+        <li><b>Fetch:</b> CPU получает инструкцию из памяти. Адрес следующей инструкции берётся из <b>PC</b>, идёт в <b>MAR</b>, инструкция возвращается в <b>MDR</b> и переписывается в <b>IR</b>. PC инкрементируется.</li>
+        <li><b>Decode:</b> <b>Control Unit</b> анализирует содержимое IR: определяет opcode, операнды и режим адресации. Преобразует инструкцию в управляющие сигналы.</li>
+        <li><b>Execute:</b> CPU выполняет операцию — ALU считает, либо идёт чтение/запись памяти, либо переход. Результат может сохраняться в регистр или в память.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Опиши, как CPU читает значение из памяти по адресу 0x4F2, используя три шины. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 1 баллу на шаг):</b></p>
+      <ul>
+        <li>1. CPU отправляет адрес 0x4F2 по <b>адресной шине</b> в контроллер памяти.</li>
+        <li>2. CPU посылает сигнал <b>read</b> по <b>шине управления</b>.</li>
+        <li>3. Контроллер памяти возвращает данные по <b>шине данных</b> обратно в CPU.</li>
+        <li>4. Сигнал <b>acknowledge</b> по шине управления подтверждает успешное чтение.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Объясни роль регистра инструкций (IR) и программного счётчика (PC) в цикле FDE. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>PC</b> хранит адрес <i>следующей</i> инструкции в памяти. В начале каждого цикла его значение копируется в MAR, чтобы выбрать инструкцию. После выборки PC автоматически увеличивается.</li>
+        <li><b>IR</b> хранит <i>текущую</i> инструкцию, которую CPU сейчас декодирует и исполняет. Без IR Control Unit не мог бы анализировать инструкцию во время фаз decode и execute.</li>
+        <li>Вместе они задают <b>где взять</b> следующую инструкцию (PC) и <b>что сейчас делать</b> (IR).</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.6 Pipelining (HL) ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s116"><span class="syllabus-tag">A1.1.6</span>🚰 Конвейеризация в многоядерных архитектурах <span class="hl-tag">HL</span></h2>
+
+  <p>
+    Тема <b>только для HL</b>. <b>Конвейеризация (pipelining)</b> — это техника, при которой процессор выполняет <b>несколько инструкций одновременно</b>, разбивая каждую на этапы и запуская следующую инструкцию сразу, как только освободился первый этап.
+  </p>
+
+  <div class="definition-box">
+    <b>Pipelining</b> — техника повышения производительности, при которой выполнение процесса разбивается на несколько этапов, и эти этапы работают одновременно над разными инструкциями.<br>
+    <b>Multi-core architecture</b> — архитектура, в которой один физический процессор содержит несколько интегрированных ядер.
+  </div>
+
+  <!-- Laundry analogy -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🧺</span> Аналогия со стиркой</h3>
+    <p>Представь три задачи: <b>Стирка → Сушка → Складывание</b>, каждая по 30 минут.</p>
+
+    <p><b>Без конвейера (последовательно):</b></p>
+    <ul>
+      <li>Постирал партию A, потом высушил, потом сложил.</li>
+      <li>Только потом начал партию B.</li>
+      <li><b>Итог:</b> 1.5 часа на одну партию.</li>
+    </ul>
+
+    <p><b>С конвейером:</b></p>
+    <ul>
+      <li>Партия A в стирке.</li>
+      <li>Партия A на сушке + партия B в стирке (одновременно!).</li>
+      <li>Партия A складывается + B сушится + C стирается.</li>
+      <li><b>Итог:</b> после первого «разгона» — новая партия каждые 30 минут.</li>
+    </ul>
+    <p>
+      В CPU четыре стадии: <b>fetch → decode → execute → writeback</b>. Каждое ядро может одновременно работать над четырьмя разными инструкциями на разных стадиях.
+    </p>
+  </div>
+
+  <!-- Multi-core -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> Многоядерные процессоры</h3>
+    <p>
+      Каждое ядро в multi-core CPU содержит <b>все базовые компоненты</b>: ALU, CU, регистры, часто свой L1 (а иногда и L2) кэш. Ядра работают независимо, но обычно <b>делят</b> L3-кэш и основную память (RAM).
+    </p>
+    <p>
+      В отличие от одноядерных, многоядерным нужны механизмы <b>межъядерной коммуникации</b> — общие кэши, шины, синхронизационные примитивы.
+    </p>
+  </div>
+
+  <!-- How pipelining helps -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🚀</span> Как конвейеризация улучшает многоядерные системы</h3>
+    <p>
+      Каждое ядро имеет <b>свой конвейер</b> — поэтому может одновременно fetch, decode, execute и writeback. На уровне всего CPU это даёт огромный рост throughput.
+    </p>
+    <ul>
+      <li><b>Fetch:</b> каждое ядро независимо берёт инструкции из памяти. Если L3 общий, требуется <b>cache coherence</b> — протоколы согласованности данных.</li>
+      <li><b>Decode:</b> каждое ядро параллельно декодирует свою инструкцию.</li>
+      <li><b>Execute:</b> каждое ядро выполняет своё (ALU-операции, доступ к памяти).</li>
+      <li><b>Writeback:</b> результаты пишутся в регистры или память; запись в общую память требует координации, чтобы данные оставались согласованными.</li>
+    </ul>
+  </div>
+
+  <!-- Independent vs parallel -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🪢</span> Независимая работа vs параллельная работа ядер</h3>
+    <p>
+      Ядра могут работать <b>независимо</b> — каждое выполняет свой поток (thread) или процесс. ОС распределяет задачи между ядрами по алгоритмам планирования.
+    </p>
+    <p>
+      Или ядра могут <b>сотрудничать</b> — одну большую задачу делят на части, каждая часть идёт на своё ядро (parallel processing). Например, в quad-core CPU задачу делят на 4 куска. Это требует синхронизации через L2/L3 кэш или общие переменные.
+    </p>
+  </div>
+
+  <!-- Pipelining table example -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📊</span> Пример: вычисление квадратов чисел на 4 ядрах</h3>
+    <p>
+      Задача: посчитать квадраты массива чисел и сохранить результаты. Каждое число проходит 4 стадии: fetch → decode → execute → writeback.
+    </p>
+    <table class="summary-table" style="font-size:0.88rem">
+      <thead>
+        <tr><th>Время</th><th>Core 1</th><th>Core 2</th><th>Core 3</th><th>Core 4</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>T1</td><td>Fetch 1</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>T2</td><td>Decode 1</td><td>Fetch 2</td><td>—</td><td>—</td></tr>
+        <tr><td>T3</td><td>Execute 1</td><td>Decode 2</td><td>Fetch 3</td><td>—</td></tr>
+        <tr><td>T4</td><td>Writeback 1</td><td>Execute 2</td><td>Decode 3</td><td>Fetch 4</td></tr>
+        <tr><td>T5</td><td>Fetch 5</td><td>Writeback 2</td><td>Execute 3</td><td>Decode 4</td></tr>
+      </tbody>
+    </table>
+    <p>
+      После T4 все 4 ядра одновременно работают над разными инструкциями на разных стадиях. Производительность по сравнению с одноядерным CPU — кратный рост.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Опиши концепцию конвейеризации (pipelining) и приведи аналогию. <span class="marks-tag">4 балла</span> <span class="hl-tag">HL</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Конвейеризация — это техника, при которой выполнение инструкций <b>разбивается на этапы</b> (fetch, decode, execute, writeback), и эти этапы выполняются <b>одновременно</b> для разных инструкций.</li>
+        <li>Это позволяет процессору запускать новую инструкцию каждый такт, не дожидаясь окончания предыдущей.</li>
+        <li><b>Аналогия со стиркой:</b> пока партия A сушится, партия B уже стирается; пока A складывается, B сушится, C стирается. После «разгона» каждая 30 минут даёт новую готовую партию.</li>
+        <li>Итог: рост throughput процессора — больше инструкций за единицу времени.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Объясни, как pipelining улучшает производительность в многоядерных архитектурах. <span class="marks-tag">5 баллов</span> <span class="hl-tag">HL</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Каждое ядро имеет <b>свой конвейер</b> и может одновременно fetch/decode/execute/writeback разные инструкции.</li>
+        <li>На уровне всего CPU несколько ядер работают над <b>разными потоками</b> параллельно — общий throughput умножается на число ядер.</li>
+        <li><b>Cache coherence</b> обеспечивает согласованность данных, когда несколько ядер делят общий кэш L3 или RAM.</li>
+        <li>Ядра могут работать <b>независимо</b> (разные потоки) или <b>сотрудничать</b> (разделить одну задачу).</li>
+        <li>Итог: меньше времени на выполнение тяжёлых параллелизуемых задач, лучше многозадачность.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Различи независимую работу ядер и параллельную обработку в multi-core CPU. <span class="marks-tag">4 балла</span> <span class="hl-tag">HL</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Независимая работа:</b> каждое ядро выполняет <b>отдельный поток или процесс</b> (например, одно ядро ОС, другое — браузер, третье — видеоплеер). ОС распределяет задачи по ядрам.</li>
+        <li><b>Параллельная обработка:</b> одну <b>большую задачу делят на части</b>, и каждое ядро работает над своей частью одновременно. Требует синхронизации через общие переменные или кэши.</li>
+        <li>Независимая работа улучшает <b>многозадачность</b>; параллельная — <b>скорость выполнения одной тяжёлой задачи</b>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.7 Secondary storage ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s117"><span class="syllabus-tag">A1.1.7</span>💾 Вторичная память (Secondary storage)</h2>
+
+  <p>
+    <b>Вторичная память</b> — это <b>энергонезависимое</b> хранилище для долговременных данных: файлов, программ, фотографий, видео. В отличие от RAM, сохраняет данные при отключении питания. Также называется <b>external memory</b>, <b>auxiliary storage</b> или <b>mass storage</b>.
+  </p>
+
+  <p>
+    Делится на две большие категории: <b>внутренняя</b> (HDD, SSD, eMMC) и <b>внешняя</b> (внешние HDD/SSD, оптические диски, флешки, карты памяти, NAS).
+  </p>
+
+  <div class="sim-callout">
+    <div class="sim-icon">📚</div>
+    <div class="sim-text">
+      <strong>Симуляция: Иерархия памяти</strong>
+      <span>Сравни вторичную память с RAM и кэшем — увидишь, насколько SSD/HDD медленнее.</span>
+    </div>
+    <a href="fundamentals.html#mem-sim" class="sim-btn">Открыть симуляцию →</a>
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Тип</th>
+        <th>Технология</th>
+        <th>Скорость</th>
+        <th>Где применяется</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>HDD</td><td>Магнитные пластины + механическая головка</td><td>100–200 MB/s</td><td>ПК, серверы, дешёвое массовое хранение</td></tr>
+      <tr><td>SSD</td><td>NAND flash, без движущихся частей</td><td>2500–7000 MB/s</td><td>Ноутбуки, ПК, рабочие станции</td></tr>
+      <tr><td>eMMC</td><td>NAND flash + контроллер на одной плате</td><td>медленнее SSD</td><td>Смартфоны, планшеты, бюджетные ноутбуки</td></tr>
+      <tr><td>Оптические</td><td>Лазер + питы/ленды на диске</td><td>низкая</td><td>Архивы, старые устройства, фильмы</td></tr>
+      <tr><td>Флешка USB</td><td>NAND flash</td><td>средняя</td><td>Перенос файлов</td></tr>
+      <tr><td>Карты памяти</td><td>NAND flash</td><td>средняя</td><td>Камеры, телефоны</td></tr>
+      <tr><td>NAS</td><td>Сетевое хранилище (HDD/SSD + RAID)</td><td>зависит от сети</td><td>Дом/офис: общее хранение, бэкапы</td></tr>
+    </tbody>
+  </table>
+
+  <!-- HDD -->
+  <div class="device-card">
+    <h3><span class="device-emoji">💽</span> HDD — Жёсткий диск (Hard Disk Drive)</h3>
+    <p>
+      Хранит данные на вращающихся <b>магнитных пластинах</b>. Читающая/пишущая <b>головка</b> двигается по поверхности и намагничивает крошечные участки.
+    </p>
+    <ul>
+      <li><b>+</b> Большой объём, надёжный, относительно дешёвый.</li>
+      <li><b>−</b> Медленный (100–200 МБ/с), есть подвижные части — может шуметь и ломаться от ударов.</li>
+    </ul>
+    <p>
+      Слово «жёсткий» (hard) — потому что пластины твёрдые и несъёмные, в отличие от гибких (floppy) дисков прошлого.
+    </p>
+  </div>
+
+  <!-- SSD -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚡</span> SSD — Твердотельный накопитель (Solid State Drive)</h3>
+    <p>
+      Использует <b>NAND flash-память</b> — без движущихся частей. Данные хранятся в <b>floating-gate транзисторах</b> (memory cells): затвор электрически заряжен или разряжен — это бит 0 или 1.
+    </p>
+    <ul>
+      <li><b>+</b> Очень быстрый (до 7000 МБ/с), тихий, прочный, мало греется.</li>
+      <li><b>−</b> Дороже за гигабайт, ограниченное число циклов записи (mitigated through <b>wear-levelling</b>).</li>
+    </ul>
+    <p>
+      NAND flash бывает разных типов: SLC, MLC, TLC, QLC — отличаются количеством битов на ячейку (1, 2, 3, 4) и компромиссом цена/скорость/долговечность. SSD-контроллер управляет передачей данных и коррекцией ошибок.
+    </p>
+  </div>
+
+  <!-- eMMC -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📱</span> eMMC — Embedded MultiMediaCard</h3>
+    <p>
+      <b>Встроенная flash-память</b>, объединяющая интерфейс multimedia card, NAND flash и контроллер на одной маленькой плате. Используется в <b>смартфонах, планшетах, бюджетных ноутбуках</b>.
+    </p>
+    <ul>
+      <li><b>+</b> Дешевле SSD, компактна, низкое энергопотребление.</li>
+      <li><b>−</b> Медленнее SSD, меньше ёмкость (обычно 16–256 ГБ).</li>
+    </ul>
+  </div>
+
+  <!-- Optical drives -->
+  <div class="device-card">
+    <h3><span class="device-emoji">💿</span> Оптические диски (Optical drives)</h3>
+    <p>
+      Хранят данные как <b>крошечные углубления (pits) и ровные участки (lands)</b> на отражающей поверхности. <b>Лазерный диод</b> освещает поверхность; отражённый свет улавливает фотодиод.
+    </p>
+    <ul>
+      <li>Свет от <b>land</b> отражается напрямую.</li>
+      <li>Свет от <b>pit</b> рассеивается под углом — меньше интенсивность.</li>
+      <li>Эти различия декодируются как биты 0/1.</li>
+    </ul>
+    <p>Примеры: CD, DVD, Blu-ray. Сегодня используются в основном для архивов и совместимости со старым оборудованием.</p>
+    <ul>
+      <li><b>+</b> Большой объём, дешёвый носитель, долго хранится.</li>
+      <li><b>−</b> Медленный, диски хрупкие, царапаются, ломаются.</li>
+    </ul>
+  </div>
+
+  <!-- Flash drives + Memory cards -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔌</span> USB-флешки и карты памяти</h3>
+    <p>
+      <b>Флешка (USB flash drive)</b> — небольшое переносное устройство, использующее NAND flash. Подключается к USB-порту, легко переносить файлы между компьютерами.
+    </p>
+    <p>
+      <b>Карты памяти (memory cards)</b> — компактные съёмные модули flash для камер, смартфонов, планшетов.
+    </p>
+    <ul>
+      <li><b>+</b> Портативность, удобство, относительно дешёвые.</li>
+      <li><b>−</b> Меньшие объёмы по сравнению с HDD/SSD; легко потерять; конфиденциальные данные на потерянной флешке — риск безопасности.</li>
+    </ul>
+  </div>
+
+  <!-- NAS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🗄️</span> NAS — Network Attached Storage</h3>
+    <p>
+      <b>Сетевое хранилище</b>: устройство с дисками (обычно HDD или SSD), подключённое к роутеру и доступное по сети. Любое устройство в сети может читать/писать файлы на NAS.
+    </p>
+    <p>
+      NAS часто настраивают с <b>RAID</b> (Redundant Array of Independent Disks) — данные дублируются на несколько дисков, чтобы пережить выход одного из них из строя.
+    </p>
+    <ul>
+      <li><b>+</b> Централизованное хранилище для семьи/офиса, общий доступ, масштабируемость, контроль администратора.</li>
+      <li><b>−</b> Дороже отдельных внешних дисков, требует настройки и сетевого подключения.</li>
+    </ul>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Сравни HDD и SSD по технологии, скорости и применению. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Технология:</b> HDD — магнитные пластины + механическая головка чтения/записи; SSD — NAND flash, без движущихся частей.</li>
+        <li><b>Скорость:</b> SSD значительно быстрее (2500–7000 МБ/с против 100–200 МБ/с у HDD), потому что нет физической задержки на поиск дорожки.</li>
+        <li><b>Энергопотребление:</b> SSD потребляет меньше энергии и не греется, что важно для ноутбуков.</li>
+        <li><b>Долговечность:</b> SSD устойчив к ударам, но имеет ограниченное число циклов записи (мitigated through wear-levelling). HDD механически уязвим, но в спокойных условиях служит долго.</li>
+        <li><b>Стоимость:</b> HDD дешевле за гигабайт, поэтому всё ещё используется для большого массового хранения.</li>
+        <li><b>Применение:</b> HDD — серверы, бэкапы, бюджетные ПК; SSD — современные ноутбуки, рабочие станции, игровые ПК.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Опиши, как оптический диск хранит и считывает данные. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Данные хранятся как <b>pits и lands</b> — крошечные углубления и ровные участки в спиральной дорожке на отражающей поверхности диска.</li>
+        <li>Для чтения <b>лазерный диод</b> направляет луч света через поликарбонатный слой на отражающий металлический слой.</li>
+        <li>От <b>land</b> свет отражается прямо в фотодиод; от <b>pit</b> — рассеивается под углом, интенсивность меняется.</li>
+        <li><b>Фотодиод</b> детектирует эти изменения и превращает их в электрический сигнал.</li>
+        <li>Сигнал декодируется как биты 0 и 1 — оригинальные данные.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Объясни преимущества NAS перед обычным внешним диском. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 пункта × 2 балла):</b></p>
+      <ul>
+        <li><b>Централизованное хранение:</b> один NAS доступен всем устройствам в сети — не нужно копировать файлы между ноутбуками и телефонами.</li>
+        <li><b>Совместный доступ:</b> несколько пользователей могут одновременно читать и редактировать файлы.</li>
+        <li><b>Защита данных:</b> можно настроить <b>RAID</b> — данные дублируются на несколько дисков, и при выходе одного из строя ничего не теряется.</li>
+        <li><b>Масштабируемость:</b> при росте потребностей можно добавить новые диски.</li>
+        <li><b>Управление:</b> администратор контролирует права доступа, бэкапы, расписания.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.8 Compression ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s118"><span class="syllabus-tag">A1.1.8</span>🗜️ Сжатие данных (Compression)</h2>
+
+  <p>
+    <b>Сжатие данных</b> — это уменьшение размера файла, чтобы:
+  </p>
+  <ul>
+    <li><b>Экономить место</b> на диске.</li>
+    <li><b>Быстрее передавать</b> данные по сети.</li>
+    <li><b>Снижать стоимость</b> хранения и трафика (особенно в облаке, где платишь за гигабайты).</li>
+  </ul>
+
+  <p>
+    Есть два главных подхода: <b>lossless (без потерь)</b> и <b>lossy (с потерями)</b>.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Параметр</th><th>Lossless</th><th>Lossy</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Целостность данных</td>
+        <td>Распакованный файл <b>идентичен</b> оригиналу.</td>
+        <td>Распакованный файл <b>отличается</b> от оригинала (потеряны детали).</td>
+      </tr>
+      <tr>
+        <td>Степень сжатия</td>
+        <td>Ниже — сохраняем всё.</td>
+        <td>Выше — выкидываем «неважное».</td>
+      </tr>
+      <tr>
+        <td>Где применяется</td>
+        <td>Бэкапы, документы, архивы, программный код.</td>
+        <td>Аудио, видео, фотографии.</td>
+      </tr>
+      <tr>
+        <td>Использует «незаметность»</td>
+        <td>Нет — все данные равноважны.</td>
+        <td>Да — выкидывает то, что человек не заметит (perceptual redundancy).</td>
+      </tr>
+      <tr>
+        <td>Обратимость</td>
+        <td>Полностью обратимо.</td>
+        <td>Необратимо: что выкинули — не вернуть.</td>
+      </tr>
+      <tr>
+        <td>Примеры форматов</td>
+        <td>ZIP, PNG, FLAC, TIFF, GIF, PDF</td>
+        <td>JPEG, MP3, MPEG</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Lossless -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🧩</span> Сжатие без потерь (Lossless)</h3>
+    <p>
+      Алгоритм находит <b>повторяющиеся паттерны</b> в данных и кодирует их более компактно. При распаковке оригинал восстанавливается <b>идеально, бит в бит</b>.
+    </p>
+    <p>
+      Идеально для текстов, кода, медицинских данных, документов — там, где <b>любая потеря недопустима</b>.
+    </p>
+    <p><b>Форматы:</b> ZIP, GZIP, PNG, FLAC, TIFF, GIF, PDF (для текста и векторов).</p>
+  </div>
+
+  <!-- RLE -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🔢</span> RLE — Run-Length Encoding (Кодирование повторяющихся серий)</h3>
+    <p>
+      Простой и эффективный <b>lossless</b> метод. Заменяет повторяющиеся подряд символы парой «<i>число повторов</i> + <i>символ</i>».
+    </p>
+    <p><b>Пример из учебника:</b></p>
+    <p>Строка <span class="code-inline">AAAAAAABBBBBCCCCCCCCCDDDDDDDDDD</span> (31 символ).</p>
+    <p>Считаем: 7 A, 5 B, 9 C, 10 D.</p>
+    <p>Сжатая версия: <span class="code-inline">7A5B9C10D</span> (9 символов) — почти в 3.5 раза короче.</p>
+    <p>
+      RLE отлично работает для <b>текста с повторами, факсов, простых изображений</b> (с большими одноцветными областями), бинарных данных с длинными нулями.
+    </p>
+  </div>
+
+  <!-- Lossy -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🎨</span> Сжатие с потерями (Lossy)</h3>
+    <p>
+      Более «агрессивный» подход: <b>выбрасывает часть данных</b>, которые человек вряд ли заметит. Достигается значительно более высокая степень сжатия — иногда в 10–100 раз.
+    </p>
+    <p>
+      <b>Пример:</b> картинка 4×4 пикселей в шахматном узоре (чёрный/белый). Lossy-сжатие может усреднить каждый блок 2×2 в серый цвет — получится 2×2 серая картинка. Оригинал не восстановить, но общее впечатление сохранится.
+    </p>
+    <p>
+      Использует <b>perceptual redundancy</b> — факт, что зрение и слух человека не замечают тонких различий: высоких частот, мелких градиентов, тихих звуков рядом с громкими.
+    </p>
+    <p><b>Форматы:</b> JPEG (фото), MP3 (аудио), MPEG (видео), H.264, AAC, WebP (lossy mode).</p>
+  </div>
+
+  <!-- Transform coding -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📐</span> Transform coding (Преобразовательное кодирование)</h3>
+    <p>
+      Более сложная и мощная техника, основанная на <b>математических преобразованиях</b> данных. Например, <b>DCT (Discrete Cosine Transform)</b> — переводит сигнал из «временно́й/пространственной» формы в <b>частотную</b>.
+    </p>
+    <p>
+      После преобразования становится видно, какие <b>частоты несут много информации</b>, а какие почти не влияют на восприятие. Малозначимые частоты можно <b>округлить или выбросить</b> (quantization), сильно уменьшив размер файла.
+    </p>
+    <ul>
+      <li><b>JPEG</b> — DCT для изображений: переводит блоки пикселей в частотную область, удаляет высокие частоты.</li>
+      <li><b>MP3, MPEG</b> — аналогично для звука: убирает частоты, плохо слышимые человеком.</li>
+    </ul>
+    <p>
+      Transform coding достигает более высокой степени сжатия, чем RLE, особенно для данных со сложными паттернами (фото, музыка, видео).
+    </p>
+  </div>
+
+  <!-- Applications -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🎯</span> Где что применяется</h3>
+    <table class="summary-table" style="font-size:0.9rem">
+      <thead>
+        <tr><th>Тип</th><th>Применение</th><th>Примеры</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Lossless</td><td>Бэкапы, документы, архивы</td><td>ZIP, PNG, TIFF, GIF, FLAC, PDF</td></tr>
+        <tr><td>Lossy</td><td>Изображения, аудио, видео</td><td>JPEG, MP3</td></tr>
+        <tr><td>RLE</td><td>Факсы, текстовые файлы, простые изображения</td><td>Fax compression, text compression</td></tr>
+        <tr><td>Transform coding</td><td>Изображения, аудио, видео</td><td>JPEG, MP3, MPEG</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Объясни различия между сжатием без потерь и с потерями. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Lossless</b> сохраняет все данные оригинала; распакованный файл <b>идентичен</b> исходному.</li>
+        <li><b>Lossy</b> жертвует частью данных (обычно теми, что человек не заметит), достигая <b>гораздо большей</b> степени сжатия, но <b>теряя качество</b>.</li>
+        <li>Lossless подходит для бэкапов, кода, текста, где данные нельзя терять.</li>
+        <li>Lossy подходит для фото, аудио, видео, где небольшая потеря качества допустима.</li>
+        <li>Lossless <b>обратимо</b>, lossy — <b>необратимо</b>: что выкинули, не вернуть.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Сожми строку <span class="code-inline">WWWWWBBBBBBBBBBAAA</span> методом RLE и поясни, почему RLE подходит для этих данных. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Решение:</b></p>
+      <ul>
+        <li>Считаем повторы: 5 W, 10 B, 3 A.</li>
+        <li>Сжатая строка: <span class="code-inline">5W10B3A</span>.</li>
+        <li>Оригинал — 18 символов; сжатая — 7. Степень сжатия примерно 2.5×.</li>
+      </ul>
+      <p><b>Почему RLE подходит:</b> в строке есть длинные серии одинаковых символов. RLE эффективен именно для <b>повторяющихся паттернов</b>, и тут он работает отлично. Для случайных данных без повторов RLE может даже увеличить размер.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Опиши, как transform coding работает в JPEG-сжатии. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>JPEG применяет <b>Discrete Cosine Transform (DCT)</b> к блокам пикселей (обычно 8×8).</li>
+        <li>DCT переводит блок из пространственной (значения пикселей) в <b>частотную область</b>.</li>
+        <li>В частотной области видно, какие частоты несут много информации, а какие — мало (высокие частоты обычно слабо влияют на восприятие).</li>
+        <li>Применяется <b>quantization</b> — менее важные частоты округляются или обнуляются. Это и есть «потеря».</li>
+        <li>Полученные коэффициенты дополнительно сжимаются <b>lossless</b>-методом (например, Huffman). Итог: значительно меньший файл, но при распаковке часть деталей не восстанавливается.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Назови два примера, когда нужно использовать lossless, и обоснуй. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Бэкап программного кода / документов:</b> ни одного символа потерять нельзя — иначе код перестанет компилироваться или текст станет некорректным.</li>
+        <li><b>Медицинские снимки / рентген:</b> потеря деталей может привести к ошибочному диагнозу. Используют lossless-форматы (PNG, DICOM).</li>
+        <li>Также: научные данные (точные измерения), юридические документы, архивы первоисточников.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ A1.1.9 Cloud computing ============ -->
+  <!-- ====================================================== -->
+  <h2 id="s119"><span class="syllabus-tag">A1.1.9</span>☁️ Облачные сервисы: SaaS, PaaS, IaaS</h2>
+
+  <p>
+    <b>Облачные вычисления (cloud computing)</b> — парадигма, в которой организации получают вычислительные ресурсы (серверы, хранилище, базы данных, ПО) <b>через интернет</b>, вместо того чтобы держать всё «у себя на сервере».
+  </p>
+
+  <p>
+    «Облако» — это не какая-то магическая абстракция, а <b>сеть удалённых серверов в дата-центрах</b> по всему миру. Главное преимущество: организация <b>платит только за то, что использует</b>, а не за дорогой сервер, который простаивает.
+  </p>
+
+  <p>
+    Есть три основные модели — отличаются <b>уровнем контроля</b> и <b>тем, что нужно делать самому</b>:
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Модель</th>
+        <th>Что предоставляется</th>
+        <th>Кто кем управляет</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>SaaS</td><td>Готовое <b>приложение</b> через браузер</td><td>Провайдер управляет всем; ты просто пользуешься</td></tr>
+      <tr><td>PaaS</td><td><b>Платформа</b> для разработчиков (ОС, БД, инструменты)</td><td>Провайдер держит инфраструктуру; ты пишешь только код</td></tr>
+      <tr><td>IaaS</td><td>Виртуализированные <b>серверы и хранилище</b></td><td>Ты управляешь всем выше железа: ОС, ПО, конфигурация</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SaaS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📨</span> SaaS — Software as a Service</h3>
+    <p>
+      <b>Готовое приложение, доступное через браузер или мобильное приложение.</b> Не надо ничего устанавливать, обновлять, поддерживать — всё делает провайдер.
+    </p>
+    <p><b>Характеристики:</b></p>
+    <ul>
+      <li><b>All-inclusive:</b> полный пакет с обновлениями и поддержкой, без больших начальных затрат.</li>
+      <li><b>Масштабируемость:</b> легко добавить/убрать пользователей.</li>
+      <li><b>Доступность:</b> работает с любого устройства с интернетом.</li>
+      <li><b>Безопасность:</b> провайдер обеспечивает защиту данных.</li>
+    </ul>
+    <p><b>Примеры:</b> Salesforce (CRM), SurveyMonkey (опросы), Canva (графический дизайн), Gmail/Google Docs, Microsoft Office 365 (онлайн-версии), Zoom, Microsoft Teams, MoodleCloud.</p>
+  </div>
+
+  <!-- PaaS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🛠️</span> PaaS — Platform as a Service</h3>
+    <p>
+      <b>Готовая среда для разработчиков:</b> ОС, базы данных, middleware, сетевая инфраструктура, инструменты разработки. Разработчик <b>пишет только код приложения</b>, не возится с серверами.
+    </p>
+    <p><b>Характеристики:</b></p>
+    <ul>
+      <li><b>DevOps-friendly:</b> ускоряет циклы разработки и развёртывания.</li>
+      <li><b>Абстракция инфраструктуры:</b> обновления ОС, БД и сети делает провайдер.</li>
+      <li><b>Снижение операционных расходов:</b> не нужно покупать и поддерживать железо/ПО.</li>
+    </ul>
+    <p><b>Примеры:</b> Google App Engine, Heroku, Microsoft Azure App Service, Amazon Elastic Beanstalk, Red Hat OpenShift.</p>
+    <p>
+      <b>Пример из учебника:</b> студент Алекс хочет создать фитнес-приложение FitTrack. У него мало опыта администрирования серверов. С PaaS Алекс просто пишет код, а платформа сама масштабирует приложение, обновляет ОС и решает вопросы безопасности.
+    </p>
+  </div>
+
+  <!-- IaaS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🏗️</span> IaaS — Infrastructure as a Service</h3>
+    <p>
+      <b>Виртуальные серверы, хранилище и сеть</b> через интернет. Бизнес сам ставит ОС, настраивает ПО, конфигурирует инфраструктуру — но не покупает физическое железо.
+    </p>
+    <p>
+      Опирается на <b>виртуализацию</b>: одна физическая машина «делится» на множество <b>виртуальных машин (VM)</b>, у каждой свой OS и приложения, работающих изолированно.
+    </p>
+    <p><b>Характеристики:</b></p>
+    <ul>
+      <li><b>Кастомизация:</b> можно настроить инфраструктуру под любые требования.</li>
+      <li><b>Масштабируемость:</b> ресурсы быстро добавляются и убираются.</li>
+      <li><b>Контроль:</b> бизнес полностью управляет конфигурацией и ПО.</li>
+    </ul>
+    <p><b>Примеры:</b> Amazon Web Services (AWS), Microsoft Azure, Google Cloud Platform, IBM Cloud, Oracle Cloud Infrastructure, Linode.</p>
+  </div>
+
+  <!-- Choosing -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🧭</span> Как выбрать модель</h3>
+    <table class="summary-table" style="font-size:0.9rem">
+      <thead>
+        <tr><th>Характеристика</th><th>SaaS</th><th>PaaS</th><th>IaaS</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Контроль</td><td>Низкий</td><td>Средний</td><td>Высокий</td></tr>
+        <tr><td>Гибкость</td><td>Низкая</td><td>Средняя</td><td>Высокая</td></tr>
+        <tr><td>Управление ресурсами</td><td>Всё делает провайдер</td><td>Большую часть — провайдер</td><td>Большую часть — клиент</td></tr>
+        <tr><td>Стоимость</td><td>Самая низкая</td><td>Средняя</td><td>Самая высокая</td></tr>
+        <tr><td>Когда выбирать</td><td>Простые приложения, конечные пользователи</td><td>Кастомные приложения, быстрая разработка</td><td>Сложные требования, специализированное железо</td></tr>
+      </tbody>
+    </table>
+    <p>
+      <b>Кратко:</b>
+    </p>
+    <ul>
+      <li><b>SaaS</b> — нужно «просто пользоваться» программой (CRM, почта, видеоконференции).</li>
+      <li><b>PaaS</b> — есть свои разработчики, но не хочется заниматься железом и инфраструктурой.</li>
+      <li><b>IaaS</b> — нужен максимальный контроль, специфические настройки, своя ОС.</li>
+    </ul>
+  </div>
+
+  <!-- Tip -->
+  <div class="ru-tip">
+    💡 <b>Мнемоника:</b> представь стопку «<i>пицца as a service</i>». IaaS — тебе дали кухню и плиту, остальное (тесто, начинку, время) делаешь сам. PaaS — тебе дали полуфабрикат теста и духовку, осталось добавить начинку. SaaS — пиццу привезли готовой, режь и ешь.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Объясни различия между SaaS, PaaS и IaaS. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на модель):</b></p>
+      <ul>
+        <li><b>SaaS</b> — готовое <b>приложение</b> через браузер/мобильник. Провайдер управляет всем (инфраструктурой, ПО, обновлениями). Низкий контроль, низкая стоимость. Примеры: Gmail, Salesforce, Canva.</li>
+        <li><b>PaaS</b> — <b>платформа</b> для разработчиков с готовой ОС, БД, middleware и инструментами. Разработчик пишет только код. Средний контроль и стоимость. Примеры: Heroku, Google App Engine.</li>
+        <li><b>IaaS</b> — <b>виртуализированная инфраструктура</b> (серверы, хранилище, сеть). Клиент сам настраивает ОС и ПО. Максимальный контроль, самая высокая стоимость. Примеры: AWS, Azure, Google Cloud.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Назови два преимущества облачных вычислений для малого бизнеса. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 пункта × 2 балла):</b></p>
+      <ul>
+        <li><b>Экономия:</b> не нужно покупать дорогие серверы и нанимать ИТ-специалистов; платишь по подписке за то, что используешь.</li>
+        <li><b>Масштабируемость:</b> ресурсы добавляются и убираются по мере роста бизнеса — без покупки нового железа.</li>
+        <li><b>Доступность:</b> сотрудники могут работать из любой точки мира с интернетом.</li>
+        <li><b>Безопасность и обновления:</b> провайдер занимается резервным копированием, патчами и защитой.</li>
+        <li><b>Быстрый запуск:</b> новый сервис можно поднять за минуты, а не за недели.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Стартап разрабатывает кастомное веб-приложение и не хочет заниматься администрированием серверов. Какую модель ты порекомендуешь и почему? <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Рекомендую <b>PaaS</b>.</li>
+        <li><b>Почему:</b> разработчикам нужна <b>среда для написания собственного кода</b>, но они не хотят возиться с ОС, БД и сетью. PaaS даёт готовую платформу с ОС, БД, middleware и инструментами; они только пишут код.</li>
+        <li><b>SaaS</b> не подходит — это готовое приложение, а им нужно своё собственное.</li>
+        <li><b>IaaS</b> подойдёт, но потребует от команды настраивать ОС, БД и сеть — слишком много забот для маленького стартапа без админов.</li>
+        <li>Конкретные примеры PaaS: Heroku, Google App Engine, AWS Elastic Beanstalk.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Опиши концепцию виртуализации в контексте IaaS. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Виртуализация</b> — создание программной «виртуальной версии» железа, ОС, хранилища или сети вместо физической.</li>
+        <li>На одной физической машине можно запустить <b>несколько виртуальных машин (VM)</b>, каждая со своей ОС и приложениями, изолированно друг от друга.</li>
+        <li>Это даёт <b>эффективное использование железа</b>, гибкость, масштабируемость и изоляцию (одна VM не падает от ошибки в другой).</li>
+        <li>IaaS-провайдеры через виртуализацию выдают клиентам столько «серверов» и «дисков», сколько нужно, не покупая каждый раз новое железо.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ====================================================== -->
+  <!-- ============ EXAM TIPS ============ -->
+  <!-- ====================================================== -->
+  <h2 id="exam-tips">📌 Что важно запомнить — экзаменационные подсказки</h2>
+
+  <ul style="line-height: 1.85; font-size: 1.02rem;">
+    <li><b>Регистры CPU (IR, PC, MAR, MDR, AC)</b> — выучи назначение каждого. На экзамене часто просят описать роль конкретного регистра в FDE-цикле.</li>
+    <li><b>Шины:</b> различай <b>адресная (что), данных (то самое содержимое), управления (сигнал)</b>. Помни: адресная — однонаправленная, данных — двунаправленная.</li>
+    <li><b>FDE-цикл</b> — основа экзамена. Запомни последовательность регистров: <b>PC → MAR → MDR → IR → CU → ALU/память</b>.</li>
+    <li><b>CPU vs GPU (HL):</b> отвечай по парам — мало мощных ядер vs тысячи простых; low latency vs high throughput; универсальность vs параллелизм.</li>
+    <li><b>Volatile vs Non-volatile</b> — лёгкий, но частый вопрос. RAM теряет, ROM/SSD/HDD сохраняют.</li>
+    <li><b>Cache hit/miss</b> — связывай с производительностью: больше hit = быстрее программа.</li>
+    <li><b>Pipelining (HL):</b> отвечай через аналогию со стиркой — наглядно и легко запомнить.</li>
+    <li><b>HDD vs SSD:</b> механика vs flash; медленно vs быстро; дёшево vs дорого; шумно vs тихо.</li>
+    <li><b>Lossless vs Lossy:</b> идентично vs с потерями; меньшая степень vs большая; код/документы vs фото/аудио.</li>
+    <li><b>RLE</b> — умей сжать любую строку повторов и объяснить, что компрессия работает только для повторяющихся данных.</li>
+    <li><b>Cloud — SaaS/PaaS/IaaS:</b> отвечай через <b>уровень контроля</b> (SaaS низкий, IaaS высокий) и <b>что предоставляется</b> (приложение / платформа / инфраструктура).</li>
+    <li><b>На «опиши» — давай 3-4 пункта, на «объясни» — рассуждай с причиной, на «различи» — обязательно структурируй ответ по парам, на «назови 2 преимущества» — 2 пункта по 2 балла.</b></li>
+  </ul>
+
+  <div class="ru-tip">
+    🎯 <b>Главное правило:</b> в IB CS ответы оцениваются по <b>ключевым словам</b>. Используй точные термины (instruction register, program counter, cache coherence, perceptual redundancy, virtualization) — даже если объяснение короткое, термины приносят баллы.
+  </div>
+
+  <p style="margin-top:32px">
+    <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+    &nbsp; · &nbsp;
+    <a href="fundamentals.html#fde-sim" class="back-link">🧠 Симуляция FDE</a>
+    &nbsp; · &nbsp;
+    <a href="fundamentals.html#mem-sim" class="back-link">📚 Симуляция памяти</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A1.1" class="back-link">К квизу A1.1 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A1.1 Аппаратное обеспечение и работа компьютера · Источник: IB DP 2025 Computer Science (Oxford) · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

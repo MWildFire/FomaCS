@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2.3 Передача данных · IB CS Theme A</title>
+<meta name="description" content="A2.3 Передача данных — детальный разбор на русском: IP-адресация (IPv4 vs IPv6, публичные/частные/статические/динамические IP, NAT), среды передачи (оптоволокно, витая пара, беспроводные), коммутация пакетов, маршрутизация (статическая/динамическая), пропускная способность и задержки, обнаружение ошибок.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .device-page h4 {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 18px 0 6px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .summary-table.compact { font-size: 0.88rem; }
+  .summary-table.compact th, .summary-table.compact td { padding: 10px 12px; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .label-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  [data-theme="dark"] .label-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .question-card .answer ul, .question-card .answer ol { padding-left: 22px; line-height: 1.7; }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .key-term {
+    background: rgba(16,185,129,0.06);
+    border-left: 4px solid var(--green);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+  }
+  [data-theme="dark"] .key-term { background: rgba(16,185,129,0.10); }
+  .key-term b { color: var(--green); }
+  .real-world {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+  }
+  .real-world b { color: var(--primary); }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .sim-cta {
+    display: inline-block;
+    margin: 6px 8px 6px 0;
+    padding: 8px 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 99px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .sim-cta:hover { background: var(--primary-2); }
+  .diagram-wrap {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0 24px;
+    text-align: center;
+  }
+  .diagram-wrap svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  .diagram-caption {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .compare-grid > div {
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .compare-grid h4 { margin-top: 0; color: var(--primary); }
+  .compare-grid ul { margin: 6px 0; padding-left: 20px; line-height: 1.6; }
+  @media (max-width: 720px) { .compare-grid { grid-template-columns: 1fr; } }
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  .takeaways {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 18px 0;
+  }
+  .takeaways ul { padding-left: 22px; line-height: 1.8; }
+  .takeaways li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A2.3 · Data transmissions
+  </span>
+
+  <h1>Передача данных</h1>
+
+  <p class="lede">
+    Тема <b>A2.3</b> отвечает на вопрос: «Как именно данные физически и логически добираются от одного устройства до другого?». Здесь четыре больших блока: <b>IP-адресация</b> (как устройства называются), <b>среды передачи</b> (по чему идут сигналы), <b>коммутация пакетов</b> (как сообщение режется на куски и доставляется), и <b>маршрутизация</b> (как роутеры выбирают путь). Плюс — характеристики канала (пропускная способность, задержка, джиттер) и <b>обнаружение ошибок</b>.
+  </p>
+
+  <div class="ru-tip">
+    💡 <b>Связь с симуляторами:</b>
+    <a class="sim-cta" href="networks.html#protocols-sim">📦 TCP vs UDP — поведение пакетов</a>
+    <a class="sim-cta" href="networks.html#topology-sim">🌐 Топологии — путь через узлы</a>
+  </div>
+
+  <!-- ============ SECTION 1: SYLLABUS MAP ============ -->
+  <h2>1. Что входит в A2.3 (карта подтем)</h2>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Подтема</th>
+        <th>О чём</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A2.3.1</td>
+        <td>Типы IP-адресации: IPv4 vs IPv6, публичные/частные, статические/динамические, NAT, loopback.</td>
+      </tr>
+      <tr>
+        <td>A2.3.2</td>
+        <td>Сравнение сред передачи: оптоволокно, витая пара, беспроводные (плюс коаксиал в реальном мире).</td>
+      </tr>
+      <tr>
+        <td>A2.3.3</td>
+        <td>Коммутация пакетов: сегментация, инкапсуляция, заголовки, независимая маршрутизация, сборка.</td>
+      </tr>
+      <tr>
+        <td>A2.3.4 <span class="label-pill">AHL</span></td>
+        <td>Статическая и динамическая маршрутизация в LAN (протоколы RIP, OSPF, BGP; метрики; сходимость).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============ SECTION 2: IP ADDRESSING ============ -->
+  <h2>2. IP-адресация (A2.3.1)</h2>
+
+  <p>
+    <b>Internet Protocol (IP)</b> — это протокол, который отвечает за <b>маршрутизацию и доставку пакетов</b> между сетями. В центре IP — <b>IP-адрес</b>: уникальное числовое имя устройства в сети.
+  </p>
+
+  <div class="key-term">
+    <b>IP-адрес.</b> Уникальный числовой идентификатор устройства в IP-сети. По нему другие устройства понимают, «куда» отправлять пакет.
+  </div>
+
+  <h3>🔢 2.1. IPv4 vs IPv6</h3>
+
+  <p>
+    Двух версий IP-адресов хватит для экзамена: <b>IPv4</b> (старый, заканчивается) и <b>IPv6</b> (новый, огромное пространство).
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Характеристика</th>
+        <th>IPv4</th>
+        <th>IPv6</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Размер адреса</td>
+        <td>32 бита</td>
+        <td>128 бит</td>
+      </tr>
+      <tr>
+        <td>Запись</td>
+        <td>десятичная с точками <span class="mono">192.168.1.1</span> (4 октета по 0–255)</td>
+        <td>8 групп по 4 шестнадцатеричные цифры через двоеточия <span class="mono">2001:0db8:85a3:0000:0000:8a2e:0370:7334</span></td>
+      </tr>
+      <tr>
+        <td>Кол-во уникальных адресов</td>
+        <td>≈ 4,3 миллиарда (2³²)</td>
+        <td>≈ 340 ундециллионов (3,4 × 10³⁸)</td>
+      </tr>
+      <tr>
+        <td>Заголовок пакета</td>
+        <td>относительно сложный, 14 полей</td>
+        <td>упрощённый, 8 фиксированных полей</td>
+      </tr>
+      <tr>
+        <td>Поддержка IPsec (шифрование, аутентификация)</td>
+        <td>опциональная</td>
+        <td>обязательная</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="real-world">
+    <b>Реальный пример.</b> IPv4 кончился ещё в 2011 году (последние блоки розданы IANA). Поэтому интернет-провайдеры массово используют <b>NAT</b> (см. ниже) и постепенно переходят на IPv6. В Индии и США уже более половины мобильного трафика идёт по IPv6.
+  </div>
+
+  <h3>🌍 2.2. Публичные и частные IP-адреса</h3>
+
+  <div class="compare-grid">
+    <div>
+      <h4>Публичный IP (Public IP)</h4>
+      <ul>
+        <li>Назначается устройству, которое <b>напрямую выходит в интернет</b>.</li>
+        <li>Уникален в масштабах всего интернета — двух одинаковых одновременно быть не может.</li>
+        <li>Управляется <b>IANA</b> (Internet Assigned Numbers Authority) и региональными регистраторами.</li>
+        <li>Используют веб-серверы, почтовые серверы, любое устройство, к которому нужно «достучаться» извне.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Частный IP (Private IP)</h4>
+      <ul>
+        <li>Используется <b>внутри частной сети</b> (дом, офис) и не маршрутизируется в открытом интернете.</li>
+        <li>Определён в <b>RFC 1918</b> — несколько диапазонов, разрешённых для повторного использования.</li>
+        <li>Чтобы выйти в интернет — нужен <b>NAT</b> на роутере.</li>
+        <li>Примеры устройств: домашний компьютер, принтер, смартфон в Wi-Fi.</li>
+      </ul>
+    </div>
+  </div>
+
+  <table class="summary-table compact">
+    <thead>
+      <tr>
+        <th>Диапазон частных адресов</th>
+        <th>Размер</th>
+        <th>Где встречается</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="mono">10.0.0.0 – 10.255.255.255</span></td>
+        <td>≈ 16,7 млн (24-битный блок)</td>
+        <td>Крупные корпоративные сети, ЦОД</td>
+      </tr>
+      <tr>
+        <td><span class="mono">172.16.0.0 – 172.31.255.255</span></td>
+        <td>≈ 1 млн (16 блоков по 20 бит)</td>
+        <td>Средние сети, VPN</td>
+      </tr>
+      <tr>
+        <td><span class="mono">192.168.0.0 – 192.168.255.255</span></td>
+        <td>≈ 65 536 (256 блоков по 16 бит)</td>
+        <td>Домашние и офисные Wi-Fi-сети; <span class="mono">192.168.1.1</span> — типовой адрес домашнего роутера</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>🔁 2.3. Loopback-адрес 127.0.0.1</h3>
+
+  <p>
+    <span class="mono">127.0.0.1</span> — это специальный <b>loopback-адрес</b>: устройство отправляет пакет «само себе», не выходя в физическую сеть. Используется для тестирования сетевого стека и локальных серверов. В IPv6 такой же смысл имеет <span class="mono">::1</span> (двойное двоеточие <span class="mono">::</span> сокращает подряд идущие нули). Весь диапазон <span class="mono">127.0.0.0 – 127.255.255.255</span> зарезервирован для loopback, но на практике используют <span class="mono">127.0.0.1</span>.
+  </p>
+
+  <div class="real-world">
+    <b>Реальный пример.</b> Веб-разработчик запускает локальный сервер и открывает в браузере <span class="mono">http://127.0.0.1:3000</span> или <span class="mono">http://localhost:3000</span> — браузер обращается к серверу, который работает на том же компьютере.
+  </div>
+
+  <h3>📌 2.4. Статические и динамические IP</h3>
+
+  <div class="compare-grid">
+    <div>
+      <h4>Статический (Static)</h4>
+      <ul>
+        <li>Адрес <b>постоянно закреплён</b> за устройством, не меняется.</li>
+        <li>Настраивается вручную администратором.</li>
+        <li>Нужен серверам (веб, почта, DNS, принтер в офисе), к которым обращаются по конкретному адресу.</li>
+        <li>Минус: <b>трудоёмко</b> при тысячах устройств — нужно вести таблицу вручную.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Динамический (Dynamic)</h4>
+      <ul>
+        <li>Адрес <b>назначается на время</b>, при подключении к сети.</li>
+        <li>Раздаёт <b>DHCP-сервер</b> из пула свободных адресов.</li>
+        <li>При повторном подключении устройство может получить уже другой IP.</li>
+        <li>Плюс: экономит ограниченный пул адресов; масштабируется.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>🌉 2.5. NAT — сетевая трансляция адресов</h3>
+
+  <p>
+    <b>NAT (Network Address Translation)</b> решает главную боль IPv4: адресов не хватает. NAT позволяет <b>сотням частных адресов прятаться за одним публичным</b>.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" aria-label="Диаграмма NAT: три устройства с частными IP идут через роутер с NAT и одним публичным IP в интернет">
+      <defs>
+        <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="#0ea5e9"/>
+        </marker>
+      </defs>
+      <!-- Devices -->
+      <g font-family="Helvetica, Arial, sans-serif" font-size="13">
+        <rect x="20" y="20" width="120" height="40" rx="8" fill="#1a3a5e" />
+        <text x="80" y="38" fill="#fff" text-anchor="middle">ПК 1</text>
+        <text x="80" y="54" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.2</text>
+
+        <rect x="20" y="100" width="120" height="40" rx="8" fill="#1a3a5e" />
+        <text x="80" y="118" fill="#fff" text-anchor="middle">ПК 2</text>
+        <text x="80" y="134" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.3</text>
+
+        <rect x="20" y="180" width="120" height="40" rx="8" fill="#1a3a5e" />
+        <text x="80" y="198" fill="#fff" text-anchor="middle">Смартфон</text>
+        <text x="80" y="214" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.4</text>
+
+        <!-- NAT router -->
+        <rect x="240" y="90" width="160" height="60" rx="10" fill="#0ea5e9" />
+        <text x="320" y="115" fill="#fff" text-anchor="middle" font-weight="700">Роутер с NAT</text>
+        <text x="320" y="135" fill="#e0f2fe" text-anchor="middle" font-size="11">внутр. 10.0.0.1 / внеш. 203.0.113.5</text>
+
+        <!-- Internet -->
+        <circle cx="540" cy="120" r="60" fill="#10b981" />
+        <text x="540" y="118" fill="#fff" text-anchor="middle" font-weight="700">Интернет</text>
+        <text x="540" y="135" fill="#d1fae5" text-anchor="middle" font-size="11">видит только</text>
+        <text x="540" y="150" fill="#d1fae5" text-anchor="middle" font-size="11">203.0.113.5</text>
+
+        <!-- arrows -->
+        <line x1="140" y1="40" x2="240" y2="100" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="120" x2="240" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="200" x2="240" y2="140" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="400" y1="120" x2="480" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+      </g>
+    </svg>
+    <div class="diagram-caption">NAT: три частных IP «маскируются» за единственным публичным адресом роутера.</div>
+  </div>
+
+  <p>Как это работает по шагам:</p>
+  <ol>
+    <li>Устройство в частной сети отправляет пакет в интернет.</li>
+    <li>NAT-устройство (обычно роутер) <b>заменяет частный IP в заголовке</b> на свой публичный IP. Также меняется <b>порт-источник</b>, чтобы потом понять, кому вернуть ответ.</li>
+    <li>Запись «частный IP + порт ↔ публичный IP + порт» сохраняется в <b>NAT-таблице</b>.</li>
+    <li>Ответ из интернета приходит на публичный IP. NAT смотрит в таблицу и пересылает пакет «правильному» устройству внутри сети.</li>
+  </ol>
+
+  <div class="real-world">
+    <b>Реальный пример.</b> У вас дома подключены ноутбук, телефон, телевизор, два умных динамика и игровая консоль — всем шести устройствам провайдер выдал один публичный IP. Каждое получает свой частный IP <span class="mono">192.168.0.x</span>, а роутер с NAT обрабатывает их совместный выход в сеть.
+  </div>
+
+  <h3>🧮 2.6. Подсеть и маска подсети (intro)</h3>
+
+  <p>
+    <b>Маска подсети (subnet mask)</b> — это битовый «фильтр», который делит IP-адрес на две части: <b>сетевая часть</b> (она же — номер подсети) и <b>хост-часть</b> (номер конкретного устройства). Устройства с одинаковой сетевой частью находятся «в одной подсети» и могут общаться напрямую — без роутера.
+  </p>
+
+  <p>Чтобы узнать сетевую часть, делается <b>побитовая операция AND</b> между IP и маской.</p>
+
+  <div class="key-term">
+    <b>Пример.</b> IP <span class="mono">192.168.1.10</span> + маска <span class="mono">255.255.255.0</span> → сетевой адрес <span class="mono">192.168.1.0</span>, хост <span class="mono">.10</span>. Все устройства <span class="mono">192.168.1.1</span> – <span class="mono">192.168.1.254</span> находятся в одной локальной сети.
+  </div>
+
+  <p>
+    В <b>CIDR-нотации</b> то же самое записывают как <span class="mono">192.168.1.0/24</span> — «24» означает, что первые 24 бита из 32 заняты под сетевую часть, а оставшиеся 8 — под хосты (256 адресов, из которых 254 могут быть назначены устройствам; первый — адрес сети, последний — широковещательный).
+  </p>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Приведи пример IPv4-адреса и пример полного IPv6-адреса. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>IPv4:</b> <span class="mono">192.168.1.1</span> — 4 группы по 0–255, разделённые точками.</li>
+        <li><b>IPv6 (полный):</b> <span class="mono">2001:0db8:85a3:0000:0000:8a2e:0370:7334</span> — 8 групп по 4 шестнадцатеричные цифры через двоеточия. Важно: полный вариант, без сокращения <span class="mono">::</span>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Опиши разницу между публичными и частными IP-адресами. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Публичный</b> IP — глобально уникален, маршрутизируется в открытом интернете, назначается регистратором; используется для устройств, к которым нужно обращаться извне (например, веб-сервер).</li>
+        <li><b>Частный</b> IP — используется внутри локальной сети (диапазоны RFC 1918: <span class="mono">10.x</span>, <span class="mono">172.16–31.x</span>, <span class="mono">192.168.x</span>), не маршрутизируется в интернете; чтобы выйти наружу, нужен <b>NAT</b>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Объясни преимущества и недостатки статических IP по сравнению с динамическими. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Статические — плюсы:</b></p>
+      <ul>
+        <li>Адрес <b>не меняется</b>, поэтому к серверу можно стабильно обращаться по одному и тому же IP / имени.</li>
+        <li>Хорошо для веб-серверов, почты, DNS, сетевых принтеров.</li>
+      </ul>
+      <p><b>Статические — минусы:</b></p>
+      <ul>
+        <li>Требуют <b>ручной настройки</b> — не масштабируются на тысячи устройств.</li>
+        <li>Риск конфликтов: если кто-то по ошибке настроит тот же адрес у другого устройства.</li>
+      </ul>
+      <p><b>Динамические — плюсы:</b></p>
+      <ul>
+        <li>Раздаёт <b>DHCP-сервер</b> автоматически — никакой ручной работы.</li>
+        <li>Экономят пул адресов: освободившийся IP можно отдать другому устройству.</li>
+      </ul>
+      <p><b>Динамические — минусы:</b></p>
+      <ul>
+        <li>Адрес может смениться — нельзя надёжно обращаться к устройству по IP.</li>
+        <li>Зависимость от работоспособности DHCP-сервера.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Опиши роль NAT. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>NAT <b>преобразует частные IP в публичный</b> (и обратно), чтобы много устройств в частной сети могли выходить в интернет через один или несколько публичных адресов.</li>
+        <li>Это <b>экономит дефицитные публичные IPv4-адреса</b>; также косвенно повышает безопасность, так как внутренние устройства не видны напрямую из интернета.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Перечисли три преимущества IPv6 по сравнению с IPv4. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Огромное адресное пространство</b> (128 бит против 32) — практически бесконечный запас.</li>
+        <li><b>Упрощённый заголовок</b> (8 полей против 14) — быстрее обрабатывается роутерами.</li>
+        <li><b>Обязательная поддержка IPsec</b> — встроенная аутентификация и шифрование.</li>
+        <li>(Также: лучшая поддержка автоконфигурации, отсутствие необходимости в NAT.)</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 3: TRANSMISSION MEDIA ============ -->
+  <h2>3. Среды передачи данных (A2.3.2)</h2>
+
+  <p>
+    Сигнал должен по чему-то передаваться. Есть три большие категории: <b>оптоволокно</b>, <b>витая пара</b> (медь) и <b>беспроводные</b> технологии. Для каждой среды важны 7 факторов: пропускная способность, сложность установки, цена, дальность, помехоустойчивость, затухание, надёжность и безопасность.
+  </p>
+
+  <h3>📊 3.1. Сравнительная таблица сред</h3>
+
+  <table class="summary-table compact">
+    <thead>
+      <tr>
+        <th>Фактор</th>
+        <th>Оптоволокно (Fibre-optic)</th>
+        <th>Витая пара (Twisted pair)</th>
+        <th>Беспроводное (Wireless)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Принцип</td>
+        <td>Импульсы света по стеклянным или пластиковым волокнам</td>
+        <td>Импульсы электричества по парам скрученных медных проводов (UTP / STP)</td>
+        <td>Электромагнитные волны: радио, инфракрасное, микроволны</td>
+      </tr>
+      <tr>
+        <td>Пропускная способность</td>
+        <td><b>Очень высокая</b> — до десятков Гбит/с</td>
+        <td>Средняя — зависит от категории; Cat 6+ даёт до 10 Гбит/с на коротких дистанциях</td>
+        <td>Ограниченная; зависит от стандарта Wi-Fi, числа клиентов, помех</td>
+      </tr>
+      <tr>
+        <td>Сложность установки</td>
+        <td>Сложно — нужны спецификации, сварочные аппараты для сварки волокон</td>
+        <td>Просто — известно десятки лет, любой техник справится</td>
+        <td>Средне — нужно правильно расставить точки доступа</td>
+      </tr>
+      <tr>
+        <td>Стоимость</td>
+        <td>Дорого — и кабель, и оборудование</td>
+        <td>Дёшево, особенно UTP — массово доступен</td>
+        <td>Цена оборудования средняя, но <b>нет затрат на физический кабель</b></td>
+      </tr>
+      <tr>
+        <td>Дальность</td>
+        <td><b>Большая</b> — десятки и сотни км без усиления</td>
+        <td>Маленькая — обычно до 100 м без репитера</td>
+        <td>Ограниченная зоной покрытия — можно расширить доп. оборудованием</td>
+      </tr>
+      <tr>
+        <td>Помехоустойчивость (EMI)</td>
+        <td><b>Полная — не подвержена электромагнитным помехам</b></td>
+        <td>Подвержена помехам, особенно на длинных дистанциях; STP лучше UTP</td>
+        <td>Уязвимо — другие беспроводные устройства, стены, погода</td>
+      </tr>
+      <tr>
+        <td>Затухание (attenuation)</td>
+        <td>Очень низкое — сигнал почти не теряется на больших расстояниях</td>
+        <td>Высокое — нужны усилители для длинных линий</td>
+        <td>Среднее — снижается с расстоянием и через препятствия</td>
+      </tr>
+      <tr>
+        <td>Надёжность</td>
+        <td>Очень высокая, не зависит от погоды</td>
+        <td>Высокая в пределах нормы, но падает от EMI</td>
+        <td>Переменная — зависит от помех, нагрузки, силы сигнала</td>
+      </tr>
+      <tr>
+        <td>Безопасность</td>
+        <td>Перехват очень сложен</td>
+        <td>Перехват сложен, но проще, чем у оптики</td>
+        <td>Самая уязвимая — нужно шифрование (WPA2/WPA3)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>На экзамене</b> часто спрашивают «сравни X и Y» или «обоснуй выбор среды для ...». Всегда отвечай через <b>три фактора минимум</b>: скорость / дальность / помехоустойчивость или цена / простота установки / надёжность.
+  </div>
+
+  <h3>📡 3.2. Кратко по каждой среде</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">💡</span> Оптоволокно (Fibre-optic)</h3>
+    <p><b>Как работает:</b> данные передаются как импульсы света по тонким стеклянным или пластиковым волокнам. Используется два режима — одномодовый (на дальние дистанции) и многомодовый (короткие, внутри ЦОД).</p>
+    <p><b>Где применяется в жизни:</b></p>
+    <ul>
+      <li>Магистральные каналы между ЦОД и трансатлантические подводные кабели — весь интернет «висит» на оптике.</li>
+      <li>FTTH (Fiber-to-the-Home) — оптика к квартире, скорости 1 Гбит/с и выше.</li>
+      <li>Внутри современных дата-центров между серверными стойками.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🧵</span> Витая пара (Twisted pair)</h3>
+    <p><b>Как работает:</b> пары медных проводов скручены попарно — это снижает взаимные помехи. Две разновидности:</p>
+    <ul>
+      <li><b>UTP (Unshielded)</b> — без экрана; дёшево, повсеместно. Категории Cat 5e, Cat 6, Cat 6a, Cat 7.</li>
+      <li><b>STP (Shielded)</b> — с дополнительным экраном из фольги или оплётки; защищает от EMI; применяется на заводах, в больницах рядом с электромагнитным оборудованием.</li>
+    </ul>
+    <p><b>Где применяется:</b></p>
+    <ul>
+      <li>Кабельная разводка офисов (от коммутатора к каждому рабочему месту через RJ-45 розетку).</li>
+      <li>Соединение домашнего компьютера с роутером, когда нужна стабильность лучше Wi-Fi.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📡</span> Беспроводные технологии (Wireless)</h3>
+    <p><b>Как работает:</b> данные передаются электромагнитными волнами разных частот — радио (Wi-Fi 2,4/5/6 ГГц), инфракрасное (пульты), микроволны (Bluetooth, мобильная связь, спутник).</p>
+    <p><b>Где применяется:</b></p>
+    <ul>
+      <li><b>Wi-Fi</b> — школьная и домашняя сеть.</li>
+      <li><b>Bluetooth</b> — наушники, мышь, клавиатура (короткая дистанция, низкое энергопотребление).</li>
+      <li><b>Сотовая связь (4G / 5G)</b> — мобильный интернет.</li>
+      <li><b>Спутниковая связь</b> — труднодоступные регионы, корабли, самолёты (Starlink).</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📞</span> Коаксиальный кабель (Coaxial) — бонус для контекста</h3>
+    <p><b>Это не входит в основной список Oxford-учебника</b>, но упоминается в реальном мире: центральная медная жила в изоляции и оплётке. Раньше использовался в кабельном ТВ и Ethernet 10Base2; сейчас — в основном для кабельного интернета (DOCSIS) «последней мили».</p>
+  </div>
+
+  <div class="real-world">
+    <b>Реальные кейсы выбора среды:</b><br>
+    • <b>Между ЦОД</b> — оптоволокно (нужна сверхвысокая скорость и дальность).<br>
+    • <b>В аудитории школы</b> — Wi-Fi (нет смысла тянуть кабель к каждому ученику).<br>
+    • <b>На заводе с тяжёлой электрикой</b> — оптоволокно или STP (нет помех от моторов).<br>
+    • <b>Из соседнего города</b> на дачу без оптики — спутник или сотовая связь.<br>
+    • <b>Игровой ПК, где важна задержка</b> — витая пара (стабильнее Wi-Fi).
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 6. Сравни оптоволокно и витую пару по трём факторам, важным для прокладки сети между двумя соседними зданиями. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Дальность:</b> оптика спокойно идёт на сотни метров и километров без усилителя; витая пара ограничена ~100 м, нужны репитеры.</li>
+        <li><b>Помехоустойчивость:</b> оптоволокно <b>не подвержено EMI</b>, поэтому надёжно даже рядом с линиями электропередачи; витая пара чувствительна.</li>
+        <li><b>Пропускная способность:</b> оптика выдаёт десятки Гбит/с; витая пара — обычно до 10 Гбит/с на коротких дистанциях.</li>
+        <li><b>Минус оптики:</b> дороже и сложнее монтаж (нужна сварка волокон).</li>
+        <li><b>Минус витой пары:</b> сильное затухание, ниже скорость, чувствительность к помехам.</li>
+        <li><b>Вывод:</b> для канала между зданиями (особенно если есть электрические помехи или большое расстояние) выбираем <b>оптоволокно</b>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7. Назови два преимущества и два недостатка беспроводной передачи данных. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Плюсы:</b></p>
+      <ul>
+        <li><b>Мобильность:</b> устройства могут перемещаться внутри зоны покрытия.</li>
+        <li><b>Нет необходимости прокладывать кабель</b> — быстро развернуть сеть, не повредить здание.</li>
+      </ul>
+      <p><b>Минусы:</b></p>
+      <ul>
+        <li><b>Уязвимость к перехвату</b> — сигнал распространяется во все стороны; нужно шифрование (WPA2/WPA3).</li>
+        <li><b>Подверженность помехам</b> — другие Wi-Fi, микроволновки, стены ослабляют сигнал; скорость и стабильность могут падать.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: BANDWIDTH / LATENCY / THROUGHPUT / JITTER ============ -->
+  <h2>4. Характеристики канала: пропускная способность, задержка, джиттер</h2>
+
+  <p>
+    На экзамене легко путают эти термины. Каждый описывает <b>свой аспект</b> качества связи.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Термин</th>
+        <th>Что означает</th>
+        <th>Единицы</th>
+        <th>Бытовая аналогия (труба + вода)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Пропускная способность (Bandwidth)</td>
+        <td>Теоретический максимум данных, который канал может пропустить за единицу времени.</td>
+        <td>бит/с, Мбит/с, Гбит/с</td>
+        <td>Диаметр трубы.</td>
+      </tr>
+      <tr>
+        <td>Реальная скорость (Throughput)</td>
+        <td>Фактическое количество данных, переданное за единицу времени. Всегда ≤ пропускной способности.</td>
+        <td>бит/с</td>
+        <td>Сколько воды реально течёт — обычно меньше, чем «влезает» в трубу.</td>
+      </tr>
+      <tr>
+        <td>Задержка (Latency)</td>
+        <td>Время, за которое один пакет добирается от отправителя до получателя.</td>
+        <td>мс</td>
+        <td>Сколько секунд проходит, пока вода доберётся от насоса до крана.</td>
+      </tr>
+      <tr>
+        <td>Джиттер (Jitter)</td>
+        <td>Вариация задержки от пакета к пакету (одни приходят быстрее, другие медленнее).</td>
+        <td>мс</td>
+        <td>Когда вода идёт «толчками», а не равномерно.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="real-world">
+    <b>Почему это важно на практике:</b><br>
+    • Для <b>видеозвонка</b> критичны <b>низкая задержка и низкий джиттер</b> — иначе «лагает» и пропадают слова.<br>
+    • Для <b>скачивания большого файла</b> важнее всего <b>пропускная способность</b> — пусть начнётся медленно, но льётся быстро.<br>
+    • Для <b>онлайн-игр</b> критична <b>задержка (ping)</b> — даже 50 мс между нажатием кнопки и реакцией могут стоить проигрыша.
+  </div>
+
+  <!-- ============ SECTION 5: PACKET SWITCHING ============ -->
+  <h2>5. Коммутация пакетов (A2.3.3)</h2>
+
+  <p>
+    Когда вы отправляете данные в сеть, они <b>не идут одним куском</b>. Они режутся на маленькие порции — <b>пакеты</b> — и каждый пакет отправляется независимо. Этот метод называется <b>packet switching</b> (коммутация пакетов) и лежит в основе всего интернета.
+  </p>
+
+  <div class="key-term">
+    <b>Пакет (Packet).</b> Структурная единица данных в сети: <b>payload</b> (полезная нагрузка — кусок исходных данных) + <b>header</b> (заголовок с метаданными: адрес отправителя и получателя, номер в последовательности, контрольная сумма).
+  </div>
+
+  <h3>🧩 5.1. Зачем делить данные на пакеты</h3>
+
+  <ul>
+    <li><b>Параллельность.</b> Разные пакеты могут идти разными путями — сеть используется эффективнее.</li>
+    <li><b>Надёжность.</b> Если один пакет потерян или повреждён, перепосылается только он, а не всё сообщение.</li>
+    <li><b>Адаптивность.</b> Если один канал перегружен, роутеры могут отправить следующий пакет в обход.</li>
+    <li><b>Справедливость.</b> Канал не «забивается» одним длинным сообщением — между его пакетами проходят чужие.</li>
+  </ul>
+
+  <h3>🗺️ 5.2. Визуализация: один пакет — много путей</h3>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Сеть из 6 роутеров. Три пакета идут разными путями от отправителя к получателю.">
+      <defs>
+        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+        </marker>
+        <marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#10b981"/>
+        </marker>
+        <marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#f59e0b"/>
+        </marker>
+      </defs>
+      <g font-family="Helvetica, Arial, sans-serif" font-size="12">
+        <!-- sender -->
+        <rect x="20" y="140" width="100" height="40" rx="8" fill="#1a3a5e"/>
+        <text x="70" y="165" fill="#fff" text-anchor="middle" font-weight="700">Отправитель</text>
+        <!-- routers -->
+        <circle cx="230" cy="60" r="28" fill="#cbd5e1"/>
+        <text x="230" y="65" text-anchor="middle" font-weight="700">R1</text>
+        <circle cx="230" cy="160" r="28" fill="#cbd5e1"/>
+        <text x="230" y="165" text-anchor="middle" font-weight="700">R2</text>
+        <circle cx="230" cy="260" r="28" fill="#cbd5e1"/>
+        <text x="230" y="265" text-anchor="middle" font-weight="700">R3</text>
+        <circle cx="430" cy="100" r="28" fill="#cbd5e1"/>
+        <text x="430" y="105" text-anchor="middle" font-weight="700">R4</text>
+        <circle cx="430" cy="220" r="28" fill="#cbd5e1"/>
+        <text x="430" y="225" text-anchor="middle" font-weight="700">R5</text>
+        <!-- receiver -->
+        <rect x="580" y="140" width="100" height="40" rx="8" fill="#1a3a5e"/>
+        <text x="630" y="165" fill="#fff" text-anchor="middle" font-weight="700">Получатель</text>
+
+        <!-- Packet 1 path: sender -> R1 -> R4 -> receiver  (violet) -->
+        <path d="M120,150 L202,75" stroke="#8b5cf6" stroke-width="2.5" fill="none" marker-end="url(#arrow2)"/>
+        <path d="M258,60 L405,90" stroke="#8b5cf6" stroke-width="2.5" fill="none" marker-end="url(#arrow2)"/>
+        <path d="M455,110 L580,150" stroke="#8b5cf6" stroke-width="2.5" fill="none" marker-end="url(#arrow2)"/>
+        <text x="350" y="35" fill="#8b5cf6" font-weight="700">Пакет 1</text>
+
+        <!-- Packet 2 path: sender -> R2 -> R4 -> receiver  (green) -->
+        <path d="M120,165 L202,160" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow3)"/>
+        <path d="M258,150 L405,115" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow3)"/>
+        <path d="M455,125 L580,160" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow3)"/>
+        <text x="350" y="160" fill="#10b981" font-weight="700">Пакет 2</text>
+
+        <!-- Packet 3 path: sender -> R3 -> R5 -> receiver  (amber) -->
+        <path d="M120,180 L202,250" stroke="#f59e0b" stroke-width="2.5" fill="none" marker-end="url(#arrow4)"/>
+        <path d="M258,260 L405,225" stroke="#f59e0b" stroke-width="2.5" fill="none" marker-end="url(#arrow4)"/>
+        <path d="M455,210 L580,175" stroke="#f59e0b" stroke-width="2.5" fill="none" marker-end="url(#arrow4)"/>
+        <text x="350" y="295" fill="#f59e0b" font-weight="700">Пакет 3</text>
+      </g>
+    </svg>
+    <div class="diagram-caption">Три пакета одного сообщения идут <b>разными маршрутами</b> через сеть — каждый роутер выбирает путь динамически. Получатель потом собирает их по порядку.</div>
+  </div>
+
+  <h3>🔄 5.3. Жизненный цикл пакета (10 шагов по учебнику)</h3>
+
+  <ol>
+    <li><b>Инициация действия.</b> Например, в Minecraft вы кликаете «поставить блок» — данные должны уйти на игровой сервер.</li>
+    <li><b>Сегментация данных.</b> Действие превращается в данные (координаты блока, тип, кто его поставил). Данные разрезаются на маленькие куски.</li>
+    <li><b>Создание пакета (инкапсуляция).</b> Каждый кусок упаковывается в пакет. Добавляется <b>заголовок</b> с адресами «откуда / куда».</li>
+    <li><b>Добавление контрольной информации.</b> В заголовок включают <b>номер последовательности (sequence number)</b> и <b>код для проверки на ошибки</b>.</li>
+    <li><b>Независимая передача.</b> Пакеты отправляются по сети независимо друг от друга.</li>
+    <li><b>Маршрутизация.</b> На каждом узле <b>роутер</b> решает, по какому пути отправить пакет дальше — на основании трафика и доступности. Один пакет может пойти через Нью-Йорк, другой — через Чикаго.</li>
+    <li><b>Прибытие на сервер.</b> Пакеты приходят, возможно не по порядку и с разной задержкой.</li>
+    <li><b>Сборка (декапсуляция).</b> Сервер использует <b>sequence numbers</b>, чтобы восстановить исходный порядок. Если каких-то пакетов не хватает — запрашивает их повторно.</li>
+    <li><b>Обновление состояния.</b> Игровой сервер ставит блок в игре и рассылает обновление другим игрокам.</li>
+    <li><b>Финальный показ.</b> Друг видит у себя в Minecraft новый блок ровно там, где вы его поставили.</li>
+  </ol>
+
+  <div class="key-term">
+    <b>Инкапсуляция / декапсуляция.</b> <b>Encapsulation</b> = «обернуть» полезные данные служебной информацией (заголовки, контрольные коды). <b>Decapsulation</b> = «снять обёртку» на стороне получателя, чтобы достать исходные данные.
+  </div>
+
+  <h3>🔀 5.4. Packet switching vs Circuit switching</h3>
+
+  <div class="compare-grid">
+    <div>
+      <h4>Packet switching (коммутация пакетов)</h4>
+      <ul>
+        <li>Данные режутся на <b>пакеты</b>, каждый идёт своим путём.</li>
+        <li>Канал общий: между моими пакетами идут чужие.</li>
+        <li>Хорошо переносит отказы — пакет находит обход.</li>
+        <li>Эффективно для коротких сообщений и веба.</li>
+        <li>Используется в <b>интернете</b> (IP/TCP/UDP).</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Circuit switching (коммутация каналов)</h4>
+      <ul>
+        <li>Сначала прокладывается <b>постоянный канал</b> от A к B.</li>
+        <li>Канал занят только для этой пары, пока разговор не закончится.</li>
+        <li>Гарантированная пропускная способность, низкий джиттер.</li>
+        <li>Неэффективно: канал может простаивать, когда никто не говорит.</li>
+        <li>Классика — <b>аналоговая телефонная сеть (PSTN)</b>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>🚦 5.5. Роль коммутаторов и маршрутизаторов</h3>
+
+  <ul>
+    <li><b>Коммутатор (Switch)</b> работает <b>внутри локальной сети</b>. Пересылает пакеты на основании <b>MAC-адресов</b>, ведёт MAC-таблицу. Снижает «шум» в сети.</li>
+    <li><b>Маршрутизатор (Router)</b> работает <b>между сетями</b>. Пересылает пакеты на основании <b>IP-адресов</b>. Смотрит в <b>таблицу маршрутизации</b>, выбирает <b>следующий hop</b> (узел, которому передать пакет).</li>
+  </ul>
+
+  <div class="key-term">
+    <b>Хоп (Hop).</b> Один «прыжок» пакета от одного узла к следующему (например, от роутера R1 к R4). Число хопов до получателя — одна из метрик качества маршрута.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 8. Опиши, что такое packet switching, и объясни, почему пакеты могут идти разными путями. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Packet switching</b> — это метод передачи данных по сети, когда исходное сообщение <b>сегментируется на пакеты</b>, и каждый пакет передаётся <b>независимо</b>.</li>
+        <li>Каждый пакет имеет <b>заголовок</b> с IP-адресами отправителя и получателя, sequence number и контрольной информацией.</li>
+        <li>На каждом узле (роутере) принимается <b>отдельное решение</b> о маршруте — на основании <b>текущей нагрузки сети, доступности каналов и таблицы маршрутизации</b>.</li>
+        <li>Поэтому при перегрузке или сбое одного канала пакет может пойти <b>в обход</b>; сеть в целом становится устойчивее.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 9. Сравни packet switching и circuit switching. Приведи пример системы для каждого. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Packet switching:</b> данные разбиваются на пакеты, каждый идёт независимо, канал общий между многими разговорами. Пример — <b>интернет</b>.</li>
+        <li><b>Circuit switching:</b> между двумя сторонами устанавливается выделенный канал на всё время сеанса. Пример — классическая <b>аналоговая телефонная сеть (PSTN)</b>.</li>
+        <li><b>Packet switching эффективнее</b>: канал не простаивает, при сбое находится обход, между моими пакетами идут чужие — справедливее распределение.</li>
+        <li><b>Circuit switching стабильнее</b>: гарантированная пропускная способность и низкий джиттер — раньше использовалось для голоса.</li>
+        <li><b>Минус packet switching:</b> возможен джиттер и переменная задержка; нужно собирать пакеты по порядку.</li>
+        <li><b>Минус circuit switching:</b> канал занят даже в моменты молчания — это дорого и неэффективно при больших объёмах коротких сообщений.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 10. Что такое инкапсуляция? Какую информацию добавляют в заголовок пакета и зачем? <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Инкапсуляция</b> — это процесс добавления к данным служебной (протокольной) информации перед отправкой в сеть.</li>
+        <li>В <b>заголовок (header)</b> пакета добавляют:</li>
+        <li>— <b>IP-адрес получателя</b> — чтобы роутеры знали, куда направлять пакет;</li>
+        <li>— <b>IP-адрес отправителя</b> — чтобы получатель знал, кому отвечать;</li>
+        <li>— <b>sequence number</b> — чтобы получатель смог восстановить порядок пакетов;</li>
+        <li>— <b>код контрольной суммы / CRC</b> — чтобы обнаружить, что пакет повредился в пути.</li>
+        <li>На стороне получателя выполняется <b>декапсуляция</b> — «снятие обёртки» и сборка исходного сообщения.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 6: ERROR DETECTION ============ -->
+  <h2>6. Обнаружение ошибок: parity, checksum, CRC</h2>
+
+  <p>
+    Любая передача — это риск, что один или несколько бит «перевернутся» из-за помех. Поэтому в каждый пакет встраивают <b>код для проверки на ошибки</b>. Учебник Oxford упоминает <b>error-checking codes</b> в составе заголовка; конкретные методы — это классика курса.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Метод</th>
+        <th>Идея</th>
+        <th>Что ловит / не ловит</th>
+        <th>Где используется</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Бит чётности (Parity bit)</td>
+        <td>К группе бит добавляется <b>один дополнительный бит</b>, чтобы общее число единиц было чётным (even parity) или нечётным (odd parity).</td>
+        <td>Ловит <b>любое нечётное число ошибок</b> (1, 3, 5 …); <b>не ловит чётное</b> число (2, 4 — перевернулись, но чётность сохранилась).</td>
+        <td>RAM с поддержкой ECC (расширенные варианты), старые UART, простые передачи.</td>
+      </tr>
+      <tr>
+        <td>Контрольная сумма (Checksum)</td>
+        <td>Складываются все байты данных, результат сжимается до фиксированного размера и отправляется. Получатель пересчитывает и сравнивает.</td>
+        <td>Ловит большинство случайных ошибок; <b>не ловит</b> ошибки, которые «компенсируют» друг друга в сумме.</td>
+        <td>Заголовки TCP и UDP, IP-заголовок (старая версия), контрольная сумма файлов.</td>
+      </tr>
+      <tr>
+        <td>CRC (Cyclic Redundancy Check)</td>
+        <td>Данные «делят» на специальный <b>полином</b>, остаток от деления (CRC-код) добавляют к пакету. Получатель повторяет деление и проверяет.</td>
+        <td>Очень мощный: ловит почти все одиночные и групповые ошибки, типичные для реальных каналов.</td>
+        <td><b>Ethernet-кадр</b>, Wi-Fi, ZIP/RAR-архивы, оптические диски, USB.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 Все эти методы только <b>обнаруживают</b> ошибку — для <b>исправления</b> нужны более сложные коды (Hamming, Reed-Solomon), либо повторная отправка пакета (это и делает TCP).
+  </div>
+
+  <!-- ============ SECTION 7: ENCODING / MODULATION ============ -->
+  <h2>7. Кодирование и модуляция (basics)</h2>
+
+  <p>
+    Чтобы биты «уехали» по физическому каналу, их надо превратить в сигнал. Это две связанные задачи:
+  </p>
+
+  <div class="compare-grid">
+    <div>
+      <h4>Кодирование (Encoding)</h4>
+      <ul>
+        <li>Преобразование <b>битов 0/1 в форму</b>, пригодную для канала (электрический импульс, световой импульс, радиоволна).</li>
+        <li>Примеры схем: <b>NRZ</b> (1 = высокий уровень, 0 = низкий), <b>Manchester</b> (переход в середине бита), <b>8b/10b</b> для оптики.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Модуляция (Modulation)</h4>
+      <ul>
+        <li>Превращение цифрового сигнала в <b>аналоговый</b> (волну) для передачи по аналоговому каналу.</li>
+        <li><b>AM</b> — амплитудная (меняется громкость), <b>FM</b> — частотная (меняется частота), <b>PSK / QAM</b> — фазовая / квадратурная (используются в Wi-Fi и 4G).</li>
+        <li><b>Демодуляция</b> — обратное преобразование, аналог → цифра, на стороне получателя.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    Эти процессы выполняет <b>модем</b> (см. <a href="setevye-ustroistva.html">A2.1.3 Сетевые устройства</a>) и сетевые карты при выходе сигнала в кабель или эфир.
+  </p>
+
+  <!-- ============ SECTION 8: ROUTING ============ -->
+  <h2>8. Маршрутизация: статическая vs динамическая <span class="label-pill">AHL</span></h2>
+
+  <p>
+    Это тема <b>A2.3.4</b> — её формально проходят только в <b>HL</b>, но для глубокого понимания сетей полезно знать всем.
+  </p>
+
+  <h3>📋 8.1. Что такое routing</h3>
+
+  <p>
+    Каждый роутер хранит <b>routing table</b> (таблицу маршрутизации) — это набор правил «если адрес назначения такой-то, отправь пакет в такой-то порт / на такой-то соседний роутер». Когда приходит пакет, роутер берёт IP-адрес получателя из заголовка, ищет совпадение в таблице и пересылает на <b>следующий хоп (next hop)</b>.
+  </p>
+
+  <h3>🛠️ 8.2. Статическая маршрутизация</h3>
+
+  <ul>
+    <li>Администратор <b>вручную</b> прописывает в роутере: «для сети X next hop — Y».</li>
+    <li>Хранятся: адрес сети назначения, маска подсети, следующий hop или выходной интерфейс.</li>
+    <li><b>Плюсы:</b> просто, предсказуемо, мало нагружает CPU/память; нет лишнего трафика обмена маршрутами; можно жёстко контролировать пути ради безопасности.</li>
+    <li><b>Минусы:</b> при изменении топологии (упал линк, добавилась сеть) нужно <b>править вручную</b>; не масштабируется на сотни роутеров; в случае сбоя пакеты могут «стучаться в стену».</li>
+    <li><b>Где подходит:</b> маленькие стабильные сети — небольшой офис, домашний роутер.</li>
+  </ul>
+
+  <h3>🤖 8.3. Динамическая маршрутизация</h3>
+
+  <ul>
+    <li>Роутеры <b>сами обмениваются информацией</b> о доступных сетях по специальным <b>routing-протоколам</b>.</li>
+    <li>Известные протоколы: <b>RIP</b> (Routing Information Protocol — старый, использует hop count), <b>OSPF</b> (Open Shortest Path First — внутренний протокол, считает «стоимость» канала), <b>BGP</b> (Border Gateway Protocol — между крупными провайдерами в интернете).</li>
+    <li>Метрики выбора маршрута: <b>число хопов, пропускная способность, задержка, надёжность</b>.</li>
+    <li>При изменении топологии (упал кабель) протокол <b>пересчитывает маршруты автоматически</b>. Время, нужное на согласованное понимание новой топологии всеми роутерами, называется <b>convergence (сходимость)</b>.</li>
+    <li><b>Плюсы:</b> сам адаптируется к изменениям, масштабируется на большие сети.</li>
+    <li><b>Минусы:</b> сложнее настроить и понять; нагружает CPU/память роутера; обмен маршрутами потребляет полосу; есть риски безопасности, если протокол не защищён.</li>
+  </ul>
+
+  <h3>📊 8.4. Сравнительная таблица</h3>
+
+  <table class="summary-table compact">
+    <thead>
+      <tr>
+        <th>Фактор</th>
+        <th>Статическая</th>
+        <th>Динамическая</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Конфигурация</td>
+        <td>Вручную, явные маршруты</td>
+        <td>Автоматически через routing-протоколы</td>
+      </tr>
+      <tr>
+        <td>Сопровождение</td>
+        <td>Ручные правки при любом изменении</td>
+        <td>Автоматически адаптируется</td>
+      </tr>
+      <tr>
+        <td>Сложность</td>
+        <td>Просто на маленьких сетях, тяжело при росте</td>
+        <td>Сложна в настройке, но управляет ростом сама</td>
+      </tr>
+      <tr>
+        <td>Расход ресурсов</td>
+        <td>Минимальный — нет обмена маршрутами</td>
+        <td>Выше — нужен CPU/память на расчёт и обмен</td>
+      </tr>
+      <tr>
+        <td>Сходимость (convergence)</td>
+        <td>Не применима — маршруты статичны</td>
+        <td>Есть; скорость зависит от протокола</td>
+      </tr>
+      <tr>
+        <td>Масштабируемость</td>
+        <td>Плохо масштабируется</td>
+        <td>Хорошо масштабируется</td>
+      </tr>
+      <tr>
+        <td>Когда выбирать</td>
+        <td>Маленькие, редко меняющиеся сети</td>
+        <td>Средние / большие сети, где нужна гибкость</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="real-world">
+    <b>Реальный пример.</b> В сети одной школы (10–20 коммутаторов) обычно настраивают <b>статическую</b> маршрутизацию — топология стабильна. А в сети крупного оператора связи (тысячи маршрутизаторов в разных странах) работают <b>OSPF</b> внутри и <b>BGP</b> на границах — иначе администраторы не успели бы вручную поддерживать таблицы.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 11. Сравни статическую и динамическую маршрутизацию по двум критериям. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Адаптация к изменениям:</b> статическая не адаптируется — упал линк, маршрут «слепнет», пока админ не поправит. Динамическая <b>автоматически перестраивает</b> маршруты.</li>
+        <li><b>Масштаб:</b> статическая хорошо работает в маленьких сетях, но в больших становится <b>нереально сопровождать</b>. Динамическая работает в больших сетях за счёт автоматизации.</li>
+        <li><b>Расход ресурсов:</b> статическая не нагружает роутер; динамическая потребляет CPU, память и часть полосы на обмен маршрутами.</li>
+        <li><b>Безопасность:</b> статическая жёстко контролируется админом; динамическая требует защиты протокола (например, аутентификация в OSPF).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 12. Что такое «сходимость» (convergence) в контексте динамической маршрутизации, и почему это важно? <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Сходимость</b> — это время, за которое <b>все роутеры сети согласованно узнают</b> о новой топологии после изменения (например, упал линк или добавили подсеть).</li>
+        <li>Пока сходимость не наступила, у разных роутеров <b>разные представления</b> о сети — это может приводить к петлям, потерям пакетов, временной недоступности.</li>
+        <li>Быстрая сходимость = <b>меньше времени простоя</b>. Разные протоколы сходятся с разной скоростью: OSPF быстрее RIP.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 9: PRACTICE QUESTIONS FROM TEXTBOOK ============ -->
+  <h2>9. Дополнительные вопросы из практикума учебника</h2>
+
+  <details class="question-card">
+    <summary>Вопрос 13 (35a из учебника). Назови пример IPv4-адреса. <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <p>Любой адрес вида <span class="mono">A.B.C.D</span>, где каждое из A, B, C, D — число 0–255. Например: <span class="mono">192.168.1.1</span>, <span class="mono">10.0.0.42</span>, <span class="mono">203.0.113.5</span>.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 14 (35b из учебника). Назови пример полного IPv6-адреса (без сокращений). <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <p>Например: <span class="mono">2001:0db8:85a3:0000:0000:8a2e:0370:7334</span>. Восемь групп по 4 шестнадцатеричные цифры через двоеточие, без <span class="mono">::</span>.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 15 (36 из учебника). Опиши разницу между публичными и частными IP-адресами. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Публичный</b> — уникален во всём интернете, маршрутизируется в открытой сети, выдаётся IANA/региональным регистратором. Нужен серверам и роутерам с прямым выходом наружу.</li>
+        <li><b>Частный</b> — используется только внутри LAN, не маршрутизируется в интернете (RFC 1918: <span class="mono">10.0.0.0/8</span>, <span class="mono">172.16.0.0/12</span>, <span class="mono">192.168.0.0/16</span>). Для выхода в интернет нужен NAT.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 16 (37 из учебника). Преимущества и недостатки статической IP-адресации против динамической. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Статика — плюсы:</b> предсказуемость, надёжное подключение к серверам по фиксированному адресу.</p>
+      <p><b>Статика — минусы:</b> ручная настройка, риск конфликтов, плохо масштабируется.</p>
+      <p><b>Динамика — плюсы:</b> автоматизирована (DHCP), экономит пул адресов, легко масштабируется.</p>
+      <p><b>Динамика — минусы:</b> адрес может меняться (плохо для серверов), зависимость от DHCP-сервера.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 17 (38 из учебника). Опиши роль NAT. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li>NAT <b>преобразует</b> частные IP в публичный (и обратно), позволяя многим устройствам в LAN общаться с интернетом через <b>один</b> публичный IP.</li>
+        <li>Это <b>экономит ограниченное пространство IPv4</b>; побочно скрывает внутренние устройства от прямого доступа извне.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 18 (39 из учебника). Перечисли три преимущества IPv6 над IPv4. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <ul>
+        <li><b>Огромное адресное пространство</b> — 128 бит (~3,4 × 10³⁸ адресов) против 32 бит (~4,3 млрд).</li>
+        <li><b>Упрощённый заголовок</b> — 8 фиксированных полей против 14, быстрее обработка.</li>
+        <li><b>Обязательная поддержка IPsec</b> — встроенная безопасность.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ CLOSING ============ -->
+  <h2>Что важно запомнить</h2>
+
+  <div class="takeaways">
+    <ul>
+      <li><b>IPv4 vs IPv6:</b> 32 бита (≈ 4,3 млрд) против 128 бит (≈ 3,4 × 10³⁸). IPv6 — будущее, IPv4 — настоящее за счёт NAT.</li>
+      <li><b>Публичный IP</b> — глобально уникален и маршрутизируется в интернете. <b>Частный IP</b> — только внутри LAN, диапазоны RFC 1918 (<span class="mono">10.x</span>, <span class="mono">172.16–31.x</span>, <span class="mono">192.168.x</span>).</li>
+      <li><b>NAT</b> — массовая трансляция «много частных в один публичный», экономит IPv4.</li>
+      <li><b>Маска подсети</b> делит IP на сетевую и хост-часть; в <b>CIDR</b> записывается как <span class="mono">/24</span>.</li>
+      <li><b>Среды передачи:</b> оптоволокно — быстро, далеко, дорого, без помех; витая пара — дёшево, до 100 м, чувствительна к EMI; беспроводные — мобильно, но уязвимо к помехам и перехвату.</li>
+      <li><b>Bandwidth ≠ throughput ≠ latency ≠ jitter</b> — все четыре про разное; типичная экзаменационная ловушка.</li>
+      <li><b>Packet switching</b>: данные → сегментация → пакеты с заголовками → независимая маршрутизация → сборка по sequence numbers. Этим живёт весь интернет.</li>
+      <li><b>Заголовок</b> пакета содержит IP-адреса источника и приёмника, sequence number, контрольные коды (parity / checksum / CRC).</li>
+      <li><b>Switch</b> работает по MAC-адресам внутри LAN; <b>router</b> — по IP-адресам между сетями, использует <b>routing table</b> и выбирает <b>next hop</b>.</li>
+      <li><b>Static vs dynamic routing</b> (AHL): статика — вручную, для маленьких сетей; динамика (RIP, OSPF, BGP) — автоматически, адаптивно, для больших сетей. Ключевое понятие — <b>convergence</b>.</li>
+      <li><b>На экзамене</b>: вопросы «compare» и «contrast» отвечай минимум через 3 фактора; обязательно используй термины <span class="mono">encapsulation</span>, <span class="mono">routing table</span>, <span class="mono">next hop</span>, <span class="mono">subnet mask</span>, <span class="mono">NAT</span>.</li>
+    </ul>
+  </div>
+
+  <p style="margin-top:32px">
+    <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html#protocols-sim" class="back-link">📦 К симулятору TCP vs UDP</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html#topology-sim" class="back-link">🌐 К симулятору топологий</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A2.3" class="back-link">К квизу A2.3 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A2.3 Передача данных · Источник: IB DP 2025 Computer Science (Oxford), стр. 144–153 · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

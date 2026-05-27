@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2.2 Архитектура сетей · IB CS Theme A</title>
+<meta name="description" content="A2.2 Архитектура сетей — глубокий разбор на русском: топологии (звезда, шина, кольцо, mesh, дерево, гибрид), функции серверов (HL), клиент-сервер vs P2P, сегментация (VLAN, подсети). Тренировочные вопросы с разбором.">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  /* HL badge */
+  .hl-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #f43f5e;
+    color: #fff;
+    border-radius: 99px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  /* Topology SVG diagrams */
+  .topo-diagram {
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0;
+    text-align: center;
+  }
+  .topo-diagram svg {
+    max-width: 100%;
+    height: auto;
+  }
+  .topo-diagram figcaption {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  /* Two-column pros/cons */
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 14px 0;
+  }
+  @media (max-width: 640px) {
+    .pros-cons { grid-template-columns: 1fr; }
+  }
+  .pros-box, .cons-box {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.93rem;
+  }
+  .pros-box {
+    background: rgba(16,185,129,0.08);
+    border-left: 4px solid var(--green);
+  }
+  .cons-box {
+    background: rgba(244,63,94,0.08);
+    border-left: 4px solid #f43f5e;
+  }
+  [data-theme="dark"] .pros-box { background: rgba(16,185,129,0.12); }
+  [data-theme="dark"] .cons-box { background: rgba(244,63,94,0.12); }
+  .pros-box ul, .cons-box ul { margin: 4px 0; padding-left: 20px; line-height: 1.6; }
+  .pros-box strong { color: var(--green); }
+  .cons-box strong { color: #f43f5e; }
+  /* Sim link callout */
+  .sim-callout {
+    background: linear-gradient(135deg, rgba(14,165,233,0.10), rgba(139,92,246,0.10));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 18px 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .sim-callout .sim-icon { font-size: 2rem; }
+  .sim-callout a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .sim-callout a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A2.2 · Network Architecture
+  </span>
+
+  <h1>Архитектура сетей</h1>
+
+  <p class="lede">
+    Эта тема (<b>A2.2</b>) — про то, как сеть устроена <i>как целое</i>: какой формы она «нарисована» на схеме (<b>топология</b>), какие специализированные компьютеры в ней работают (<b>серверы</b>), кто кому что подаёт (<b>клиент-сервер vs P2P</b>) и как её разделить на части ради безопасности и скорости (<b>сегментация</b>). Понимание архитектуры — это понимание <i>почему</i> сеть устойчива (или хрупка), быстра (или тормозит), безопасна (или дырявая).
+  </p>
+
+  <div class="sim-callout">
+    <span class="sim-icon">🎮</span>
+    <div>
+      Хочешь сразу пощупать топологии? Открой <a href="networks.html?v=9#topology-sim">интерактивный симулятор топологий</a> — там можно построить звезду / шину / кольцо / mesh / гибрид и «убить» узел, чтобы посмотреть, как сеть реагирует на отказ.
+    </div>
+  </div>
+
+  <!-- ============ SECTION 0: PROGRAMME OF STUDY ============ -->
+  <h2>📚 Что входит в A2.2</h2>
+  <table class="summary-table">
+    <thead>
+      <tr><th>Под-тема</th><th>О чём</th><th>Уровень</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A2.2.1</td><td>Функции и применения сетевых топологий</td><td>SL + HL</td></tr>
+      <tr><td>A2.2.2</td><td>Функции серверов (DNS, DHCP, файловый, почтовый, прокси, web)</td><td>HL only</td></tr>
+      <tr><td>A2.2.3</td><td>Сравнение моделей: клиент-сервер vs peer-to-peer (P2P)</td><td>SL + HL</td></tr>
+      <tr><td>A2.2.4</td><td>Сегментация сетей: подсети (subnetting) и VLAN</td><td>SL + HL</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ SECTION 1: TOPOLOGIES ============ -->
+  <h2>🕸️ A2.2.1 — Топологии сетей</h2>
+
+  <p>
+    <b>Топология сети</b> — это расположение устройств (узлов, <i>nodes</i>) и связей (<i>links</i>) внутри сети. Топология может быть:
+  </p>
+  <ul>
+    <li><b>Физическая</b> — фактическая раскладка кабелей, проводов, маршрутизаторов, коммутаторов и других «железок».</li>
+    <li><b>Логическая</b> — как данные <i>текут</i> по сети, независимо от физического расположения. Например: физически у тебя звезда, но логически (по поведению трафика) может быть кольцо.</li>
+  </ul>
+
+  <p>Для экзамена важно знать характеристики каждой топологии по 5 осям: <b>надёжность, скорость, масштабируемость, поведение при отказе, стоимость</b>. И — <b>где её реально применяют</b>.</p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Топология</th><th>Надёжность</th><th>Скорость</th><th>Где применяют</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Звезда (Star)</td><td>Высокая (но единая точка отказа = центр)</td><td>Быстрая</td><td>Дома, офисы, школы</td></tr>
+      <tr><td>Шина (Bus)</td><td>Низкая (один обрыв = всё лежит)</td><td>Низкая при загрузке</td><td>Старые/маленькие LAN, легаси</td></tr>
+      <tr><td>Кольцо (Ring)</td><td>Низкая/средняя (разрыв ломает поток)</td><td>Средняя</td><td>Token Ring, некоторые оптические бэкбоны (FDDI)</td></tr>
+      <tr><td>Mesh (Сетка)</td><td>Очень высокая (нет единой точки отказа)</td><td>Зависит от числа «прыжков»</td><td>Wi-Fi mesh (Eero, Google Nest), IoT</td></tr>
+      <tr><td>Дерево (Tree)</td><td>Средняя (отказ узла = ветка вниз отрезана)</td><td>Хорошая для иерархии</td><td>Большие корпоративные сети, кампусы</td></tr>
+      <tr><td>Гибрид (Hybrid)</td><td>Очень высокая (комбинирует сильные стороны)</td><td>Гибкая</td><td>Корпоративные сети, smart cities</td></tr>
+    </tbody>
+  </table>
+
+  <!-- STAR -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⭐</span> Звезда (Star topology)</h3>
+    <p>Каждое устройство соединено <b>напрямую</b> с центральным устройством (обычно с <b>коммутатором</b> или <b>маршрутизатором</b>). Получается «звёздочка» с центром.</p>
+
+    <figure class="topo-diagram">
+      <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" aria-label="Звёздная топология">
+        <!-- Lines from centre to nodes -->
+        <line x1="160" y1="110" x2="60"  y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="160" y1="110" x2="160" y2="30"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="160" y1="110" x2="260" y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="160" y1="110" x2="60"  y2="180" stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="160" y1="110" x2="160" y2="190" stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="160" y1="110" x2="260" y2="180" stroke="var(--text-muted)" stroke-width="2"/>
+        <!-- Central switch -->
+        <rect x="140" y="92" width="40" height="36" rx="6" fill="var(--accent)" stroke="var(--primary)" stroke-width="2"/>
+        <text x="160" y="115" font-size="10" font-family="sans-serif" fill="#fff" text-anchor="middle" font-weight="bold">SW</text>
+        <!-- Nodes -->
+        <circle cx="60"  cy="40"  r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="160" cy="30"  r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="260" cy="40"  r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="60"  cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="160" cy="190" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="260" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+      </svg>
+      <figcaption>Звезда: 6 устройств подключены к центральному коммутатору (SW).</figcaption>
+    </figure>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li><b>Надёжность каждого узла</b> — обрыв одного кабеля или поломка одного устройства не уронит сеть, пострадает только этот узел.</li>
+          <li><b>Скорость</b> — современные коммутаторы минимизируют задержки; прямая связь с центром убирает «бутылочные горлышки».</li>
+          <li><b>Лёгкая масштабируемость</b> — добавить новое устройство = подключить кабель в свободный порт.</li>
+          <li>Коллизии данных почти исключены (коммутатор управляет трафиком).</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li><b>Единая точка отказа</b> — если ляжет центральный коммутатор/хаб, ляжет вся сеть.</li>
+          <li>У коммутатора <b>ограниченное число портов</b> — это потолок масштабирования.</li>
+          <li><b>Дороже по кабелям</b> — у каждого устройства своя выделенная линия в центр.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Где применяют:</b> 🏠 Домашние сети (роутер + Wi-Fi точка в центре), 🏢 офисные LAN с центральным управляемым коммутатором.</p>
+  </div>
+
+  <!-- BUS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🚌</span> Шина (Bus topology)</h3>
+    <p>Все устройства подключены к <b>одному общему кабелю</b> (магистрали, <i>backbone</i>). Каждое устройство «слушает» весь трафик и берёт только адресованные ему пакеты. На концах кабеля стоят <b>терминаторы</b>, чтобы сигнал не отражался.</p>
+
+    <figure class="topo-diagram">
+      <svg viewBox="0 0 360 160" xmlns="http://www.w3.org/2000/svg" aria-label="Шинная топология">
+        <!-- Main bus line -->
+        <line x1="20" y1="80" x2="340" y2="80" stroke="var(--accent)" stroke-width="4"/>
+        <!-- Terminators -->
+        <rect x="10" y="72" width="14" height="16" fill="var(--text-muted)" rx="2"/>
+        <rect x="336" y="72" width="14" height="16" fill="var(--text-muted)" rx="2"/>
+        <!-- Drop lines + nodes -->
+        <line x1="70"  y1="80" x2="70"  y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="130" y1="80" x2="130" y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="190" y1="80" x2="190" y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="250" y1="80" x2="250" y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="100" y1="80" x2="100" y2="130" stroke="var(--text-muted)" stroke-width="2"/>
+        <line x1="220" y1="80" x2="220" y2="130" stroke="var(--text-muted)" stroke-width="2"/>
+        <circle cx="70"  cy="30"  r="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="130" cy="30"  r="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="190" cy="30"  r="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="250" cy="30"  r="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="100" cy="140" r="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="220" cy="140" r="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+      </svg>
+      <figcaption>Шина: все устройства висят на одном кабеле; на концах — терминаторы.</figcaption>
+    </figure>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li><b>Дёшево</b> — один кабель на всех, мало проводки.</li>
+          <li>Просто проектировать для маленьких сетей.</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li><b>Один обрыв магистрали = вся сеть мертва.</b></li>
+          <li><b>Коллизии</b> — два устройства, передающие одновременно, сталкиваются, и приходится повторять. При большом числе узлов производительность падает.</li>
+          <li>Плохая безопасность — все «слышат» всё.</li>
+          <li>Сложно искать поломку (где обрыв на длинном кабеле?).</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Где применяют:</b> почти не используется в современных сетях. Встречается в легаси Ethernet-сегментах (10BASE-2/10BASE-5) и в некоторых промышленных шинах (CAN bus в автомобилях — концептуально похоже).</p>
+  </div>
+
+  <!-- RING -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⭕</span> Кольцо (Ring topology)</h3>
+    <p>Каждое устройство соединено с двумя соседями — слева и справа. Данные ходят по кольцу в одном (или двух) направлении(ях), пока не дойдут до адресата. Часто используется механизм <b>токена</b>: у кого токен — тот сейчас передаёт.</p>
+
+    <figure class="topo-diagram">
+      <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" aria-label="Кольцевая топология">
+        <!-- Ring path -->
+        <polygon points="140,30 230,90 200,180 80,180 50,90" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <!-- Nodes -->
+        <circle cx="140" cy="30"  r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="230" cy="90"  r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="200" cy="180" r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="80"  cy="180" r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="50"  cy="90"  r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <!-- Direction arrows -->
+        <polygon points="185,55 192,60 185,65" fill="var(--accent)"/>
+        <polygon points="218,135 225,140 218,145" fill="var(--accent)"/>
+      </svg>
+      <figcaption>Кольцо: каждый узел — между двумя соседями; данные обходят круг.</figcaption>
+    </figure>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li><b>Нет коллизий</b> при использовании токена — только один передаёт за раз.</li>
+          <li>Производительность <b>предсказуемая</b> и стабильная под нагрузкой.</li>
+          <li>Дёшево по кабелю (меньше проводки, чем у звезды).</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li><b>Обрыв одного звена = всё кольцо ломается</b> (если кольцо одностороннее).</li>
+          <li>Если выходит из строя один узел — данные дальше не идут.</li>
+          <li>Добавить устройство = временно «разорвать кольцо».</li>
+          <li>Большая задержка: пакет может пройти много узлов до адресата.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Где применяют:</b> исторически <b>Token Ring</b> (IBM, 1980-е), <b>FDDI</b> (оптические бэкбоны университетов). Сейчас редко, но идея «двойного кольца» используется в SONET/SDH и метро-Ethernet для резервирования.</p>
+  </div>
+
+  <!-- MESH -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🕸️</span> Mesh (Сетчатая топология)</h3>
+    <p>Каждый узел (<i>node</i>) соединён с как можно большим числом других узлов.
+      <b>Полный mesh</b> = каждый соединён с каждым. <b>Частичный mesh</b> = только с некоторыми. Получается «паутина» из множества прямых связей.</p>
+
+    <figure class="topo-diagram">
+      <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" aria-label="Mesh топология">
+        <!-- All-to-all connections among 5 nodes -->
+        <g stroke="var(--text-muted)" stroke-width="1.8">
+          <line x1="160" y1="30"  x2="50"  y2="110"/>
+          <line x1="160" y1="30"  x2="270" y2="110"/>
+          <line x1="160" y1="30"  x2="90"  y2="190"/>
+          <line x1="160" y1="30"  x2="230" y2="190"/>
+          <line x1="50"  y1="110" x2="270" y2="110"/>
+          <line x1="50"  y1="110" x2="90"  y2="190"/>
+          <line x1="50"  y1="110" x2="230" y2="190"/>
+          <line x1="270" y1="110" x2="90"  y2="190"/>
+          <line x1="270" y1="110" x2="230" y2="190"/>
+          <line x1="90"  y1="190" x2="230" y2="190"/>
+        </g>
+        <circle cx="160" cy="30"  r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+        <circle cx="50"  cy="110" r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+        <circle cx="270" cy="110" r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+        <circle cx="90"  cy="190" r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+        <circle cx="230" cy="190" r="16" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+      </svg>
+      <figcaption>Полный mesh из 5 узлов — каждый соединён с каждым (10 связей).</figcaption>
+    </figure>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li><b>Самая высокая надёжность.</b> Если узел или линия упали, данные автоматически идут другим путём (<b>избыточность маршрутов</b>).</li>
+          <li><b>Нет единой точки отказа.</b></li>
+          <li>Лёгкая масштабируемость: добавил узел, включил питание — mesh-протоколы сами найдут соседей.</li>
+          <li>Умные алгоритмы маршрутизации находят оптимальный путь — мало коллизий.</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li><b>Очень дорого по кабелям и портам</b> (если проводной). В полном mesh связей растёт как n(n-1)/2.</li>
+          <li>Скорость может страдать на «длинных» путях из-за множества <b>хопов</b> (hops — переходов между узлами).</li>
+          <li>Корпоративные mesh-узлы дороги.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Где применяют:</b> 📶 современные домашние <b>Wi-Fi mesh</b>-системы (Google Nest Wifi, Eero, Amazon eero, TP-Link Deco). Городские mesh-сети для интернета в зонах со слабой инфраструктурой. <b>IoT</b>-сенсоры на складах и заводах. Военные тактические сети (нет «единого центра» — труднее уничтожить).</p>
+  </div>
+
+  <!-- TREE -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🌳</span> Дерево (Tree topology)</h3>
+    <p>Иерархическая топология: один корневой узел (<i>root</i>) разветвляется на под-узлы, те — на свои под-узлы. Сочетает <b>шину</b> (магистраль вверху) и <b>звёзды</b> (ветки внизу). По сути — расширенная звезда с уровнями.</p>
+
+    <figure class="topo-diagram">
+      <svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" aria-label="Древовидная топология">
+        <!-- Edges -->
+        <g stroke="var(--text-muted)" stroke-width="2">
+          <line x1="170" y1="30" x2="80"  y2="100"/>
+          <line x1="170" y1="30" x2="260" y2="100"/>
+          <line x1="80"  y1="100" x2="40"  y2="180"/>
+          <line x1="80"  y1="100" x2="120" y2="180"/>
+          <line x1="260" y1="100" x2="220" y2="180"/>
+          <line x1="260" y1="100" x2="300" y2="180"/>
+        </g>
+        <!-- Root -->
+        <rect x="150" y="14" width="40" height="32" rx="5" fill="var(--accent)" stroke="var(--primary)" stroke-width="2"/>
+        <text x="170" y="35" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">ROOT</text>
+        <!-- Branch switches -->
+        <rect x="60"  y="86"  width="40" height="28" rx="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <rect x="240" y="86"  width="40" height="28" rx="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <text x="80"  y="104" font-size="10" fill="var(--text)" text-anchor="middle">SW</text>
+        <text x="260" y="104" font-size="10" fill="var(--text)" text-anchor="middle">SW</text>
+        <!-- Leaves -->
+        <circle cx="40"  cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="120" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="220" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="300" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+      </svg>
+      <figcaption>Дерево: корневой узел → под-коммутаторы → конечные устройства.</figcaption>
+    </figure>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li><b>Иерархия = простой менеджмент.</b> Удобно для крупных кампусов, корпоративных сетей с этажами/зданиями.</li>
+          <li>Хорошая <b>масштабируемость</b> — можно расти, добавляя ветки.</li>
+          <li>Сегментация естественная — каждая ветка ≈ отдел.</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li><b>Если упал корневой узел — лежит вся сеть.</b></li>
+          <li>Отказ промежуточного коммутатора отрезает всё «ниже» по ветке.</li>
+          <li>Сложно настроить и поддерживать в больших масштабах.</li>
+          <li>Дорого по кабелям и оборудованию.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Где применяют:</b> 🏫 университетские кампусы, корпоративные сети «штаб-квартира → офисы → этажи → компьютеры», провайдеры доступа в интернет (магистраль → региональные узлы → клиенты).</p>
+  </div>
+
+  <!-- HYBRID -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🧬</span> Гибрид (Hybrid topology)</h3>
+    <p>Сочетание <b>двух и более</b> топологий ради того, чтобы взять у каждой её лучшие свойства и обойти слабые места. Например: <b>звезда</b> для ядра (главные серверы и роутеры) + <b>mesh</b> для периферии (для устойчивости).</p>
+
+    <figure class="topo-diagram">
+      <svg viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg" aria-label="Гибридная топология">
+        <!-- Top: star -->
+        <g stroke="var(--text-muted)" stroke-width="2">
+          <line x1="180" y1="80" x2="80"  y2="40"/>
+          <line x1="180" y1="80" x2="280" y2="40"/>
+          <line x1="180" y1="80" x2="40"  y2="100"/>
+          <line x1="180" y1="80" x2="320" y2="100"/>
+        </g>
+        <rect x="160" y="62" width="40" height="36" rx="6" fill="var(--accent)" stroke="var(--primary)" stroke-width="2"/>
+        <text x="180" y="85" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">CORE</text>
+        <circle cx="80"  cy="40"  r="13" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="280" cy="40"  r="13" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="40"  cy="100" r="13" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="320" cy="100" r="13" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <!-- Bottom: mesh segment -->
+        <line x1="180" y1="98" x2="180" y2="140" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4 3"/>
+        <g stroke="var(--text-muted)" stroke-width="1.8">
+          <line x1="110" y1="160" x2="180" y2="200"/>
+          <line x1="180" y1="200" x2="250" y2="160"/>
+          <line x1="110" y1="160" x2="250" y2="160"/>
+          <line x1="110" y1="160" x2="180" y2="140"/>
+          <line x1="250" y1="160" x2="180" y2="140"/>
+          <line x1="180" y1="140" x2="180" y2="200"/>
+        </g>
+        <circle cx="180" cy="140" r="13" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+        <circle cx="110" cy="160" r="13" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+        <circle cx="250" cy="160" r="13" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+        <circle cx="180" cy="200" r="13" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+        <text x="305" y="215" font-size="10" fill="var(--text-muted)" font-style="italic">mesh-сегмент</text>
+        <text x="60" y="20" font-size="10" fill="var(--text-muted)" font-style="italic">звезда-ядро</text>
+      </svg>
+      <figcaption>Гибрид: звёздное ядро для центральных устройств + mesh-сегмент для надёжности на периферии.</figcaption>
+    </figure>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li><b>Очень высокая надёжность</b> — комбинирует резервные пути mesh с управляемостью звезды.</li>
+          <li><b>Гибкая масштабируемость</b> — расширять можно через те части, которые легче масштабировать (mesh или звезда).</li>
+          <li>Можно подобрать оптимальные характеристики по производительности для разных частей сети.</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li><b>Сложно проектировать и обслуживать</b> — несколько технологий = больше нюансов.</li>
+          <li>Дороже простых решений из-за управления и поддержки разных топологий.</li>
+          <li>Требует «умных» алгоритмов маршрутизации, чтобы оптимизировать пути.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Где применяют:</b> 🏢 крупные корпоративные сети («звезда» в офисе + mesh для удалённых станций), 🏙️ <b>smart cities</b> (интеграция разных служб: транспорт, освещение, видеонаблюдение).</p>
+  </div>
+
+  <div class="ru-tip">
+    💡 <b>Экзаменационный лайфхак:</b> если просят «сравни две топологии», структурируй ответ по 5 осям — <b>надёжность, скорость, масштабируемость, поведение при отказе, стоимость</b>. Это даёт чёткие баллы за каждый пункт.
+  </div>
+
+  <h3>Тренировочные вопросы — A2.2.1 Топологии</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Назови одно преимущество использования звёздной топологии при проектировании сети. <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любой 1 пункт):</b></p>
+      <ul>
+        <li>Высокая надёжность узлов: <b>отказ одного устройства или кабеля не уронит сеть</b> — пострадает только этот узел.</li>
+        <li>Лёгкая масштабируемость: новое устройство добавляется простым подключением к свободному порту центрального коммутатора.</li>
+        <li>Хорошая производительность: прямая связь устройства с центром минимизирует задержки и коллизии.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Опиши, в чём основное различие между физической и логической сетевой топологией. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Физическая топология</b> — это <i>фактическое расположение</i> кабелей, проводов, коммутаторов и других «железок» — то, что видно глазами.</li>
+        <li><b>Логическая топология</b> — это <i>как данные текут</i> по сети, независимо от физического расположения устройств.</li>
+        <li>Можно иметь физическую звезду (все подключены к одному коммутатору), но логически — кольцо или шину, в зависимости от протокола.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">2 балла = по 1 за каждое определение/контраст.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Опиши два признака mesh-топологии. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (2 признака × 2 балла каждое):</b></p>
+      <ul>
+        <li><b>Высокая надёжность за счёт избыточности.</b> Если один узел или соединение выходит из строя, данные автоматически перенаправляются другими путями. Нет единой точки отказа.</li>
+        <li><b>Прямые соединения многих узлов.</b> В полном mesh каждый узел соединён с каждым; в частичном — с некоторыми. Это даёт умной маршрутизации возможность найти кратчайший/менее загруженный путь.</li>
+        <li><b>Лёгкая масштабируемость:</b> большинство mesh-протоколов умеют автонастройку — добавил устройство, включил, и оно само нашло соседей.</li>
+        <li><b>Скорость зависит от числа «хопов»</b> между узлами и от нагрузки на сеть.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. (a) Опиши преимущества гибридной топологии с примерами из учебника. (b) Опиши реальное применение гибридной топологии. <span class="marks-tag">4 + 2 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Преимущества (4 балла):</b></p>
+      <ul>
+        <li><b>Высокая надёжность</b> — благодаря множеству путей передачи данных сеть остаётся работоспособной даже при отказе компонентов. Это сочетание избыточности mesh с централизованным управлением звезды.</li>
+        <li><b>Гибкая производительность</b> — прямые связи в одних сегментах (как в mesh) увеличивают скорость и уменьшают число хопов; централизованные элементы упрощают маршрутизацию и управление.</li>
+        <li><b>Гибкая масштабируемость</b> — добавлять новые узлы можно через те части, которые проще расширять (mesh- или звёздные сегменты).</li>
+        <li><b>Использование умных алгоритмов маршрутизации</b> — позволяет оптимизировать пути данных через разные топологии, уменьшая коллизии и заторы.</li>
+      </ul>
+      <p><b>(b) Применение (2 балла):</b></p>
+      <ul>
+        <li><b>Крупные корпоративные сети:</b> звезда для центральных офисов + mesh для соединения удалённых рабочих станций и устройств.</li>
+        <li><b>Smart cities:</b> гибрид интегрирует разные сервисы и инфраструктуру (транспорт, освещение, безопасность), обеспечивая устойчивость, гибкость и покрытие.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Объясни поведение шинной и кольцевой топологии при обрыве кабеля. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 2 балла на каждую):</b></p>
+      <ul>
+        <li><b>Шина:</b> весь трафик идёт по одному общему кабелю. <b>Обрыв магистрали = полная потеря связи</b> для всех устройств. Без терминаторов на концах сигнал ещё и отражается, вызывая помехи.</li>
+        <li><b>Кольцо:</b> данные обходят круг через всех соседей. <b>Обрыв одного звена = поток ломается</b>, передача останавливается (для одностороннего кольца). В двойном кольце (FDDI) сеть может «свернуться» вокруг обрыва.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 2: SERVERS (HL) ============ -->
+  <h2>🖥️ A2.2.2 — Функции серверов <span class="hl-badge">HL</span></h2>
+
+  <p>
+    <b>Сервер</b> — это компьютер (аппаратура или софт), который <i>предоставляет</i> данные, ресурсы или услуги другим компьютерам (<b>клиентам</b>) по сети. Технически сервером может быть любой компьютер, но в реальности серверы обычно отличаются от обычных ПК: они построены для <b>высокой надёжности, отказоустойчивости и стабильной производительности</b>. Серверы работают 24/7, часто стоят в стойках в дата-центрах, у них продублированы блоки питания, диски (RAID) и сетевые карты.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Сервер</th><th>Что делает (одной строкой)</th><th>Ключевые протоколы</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>DNS</td><td>Переводит доменные имена в IP-адреса</td><td>DNS</td></tr>
+      <tr><td>DHCP</td><td>Автоматически раздаёт IP-адреса и настройки сети устройствам</td><td>DHCP (DORA)</td></tr>
+      <tr><td>File</td><td>Централизованно хранит файлы и управляет доступом к ним</td><td>SMB, NFS</td></tr>
+      <tr><td>Mail</td><td>Отправляет, получает и хранит электронную почту</td><td>SMTP, POP3, IMAP</td></tr>
+      <tr><td>Proxy</td><td>Промежуточный посредник между клиентом и интернетом (фильтр + кэш)</td><td>HTTP/HTTPS</td></tr>
+      <tr><td>Web</td><td>Отдаёт веб-страницы (HTML, CSS, JS) браузерам по запросу</td><td>HTTP, HTTPS</td></tr>
+      <tr><td>Database</td><td>Хранит данные и обрабатывает запросы клиентов к БД</td><td>SQL, ODBC</td></tr>
+      <tr><td>Application</td><td>Выполняет бизнес-логику приложений, связывает клиент и БД</td><td>HTTP, REST, gRPC</td></tr>
+    </tbody>
+  </table>
+
+  <!-- DNS -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🗂️</span> A. DNS-сервер (Domain Name System)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Переводит <b>понятные человеку доменные имена</b> (например, <code>www.google.com</code>) в <b>числовые IP-адреса</b> (например, <code>172.217.16.14</code>). Без этого перевода маршрутизация пакетов невозможна.</div>
+      <div class="label">Как работает</div>
+      <div>
+        <ul>
+          <li>Браузер запрашивает IP у <b>локального DNS</b> (обычно у провайдера).</li>
+          <li>Если локальный DNS не знает ответа — он <b>рекурсивно</b> опрашивает корневые серверы → серверы TLD (например, для <code>.com</code>) → <b>авторитетный</b> DNS домена, у которого есть точный ответ.</li>
+          <li>Найденный IP <b>кэшируется</b> на время TTL (Time To Live), чтобы ускорить будущие запросы.</li>
+        </ul>
+      </div>
+      <div class="label">Надёжность</div>
+      <div>DNS-серверы <b>географически распределены</b> и реплицируются. Если один сервер упал — другие продолжают отвечать. Крупные провайдеры используют балансировку нагрузки между серверами.</div>
+    </div>
+    <p><b>Пример:</b> ты вводишь <code>google.com</code> → DNS возвращает <code>142.250.190.46</code> → твой браузер обращается уже к этому IP.</p>
+  </div>
+
+  <!-- DHCP -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📡</span> B. DHCP-сервер (Dynamic Host Configuration Protocol)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Автоматически выдаёт устройствам в сети <b>IP-адрес</b> и другие сетевые настройки (маску подсети, шлюз по умолчанию, DNS-серверы), чтобы они могли начать общаться с другими сетями.</div>
+      <div class="label">Процесс DORA</div>
+      <div>
+        <ul>
+          <li><b>D</b>iscovery — клиент рассылает <code>DHCPDISCOVER</code>, чтобы найти DHCP-сервер.</li>
+          <li><b>O</b>ffer — сервер отвечает <code>DHCPOFFER</code> с предложенным IP.</li>
+          <li><b>R</b>equest — клиент подтверждает: «беру этот IP» (<code>DHCPREQUEST</code>).</li>
+          <li><b>A</b>cknowledgment — сервер закрепляет аренду (<code>DHCPACK</code>) на определённое время (<i>lease</i>).</li>
+        </ul>
+      </div>
+      <div class="label">Режимы</div>
+      <div>
+        <ul>
+          <li><b>Динамический:</b> IP даётся из пула на ограниченное время. По истечении аренды клиент запрашивает заново.</li>
+          <li><b>Статический:</b> конкретный IP закрепляется за устройством по его MAC. Нужно для принтеров, серверов, оборудования, которому нужен постоянный адрес.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Зачем нужен:</b> без DHCP админ должен вручную назначать IP каждому новому устройству — это долго и легко допустить ошибку. Большие сети часто имеют <b>несколько DHCP-серверов</b> для отказоустойчивости и балансировки.</p>
+  </div>
+
+  <!-- File -->
+  <div class="device-card">
+    <h3><span class="device-emoji">📁</span> C. Файловый сервер (File server)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Централизованно <b>хранит и управляет файлами</b> в сети, позволяя нескольким пользователям и устройствам обращаться к ним и делиться ими.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Клиент отправляет запрос на файл → сервер проверяет права доступа → разрешает или запрещает.</li>
+          <li>При разрешении — пользователь может читать, редактировать или сохранять файл прямо на сервере (в зависимости от прав).</li>
+          <li>Использует протоколы <b>SMB</b> (Windows) или <b>NFS</b> (Unix/Linux).</li>
+        </ul>
+      </div>
+      <div class="label">Надёжность</div>
+      <div>Для отказоустойчивости используют <b>RAID</b> (избыточные массивы дисков) и <b>регулярные резервные копии</b> (backup). Это защищает данные от потери при отказе диска или повреждении файлов.</div>
+    </div>
+    <p><b>Пример:</b> в компании файловый сервер хранит общие документы — сотрудники открывают их с любых устройств в офисе или удалённо. Нет нужды в флешках и пересылке файлов почтой.</p>
+  </div>
+
+  <!-- Mail -->
+  <div class="device-card">
+    <h3><span class="device-emoji">✉️</span> D. Почтовый сервер (Mail server)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div><b>Отправляет, принимает и хранит</b> электронную почту. Это как «цифровое почтовое отделение». Может быть в роли <b>MTA</b> (Mail Transfer Agent, перевозчик писем) или <b>MDA</b> (Mail Delivery Agent, доставщик в ящик).</div>
+      <div class="label">Протоколы</div>
+      <div>
+        <ul>
+          <li><b>SMTP</b> (Simple Mail Transfer Protocol) — для <b>отправки</b> писем.</li>
+          <li><b>POP3</b> — клиент <b>скачивает</b> письма на устройство и обычно <b>удаляет с сервера</b>.</li>
+          <li><b>IMAP</b> — клиент <b>синхронизирует</b> письма; они остаются на сервере, доступны с любого устройства.</li>
+        </ul>
+      </div>
+      <div class="label">Безопасность</div>
+      <div>
+        <ul>
+          <li>Спам-фильтры и антивирус — защита от вредоносных писем.</li>
+          <li><b>DKIM, SPF, DMARC</b> — современные политики аутентификации отправителя, без которых письмо чаще попадёт в спам.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Пример:</b> когда ты отправляешь письмо с gmail.com → твой клиент подключается к SMTP-серверу Google → тот определяет почтовый сервер получателя по доменной части адреса и пересылает туда → у получателя письмо забирается через IMAP/POP3.</p>
+  </div>
+
+  <!-- Proxy -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🚦</span> E. Прокси-сервер (Proxy server)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Работает как <b>посредник</b> между устройством пользователя и интернетом. Ты не идёшь к сайту напрямую — твой запрос идёт через прокси, который сам сходит и принесёт ответ.</div>
+      <div class="label">Ключевые роли</div>
+      <div>
+        <ul>
+          <li><b>Конфиденциальность и безопасность:</b> скрывает реальный IP пользователя, предотвращает прямые атаки на внутреннюю сеть.</li>
+          <li><b>Фильтрация контента:</b> в школе/офисе блокирует сайты, не соответствующие политике (соцсети, NSFW и т.д.).</li>
+          <li><b>Кэширование:</b> хранит копии часто запрашиваемых ресурсов — ускоряет доступ и экономит трафик.</li>
+          <li><b>Логирование:</b> ведёт журнал всех веб-запросов; позволяет отследить вредоносную или подозрительную активность.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Пример:</b> в офисе сотрудник заходит на сайт → запрос идёт на прокси → прокси проверяет политику → если сайт разрешён, прокси берёт страницу (или отдаёт из кэша) и возвращает сотруднику. Если запрещён — выдаёт сообщение об отказе.</p>
+    <p><b>Публичные прокси</b> позволяют пользователям скрыть свой IP и геолокацию — это полезно для доступа к гео-ограниченному контенту и обхода цензуры.</p>
+  </div>
+
+  <!-- Web -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🌐</span> F. Веб-сервер (Web server)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Хранит, обрабатывает и <b>отдаёт веб-страницы</b> (HTML, CSS, JavaScript, картинки) клиентам по запросу через протоколы <b>HTTP/HTTPS</b>.</div>
+      <div class="label">Как работает</div>
+      <div>
+        <ul>
+          <li>Хранит файлы сайта (HTML, CSS, JS, медиа).</li>
+          <li>Получает HTTP-запрос от браузера, ищет нужный файл, отдаёт его. Если страница <b>динамическая</b> — сначала выполняет серверный скрипт (PHP, Python, Node.js) и генерирует HTML «на лету».</li>
+          <li>Часто использует <b>SSL/TLS</b> для шифрования (HTTPS).</li>
+        </ul>
+      </div>
+      <div class="label">Популярные</div>
+      <div><b>Apache</b>, <b>Nginx</b>, <b>IIS</b> (Microsoft).</div>
+    </div>
+    <p><b>Пример:</b> «Bekka's Bakery» хостит сайт на веб-сервере. Клиент вводит URL → браузер посылает HTTP-запрос → сервер находит файл меню (или запускает скрипт и тянет меню из БД) → возвращает HTML → браузер рендерит страницу.</p>
+  </div>
+
+  <!-- Database -->
+  <div class="device-card">
+    <h3><span class="device-emoji">🗄️</span> G. Сервер баз данных (Database server)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Хранит структурированные данные (таблицы, записи) и обрабатывает запросы клиентов на чтение, запись, обновление и удаление данных. Использует SQL или специализированные API.</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Принимает SQL-запросы (например, <code>SELECT * FROM users WHERE id=42</code>) и возвращает результат.</li>
+          <li>Контролирует <b>транзакции</b> (ACID-свойства): данные либо записываются полностью, либо не записываются вовсе.</li>
+          <li>Управляет правами доступа: кто может читать/писать какие таблицы.</li>
+          <li>Делает резервные копии и реплицирует данные на другие серверы для отказоустойчивости.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Пример:</b> сервер MySQL/PostgreSQL хранит данные пользователей соцсети. Веб-сервер (или application-сервер) отправляет ему SQL-запрос, получает данные и формирует страницу.</p>
+  </div>
+
+  <!-- Application -->
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> H. Сервер приложений (Application server)</h3>
+    <div class="label-row">
+      <div class="label">Назначение</div>
+      <div>Выполняет <b>бизнес-логику</b> приложения — то есть «думающий» слой между клиентом (браузером/мобилкой) и хранилищем данных (БД).</div>
+      <div class="label">Что делает</div>
+      <div>
+        <ul>
+          <li>Обрабатывает действия пользователя: «добавь в корзину», «рассчитай стоимость доставки», «прими платёж».</li>
+          <li>Связывает запросы клиента с базой данных и с другими сервисами.</li>
+          <li>Применяет правила бизнеса (скидки, проверки, авторизация).</li>
+          <li>Часто работает в трёхслойной архитектуре: клиент ↔ application server ↔ database server.</li>
+        </ul>
+      </div>
+    </div>
+    <p><b>Пример:</b> когда ты оформляешь заказ в интернет-магазине, веб-сервер отдаёт страницу, application-сервер обрабатывает «положить в корзину» и «оплатить», а database-сервер хранит товары и заказы.</p>
+  </div>
+
+  <h3>Тренировочные вопросы — A2.2.2 Серверы (HL)</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 6. Назови основную функцию DNS-сервера. <span class="marks-tag">1 балл</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>DNS-сервер <b>переводит человекочитаемые доменные имена</b> (например, <code>www.google.com</code>) в соответствующие <b>числовые IP-адреса</b> (например, <code>172.217.16.14</code>), что позволяет маршрутизации пакетов работать.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7. Опиши роль DHCP-сервера. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 1 баллу на пункт):</b></p>
+      <ul>
+        <li>DHCP-сервер <b>автоматически назначает IP-адреса</b> и другие сетевые параметры (маску подсети, шлюз по умолчанию, адрес DNS-сервера) устройствам, подключающимся к сети.</li>
+        <li>Это <b>упрощает администрирование</b> — не нужно настраивать каждое устройство вручную; снижает риск конфликтов IP-адресов.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 8. Опиши две функции почтового сервера. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 × 2 балла):</b></p>
+      <ul>
+        <li><b>Отправка писем</b> по протоколу <b>SMTP</b>: клиент подключается к SMTP-серверу, тот определяет почтовый сервер получателя по доменной части адреса и пересылает письмо туда.</li>
+        <li><b>Получение и хранение писем</b> по протоколу <b>POP3</b> (скачивание и обычно удаление с сервера) или <b>IMAP</b> (синхронизация, письма остаются на сервере и доступны с разных устройств).</li>
+        <li><b>Защита от спама и вредоносного ПО:</b> спам-фильтры, антивирус, политики DKIM/SPF/DMARC для аутентификации отправителя.</li>
+        <li><b>Маршрутизация писем внутри организации:</b> если получатель — на том же сервере, письмо доставляется прямо в его ящик без выхода в интернет.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 9. Опиши преимущества и потенциальные недостатки использования прокси-сервера в организации. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Преимущества (по 1 баллу):</b></p>
+      <ul>
+        <li><b>Контроль и фильтрация контента:</b> можно блокировать нежелательные сайты согласно политике организации.</li>
+        <li><b>Безопасность:</b> прокси маскирует реальные IP-адреса внутренних устройств и предотвращает прямые атаки.</li>
+        <li><b>Кэширование:</b> часто запрашиваемые ресурсы хранятся локально — экономия трафика и ускорение доступа.</li>
+        <li><b>Мониторинг и логи:</b> можно отследить вредоносную или нецелевую активность.</li>
+      </ul>
+      <p><b>Недостатки (по 1 баллу):</b></p>
+      <ul>
+        <li><b>Единая точка отказа:</b> если прокси упадёт, никто не сможет выйти в интернет.</li>
+        <li><b>Возможные задержки:</b> дополнительный «прыжок» через прокси может замедлить работу, особенно при большой нагрузке.</li>
+        <li><b>Приватность сотрудников:</b> логирование всей активности может вызывать вопросы по этике.</li>
+        <li><b>Стоимость и сложность настройки:</b> особенно для крупных организаций.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 10. Опиши роль избыточности (redundancy) при проектировании DNS-серверов. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Несколько серверов с одинаковыми данными:</b> если один сервер упал, другие продолжают отвечать на запросы — нет единой точки отказа.</li>
+        <li><b>Географическая распределённость:</b> серверы стоят в разных регионах мира, что снижает задержку (latency) для пользователей и обеспечивает живучесть при катастрофах или сетевых сбоях.</li>
+        <li><b>Балансировка нагрузки:</b> запросы распределяются между серверами, чтобы ни один не оказался перегружен. Это сохраняет производительность даже при росте трафика.</li>
+        <li><b>Особо устойчивы корневые серверы:</b> их множество географически распределённых копий защищает от глобальных сбоев DNS.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 3: NETWORKING MODELS ============ -->
+  <h2>🤝 A2.2.3 — Клиент-сервер vs Peer-to-Peer (P2P)</h2>
+
+  <p>Это два фундаментально разных подхода к тому, как устройства <i>общаются</i> в сети.</p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">👑</span> Клиент-сервер (Client-Server)</h3>
+    <p>Один (или несколько) <b>серверов</b> хранят, обрабатывают и предоставляют ресурсы; <b>клиенты</b> запрашивают эти ресурсы. Модель построена по принципу <b>запрос/ответ</b> (request/response). Это <b>централизованная</b> архитектура — серверы выступают в роли централизованных точек доступа.</p>
+    <p><b>Пример:</b> ты заходишь в браузер, набираешь <code>youtube.com</code>. Твой браузер — <b>клиент</b>. Сервер YouTube — <b>сервер</b>. Браузер шлёт HTTP-запрос → сервер находит видео → возвращает данные.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🤝</span> Peer-to-Peer (P2P, пиринговая сеть)</h3>
+    <p><b>Децентрализованная</b> модель: каждый участник (<b>peer</b>) имеет <i>равные</i> возможности и обязанности. Нет выделенного сервера — каждый узел может быть и клиентом, и сервером одновременно, обмениваясь ресурсами напрямую с другими peer'ами.</p>
+    <p><b>Пример:</b> <b>BitTorrent</b> — файлы скачиваются маленькими кусочками сразу от десятков других пользователей; <b>Bitcoin</b> — блокчейн распределён по тысячам узлов; <b>Skype</b> (исторически) — звонки шли напрямую между пользователями.</p>
+  </div>
+
+  <h3>Прямое сравнение</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Критерий</th><th>Клиент-сервер</th><th>Peer-to-Peer (P2P)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Контроль</td>
+        <td>✅ <b>Централизованный.</b> Легко применять политики, управлять ресурсами, обеспечивать целостность данных.</td>
+        <td>⚠️ <b>Распределённый.</b> Нет единой власти — устойчивее, но сложнее отслеживать проблемы и собирать метрики.</td>
+      </tr>
+      <tr>
+        <td>Масштабируемость</td>
+        <td>Зависит от мощности сервера. Расширение = апгрейд серверов или добавление новых — <b>дорого</b>.</td>
+        <td>✅ Каждый новый peer <b>добавляет ресурсы</b> в общий пул. Масштабирование почти бесплатное.</td>
+      </tr>
+      <tr>
+        <td>Безопасность</td>
+        <td>✅ Централизованные меры безопасности проще администрировать. Но серверы — лакомая цель для атак.</td>
+        <td>⚠️ Анонимность может быть плюсом, но и минусом: труднее идентифицировать и пресекать вредоносное ПО.</td>
+      </tr>
+      <tr>
+        <td>Эффективность</td>
+        <td>Серверы можно оптимизировать под конкретные задачи. Но при высокой нагрузке = bottleneck.</td>
+        <td>Ресурсы распределены между peer'ами — снижает нагрузку на отдельные узлы. Но возможен оверхед при плохом управлении.</td>
+      </tr>
+      <tr>
+        <td>Надёжность</td>
+        <td>⚠️ Сервер = <b>единая точка отказа</b>. Если он упал — сервис недоступен всем.</td>
+        <td>✅ Сеть продолжает работать, даже если некоторые peer'ы отключились. Но peer'ы могут уходить/приходить — это влияет на доступность данных.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Реальные применения</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🌐</span> Примеры клиент-сервер</h3>
+    <ul>
+      <li><b>Веб-сайты:</b> браузер (клиент) запрашивает данные у веб-сервера. Преимущества — централизованное управление, единая версия контента; недостаток — если сервер ляжет, сайт недоступен всем.</li>
+      <li><b>Email с MS Exchange:</b> почтовые клиенты (Outlook) обращаются к центральному почтовому серверу. Плюсы — централизованный контроль политик безопасности, резервное копирование, архивирование. Минусы — единая точка отказа, высокие затраты на обслуживание.</li>
+      <li><b>Онлайн-банкинг:</b> банковское приложение → центральные серверы банка обрабатывают транзакции. Плюсы — безопасность и целостность данных. Минусы — серверы банка — лакомая цель для кибератак, и любой даунтайм аффектит всех клиентов.</li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔗</span> Примеры P2P</h3>
+    <ul>
+      <li><b>BitTorrent:</b> файлы скачиваются напрямую между пользователями, без центрального сервера. Плюсы — нет нужды в мощных серверах; быстрее для больших файлов (одновременная передача кусочков от многих peer'ов). Минусы — меньше контроля над безопасностью, скорость зависит от числа peer'ов.</li>
+      <li><b>Skype</b> (классический): использовал P2P для прямого установления голосовых соединений. Плюсы — масштабируется без огромных вложений в инфраструктуру, лучшее качество за счёт прямой маршрутизации. Минусы — нестабильность peer'ов, сложно проводить централизованные политики безопасности.</li>
+      <li><b>Bitcoin и блокчейн:</b> P2P-сеть, где каждый узел хранит копию журнала транзакций. Плюсы — децентрализация повышает безопасность, нет единой точки отказа, защита от подделок. Минусы — большие энергозатраты на консенсус (proof-of-work), транзакции могут быть медленнее, чем в централизованных системах.</li>
+    </ul>
+  </div>
+
+  <h3>Тренировочные вопросы — A2.2.3 Модели сетей</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 11. Сравни модели клиент-сервер и peer-to-peer по двум критериям. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 пары × 2 балла):</b></p>
+      <ul>
+        <li><b>Контроль:</b> в клиент-серверной модели контроль <b>централизован</b> на сервере → легко применять политики и управлять ресурсами. В P2P — контроль <b>распределён</b> между peer'ами, нет единого центра.</li>
+        <li><b>Надёжность:</b> в клиент-серверной модели сервер — <b>единая точка отказа</b> (сервер упал → сервис недоступен). В P2P сеть продолжает работать даже при отказе нескольких peer'ов.</li>
+        <li><b>Масштабируемость:</b> клиент-сервер требует <b>апгрейда сервера</b> при росте нагрузки (дорого). В P2P добавление нового peer'а само по себе <b>увеличивает</b> ресурсы сети.</li>
+        <li><b>Безопасность:</b> в клиент-серверной модели меры безопасности применяются централизованно, но серверы — мишень для атак. В P2P — анонимность может быть плюсом, но затрудняет борьбу с вредоносным ПО.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 12. Опиши один реальный пример клиент-серверной модели и один пример P2P, объяснив, почему именно эта модель здесь подходит. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Клиент-сервер: онлайн-банкинг.</b> Банковское приложение (клиент) обращается к серверам банка. Это правильная модель, потому что нужна <b>централизованная безопасность</b>, контроль транзакций и гарантия консистентности баланса. Распределённый P2P-подход здесь рискован — нельзя позволить, чтобы транзакции зависели от частных peer'ов.</li>
+        <li><b>P2P: BitTorrent.</b> Файлы передаются напрямую между пользователями. Это правильная модель, потому что <b>нет нужды в дорогих центральных серверах</b>, а скачивание <b>ускоряется</b> при росте числа peer'ов (каждый отдаёт куски). Для централизованной модели потребовалась бы огромная пропускная способность сервера-источника.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 13. Объясни, почему клиент-серверная модель имеет «единую точку отказа», и как P2P этого избегает. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>В клиент-серверной модели <b>все клиенты обращаются к одному (или нескольким) центральным серверам</b>. Если сервер упал из-за поломки, кибератаки или планового обслуживания, <b>все клиенты теряют доступ</b> к услуге.</li>
+        <li>В P2P нет выделенного сервера: <b>каждый peer — одновременно и клиент, и сервер</b>. Ресурсы распределены по сети.</li>
+        <li>Если один (или даже многие) peer'ы отключаются, оставшиеся peer'ы <b>продолжают предоставлять данные и сервис</b>. Поэтому P2P-сеть устойчивее к точечным сбоям.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Совет: в реальности крупные клиент-серверные системы используют кластеры серверов и репликацию, чтобы снизить риск, но архитектурно «единая точка отказа» — характеристика модели.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: SEGMENTATION ============ -->
+  <h2>🧩 A2.2.4 — Сегментация сетей</h2>
+
+  <p>
+    <b>Сегментация сети</b> (network segmentation) — это разделение компьютерной сети на меньшие, отдельные <b>сегменты</b> или <b>подсети</b>. Это делают ради <b>безопасности</b>, <b>производительности</b> и <b>удобства управления</b>. Грубая аналогия: вместо одной большой комнаты с 200 людьми, шумящими одновременно, ты строишь 10 комнат по 20 человек — внутри каждой удобно работать, между комнатами трафик контролируется.
+  </p>
+
+  <h3>Зачем сегментировать сеть?</h3>
+
+  <div class="pros-cons" style="margin-top: 16px;">
+    <div class="pros-box">
+      <strong>🔐 Безопасность</strong>
+      <ul>
+        <li>Только разрешённый трафик ходит между сегментами.</li>
+        <li>Пример: <b>гостевой Wi-Fi</b> в банке отделён от сети с клиентскими счетами — устройство гостя физически/логически не может попасть в платёжную сеть.</li>
+        <li>Если злоумышленник пробил один сегмент, он <b>не получает доступ</b> к остальным.</li>
+        <li>Можно применять разные политики безопасности к разным сегментам.</li>
+      </ul>
+    </div>
+    <div class="pros-box">
+      <strong>⚡ Производительность</strong>
+      <ul>
+        <li>Меньше широковещательного (broadcast) трафика в каждом сегменте → меньше «шума».</li>
+        <li>Тяжёлый трафик (видеостриминг, бэкапы) изолирован — не мешает остальной сети.</li>
+        <li>Пример: 50 студентов, стримящих видео в одном сегменте, <b>не повлияют</b> на другие сегменты сети.</li>
+      </ul>
+    </div>
+    <div class="pros-box">
+      <strong>📈 Масштабируемость</strong>
+      <ul>
+        <li>Новые сегменты добавляются <b>без нарушения работы</b> существующих.</li>
+        <li>Контролируемое расширение сети.</li>
+      </ul>
+    </div>
+    <div class="pros-box">
+      <strong>🛠️ Управляемость</strong>
+      <ul>
+        <li>Админам проще <b>мониторить</b> и управлять трафиком внутри сегментов.</li>
+        <li>Быстрее находят и устраняют проблемы.</li>
+        <li>Можно апгрейдить отдельные сегменты без перестройки всей сети.</li>
+      </ul>
+    </div>
+  </div>
+
+  <figure class="topo-diagram">
+    <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" aria-label="Сегментация сети">
+      <!-- Cloud -->
+      <ellipse cx="230" cy="30" rx="50" ry="18" fill="var(--surface-2)" stroke="var(--text-muted)" stroke-width="1.5"/>
+      <text x="230" y="34" font-size="11" fill="var(--text)" text-anchor="middle" font-style="italic">Internet</text>
+      <!-- Main router -->
+      <rect x="200" y="60" width="60" height="22" rx="4" fill="var(--accent)" stroke="var(--primary)" stroke-width="2"/>
+      <text x="230" y="75" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">ROUTER</text>
+      <line x1="230" y1="48" x2="230" y2="60" stroke="var(--text-muted)" stroke-width="2"/>
+      <!-- Lines to segment switches -->
+      <g stroke="var(--text-muted)" stroke-width="1.5">
+        <line x1="230" y1="82" x2="60"  y2="120"/>
+        <line x1="230" y1="82" x2="170" y2="120"/>
+        <line x1="230" y1="82" x2="290" y2="120"/>
+        <line x1="230" y1="82" x2="400" y2="120"/>
+      </g>
+      <!-- Segment switches -->
+      <rect x="30"  y="120" width="60" height="22" rx="4" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+      <rect x="140" y="120" width="60" height="22" rx="4" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+      <rect x="260" y="120" width="60" height="22" rx="4" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+      <rect x="370" y="120" width="60" height="22" rx="4" fill="var(--surface)" stroke="var(--violet)" stroke-width="2"/>
+      <!-- Labels -->
+      <text x="60"  y="170" font-size="11" fill="var(--text)" text-anchor="middle">IoT</text>
+      <text x="170" y="170" font-size="11" fill="var(--text)" text-anchor="middle">Сотрудники</text>
+      <text x="290" y="170" font-size="11" fill="var(--text)" text-anchor="middle">Гостевой Wi-Fi</text>
+      <text x="400" y="170" font-size="11" fill="var(--text)" text-anchor="middle">PCI / Платежи</text>
+      <text x="60"  y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 10</text>
+      <text x="170" y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 20</text>
+      <text x="290" y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 30</text>
+      <text x="400" y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 40</text>
+    </svg>
+    <figcaption>Сегментация: один маршрутизатор + 4 разных сегмента (VLAN) с изолированным трафиком.</figcaption>
+  </figure>
+
+  <h3>Методы сегментации</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔢</span> A. Subnetting (Подсети)</h3>
+    <p>Разделение большой <b>IP-сети</b> на меньшие логические подсети (<b>subnets</b>). Достигается манипуляцией <b>маской подсети</b> (subnet mask).</p>
+
+    <p><b>Ключевые понятия:</b></p>
+    <ul>
+      <li><b>Маска подсети</b> определяет, какая часть IP-адреса — «сеть», а какая — «хост». Например, при маске <code>255.255.255.0</code> первые 3 октета IP — это сеть, последний — хост.</li>
+      <li><b>Сетевой адрес</b> определяется операцией <b>побитового AND</b> между IP и маской.</li>
+      <li>Устройства с <b>одинаковой сетевой частью</b> могут общаться напрямую; устройствам из разных подсетей нужен <b>маршрутизатор</b>.</li>
+      <li><b>CIDR-нотация</b> (например, <code>192.168.1.0/24</code>) — компактная запись: число после слэша = сколько бит маски равны 1.</li>
+    </ul>
+
+    <p><b>Пример (Worked Example 2 из учебника):</b><br>
+    IP: <code>192.168.1.10</code> → бинарно <code>11000000.10101000.00000001.00001010</code><br>
+    Маска: <code>255.255.255.0</code> → бинарно <code>11111111.11111111.11111111.00000000</code><br>
+    Побитовое AND даёт: <code>192.168.1.0</code> — это <b>сетевой адрес</b>.</p>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li>Эффективнее использует <b>IP-адресное пространство</b>.</li>
+          <li>Уменьшает размер таблиц маршрутизации — роутеры хранят маршруты к подсетям, а не к каждому IP.</li>
+          <li>Изолирует широковещательный трафик внутри подсети.</li>
+          <li>Можно применять <b>ACL</b> (Access Control Lists) на границах подсетей для безопасности.</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li>Сложнее проектировать, нужно понимание двоичной арифметики.</li>
+          <li>Для общения между подсетями обязательно нужен маршрутизатор.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p><b>ACL (Access Control List):</b> правила «кто к чему имеет доступ» — например, «компьютеры из подсети сотрудников могут читать файлы на файловом сервере, но компьютеры гостей — нет».</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🏷️</span> B. VLAN (Virtual Local Area Network)</h3>
+    <p><b>Виртуальная локальная сеть</b> позволяет сегментировать <b>физическую</b> сеть на несколько <b>логических</b> сетей. Устройства можно группировать вместе, <b>даже если они подключены к разным коммутаторам</b> или находятся в разных физических местах.</p>
+
+    <p><b>Ключевые свойства:</b></p>
+    <ul>
+      <li><b>Группировка по функции/отделу/приложению</b>, а не по физическому расположению.</li>
+      <li>VLAN <b>ограничивают широковещательные домены</b> — широковещательный трафик идёт только тем, кому он нужен.</li>
+      <li><b>Изолированный трафик</b> между VLAN → лучшая безопасность. Для связи между VLAN нужен <b>inter-VLAN routing</b> (маршрутизатор или L3-коммутатор), и его можно контролировать политиками.</li>
+      <li><b>Логическое разделение без физического:</b> не нужно прокладывать отдельные кабели и покупать отдельные коммутаторы для каждой группы.</li>
+    </ul>
+
+    <p><b>Пример из учебника:</b> небольшая компания, 24-портовый коммутатор. Админ назначает порты 1-10 → VLAN 10 («Бухгалтерия»), порты 11-20 → VLAN 20 («Продажи»). Компьютеры из VLAN 10 могут общаться <b>только между собой</b>, не с VLAN 20. Уменьшается ненужный широковещательный трафик, повышается безопасность, можно применять разные QoS-политики.</p>
+
+    <div class="pros-cons">
+      <div class="pros-box">
+        <strong>Плюсы</strong>
+        <ul>
+          <li>Безопасность: чувствительные данные отделены от остального трафика.</li>
+          <li>Гибкость: группировка не зависит от физического подключения.</li>
+          <li>Производительность: ограничение широковещательного домена.</li>
+          <li>Дешевле, чем покупать отдельные коммутаторы для каждой группы.</li>
+        </ul>
+      </div>
+      <div class="cons-box">
+        <strong>Минусы</strong>
+        <ul>
+          <li>Требует <b>управляемых коммутаторов</b> (managed switches) — они дороже простых.</li>
+          <li>Сложнее настройка и поддержка, особенно в больших сетях.</li>
+          <li>Неправильная конфигурация может создать «дыру» в безопасности или сломать связь.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>Subnetting + VLAN = вместе</h3>
+  <p>В реальности subnetting и VLAN <b>часто работают вместе</b>. VLAN сегментирует на уровне коммутатора (L2), а subnetting — на уровне IP (L3). Например: каждая VLAN получает свою подсеть, и inter-VLAN routing между ними контролируется ACL'ами. Это даёт <b>двойную защиту и оптимизацию</b>.</p>
+
+  <h3>Тренировочные вопросы — A2.2.4 Сегментация</h3>
+
+  <details class="question-card">
+    <summary>Вопрос 14. Объясни два преимущества сегментации сети. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (любые 2 × 2 балла):</b></p>
+      <ul>
+        <li><b>Безопасность:</b> только разрешённый трафик может пересекать границы сегментов. Если злоумышленник пробил один сегмент (например, гостевой Wi-Fi), он не получает доступ к чувствительным сегментам (например, бухгалтерии). Можно применять разные политики безопасности к разным сегментам.</li>
+        <li><b>Производительность:</b> сегментация ограничивает широковещательный трафик внутри сегмента и распределяет нагрузку. Если 50 студентов стримят видео в одном сегменте, это не влияет на работу других сегментов.</li>
+        <li><b>Управляемость:</b> админам проще мониторить и устранять проблемы в меньших сегментах. Можно апгрейдить части сети без её полной перестройки.</li>
+        <li><b>Масштабируемость:</b> новые сегменты добавляются, не нарушая работу существующих — сеть может расти контролируемо.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 15. Применяя маску подсети 255.255.255.0 к IP-адресу 192.168.5.42, определи сетевую часть и хостовую часть. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Маска <code>255.255.255.0</code> означает, что <b>первые 3 октета</b> — сетевая часть, <b>последний октет</b> — хостовая часть.</li>
+        <li><b>Сетевая часть:</b> <code>192.168.5</code> (или сетевой адрес <code>192.168.5.0</code>).</li>
+        <li><b>Хостовая часть:</b> <code>42</code> (то есть конкретное устройство в этой сети).</li>
+        <li>Бонус: любые устройства с IP в диапазоне <code>192.168.5.1</code>–<code>192.168.5.254</code> находятся в той же подсети и могут общаться напрямую без маршрутизатора.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 16. Объясни, чем VLAN отличается от обычной подсети, и какие преимущества даёт использование VLAN. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Subnetting</b> разделяет сеть на уровне <b>IP-адресов (L3)</b>: с помощью маски подсети группа IP-адресов считается одной подсетью. Устройствам разных подсетей нужен маршрутизатор для общения.</li>
+        <li><b>VLAN</b> разделяет сеть на уровне <b>коммутатора (L2)</b>: устройства группируются логически, даже если физически подключены к разным коммутаторам или находятся в разных местах.</li>
+        <li><b>Преимущества VLAN:</b>
+          <ul>
+            <li>Группировка по функции/отделу, а не по физическому расположению — удобно для крупных офисов.</li>
+            <li>Лучшая безопасность: трафик между VLAN изолирован, для связи нужен маршрутизатор или L3-коммутатор с политиками доступа.</li>
+            <li>Меньше широковещательного трафика → лучше производительность.</li>
+            <li>Можно сегментировать сеть, <b>не прокладывая новые кабели</b> и не покупая отдельные коммутаторы.</li>
+          </ul>
+        </li>
+        <li>На практике VLAN и subnetting часто работают вместе — каждый VLAN получает свою подсеть.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 17. Какие меры безопасности можно реализовать с помощью сегментации в банке, где есть гостевой Wi-Fi и сеть с клиентскими счетами? <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Изоляция гостевого Wi-Fi от внутренней сети:</b> устройства гостей физически/логически не могут попасть в сеть с клиентскими счетами. Это разные VLAN/подсети.</li>
+        <li><b>Применение ACL (Access Control Lists)</b> на маршрутизаторе или firewall: разрешён трафик только из конкретных «доверенных» подсетей в платёжную систему.</li>
+        <li><b>Минимизация поверхности атаки:</b> если злоумышленник захватил устройство в гостевом сегменте, он не получает доступ к серверам с банковскими данными.</li>
+        <li><b>Разные политики безопасности по сегментам:</b> в платёжном сегменте могут быть строгие правила (шифрование, аудит, многофакторная аутентификация), в гостевом — упрощённые.</li>
+        <li><b>Контролируемый мониторинг:</b> подозрительная активность внутри чувствительных сегментов фиксируется проще, потому что обычно там малый и предсказуемый трафик.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 5: PRACTICAL TASKS ============ -->
+  <h2>🔬 Практические задания</h2>
+
+  <div class="task-card">
+    <h3>🔍 Индивидуальное: спроектируй сегментированную сеть для школы</h3>
+    <p><b>Цель:</b> применить понятия сегментации, VLAN и подсетей к реальному сценарию.</p>
+    <div class="scenario">
+      <b>Сценарий:</b> школа на 600 учеников и 50 учителей. Нужно: интернет для всех; общая локальная сеть для учителей с доступом к файловому серверу; отдельный гостевой Wi-Fi для родителей и посетителей; IoT-устройства (камеры, умные доски); компьютерный класс на 30 машин.
+    </div>
+    <p><b>Инструкции:</b></p>
+    <ol>
+      <li>Определи, сколько <b>сегментов (VLAN)</b> нужно. Минимум 4: учителя, ученики, гостевой Wi-Fi, IoT. Возможно — отдельный для серверной.</li>
+      <li>Для каждого сегмента распиши, какой <b>трафик</b> разрешён в и из него (например, «гостевой → только интернет, нельзя во внутреннюю сеть»).</li>
+      <li>Выбери подходящие <b>подсети</b> (например, 192.168.10.0/24 для учителей, 192.168.20.0/24 для учеников, и т.д.).</li>
+      <li>Объясни, почему такое разделение даёт <b>лучшую безопасность и производительность</b>, чем одна плоская сеть.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>👥 Групповое: дебаты «Клиент-сервер vs P2P»</h3>
+    <p><b>Цель:</b> через дискуссию глубже понять плюсы и минусы каждой модели.</p>
+    <p><b>Инструкции (группы по 4):</b></p>
+    <ol>
+      <li>Разделитесь на 2 команды. Команда A защищает <b>клиент-сервер</b>, команда B — <b>P2P</b>.</li>
+      <li>Каждая команда готовит аргументы на тему: «Для какого приложения <i>ИИ-чатбот</i> подходит лучше — клиент-сервер или P2P?»</li>
+      <li>Учитывайте: скорость, безопасность, надёжность, стоимость, простоту обновлений модели.</li>
+      <li>Поменяйтесь ролями: теперь A защищает <b>BitTorrent-альтернативу</b>, B — централизованный <b>стриминговый сервис</b>.</li>
+      <li>Запишите общий вывод: <b>какие признаки задачи</b> намекают, что нужно идти в клиент-сервер, а какие — в P2P.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>🏠 Домашнее: топология твоей сети дома</h3>
+    <p><b>Цель:</b> связать абстрактные знания с реальностью.</p>
+    <ol>
+      <li>Опиши, какая топология у тебя дома. Скорее всего, физически — <b>звезда</b> вокруг роутера. Логически — возможно, гибрид (если есть Wi-Fi mesh-расширители).</li>
+      <li>Сосчитай устройства: компьютеры, смартфоны, smart-TV, умные колонки, IoT (камеры, лампочки). Сколько их в одной сети?</li>
+      <li>Спросишь: <b>сегментирована ли</b> твоя сеть? Большинство домашних роутеров позволяют создать «гостевой Wi-Fi» (отдельный VLAN). Если у тебя есть IoT — желательно вынести его в отдельную сеть (по соображениям безопасности).</li>
+      <li>Опиши, какие сервисы ты используешь и какая у них модель: <b>Google Drive</b> — клиент-сервер; <b>µTorrent</b> — P2P; <b>WhatsApp-звонки</b> — гибрид (стартует через сервер Meta, далее может быть P2P).</li>
+    </ol>
+  </div>
+
+  <!-- ============ CLOSING ============ -->
+  <h2>🎯 Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li>Топология описывает <b>форму сети</b>. Для экзамена сравнивай по 5 осям: <b>надёжность, скорость, масштабируемость, поведение при отказе, стоимость</b>.</li>
+    <li><b>Звезда</b> — самая популярная (дом, офис). <b>Mesh</b> — самая надёжная (нет единой точки отказа). <b>Гибрид</b> — комбинирует лучшее.</li>
+    <li>Различай <b>физическую</b> топологию (где лежат провода) и <b>логическую</b> (как ходят данные).</li>
+    <li><b>Серверы (HL)</b> — это специализированные «работники» сети. Запомни 8 типов: <b>DNS, DHCP, file, mail, proxy, web, database, application</b>. Знай 1–2 основных протокола у каждого.</li>
+    <li><b>Клиент-сервер</b> — централизованно, легко управлять, но <b>единая точка отказа</b>. <b>P2P</b> — децентрализованно, устойчиво, дешёво масштабируется, но сложнее контролировать.</li>
+    <li><b>Сегментация</b> = лучшая <b>безопасность</b> + лучшая <b>производительность</b> + лучшая <b>управляемость</b>.</li>
+    <li><b>Subnetting</b> делит сеть на уровне IP (через маску подсети); <b>VLAN</b> — на уровне коммутатора (логически, независимо от физики). Часто работают вместе.</li>
+    <li>Помни про <b>DORA</b>-процесс DHCP: <b>D</b>iscovery → <b>O</b>ffer → <b>R</b>equest → <b>A</b>ck.</li>
+    <li>Маска подсети <code>255.255.255.0</code> = <code>/24</code> в CIDR. <b>Побитовый AND</b> IP-адреса и маски = сетевой адрес.</li>
+    <li>На экзамене вопрос «опиши преимущества и недостатки X» — всегда даёшь <b>2 плюса + 2 минуса</b> минимум (это шаблон для 4 баллов).</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+    &nbsp; · &nbsp;
+    <a href="setevye-ustroistva.html" class="back-link">← A2.1.3 Устройства</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html?v=9#topology-sim" class="back-link">🎮 К симулятору топологий →</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A2.2" class="back-link">К квизу A2.2 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A2.2 Архитектура сетей · По материалам Oxford IB DP Computer Science 2025 · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

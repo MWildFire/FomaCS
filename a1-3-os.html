@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1.3 Операционные и управляющие системы · IB CS Theme A</title>
+<meta name="description" content="A1.3 Operating systems and control systems — подробный разбор на русском: роль ОС, функции, планирование (FCFS, round robin, multilevel, priority), polling vs interrupts, многозадачность (HL), компоненты управляющих систем (HL), реальные применения (HL).">
+<link rel="stylesheet" href="styles.css?v=9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .hl-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--red);
+    color: #fff;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .device-card.hl-card {
+    border-left-color: var(--red);
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .analogy-list ul { margin: 4px 0; }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .loop-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .loop-diagram svg {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+  }
+  .loop-diagram .diagram-caption {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 18px 0;
+  }
+  @media (min-width: 720px) {
+    .two-col { grid-template-columns: 1fr 1fr; }
+  }
+  .mini-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .mini-card h4 {
+    margin: 0 0 6px;
+    color: var(--primary);
+    font-size: 1rem;
+  }
+  .mini-card p {
+    margin: 4px 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .term-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .term-list .term {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.92rem;
+  }
+  .term-list .term b {
+    color: var(--primary);
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A1.3 · Operating Systems &amp; Control Systems
+  </span>
+
+  <h1>Операционные и управляющие системы</h1>
+
+  <p class="lede">
+    Тема <b>A1.3</b> — про два типа «дирижёров» в мире вычислений. <b>Операционная система (OS)</b> управляет ресурсами компьютера: процессорным временем, памятью, дисками, сетью, безопасностью. <b>Управляющая система (control system)</b> регулирует поведение физического устройства — лифта, термостата, машины — через датчики, контроллер, актуаторы и обратную связь. Внутри одна и та же идея: <b>скрыть сложность</b> и <b>принять решение на основе данных</b>. Разделы <b>A1.3.5 – A1.3.7 — только для HL</b>.
+  </p>
+
+  <!-- ============ SECTION 0: SYLLABUS MAP ============ -->
+  <h2>0. Карта темы</h2>
+  <p>
+    В этой теме семь подпунктов. Первые четыре — для всех (SL и HL), последние три — только для HL.
+  </p>
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Подпункт</th>
+        <th>О чём</th>
+        <th>Уровень</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>A1.3.1</td><td>Роль операционной системы (абстракция железа)</td><td>SL+HL</td></tr>
+      <tr><td>A1.3.2</td><td>Функции ОС: память, файлы, устройства, планирование, безопасность, учёт, GUI, виртуализация, сеть</td><td>SL+HL</td></tr>
+      <tr><td>A1.3.3</td><td>Подходы к планированию: FCFS, round robin, multilevel queue, priority</td><td>SL+HL</td></tr>
+      <tr><td>A1.3.4</td><td>Polling vs interrupts — когда что использовать</td><td>SL+HL</td></tr>
+      <tr><td>A1.3.5</td><td>ОС управляет многозадачностью и ресурсами — deadlock, starvation</td><td><span class="hl-badge">HL</span></td></tr>
+      <tr><td>A1.3.6</td><td>Компоненты управляющей системы: контроллер, датчики, актуаторы, преобразователи</td><td><span class="hl-badge">HL</span></td></tr>
+      <tr><td>A1.3.7</td><td>Реальные применения: машины, термостаты, лифты, стиралки, светофоры, полив, охрана, двери</td><td><span class="hl-badge">HL</span></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ SECTION 1: A1.3.1 ============ -->
+  <h2>1. A1.3.1 Роль операционной системы</h2>
+
+  <p>
+    <b>Операционная система (OS)</b> — это <b>посредник (interface)</b> между пользователем, приложениями и аппаратным обеспечением (hardware). Её задача — <b>управлять системными ресурсами</b> (CPU, память, диск, сеть, периферия) и <b>предоставлять сервисы</b> приложениям и пользователю: файловую систему, управление процессами, безопасность, графический интерфейс.
+  </p>
+
+  <p>
+    Примеры ОС: <b>Linux, Windows, macOS, Android, iOS, BSD, Orbis</b> (для PlayStation). У каждой свои сильные стороны — нет «лучшей» ОС, есть только <b>наиболее подходящая</b> под конкретную задачу.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🎭</span> Абстракция железа (hardware abstraction)</h3>
+    <p>
+      <b>Абстракция (abstraction)</b> — это <b>сокрытие сложных деталей за простым интерфейсом</b>. Когда ты играешь в видеоигру, ты не думаешь о том, как распределяются потоки, как выделяется память, как драйверы общаются с GPU. Ты просто играешь. Это и есть работа ОС — спрятать всю сложность.
+    </p>
+    <p>
+      Аналогия из жизни: <b>руль и педали в машине</b>. Тебе не нужно понимать, как работает двигатель внутреннего сгорания, чтобы ехать. Руль, педали и коробка передач — это <b>интерфейс</b> к сложной механике.
+    </p>
+    <div class="ru-tip">
+      💡 Если бы каждое приложение само управляло памятью, диском и CPU, был бы <b>хаос (chaos)</b>: программы конфликтовали бы за ресурсы, ломали друг друга, нарушали безопасность. ОС играет роль <b>дирижёра оркестра</b> — каждый «инструмент» (приложение) играет свою партию в нужный момент.
+    </div>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 1.1. Опиши роль операционной системы. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>ОС — это <b>интерфейс между пользователем/приложениями и аппаратным обеспечением</b>.</li>
+        <li>Она <b>управляет системными ресурсами</b> (CPU, память, диск, сеть, периферия).</li>
+        <li>Предоставляет <b>сервисы</b>: файловую систему, управление процессами, безопасность, пользовательский интерфейс.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 1.2. Объясни, что такое абстракция железа и зачем она нужна. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Абстракция — <b>сокрытие сложных деталей за простым интерфейсом</b>.</li>
+        <li>Приложение не управляет напрямую RAM, CPU и драйверами — оно <b>обращается к ОС через системные вызовы (system calls)</b>.</li>
+        <li>Это <b>упрощает разработку</b>: один и тот же код работает на разном железе.</li>
+        <li>Это <b>повышает надёжность и безопасность</b>: программа не может случайно сломать систему или другие приложения.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 2: A1.3.2 ============ -->
+  <h2>2. A1.3.2 Функции операционной системы</h2>
+
+  <p>
+    ОС не делает «одну вещь» — она делает <b>десяток связанных вещей одновременно</b>. Вот основные функции, которые надо знать на экзамене.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Функция</th>
+        <th>Что делает</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>CPU</td><td>Планирует и распределяет время процессора между процессами и потоками; обрабатывает прерывания.</td></tr>
+      <tr><td>Память</td><td>Выделяет/освобождает физическую и виртуальную память; пейджинг (paging) между RAM и диском; защита памяти.</td></tr>
+      <tr><td>Хранилище</td><td>Файловая система: создание, удаление, чтение, запись файлов; права доступа; целостность диска.</td></tr>
+      <tr><td>I/O</td><td>Управление потоком данных от клавиатуры, мыши, сетевой карты; обработка прерываний от устройств.</td></tr>
+      <tr><td>Сеть</td><td>Сетевой стек (TCP/IP), сетевые соединения, распределение пропускной способности.</td></tr>
+      <tr><td>UI</td><td>Графический (GUI) и командный (CLI) интерфейс — перевод действий пользователя в системные вызовы.</td></tr>
+      <tr><td>Безопасность</td><td>Аутентификация, авторизация, шифрование, журналирование (logging).</td></tr>
+      <tr><td>Процессы</td><td>Создание, выполнение, приостановка, завершение; межпроцессное взаимодействие (IPC); синхронизация.</td></tr>
+      <tr><td>Питание</td><td>Управление энергопотреблением (особенно важно для ноутбуков/телефонов).</td></tr>
+      <tr><td>Периферия</td><td>Драйверы для USB, Bluetooth и т.д. — обеспечивают совместимость и работу через универсальный интерфейс.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.1 Что такое процесс (process)?</h3>
+  <div class="device-card">
+    <h3><span class="device-emoji">⚙️</span> Процесс — это выполняющаяся программа</h3>
+    <p>
+      <b>Программа (program)</b> — пассивный набор инструкций на диске. <b>Процесс (process)</b> — активное выполнение этих инструкций в памяти. Когда ты дважды кликаешь иконку, ОС <b>создаёт процесс</b> для управления выполнением программы. Из одной программы можно запустить несколько процессов.
+    </p>
+    <p><b>У каждого процесса есть:</b></p>
+    <ul>
+      <li><b>Память</b> — приватная область для кода, данных и стека (call stack).</li>
+      <li><b>CPU-время</b> — «слоты» процессорного времени, выделенные планировщиком.</li>
+      <li><b>Открытые файлы / сетевые соединения</b>.</li>
+      <li><b>PID</b> (Process ID) — уникальный идентификатор.</li>
+      <li><b>Приоритет</b> — влияет на решения планировщика.</li>
+      <li><b>Регистры</b> — текущие значения в CPU.</li>
+    </ul>
+    <p><b>Состояния процесса (process states):</b></p>
+    <ul>
+      <li><b>New</b> — создаётся и загружается в память.</li>
+      <li><b>Ready</b> — готов к выполнению, ждёт своей очереди на CPU.</li>
+      <li><b>Running</b> — выполняется на CPU прямо сейчас.</li>
+      <li><b>Blocked / Waiting</b> — ждёт внешнего события (например, данных с диска или ввода пользователя).</li>
+      <li><b>Terminated</b> — завершён, ОС освобождает его ресурсы.</li>
+    </ul>
+  </div>
+
+  <h3>2.2 Поток (thread)</h3>
+  <p>
+    <b>Поток (thread)</b> — это <b>самая маленькая единица выполнения</b>, которой управляет планировщик. Внутри одного процесса может быть много потоков, и они <b>делят память</b>. Пример: текстовый редактор может иметь поток для отрисовки документа, поток для проверки орфографии в фоне и поток для обработки ввода с клавиатуры — всё одновременно.
+  </p>
+
+  <h3>2.3 Целостность системы (system integrity)</h3>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>Изоляция процессов</h4>
+      <p>Каждый процесс работает в своей виртуальной памяти — не может случайно сломать другой процесс или саму ОС.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Защита памяти</h4>
+      <p>Memory protection — отдельные адресные пространства, которые ОС не даёт перезаписать чужим процессам.</p>
+    </div>
+    <div class="mini-card">
+      <h4>User mode vs kernel mode</h4>
+      <p>Прямой доступ к железу — только в режиме ядра (kernel mode). Приложения работают в режиме пользователя (user mode).</p>
+    </div>
+    <div class="mini-card">
+      <h4>Sandboxing</h4>
+      <p>Ограничение приложения только теми ресурсами, которые ему нужны (файлы, сеть, память) — снижает риск от уязвимостей.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Права доступа (ACL)</h4>
+      <p>Каждый файл/каталог имеет права read/write/execute для владельца, группы и других. Это контролирует, кто и что может делать.</p>
+    </div>
+    <div class="mini-card">
+      <h4>CIA-триада</h4>
+      <p>Конфиденциальность (Confidentiality), Целостность (Integrity), Доступность (Availability) — рамка для оценки безопасности.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Шифрование</h4>
+      <p>BitLocker (Windows), FileVault (macOS), dm-crypt/LUKS (Linux) — шифруют диск, защищая данные при краже.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Firewall + антивирус</h4>
+      <p>Firewall фильтрует пакеты на сетевом уровне; антивирус ищет вредоносное поведение и сигнатуры известных вирусов.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Patch management</h4>
+      <p>Обновления безопасности, исправления багов, новые функции. Часто проверяют целостность и подлинность обновления.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Rollback (откат)</h4>
+      <p>Возврат к последнему рабочему состоянию: Windows System Restore, macOS Time Machine.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Контрольные суммы / хеши</h4>
+      <p>Checksums и hashes проверяют целостность файлов — изменилось ли что-то по сравнению с эталоном.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Мониторинг и логирование</h4>
+      <p>Monitoring — текущее состояние. Logging — журнал событий (Event Viewer в Windows, Console в macOS, /var/log в Linux).</p>
+    </div>
+  </div>
+
+  <h3>2.4 Управление памятью (memory management)</h3>
+  <p>
+    ОС <b>выделяет и освобождает память</b> процессам, защищает адресные пространства друг от друга, и реализует <b>виртуальную память (virtual memory)</b>. Виртуальная память позволяет процессам «думать», что у них больше памяти, чем есть физически — за счёт <b>пейджинга (paging)</b>: лишние страницы памяти временно перекладываются на диск (swap space).
+  </p>
+  <p>
+    <b>Page (страница)</b> — это фиксированный непрерывный блок виртуальной памяти. Без виртуальной памяти такие блоки называются <b>page frames</b>. <b>MMU (Memory Management Unit)</b> в железе помогает ОС <b>динамически отображать виртуальные адреса на физические</b>.
+  </p>
+
+  <h3>2.5 Файловая система (file system)</h3>
+  <p>
+    Метод, которым ОС <b>хранит и читает данные</b>. Организует данные блоками на диске, определяет правила именования файлов, структуру каталогов, права доступа. Примеры: <b>NTFS</b> (Windows), <b>ext4</b> (Linux), <b>APFS</b> (macOS).
+  </p>
+
+  <h3>2.6 Управление устройствами (device management)</h3>
+  <p>
+    ОС общается с аппаратурой через <b>драйверы (drivers)</b>. Драйвер <b>переводит</b> команды ОС в специфические для устройства сигналы. Когда ты двигаешь мышь, она генерирует <b>прерывание</b> — драйвер передаёт его в ОС, та обновляет позицию курсора. Драйверы также дают единый интерфейс приложениям: они не должны знать, какая конкретно мышь подключена.
+  </p>
+
+  <h3>2.7 Планирование (scheduling)</h3>
+  <p>
+    Решение, <b>кто и когда</b> получает время CPU. Учитывает приоритет, справедливость, эффективность, нагрузку. Подробно — в разделе <a href="#scheduling">A1.3.3</a>.
+  </p>
+
+  <h3>2.8 Безопасность (security)</h3>
+  <p>
+    ОС предоставляет firewall, шифрование, контроль доступа, аутентификацию пользователя, патчи безопасности, sandboxing, логирование, проверки целостности данных.
+  </p>
+
+  <h3>2.9 Учёт ресурсов (accounting)</h3>
+  <p>
+    ОС <b>отслеживает использование ресурсов</b>: сколько CPU-времени, памяти, диска, сетевого трафика «съел» каждый процесс. Раньше это нужно было, чтобы выставлять счета пользователям мейнфреймов. Сегодня — снова актуально для <b>облачных вычислений (cloud computing)</b>, где платишь «за использование».
+  </p>
+
+  <h3>2.10 Графический интерфейс (GUI)</h3>
+  <p>
+    Windows, macOS и большинство Linux-сред имеют разные GUI, но их роль одна: <b>визуальный интерфейс</b> с иконками, окнами, меню, кнопками. Хороший GUI упрощает использование; плохой GUI мешает работе. Эта тема — часть <b>human–computer interaction (HCI)</b>.
+  </p>
+
+  <h3>2.11 Виртуализация (virtualization)</h3>
+  <div class="device-card">
+    <h3><span class="device-emoji">🏢</span> Один физический сервер, много виртуальных машин</h3>
+    <p>
+      <b>Виртуализация</b> — создание <b>виртуальных копий физического железа</b>. Один компьютер может «хостить» несколько <b>виртуальных машин (VM)</b>, и каждая работает так, будто у неё своё собственное железо. Аналогия: один большой дом разделили на отдельные квартиры — каждая со своими «комнатами» (ресурсами), но в одном здании.
+    </p>
+    <p>
+      Ключевая технология — <b>гипервизор (hypervisor)</b>: программный слой между виртуальными машинами и физическим железом. Гипервизор <b>распределяет</b> ресурсы между VM и <b>изолирует</b> их друг от друга.
+    </p>
+    <p><b>Два главных преимущества:</b></p>
+    <ul>
+      <li><b>Эффективное использование железа</b> — несколько VM делят один CPU/память/диск, повышая загрузку.</li>
+      <li><b>Изоляция</b> — сбой или взлом одной VM не влияет на другие.</li>
+    </ul>
+  </div>
+
+  <h3>2.12 Сетевые функции (networking)</h3>
+  <p>
+    ОС реализует <b>сетевой стек (network stack)</b> — слои TCP/IP. Управляет сетевыми картами через драйверы, настраивает IP-адреса (статически или через DHCP), применяет шифрование (SSL/TLS), фильтрует пакеты файрволом. В комплекте идут утилиты: <code>ping</code>, <code>ifconfig/ipconfig</code>, <code>netstat</code>, <code>traceroute/tracert</code>.
+  </p>
+
+  <details class="question-card">
+    <summary>Вопрос 2.1. Опиши, как операционные системы обрабатывают хранилище и файловые системы. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>ОС использует <b>файловую систему</b> как слой абстракции над физическим диском (HDD/SSD).</li>
+        <li>Файловая система определяет, как данные <b>именуются, организуются в каталоги, хранятся в блоках</b> на диске.</li>
+        <li>ОС управляет <b>правами доступа, целостностью файлов и выделением свободного места</b> (например, NTFS в Windows, ext4 в Linux, APFS в macOS).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.2. Опиши, как операционные системы обеспечивают целостность системы и управляют фоновыми процессами. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>ОС использует <b>изоляцию процессов</b> и <b>защиту памяти</b>, чтобы один процесс не мог сломать другой или саму ОС.</li>
+        <li><b>Фоновые процессы (background processes)</b> работают без видимого интерфейса; ОС управляет их приоритетами и доступом к ресурсам.</li>
+        <li><b>Логирование, контрольные суммы, патчи и rollback</b> поддерживают доверенное состояние системы.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2.3. Опиши важность сетевых возможностей в операционных системах, включая управление сетевым железом и протоколами. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>ОС реализует <b>сетевой стек</b> (TCP/IP) — собирает входящие пакеты обратно в данные для приложений.</li>
+        <li>Управляет <b>сетевыми картами (NIC) через драйверы</b>, абстрагируя различия между разным железом.</li>
+        <li>Назначает IP-адреса статически или через <b>DHCP</b>, что необходимо для идентификации устройства в сети.</li>
+        <li>Применяет <b>безопасность</b>: firewall, SSL/TLS-шифрование, аутентификацию; даёт диагностические утилиты <code>ping</code>, <code>traceroute</code>, <code>netstat</code>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 3: A1.3.3 SCHEDULING ============ -->
+  <h2 id="scheduling">3. A1.3.3 Подходы к планированию</h2>
+
+  <p>
+    <b>Планирование (scheduling)</b> — это <b>решение, в каком порядке и сколько времени</b> каждому процессу даётся на CPU. ОС оценивает эффективность планировщика через <b>throughput</b> (сколько процессов завершено за единицу времени), <b>turnaround time</b> (сколько прошло от поступления до завершения), <b>waiting time</b> и <b>CPU utilization</b>.
+  </p>
+
+  <h3>3.1 Ключевые термины</h3>
+  <div class="term-list">
+    <div class="term"><b>Slice (квант времени, срез)</b> — сколько CPU-времени даётся процессу, прежде чем его прервут или заменят.</div>
+    <div class="term"><b>Quantum</b> — фиксированный квант времени в pre-emptive системах (например, round robin).</div>
+    <div class="term"><b>Pre-emption (вытеснение)</b> — способность планировщика <b>прервать выполняющийся процесс</b> и отдать CPU более приоритетному.</div>
+    <div class="term"><b>Fairness (справедливость)</b> — равноправное распределение CPU между всеми процессами.</div>
+    <div class="term"><b>Starvation (голодание)</b> — процесс <b>никогда не получает CPU</b>, потому что другие постоянно мешают.</div>
+    <div class="term"><b>Efficiency (эффективность)</b> — максимум throughput, минимум waiting time.</div>
+    <div class="term"><b>Context switching (переключение контекста)</b> — сохранение состояния одного процесса и загрузка другого; занимает время и снижает производительность.</div>
+    <div class="term"><b>Convoy effect (эффект каравана)</b> — короткие процессы ждут одного длинного, всё замедляется.</div>
+    <div class="term"><b>Ageing (старение)</b> — приоритет ожидающего процесса <b>постепенно повышают</b>, чтобы избежать starvation.</div>
+  </div>
+
+  <h3>3.2 Четыре алгоритма планирования</h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🚶</span> FCFS — First-Come, First-Served</h3>
+    <p>
+      Процессы получают CPU <b>в том порядке, в котором пришли</b>. CPU обслуживает один процесс до конца, потом следующий. <b>Не вытесняющий (non-pre-emptive)</b>: начатый процесс работает до завершения.
+    </p>
+    <p><b>Аналогия:</b> очередь в кассе — кто раньше подошёл, тот раньше обслужен.</p>
+    <p><b>Где использовать:</b> простые среды с предсказуемой длиной задач, когда важна <b>простота и предсказуемость</b>, а не максимальная пропускная способность.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔁</span> Round Robin</h3>
+    <p>
+      <b>Вытесняющий (pre-emptive)</b> алгоритм. Каждому процессу даётся <b>фиксированный квант времени (time quantum)</b>. Если процесс не завершился — его <b>отправляют в конец очереди</b>, следующий получает CPU. Круг повторяется — отсюда «round robin».
+    </p>
+    <p><b>Аналогия:</b> учитель опрашивает учеников по очереди, каждому даёт 30 секунд.</p>
+    <p><b>Тонкость:</b> размер кванта критичен. Слишком короткий — много переключений контекста (большие накладные расходы). Слишком длинный — алгоритм вырождается в FCFS.</p>
+    <p><b>Где использовать:</b> системы с разделением времени (time-sharing), многозадачные системы, где важна <b>отзывчивость для всех пользователей</b>.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📚</span> Multilevel Queue Scheduling</h3>
+    <p>
+      Очередь готовых процессов <b>разделена на несколько очередей</b>, каждая со своим алгоритмом и приоритетом. Процессы <b>навсегда закрепляются</b> за одной очередью по своему типу (например, системные vs пользовательские, фоновые vs интерактивные).
+    </p>
+    <p>
+      Между очередями планирование может быть <b>фиксированно-приоритетным</b> (высокая очередь всегда первая) или по <b>round robin</b> между очередями.
+    </p>
+    <p><b>Аналогия:</b> в больнице — три очереди: критические пациенты, срочные, плановые. Критических обслуживают первыми, но плановые тоже не забывают.</p>
+    <p><b>Где использовать:</b> сложные системы со смешанными типами процессов — например, ОС, которая балансирует системные и пользовательские задачи.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⭐</span> Priority Scheduling</h3>
+    <p>
+      У каждого процесса есть <b>приоритет</b>, и CPU получает тот, у кого приоритет выше. Бывает <b>вытесняющим (pre-emptive)</b> — пришёл более важный, вытеснил текущий — и <b>невытесняющим (non-pre-emptive)</b> — текущий доработает, потом проверим очередь.
+    </p>
+    <p><b>Аналогия:</b> в аэропорту — пассажиров с золотой картой пускают вперёд, остальные ждут.</p>
+    <p><b>Минус:</b> риск <b>starvation</b> — низкоприоритетный процесс может «никогда» не получить CPU. Решение — <b>ageing</b> (постепенно повышать приоритет ожидающих).</p>
+    <p><b>Где использовать:</b> <b>системы реального времени (real-time)</b>, где критично выполнить высокоприоритетные задачи вовремя — медицинская техника, автоматика, авиатехника.</p>
+  </div>
+
+  <h3>3.3 Сравнительная таблица (Таблица 17 в учебнике)</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Критерий</th>
+        <th>FCFS</th>
+        <th>Round Robin</th>
+        <th>Multilevel</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Справедливость</td>
+        <td>Справедлив «по очереди прихода». Но <b>convoy effect</b> — короткие ждут долгих.</td>
+        <td>Спроектирован как справедливый: каждому равный квант.</td>
+        <td>По сути <b>несправедлив</b>: одни очереди важнее других.</td>
+        <td>Риск <b>starvation</b> для низкоприоритетных, если нет ageing.</td>
+      </tr>
+      <tr>
+        <td>Эффективность / переключения</td>
+        <td>Самый <b>неэффективный</b> по CPU и времени отклика при смеси задач.</td>
+        <td>Хорошее использование CPU, но overhead от частых переключений контекста.</td>
+        <td>Эффективен при правильной настройке очередей; добавляет сложность управления.</td>
+        <td>Очень эффективен, если приоритеты заданы верно; без pre-emption — высокий может ждать.</td>
+      </tr>
+      <tr>
+        <td>Pre-emption</td>
+        <td>Нет (non-pre-emptive).</td>
+        <td>Да (по таймеру).</td>
+        <td>Зависит от алгоритма в каждой очереди.</td>
+        <td>Бывает оба варианта.</td>
+      </tr>
+      <tr>
+        <td>Где используется</td>
+        <td>Простые системы с одинаковыми задачами.</td>
+        <td>Time-sharing, многопользовательские системы.</td>
+        <td>ОС с системными и пользовательскими процессами.</td>
+        <td>Real-time системы (медицина, авиация, промышленность).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Запомни:</b> FCFS = простота, Round Robin = справедливость, Multilevel = смешанная нагрузка, Priority = реальное время.
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 3.1. Опиши алгоритм round robin и обсуди его потенциальные недостатки. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Описание (3 балла):</b></p>
+      <ul>
+        <li>Round robin — <b>вытесняющий</b> алгоритм планирования.</li>
+        <li>Каждому процессу даётся фиксированный <b>квант времени (time quantum)</b>.</li>
+        <li>Если процесс не завершился — он <b>отправляется в конец очереди</b>, следующий получает CPU. Цикл продолжается.</li>
+      </ul>
+      <p><b>Недостатки (3 балла):</b></p>
+      <ul>
+        <li><b>Выбор кванта критичен:</b> слишком короткий → много переключений контекста, накладные расходы; слишком длинный → поведение как у FCFS.</li>
+        <li><b>Накладные расходы</b> на context switching снижают эффективность CPU.</li>
+        <li><b>Не учитывает приоритет:</b> срочные задачи получают столько же CPU, сколько и фоновые — плохо для real-time систем.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3.2. Сравни и противопоставь эффективность и справедливость round robin и priority scheduling. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Справедливость:</b> round robin <b>справедлив по построению</b> — каждый получает равный квант. Priority — <b>несправедлив</b>: высокоприоритетные подавляют низкоприоритетные, риск <b>starvation</b>.</li>
+        <li><b>Эффективность:</b> priority может быть <b>очень эффективен</b>, если приоритеты заданы правильно — критичные задачи выполняются вовремя. Round robin даёт <b>среднее время отклика</b>, но платит overhead за частые переключения.</li>
+        <li><b>Применение:</b> round robin лучше для time-sharing, многопользовательских систем; priority — для real-time, медицины, авиации.</li>
+        <li><b>Smягчение слабостей:</b> у priority — ageing (постепенно повышать приоритет ожидающих); у round robin — подбор оптимального кванта.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3.3. Объясни, как multilevel queue scheduling можно использовать для управления процессами разных типов и приоритетов. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Multilevel queue <b>делит готовые процессы на несколько очередей</b> по типу или приоритету (например, системные/пользовательские, foreground/background).</li>
+        <li>Каждая очередь имеет <b>свой алгоритм</b> внутри (одна — FCFS, другая — round robin).</li>
+        <li>Между очередями — фиксированный приоритет или round robin.</li>
+        <li><b>Преимущество:</b> можно эффективно обработать смешанную нагрузку — критичные системные задачи получают приоритет, но и пользовательские не голодают.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: A1.3.4 POLLING vs INTERRUPTS ============ -->
+  <h2>4. A1.3.4 Polling vs Interrupts</h2>
+
+  <p>
+    Два способа, которыми CPU узнаёт, что внешнее устройство или программа <b>требует внимания</b>.
+  </p>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔔</span> Interrupt (прерывание)</h3>
+    <p>
+      Устройство <b>само посылает сигнал</b> процессору: «эй, у меня данные, обработай!». CPU <b>прерывает</b> текущую работу, сохраняет контекст и запускает <b>Interrupt Service Routine (ISR)</b> — специальную процедуру для этого события. После ISR процессор возвращается к прерванному делу.
+    </p>
+    <p><b>Аналогия:</b> ты работаешь, и звонит дверной звонок. Ты прерываешься, идёшь открыть, потом возвращаешься к работе.</p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔄</span> Polling (опрос)</h3>
+    <p>
+      Процессор <b>сам периодически опрашивает</b> устройства: «есть ли что-то новое?». Если нет — возвращается к работе и через какое-то время опросит снова. Если да — обрабатывает.
+    </p>
+    <p><b>Аналогия:</b> ты ждёшь курьера, и каждые 5 минут идёшь к двери проверить, не пришёл ли он.</p>
+  </div>
+
+  <h3>4.1 Сравнительная таблица факторов (Таблица 19 в учебнике)</h3>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Фактор</th>
+        <th>Interrupt</th>
+        <th>Polling</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Частота событий</td>
+        <td><b>Лучше при частых событиях:</b> CPU реагирует сразу, минимизируя ожидание.</td>
+        <td>Подходит для <b>редких событий:</b> CPU может позволить себе периодически проверять.</td>
+      </tr>
+      <tr>
+        <td>Накладные расходы CPU</td>
+        <td>Overhead от сохранения/восстановления контекста и выполнения ISR.</td>
+        <td>Overhead от <b>пустых проверок</b> — CPU тратит циклы, даже если ничего не происходит.</td>
+      </tr>
+      <tr>
+        <td>Источник питания</td>
+        <td><b>Лучше для батарей:</b> CPU может уйти в <b>low-power sleep</b> между прерываниями.</td>
+        <td>Высасывает батарею — CPU всё время должен быть «бодрым» для опросов.</td>
+      </tr>
+      <tr>
+        <td>Предсказуемость событий</td>
+        <td>Лучше для <b>непредсказуемых</b> событий — реагирует когда угодно.</td>
+        <td>Эффективен при <b>регулярных, известных</b> интервалах.</td>
+      </tr>
+      <tr>
+        <td>Контролируемая задержка (latency)</td>
+        <td><b>Низкая и контролируемая</b> latency — реакция как только событие произошло.</td>
+        <td><b>Переменная latency</b> — зависит, когда событие произошло относительно цикла опроса.</td>
+      </tr>
+      <tr>
+        <td>Безопасность</td>
+        <td>Уязвимы для <b>DoS-атак:</b> поток прерываний может перегрузить CPU.</td>
+        <td>Меньше подвержен таким атакам, но <b>может пропустить аномалию</b>, если её не ожидает.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 Реальные сценарии</h3>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>Клавиатура и мышь</h4>
+      <p>Используют <b>прерывания</b> — для мгновенной реакции. Polling дал бы заметные задержки. Игровые мыши работают на 1000 Hz polling rate для минимальной задержки.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Сетевые коммуникации</h4>
+      <p>Пакеты приходят <b>непредсказуемо</b> — нужны прерывания. NIC «будит» CPU, как только пришёл пакет.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Дисковые I/O</h4>
+      <p>Диски медленные по сравнению с CPU — прерывания позволяют CPU делать другое, пока диск работает, и сообщают, когда чтение/запись готовы.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Встроенные системы (IoT)</h4>
+      <p>Прерывания критичны для <b>экономии батареи</b>: датчик «спит», просыпается только при событии.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Real-time системы</h4>
+      <p>Медицинская техника, автомобильные контроллеры — прерывания дают <b>гарантированную low latency</b>.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Когда подходит polling</h4>
+      <p>Если события <b>предсказуемы, редки</b>, а устройство работает от сети (mains) — polling проще в реализации.</p>
+    </div>
+  </div>
+
+  <h3>4.3 Пример: что происходит, когда ты двигаешь мышь</h3>
+  <ol style="line-height:1.7">
+    <li><b>Физическое движение:</b> ты двигаешь мышь, её датчики ловят движение.</li>
+    <li><b>Генерация сигнала:</b> сенсор превращает движение в электрические сигналы.</li>
+    <li><b>Формирование пакета данных:</b> внутренний процессор мыши собирает данные о направлении и кнопках.</li>
+    <li><b>Передача:</b> данные идут на компьютер по USB, PS/2 или беспроводно (Bluetooth, RF).</li>
+    <li><b>Сигнал прерывания:</b> USB- или Bluetooth-интерфейс посылает <b>interrupt</b> процессору.</li>
+    <li><b>Активация ISR:</b> CPU сохраняет состояние, запускает Interrupt Service Routine для мыши.</li>
+    <li><b>Расчёт позиции курсора:</b> ОС вычисляет новую позицию с учётом «скорости указателя».</li>
+    <li><b>Обновление экрана:</b> ОС шлёт GPU команду перерисовать курсор.</li>
+    <li><b>Возврат:</b> CPU восстанавливает состояние и возвращается к прерванной задаче.</li>
+  </ol>
+
+  <details class="question-card">
+    <summary>Вопрос 4.1. Объясни метод polling и обсуди его потенциальные недостатки по части эффективности CPU. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Описание (3 балла):</b></p>
+      <ul>
+        <li>Polling — процессор <b>периодически опрашивает устройства</b>, чтобы узнать, есть ли у них данные или нужно ли их обслуживать.</li>
+        <li>Это <b>цикл проверок</b> состояния всех устройств по очереди.</li>
+        <li>Polling прост в реализации.</li>
+      </ul>
+      <p><b>Недостатки (3 балла):</b></p>
+      <ul>
+        <li><b>Тратит CPU-циклы</b> на пустые проверки, когда событий нет → снижает эффективность.</li>
+        <li>Вводит <b>переменную задержку</b>: реакция зависит от момента опроса.</li>
+        <li>Высасывает <b>батарею</b> — CPU не может уйти в спящий режим.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.2. Сравни и противопоставь interrupts и polling по части энергопотребления и пригодности для устройств на батарее. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Interrupts</b> позволяют CPU уходить в <b>low-power sleep mode</b> и просыпаться только при событии — это сильно экономит батарею.</li>
+        <li><b>Polling</b> требует, чтобы CPU был активен и периодически опрашивал устройства, даже если ничего не происходит — батарея садится быстрее.</li>
+        <li>На устройствах с питанием от сети (mains) разница менее критична.</li>
+        <li><b>Вывод:</b> для мобильных устройств, носимой электроники, IoT и встроенных систем <b>interrupts предпочтительнее</b>; для стационарных систем выбор более свободный.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.3. Объясни роль controlled latency при выборе между interrupt handling и polling для real-time систем. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Controlled latency</b> — способность гарантировать <b>предсказуемую задержку</b> между событием и реакцией системы.</li>
+        <li>В real-time системах (медицина, автомобили, промышленность) реакция должна укладываться в <b>строгие временные рамки</b> — иначе риск аварии.</li>
+        <li><b>Interrupts</b> дают <b>низкую и контролируемую latency</b> — CPU реагирует, как только пришёл сигнал.</li>
+        <li><b>Polling</b> даёт <b>переменную latency</b> — реакция зависит от того, успел ли цикл опроса; в худшем случае задержка = период опроса.</li>
+        <li><b>Вывод:</b> в real-time системах <b>interrupts практически безальтернативны</b>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4.4. Оцени, чем отличаются проблемы безопасности при interrupt handling и polling. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Interrupts</b> могут быть использованы для <b>DoS-атаки</b>: вредоносное устройство или программа заваливает CPU прерываниями, и легитимные задачи перестают выполняться.</li>
+        <li><b>Polling</b> в этом смысле менее уязвим — CPU всё равно опрашивает в своём ритме.</li>
+        <li>Но polling может <b>пропустить аномалию</b>, если она происходит между опросами или не соответствует тому, что система ожидает.</li>
+        <li>Защита от DoS на прерываниях — <b>ограничение частоты прерываний</b>, проверка источника, использование прерываний с приоритетом.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 5: A1.3.5 MULTITASKING HL ============ -->
+  <h2 id="multitasking">5. A1.3.5 Многозадачность и распределение ресурсов <span class="hl-badge">HL</span></h2>
+
+  <p>
+    <b>Многозадачность (multitasking)</b> — способность ОС <b>управлять и выполнять несколько процессов</b> «одновременно». На самом деле в одно мгновение CPU выполняет один процесс, но переключается так быстро, что создаётся <b>иллюзия параллельности</b>. Этот механизм называется <b>context switching (переключение контекста)</b> — ОС сохраняет состояние текущего процесса (регистры, указатели памяти) и загружает состояние следующего.
+  </p>
+
+  <p>
+    <b>Распределение ресурсов (resource allocation)</b> — эффективное раздавание CPU, памяти, диска, сети между процессами. Это сложная динамичная задача — миллионы решений в секунду.
+  </p>
+
+  <h3>5.1 Механизмы многозадачности</h3>
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🎛️</span> Как ОС жонглирует сотнями процессов</h3>
+    <ul>
+      <li><b>Process management:</b> ОС ведёт <b>таблицу процессов (process table)</b> с состоянием (running/waiting/blocked), приоритетом, использованием ресурсов.</li>
+      <li><b>Context switching:</b> при переключении ОС <b>сохраняет состояние</b> в таблице и <b>загружает</b> следующий — обычно за микросекунды.</li>
+      <li><b>Многопоточность (multithreading):</b> внутри процесса несколько потоков разделяют память и могут выполняться параллельно на <b>multi-core</b> CPU.</li>
+    </ul>
+  </div>
+
+  <h3>5.2 Механизмы распределения ресурсов</h3>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>Управление памятью</h4>
+      <p><b>Paging</b> — разделение физической памяти на фиксированные блоки (страницы). <b>Segmentation</b> — деление памяти на сегменты разного размера (код, данные). <b>Virtual memory</b> = paging + segmentation: процессам кажется, что памяти больше, чем физически есть, за счёт swap-файла на диске.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Управление устройствами</h4>
+      <p>ОС через <b>драйверы</b> общается с устройствами, предотвращает конфликты, организует доступ к периферии (принтеры, сетевые карты).</p>
+    </div>
+    <div class="mini-card">
+      <h4>Файловые системы</h4>
+      <p>Абстракция над диском: NTFS, ext4, APFS. Файлы и каталоги — поверх блоков на физическом носителе.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Мониторинг и лимиты</h4>
+      <p>ОС следит за тем, сколько каждый процесс ест CPU, памяти, I/O. Может выставить <b>квоты (quotas)</b>, чтобы один процесс не съел всё.</p>
+    </div>
+  </div>
+
+  <h3>5.3 Вызовы планирования задач (task scheduling)</h3>
+  <ul style="line-height:1.7">
+    <li><b>Fairness vs efficiency:</b> справедливо раздать CPU всем — но высокоприоритетные не должны страдать, а низкоприоритетные не должны умирать.</li>
+    <li><b>Pre-emption:</b> приостановка процесса в пользу более важного — даёт отзывчивость, но добавляет накладные расходы.</li>
+    <li><b>Starvation:</b> в крайних случаях низкоприоритетные задачи <b>никогда</b> не получают CPU — нужны стратегии вроде ageing.</li>
+  </ul>
+
+  <h3>5.4 Resource contention (борьба за ресурсы)</h3>
+  <p>
+    Происходит, когда <b>несколько процессов хотят один и тот же ресурс</b>, который не делится на всех. Это может привести к нескольким плохим состояниям:
+  </p>
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🔒</span> Deadlock (взаимная блокировка)</h3>
+    <p>
+      Два или больше процессов <b>ждут друг друга</b> по кругу — никто не может продолжить. Классический пример: процесс A держит ресурс 1 и хочет ресурс 2; процесс B держит ресурс 2 и хочет ресурс 1. Оба зависнут навсегда.
+    </p>
+    <p><b>Что делает ОС:</b></p>
+    <ul>
+      <li><b>Detection (обнаружение):</b> алгоритмы мониторят зависимости ресурсов и ловят циклы ожидания.</li>
+      <li><b>Release the deadlock:</b> ОС может <b>завершить один из процессов</b>, <b>вытеснить его задачи</b>, или <b>перераспределить ресурсы</b>.</li>
+      <li><b>Prevention (предотвращение):</b> deadlock avoidance algorithms (например, <b>Banker's algorithm</b>) проверяют, не создаст ли запрос на ресурс цикл — и отказывают, если да.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🔁</span> Livelock</h3>
+    <p>
+      Процессы постоянно <b>запрашивают и отпускают ресурсы</b>, но не продвигаются вперёд. В отличие от deadlock, они <b>активны</b>, но прогресса нет. Аналогия: два человека столкнулись в коридоре, оба отходят в одну сторону, опять блокируют друг друга, и так бесконечно.
+    </p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">💥</span> Thrashing</h3>
+    <p>
+      Возникает, когда страниц памяти не хватает, и ОС <b>постоянно подкачивает (swap)</b> страницы между RAM и диском. CPU тратит больше времени на пейджинг, чем на полезную работу. Решение — оптимизация <b>demand paging</b> и виртуальной памяти, добавление RAM.
+    </p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 5.1. Объясни механизмы, которые ОС использует для распределения ресурсов, включая управление памятью и устройствами. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Память:</b> paging (фиксированные страницы), segmentation (логические сегменты), virtual memory (расширение RAM за счёт диска).</li>
+        <li><b>Устройства:</b> ОС использует <b>драйверы</b> как абстракцию, предотвращает конфликты, организует доступ.</li>
+        <li><b>Мониторинг:</b> ОС следит за использованием CPU, памяти, I/O и применяет лимиты.</li>
+        <li><b>Файловая система:</b> блочный уровень хранения, организация в каталоги и файлы.</li>
+        <li><b>Network stack:</b> распределение пропускной способности между процессами.</li>
+        <li><b>Цель:</b> справедливость, эффективность, стабильность.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.2. Обсуди вызовы, связанные с task scheduling, включая fairness, pre-emption и starvation. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Fairness:</b> ОС должна давать CPU всем процессам, но высокоприоритетные нуждаются в большем времени — компромисс.</li>
+        <li><b>Pre-emption:</b> возможность прервать процесс ради более срочного — улучшает отзывчивость, но <b>context switching стоит времени</b>.</li>
+        <li><b>Starvation:</b> низкоприоритетный процесс может <b>никогда</b> не получить CPU; нужны стратегии вроде <b>ageing</b> (постепенное повышение приоритета ожидающих).</li>
+        <li><b>Выбор алгоритма:</b> ни один не идеален — выбор зависит от нагрузки.</li>
+        <li><b>Динамика:</b> в реальной системе нагрузка меняется ежесекундно, ОС адаптирует решения.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.3. Обсуди проблему resource contention в многозадачных средах и стратегии её смягчения. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Resource contention</b> — несколько процессов хотят один ресурс одновременно (CPU, память, файл, периферия), а он не делится.</li>
+        <li>Последствия: <b>deadlock</b> (взаимная блокировка), <b>livelock</b> (активное ожидание без прогресса), <b>thrashing</b> (избыточный пейджинг).</li>
+        <li><b>Стратегии:</b> алгоритмы <b>обнаружения deadlock</b>, <b>избегания (Banker's algorithm)</b>, корректное использование <b>блокировок (locks) и семафоров</b>.</li>
+        <li><b>Восстановление:</b> завершение одного из процессов, освобождение ресурсов, откат.</li>
+        <li><b>Профилактика:</b> заказывать ресурсы в одном и том же порядке, использовать timeouts на ожидание.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5.4. (a) Очерти важность управления deadlock в операционных системах. <span class="marks-tag">2 балла</span> (b) Опиши, как ОС предотвращает и разрешает deadlock. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>(a) Важность (2 балла):</b></p>
+      <ul>
+        <li>Без управления deadlock система может <b>зависнуть полностью</b>, потому что процессы вечно ждут друг друга.</li>
+        <li>Это <b>критично для надёжности</b>, особенно в серверах, базах данных, real-time системах.</li>
+      </ul>
+      <p><b>(b) Предотвращение и разрешение (4 балла):</b></p>
+      <ul>
+        <li><b>Detection:</b> ОС анализирует граф зависимостей ресурсов и ищет циклы.</li>
+        <li><b>Release:</b> при обнаружении — <b>завершить один из процессов</b>, вытеснить задачи, перераспределить ресурсы.</li>
+        <li><b>Prevention:</b> deadlock avoidance algorithms (например, Banker's algorithm) <b>отказывают</b> в запросе ресурса, если это создаст цикл.</li>
+        <li><b>Дизайн:</b> требовать процессы заказывать ресурсы в едином порядке — исключает один из условий deadlock.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 6: A1.3.6 CONTROL SYSTEM COMPONENTS HL ============ -->
+  <h2>6. A1.3.6 Компоненты управляющей системы <span class="hl-badge">HL</span></h2>
+
+  <p>
+    <b>Управляющая система (control system)</b> — это устройство или набор устройств, который <b>управляет, направляет или регулирует поведение</b> других устройств через <b>петли управления (control loops)</b>. Примеры: лифт, стиральная машина, светофор, термостат, круиз-контроль.
+  </p>
+
+  <h3>6.1 Модель IPO + обратная связь</h3>
+  <p>
+    <b>IPO (Input – Process – Output)</b> — базовая модель: данные поступают на вход → обрабатываются → дают выход. <b>Feedback (обратная связь)</b> — выход <b>возвращается обратно в систему</b>, чтобы скорректировать дальнейшую работу.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr><th>Элемент</th><th>Определение</th><th>Пример (круиз-контроль)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Input</td>
+        <td>Данные / сигналы, поступающие в систему: команды пользователя, данные с датчиков.</td>
+        <td>Водитель ставит желаемую скорость 100 км/ч; датчик измеряет текущую скорость.</td>
+      </tr>
+      <tr>
+        <td>Process</td>
+        <td>Обработка входных данных в контроллере или микроконтроллере по предзаданным правилам или алгоритму.</td>
+        <td>Контроллер сравнивает желаемую и текущую скорость, считает разницу (error), решает, насколько прибавить газу.</td>
+      </tr>
+      <tr>
+        <td>Output</td>
+        <td>Реальное действие / поведение системы: движение, нагрев, открытие клапана.</td>
+        <td>Актуатор дроссельной заслонки увеличивает подачу топлива — машина разгоняется.</td>
+      </tr>
+      <tr>
+        <td>Feedback</td>
+        <td>Выход замеряется датчиком и возвращается в систему — для корректировки в реальном времени.</td>
+        <td>Датчик скорости постоянно мерит реальную скорость — это <b>closed-loop</b> система.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 Open-loop vs Closed-loop</h3>
+
+  <div class="loop-diagram">
+    <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Открытая и закрытая петли управления">
+      <defs>
+        <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#1a3a5e"/>
+        </marker>
+        <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#10b981"/>
+        </marker>
+      </defs>
+      <!-- OPEN LOOP -->
+      <text x="20" y="20" font-family="Helvetica" font-size="13" font-weight="700" fill="#1a3a5e">Open-loop (без обратной связи)</text>
+      <rect x="20" y="35" width="90" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="65" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Input</text>
+      <line x1="110" y1="55" x2="160" y2="55" stroke="#1a3a5e" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="160" y="35" width="100" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="210" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Controller</text>
+      <line x1="260" y1="55" x2="310" y2="55" stroke="#1a3a5e" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="310" y="35" width="100" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="360" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Actuator</text>
+      <line x1="410" y1="55" x2="460" y2="55" stroke="#1a3a5e" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="460" y="35" width="100" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="510" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Output</text>
+
+      <!-- CLOSED LOOP -->
+      <text x="20" y="115" font-family="Helvetica" font-size="13" font-weight="700" fill="#10b981">Closed-loop (с обратной связью)</text>
+      <rect x="20" y="130" width="90" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="65" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Input</text>
+      <line x1="110" y1="150" x2="160" y2="150" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <rect x="160" y="130" width="100" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="210" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Controller</text>
+      <line x1="260" y1="150" x2="310" y2="150" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <rect x="310" y="130" width="100" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="360" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Actuator</text>
+      <line x1="410" y1="150" x2="460" y2="150" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <rect x="460" y="130" width="100" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="510" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Output</text>
+      <!-- Feedback arrow -->
+      <path d="M510 170 L510 200 L210 200 L210 170" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow2)"/>
+      <text x="360" y="216" text-anchor="middle" font-family="Helvetica" font-size="11" font-style="italic" fill="#10b981">Feedback (датчик мерит выход)</text>
+    </svg>
+    <div class="diagram-caption">Сверху: open-loop. Снизу: closed-loop с обратной связью от датчика к контроллеру.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>Open-loop (без обратной связи)</h4>
+      <p>Выполняет <b>предзаданный набор операций</b> и не корректируется по результату. Пример: <b>обычный тостер</b> — таймер на 2 минуты, неважно, поджарился хлеб или сгорел. Или <b>сушилка для одежды на таймере</b>.</p>
+    </div>
+    <div class="mini-card">
+      <h4>Closed-loop (с обратной связью)</h4>
+      <p>Непрерывно мониторит выход, сравнивает с целью и корректирует входы. Пример: <b>холодильник Samsung работает по closed-loop:</b> датчик температуры → контроллер → компрессор включается/выключается. Также: круиз-контроль, термостат, автопилот.</p>
+    </div>
+  </div>
+
+  <h3>6.3 Пять ключевых компонентов (Таблица 21 в учебнике)</h3>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🧠</span> Controller (контроллер)</h3>
+    <p>
+      Устройство или ПО, которое <b>обрабатывает входы</b> от датчиков и <b>посылает сигналы</b> актуаторам. Может быть встроенным микроконтроллером или промышленным <b>PLC (Programmable Logic Controller)</b>.
+    </p>
+    <p><b>Пример:</b> На сборочной линии PLC координирует последовательность машин — мотор крутит конвейер, пневматическая рука переставляет деталь, датчик проверяет результат.</p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🌡️</span> Sensors (датчики)</h3>
+    <p>
+      Устройства, которые <b>обнаруживают и измеряют физические величины</b> (температура, свет, давление, движение, влажность) и превращают их в сигналы, понятные контроллеру.
+    </p>
+    <p><b>Пример:</b> <b>Thermocouple (термопара)</b> в промышленной печи — мерит температуру и шлёт контроллеру, который регулирует подачу топлива.</p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">⚙️</span> Actuators (актуаторы / исполнительные устройства)</h3>
+    <p>
+      Механические или электронные устройства, которые <b>совершают физическое действие</b> в ответ на сигналы контроллера: моторы, клапаны, нагреватели, сирены.
+    </p>
+    <p><b>Пример:</b> <b>Solenoid valve (соленоидный клапан)</b> в автоматической поливе — открывает/закрывает воду по команде контроллера, который читал данные с датчика влажности почвы.</p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🔄</span> Transducer (преобразователь)</h3>
+    <p>
+      Превращает <b>одну форму энергии или сигнала в другую</b>. Часто стоит между физическим миром и электроникой. Технически датчики и актуаторы — частный случай преобразователей.
+    </p>
+    <p><b>Пример:</b> <b>Piezoelectric pressure sensor</b> в системе мониторинга давления шин — преобразует давление в электрический сигнал, который читает бортовой компьютер; если давление вне нормы, водителю показывают предупреждение.</p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">📐</span> Control algorithm (алгоритм управления)</h3>
+    <p>
+      Математическая формула или логика, которой <b>контроллер пользуется</b>, чтобы решить, какой выход дать на основе входа, цели и текущего состояния.
+    </p>
+    <p><b>Пример:</b> <b>PID-контроль (proportional–integral–derivative)</b> в домашнем отоплении — мерит ошибку (разницу между целевой и фактической температурой), её интеграл (накопленную ошибку) и производную (скорость изменения), сглаживает регулирование. Меньше скачков, точнее температура, меньше расход энергии.</p>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 6.1. Назови четыре главных компонента в управляющих системах. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 1 баллу за каждый):</b></p>
+      <ul>
+        <li><b>Input</b> — данные от пользователя или датчиков.</li>
+        <li><b>Process</b> — обработка данных контроллером.</li>
+        <li><b>Output</b> — действие, выполняемое системой (через актуатор).</li>
+        <li><b>Feedback</b> — обратная связь от выхода обратно в систему для коррекции.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem">Альтернативный набор «компонентов» — controller, sensors, actuators, control algorithm.</p>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 6.2. Очерти роль feedback в управляющей системе. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Feedback <b>возвращает информацию о выходе</b> обратно в систему.</li>
+        <li>Это позволяет системе <b>корректировать поведение в реальном времени</b>, чтобы удерживать желаемое состояние (closed-loop control).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 6.3. Объясни функции датчиков и актуаторов в управляющей системе, включая как они взаимодействуют с другими компонентами. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Датчики (sensors)</b> измеряют физические величины (температура, давление, движение) и <b>превращают их в электрические сигналы</b> для контроллера.</li>
+        <li>Контроллер <b>обрабатывает</b> эти сигналы через control algorithm.</li>
+        <li><b>Актуаторы (actuators)</b> получают сигналы от контроллера и <b>выполняют физическое действие</b> (открыть клапан, запустить мотор).</li>
+        <li>В <b>closed-loop системе</b> датчики затем мерят результат и шлют его обратно — петля замыкается.</li>
+        <li><b>Преобразователи (transducers)</b> часто стоят в роли датчика или актуатора, переводя сигнал из одной формы в другую.</li>
+        <li><b>Пример:</b> в холодильнике термопара (датчик) мерит температуру, контроллер сравнивает с целью, реле (актуатор) запускает компрессор.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 7: A1.3.7 REAL-WORLD HL ============ -->
+  <h2>7. A1.3.7 Реальные применения управляющих систем <span class="hl-badge">HL</span></h2>
+
+  <p>
+    Управляющие системы повсюду. Все они строятся на одной модели: <b>датчики собирают данные → контроллер с алгоритмом принимает решение → актуаторы выполняют действие → датчики снова мерят результат</b>. Меняется только сложность алгоритма и набор сенсоров.
+  </p>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🚗</span> Автономные транспортные средства (autonomous vehicles)</h3>
+    <p>Сложнейшие управляющие системы.</p>
+    <ul>
+      <li><b>Датчики:</b> <b>LIDAR</b> (3D-картирование, обнаружение объектов), <b>radar</b> (плохая погода), <b>камеры</b> (визуальное распознавание), <b>ultrasonic</b> (ближняя проксимити), <b>IMU</b> (отслеживание движения самой машины).</li>
+      <li><b>Алгоритмы:</b> path planning (планирование маршрута), localization (где я нахожусь), obstacle avoidance (избегание препятствий), AI для интерпретации трафика.</li>
+      <li><b>Актуаторы:</b> электромеханический руль, electronic throttle, ABS (anti-lock braking).</li>
+      <li><b>Реальное:</b> Tesla Autopilot, Waymo. Мониторинг 360° на скорости 100+ км/ч в реальном времени.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🌡️</span> Домашние термостаты и BMS (building management systems)</h3>
+    <ul>
+      <li><b>Датчики:</b> биметаллические полоски или цифровые термисторы.</li>
+      <li><b>Контроллер:</b> простое on/off или сложный PID-алгоритм.</li>
+      <li><b>Актуаторы:</b> реле или переключатели для печки/кондиционера.</li>
+      <li><b>BMS (масштаб здания):</b> сеть температурных датчиков, центральный контроллер учитывает занятость, погоду, цену энергии; продвинутые BMS используют ML для оптимизации.</li>
+      <li><b>Реальное:</b> Nest Thermostat — учится привычкам и экономит до 15% энергии.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🛗</span> Автоматическое управление лифтами</h3>
+    <ul>
+      <li><b>Цель:</b> минимизировать время ожидания и поездки пассажиров.</li>
+      <li><b>Датчики:</b> датчики положения каждой кабины, кнопки вызова на этажах и внутри.</li>
+      <li><b>Контроллер:</b> алгоритм назначает кабину на вызов — учитывает направление движения, нагрузку, расстояние.</li>
+      <li><b>Актуаторы:</b> моторы перемещают кабину, двери.</li>
+      <li><b>Реальное:</b> небоскрёб с 10 лифтами использует <b>destination dispatch</b> — пассажир заранее указывает этаж, система группирует попутных.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🧺</span> Автоматические стиральные машины</h3>
+    <ul>
+      <li><b>Датчики:</b> датчики веса белья, уровня воды, <b>turbidity sensor</b> (мутность воды — определяет грязь).</li>
+      <li><b>Контроллер:</b> fuzzy logic или классические алгоритмы — выбирает длительность цикла, температуру, скорость вращения.</li>
+      <li><b>Актуаторы:</b> входной клапан воды, слив, мотор барабана, нагреватель.</li>
+      <li><b>Реальное:</b> современные машины подстраивают цикл — мало белья → меньше воды и времени; очень грязное → дольше стирка.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🚦</span> Управление светофорами</h3>
+    <ul>
+      <li><b>Датчики:</b> <b>inductive loop detectors</b> в дорожном полотне (магнитное поле меняется от металла машины), камеры с computer vision, кнопки для пешеходов.</li>
+      <li><b>Контроллер:</b> старые — pre-timed schedule (фиксированный цикл); современные — <b>actuated controllers</b> с динамическим таймингом; продвинутые <b>ATCS</b> используют ИИ по всему городу.</li>
+      <li><b>Актуаторы:</b> сами лампы светофора (красный, жёлтый, зелёный) и пешеходные сигналы.</li>
+      <li><b>Реальное:</b> Москва, Сингапур, многие крупные города используют AI-управляемые светофоры — снижают пробки на 20–30%.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">💧</span> Управление поливом (irrigation control systems)</h3>
+    <ul>
+      <li><b>Датчики:</b> <b>tensiometers</b> (натяжение воды в почве), capacitance-based sensors (прямое измерение влажности).</li>
+      <li><b>Контроллер:</b> программы под конкретную культуру, иногда интегрируются с прогнозом погоды.</li>
+      <li><b>Актуаторы:</b> соленоидные клапаны на линиях полива.</li>
+      <li><b>Реальное:</b> <b>variable-rate irrigation</b> — разные зоны поля получают разную воду по локальным датчикам. Экономия до 30% воды.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🚨</span> Домашние охранные системы (home security)</h3>
+    <ul>
+      <li><b>Датчики:</b> датчики движения (passive infrared, PIR), контакты на дверях и окнах, <b>glass break detectors</b> (акустика + датчик вибрации), датчики дыма и угарного газа.</li>
+      <li><b>Контроллер:</b> центральная панель с логикой — отличает реальную угрозу от ложной тревоги.</li>
+      <li><b>Актуаторы:</b> сирены, smart locks, отправка уведомлений на телефон или в охранную фирму.</li>
+      <li><b>Реальное:</b> Ring, Arlo — сеть камер и сенсоров с уведомлениями в мобильное приложение.</li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🚪</span> Автоматические двери</h3>
+    <ul>
+      <li><b>Датчики:</b> microwave (импульсы и анализ отражения) или infrared (тепло), optical sensors (сетка инфракрасных лучей).</li>
+      <li><b>Контроллер:</b> логика против ложных открытий — открывать только когда подходят с определённой стороны.</li>
+      <li><b>Актуаторы:</b> электромоторы с шестернями или гидравлика.</li>
+      <li><b>Доп. защита:</b> <b>light curtains</b> — не дают двери закрыться, если кто-то в проёме.</li>
+      <li><b>Реальное:</b> двери в супермаркетах, аэропортах, метро.</li>
+    </ul>
+  </div>
+
+  <details class="question-card">
+    <summary>Вопрос 7.1. Назови два реальных применения управляющих систем. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Любые два из (по 1 баллу):</b></p>
+      <ul>
+        <li>Автономные транспортные средства.</li>
+        <li>Домашние термостаты / системы управления зданием (BMS).</li>
+        <li>Автоматические лифты.</li>
+        <li>Стиральные машины.</li>
+        <li>Светофоры.</li>
+        <li>Системы автоматического полива.</li>
+        <li>Домашние охранные системы.</li>
+        <li>Автоматические двери.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7.2. Очерти, как управляющие системы используются в автоматических стиральных машинах. <span class="marks-tag">2 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li>Датчики веса белья, уровня воды и иногда мутности воды передают данные контроллеру.</li>
+        <li>Контроллер (часто fuzzy logic) выбирает <b>оптимальную программу</b>: длительность, температуру, скорость отжима, количество воды.</li>
+        <li>Актуаторы — клапаны воды, мотор барабана, нагреватель — выполняют программу.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7.3. Объясни роль датчиков, контроллеров и актуаторов в работе автономных транспортных средств. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Датчики:</b> LIDAR (3D-картирование), радар (плохая погода), камеры (распознавание), ультразвук (ближняя проксимити), IMU (движение машины) — собирают полную картину окружения.</li>
+        <li><b>Контроллер:</b> запускает алгоритмы path planning, localization, obstacle avoidance, иногда ИИ для интерпретации трафика и принятия решений.</li>
+        <li><b>Актуаторы:</b> электромеханический руль, электронный газ, ABS — физически реализуют решения системы.</li>
+        <li><b>Closed-loop:</b> датчики постоянно мерят результат, машина корректирует курс в реальном времени.</li>
+        <li><b>Безопасность:</b> избыточность сенсоров (если один откажет — другие подстрахуют).</li>
+        <li><b>Сложность:</b> миллионы решений в секунду на скоростях, опасных для человека.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7.4. Объясни, как системы управления светофорами используют датчики и контроллеры для регулирования трафика на перекрёстках. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Датчики:</b> inductive loop detectors в полотне дороги ловят машины через изменение магнитного поля; камеры с computer vision считают и классифицируют машины; pressure-sensitive pads для пешеходов.</li>
+        <li><b>Контроллер:</b> обрабатывает данные сенсоров. <b>Старые</b> работают по фиксированному расписанию; <b>actuated controllers</b> подстраивают тайминги под реальный поток; <b>ATCS (adaptive traffic control systems)</b> используют ИИ по сети перекрёстков.</li>
+        <li><b>Актуаторы:</b> сами огни светофора (красный, жёлтый, зелёный) и пешеходные сигналы.</li>
+        <li><b>Closed-loop:</b> датчики мерят результат (поток уменьшился? пробка ушла?) — контроллер подстраивается.</li>
+        <li><b>Польза:</b> меньше пробок, меньше выбросов, безопаснее для пешеходов.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 7.5. Оцени использование управляющих систем в домашней охране, акцент на типах датчиков и их функциях. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что писать:</b></p>
+      <ul>
+        <li><b>Датчики движения PIR</b> — ловят инфракрасное излучение тела; экономичны, но возможны ложные срабатывания.</li>
+        <li><b>Магнитные контакты</b> на дверях и окнах — сработают на размыкание; просты и надёжны.</li>
+        <li><b>Glass break detectors</b> — акустика плюс датчик вибрации; ловят именно звук бьющегося стекла.</li>
+        <li><b>Датчики дыма / угарного газа</b> — защита от пожаров и отравления, не только от взлома.</li>
+        <li><b>Контроллер</b> сравнивает сигналы с логикой угрозы — снижает ложные тревоги.</li>
+        <li><b>Актуаторы:</b> сирены, smart locks, push-уведомления — реакция должна быть быстрой и заметной.</li>
+        <li><b>Оценка:</b> комбинация датчиков даёт redundancy — лучшая защита, но дороже; ложные срабатывания — главная проблема, и хороший контроллер их фильтрует.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 8: PRACTICAL TASKS ============ -->
+  <h2>8. Практические задания</h2>
+
+  <div class="task-card">
+    <h3>🔍 Индивидуальное задание: Декомпозируй ОС, которой ты пользуешься</h3>
+    <p><b>Цель:</b> Связать абстрактные функции ОС с конкретным опытом.</p>
+    <ol>
+      <li>Открой <b>Task Manager</b> (Windows), <b>Activity Monitor</b> (macOS) или <code>top</code> / <code>htop</code> (Linux).</li>
+      <li>Найди <b>5 процессов</b> с наибольшим использованием CPU. Запиши их PID, имя, состояние, приоритет.</li>
+      <li>Открой <b>Event Viewer</b> (Windows), <b>Console</b> (macOS) или <code>/var/log/system.log</code> (Linux). Найди записи о входе пользователя за сегодня.</li>
+      <li>Открой <b>диспетчер дисков</b> — какая файловая система используется? NTFS, APFS, ext4?</li>
+      <li>Сделай таблицу: для каждого процесса укажи, какая <b>функция ОС</b> (память, CPU, I/O, сеть) преобладает в его работе.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>👥 Групповое задание: Спроектируй планировщик для умного дома</h3>
+    <p><b>Цель:</b> Сравнить алгоритмы планирования на реальном сценарии.</p>
+    <div class="scenario">
+      <b>Сценарий:</b> Умный дом с 30 задачами: 5 критических (датчики дыма, охрана), 10 интерактивных (голосовые команды, климат), 15 фоновых (логи, обновления, бэкап).
+    </div>
+    <ol>
+      <li><b>Выбери</b> подходящий алгоритм для каждой группы — обоснуй (FCFS, round robin, multilevel queue, priority).</li>
+      <li><b>Поясни:</b> что если использовать <b>один</b> алгоритм для всех? Какие проблемы возникнут?</li>
+      <li>Объясни, как <b>multilevel queue</b> решает эти проблемы — какие очереди создашь, какой приоритет дашь?</li>
+      <li>Подготовь схему «процессы → очереди → CPU» с описанием правил.</li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3>🏠 Домашнее задание: Разбери одну управляющую систему дома</h3>
+    <p><b>Цель:</b> Перевести модель IPO в реальное устройство.</p>
+    <ol>
+      <li>Выбери одно устройство дома: микроволновка, посудомойка, кондиционер, духовка, робот-пылесос, увлажнитель.</li>
+      <li>Опиши <b>каждый компонент</b>: input, process, output, feedback. Это open-loop или closed-loop? Обоснуй.</li>
+      <li>Назови <b>конкретные</b> датчики, контроллер, актуаторы, control algorithm (если знаешь — какой алгоритм).</li>
+      <li>Что произойдёт, если <b>отключить feedback</b>? Опиши на примере.</li>
+      <li>Подумай о <b>безопасности:</b> что если контроллер сломается, а актуатор продолжит работать?</li>
+    </ol>
+  </div>
+
+  <!-- ============ Closing ============ -->
+  <h2>Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><b>ОС</b> — посредник между пользователем/приложениями и железом; её главная сила — <b>абстракция (abstraction)</b>.</li>
+    <li><b>Десять функций ОС:</b> память, файлы, устройства, сеть, UI, безопасность, процессы, питание, периферия, планирование. Можешь назвать любые 4–6 — этого достаточно для большинства вопросов.</li>
+    <li><b>Процесс ≠ программа:</b> программа — пассивный код, процесс — активное выполнение.</li>
+    <li><b>Планирование:</b> FCFS (просто), round robin (справедливо), multilevel (смешано), priority (real-time). На экзамене различай по двум осям — <b>fairness vs efficiency</b> и <b>pre-emptive vs non-pre-emptive</b>.</li>
+    <li><b>Polling vs Interrupts:</b> interrupts для частых, непредсказуемых, low-latency и batteries; polling для редких, регулярных, mains.</li>
+    <li><b>HL — многозадачность:</b> ОС жонглирует процессами через <b>context switching</b>. Главные риски — <b>deadlock</b>, <b>starvation</b>, <b>thrashing</b>; на каждое есть стратегия (detection/avoidance, ageing, оптимизация памяти).</li>
+    <li><b>HL — управляющая система:</b> <b>IPO + feedback</b>. <b>Open-loop</b> — без обратной связи (тостер на таймере), <b>closed-loop</b> — с обратной связью (термостат, круиз-контроль).</li>
+    <li><b>HL — пять компонентов:</b> controller, sensors, actuators, transducer, control algorithm. Запомни конкретные примеры: PLC, thermocouple, solenoid valve, piezoelectric sensor, PID.</li>
+    <li><b>HL — реальные применения:</b> 8 канонических примеров — авто-машины, термостаты, лифты, стиралки, светофоры, полив, охрана, двери. Для каждого знай датчик → контроллер → актуатор.</li>
+    <li>На экзамене часто спрашивают <b>«сравни X и Y»</b> — отвечай через таблицу: <b>fairness, efficiency, pre-emption, use case</b> для планирования; <b>event frequency, CPU overhead, power, latency, security</b> для polling vs interrupts.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A1.3" class="back-link">К квизу A1.3 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A1.3 Операционные и управляющие системы · По материалам Oxford IB DP 2025 Computer Science · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>
