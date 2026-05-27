@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A4 Machine Learning · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=4">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -36,6 +36,7 @@
     <h4><span class="lang-en-inline">A4 · ML</span><span class="lang-ru-inline">A4 · ML</span></h4>
     <a href="#regression-sim"><span class="lang-en-inline">📐 Linear regression</span><span class="lang-ru-inline">📐 Линейная регрессия</span></a>
     <a href="#kmeans-sim"><span class="lang-en-inline">🎯 K-means clustering</span><span class="lang-ru-inline">🎯 K-means кластеризация</span></a>
+    <a href="#knn-sim"><span class="lang-en-inline">🌟 KNN classifier</span><span class="lang-ru-inline">🌟 KNN-классификатор</span></a>
     <a href="#classifier-sim"><span class="lang-en-inline">📊 Confusion matrix</span><span class="lang-ru-inline">📊 Матрица ошибок</span></a>
     <a href="#bias-sim"><span class="lang-en-inline">⚖️ Bias visualization</span><span class="lang-ru-inline">⚖️ Предвзятость данных</span></a>
     <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
@@ -162,6 +163,54 @@
       </p>
     </section>
 
+    <!-- ============ KNN CLASSIFIER ============ -->
+    <section id="knn-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A4.3</span>
+          <h3>
+            <span class="lang-en-inline">K-Nearest Neighbours — classify by neighbourhood</span>
+            <span class="lang-ru-inline">k-ближайших соседей — классификация «по соседям»</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Pick a class, click to add training points. <b>Drag the ★ query point</b> around. It is classified by the majority vote of its <i>k</i> nearest neighbours — the dashed circle shows that radius. Crank k up: small k overfits noise, large k smooths boundaries.</span>
+            <span class="lang-ru-inline">Выберите класс и кликайте, чтобы добавлять обучающие точки. <b>Перетаскивайте ★ — точку запроса</b>. Она классифицируется по голосованию <i>k</i> ближайших соседей — пунктирная окружность показывает их радиус. Маленькое k переобучается на шуме, большое — сглаживает границы.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>k:
+          <input type="range" id="knn-k" min="1" max="15" value="3">
+          <span id="knn-k-v">3</span>
+        </label>
+        <label>
+          <span class="lang-en-inline">Class to add:</span><span class="lang-ru-inline">Добавлять класс:</span>
+          <select id="knn-class">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+          </select>
+        </label>
+        <button class="btn btn-ghost btn-sm" id="knn-seed">
+          <span class="lang-en-inline">🎲 Seed data</span><span class="lang-ru-inline">🎲 Сидовые данные</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="knn-clear">
+          <span class="lang-en-inline">Clear</span><span class="lang-ru-inline">Очистить</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="knn-canvas" width="900" height="460"
+                role="img" aria-label="K-nearest neighbours classifier playground. Click or tap to add training points. Drag the star query point, or use arrow keys when the canvas is focused (Shift for larger steps; Enter/Space to add a point at the star)."></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat" style="grid-column: span 2"><div class="label"><span class="lang-en-inline">Result</span><span class="lang-ru-inline">Результат</span></div><div class="value" id="knn-result" style="font-size:1rem">—</div></div>
+        <div class="sim-stat" style="grid-column: span 2"><div class="label"><span class="lang-en-inline">Votes</span><span class="lang-ru-inline">Голоса</span></div><div class="value" id="knn-votes" style="font-size:0.85rem; line-height:1.6">—</div></div>
+      </div>
+    </section>
+
     <!-- ============ CONFUSION MATRIX ============ -->
     <section id="classifier-sim" class="sim">
       <div class="sim-header">
@@ -271,13 +320,14 @@
   </p>
 </footer>
 
-<script src="js/data.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
-<script src="js/notes-render.js?v=2"></script>
-<script src="js/regression.js?v=2"></script>
-<script src="js/kmeans.js?v=2"></script>
-<script src="js/confusion.js?v=2"></script>
-<script src="js/bias.js?v=2"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
+<script src="js/notes-render.js?v=4"></script>
+<script src="js/regression.js?v=4"></script>
+<script src="js/kmeans.js?v=4"></script>
+<script src="js/knn.js?v=4"></script>
+<script src="js/confusion.js?v=4"></script>
+<script src="js/bias.js?v=4"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     renderNotes('notes-41-content', 'a4_1');

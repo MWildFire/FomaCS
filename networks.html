@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2 Networks · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=4">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -35,12 +35,20 @@
   <aside class="sidebar">
     <h4><span class="lang-en-inline">A2 · Networks</span><span class="lang-ru-inline">A2 · Сети</span></h4>
     <a href="#topology-sim"><span class="lang-en-inline">🌐 Topology sim</span><span class="lang-ru-inline">🌐 Топологии</span></a>
+    <a href="#cloud-edge-sim"><span class="lang-en-inline">☁️ Cloud / Edge / Fog</span><span class="lang-ru-inline">☁️ Cloud / Edge / Fog</span></a>
+    <a href="#dev-sim"><span class="lang-en-inline">🧩 Network devices</span><span class="lang-ru-inline">🧩 Сетевые устройства</span></a>
     <a href="#protocols-sim"><span class="lang-en-inline">📦 TCP vs UDP</span><span class="lang-ru-inline">📦 TCP vs UDP</span></a>
     <a href="#layers-sim"><span class="lang-en-inline">🧱 TCP/IP layers</span><span class="lang-ru-inline">🧱 Уровни TCP/IP</span></a>
+    <a href="#encryption-sim"><span class="lang-en-inline">🔐 Encryption demo</span><span class="lang-ru-inline">🔐 Шифрование</span></a>
     <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
-    <a href="#notes-21"><span class="lang-en-inline">A2.1 Fundamentals</span><span class="lang-ru-inline">A2.1 Основы</span></a>
+    <a href="#notes-211"><span class="lang-en-inline">A2.1.1 Networks</span><span class="lang-ru-inline">A2.1.1 Сети</span></a>
+    <a href="#notes-212"><span class="lang-en-inline">A2.1.2 Infrastructure</span><span class="lang-ru-inline">A2.1.2 Инфраструктура</span></a>
+    <a href="#notes-213"><span class="lang-en-inline">A2.1.3 Devices</span><span class="lang-ru-inline">A2.1.3 Устройства</span></a>
+    <a href="#notes-214"><span class="lang-en-inline">A2.1.4 Protocols</span><span class="lang-ru-inline">A2.1.4 Протоколы</span></a>
+    <a href="#notes-215"><span class="lang-en-inline">A2.1.5 TCP/IP (HL)</span><span class="lang-ru-inline">A2.1.5 TCP/IP (HL)</span></a>
     <a href="#notes-22"><span class="lang-en-inline">A2.2 Architecture</span><span class="lang-ru-inline">A2.2 Архитектура</span></a>
-    <a href="#notes-23"><span class="lang-en-inline">A2.3 Security</span><span class="lang-ru-inline">A2.3 Безопасность</span></a>
+    <a href="#notes-23"><span class="lang-en-inline">A2.3 Transmission</span><span class="lang-ru-inline">A2.3 Передача</span></a>
+    <a href="#notes-24"><span class="lang-en-inline">A2.4 Security</span><span class="lang-ru-inline">A2.4 Безопасность</span></a>
     <h4><span class="lang-en-inline">Practice</span><span class="lang-ru-inline">Практика</span></h4>
     <a href="quiz.html?topic=A2.1"><span class="lang-en-inline">A2.1 quiz →</span><span class="lang-ru-inline">A2.1 квиз →</span></a>
     <a href="quiz.html?topic=A2.2"><span class="lang-en-inline">A2.2 quiz →</span><span class="lang-ru-inline">A2.2 квиз →</span></a>
@@ -168,6 +176,71 @@
       </div>
     </section>
 
+    <!-- ============ CLOUD / EDGE / FOG SIM ============ -->
+    <section id="cloud-edge-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.1.2</span>
+          <h3>
+            <span class="lang-en-inline">Cloud · Fog · Edge — where does the work happen?</span>
+            <span class="lang-ru-inline">Cloud · Fog · Edge — где идёт обработка?</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Pick a deployment mode and slide up the number of devices. Watch how <b>latency</b> grows when everything must round-trip to a distant data centre — and how moving work closer to the source (fog / edge) keeps it low.</span>
+            <span class="lang-ru-inline">Выберите режим развёртывания и увеличивайте число устройств. Смотрите, как растёт <b>задержка</b>, когда всё гоняется до удалённого ЦОД — и как приближение обработки к источнику (fog / edge) её удерживает.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Mode:</span><span class="lang-ru-inline">Режим:</span>
+          <select id="ce-mode">
+            <option value="cloud">Cloud only</option>
+            <option value="fog">Cloud + Fog</option>
+            <option value="edge" selected>Cloud + Fog + Edge</option>
+          </select>
+        </label>
+        <label>
+          <span class="lang-en-inline">Devices:</span><span class="lang-ru-inline">Устройств:</span>
+          <input type="range" id="ce-devices" min="5" max="80" value="40" step="5">
+          <span id="ce-devices-v">40</span>
+        </label>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="ce-canvas" width="900" height="420"
+                role="img" aria-label="Diagram comparing cloud, fog and edge computing tiers with device traffic flowing through them."></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Latency</span><span class="lang-ru-inline">Задержка</span></div><div class="value" id="ce-latency">—</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Backbone bandwidth</span><span class="lang-ru-inline">Магистраль</span></div><div class="value" id="ce-bandwidth">OK</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Resilience</span><span class="lang-ru-inline">Устойчивость</span></div><div class="value" id="ce-resil">—</div></div>
+      </div>
+    </section>
+
+    <!-- ============ NETWORK DEVICES MATCHER ============ -->
+    <section id="dev-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.1.3</span>
+          <h3>
+            <span class="lang-en-inline">Network devices — pick one to see its layer</span>
+            <span class="lang-ru-inline">Сетевые устройства — выберите, чтобы увидеть его уровень</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Click a device card. The matching TCP/IP layer lights up and the detail panel shows what addressing it uses (IP, MAC, or none) and what it does. Helps you answer every "router-vs-switch" exam question with confidence.</span>
+            <span class="lang-ru-inline">Кликните по карточке устройства. Подсветится соответствующий уровень TCP/IP, в панели появятся подробности об адресации (IP, MAC или без) и о функции. Поможет уверенно отвечать на любые вопросы вида «маршрутизатор против коммутатора».</span>
+          </p>
+        </div>
+      </div>
+
+      <div id="dev-grid" class="dev-grid"></div>
+      <div id="dev-layers"></div>
+      <div id="dev-detail" class="dev-detail"></div>
+    </section>
+
     <!-- ============ TCP/IP LAYERS SIM ============ -->
     <section id="layers-sim" class="sim">
       <div class="sim-header">
@@ -197,18 +270,99 @@
       </div>
     </section>
 
+    <!-- ============ ENCRYPTION DEMO ============ -->
+    <section id="encryption-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.4</span>
+          <h3>
+            <span class="lang-en-inline">Encryption — symmetric vs asymmetric</span>
+            <span class="lang-ru-inline">Шифрование — симметричное и асимметричное</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Type a message and a key. Switch between <b>symmetric</b> (one shared key) and <b>asymmetric</b> (public/private pair) and follow the data through encrypt → wire → decrypt. The eavesdropper sees only the ciphertext.</span>
+            <span class="lang-ru-inline">Введите сообщение и ключ. Переключайтесь между <b>симметричным</b> (один общий ключ) и <b>асимметричным</b> (пара открытый/закрытый) и следите за данными: шифр → провод → расшифровка. Перехватчик видит только шифртекст.</span>
+          </p>
+          <p class="muted" style="font-size:0.82rem">
+            <span class="lang-en-inline">⚠ Cryptography is illustrative only — Caesar shift / XOR keystream. Never use these for real secrets!</span>
+            <span class="lang-ru-inline">⚠ Шифры здесь учебные — Caesar и XOR. <b>Не используйте</b> их для реальных секретов!</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Mode:</span><span class="lang-ru-inline">Режим:</span>
+          <select id="enc-mode">
+            <option value="symmetric">Symmetric (shared key)</option>
+            <option value="asymmetric">Asymmetric (public/private)</option>
+          </select>
+        </label>
+        <button class="btn btn-primary btn-sm" id="enc-run">
+          <span class="lang-en-inline">↻ Re-encrypt</span><span class="lang-ru-inline">↻ Шифровать</span>
+        </button>
+      </div>
+
+      <div class="enc-row">
+        <label>
+          <span class="lang-en-inline">Message:</span><span class="lang-ru-inline">Сообщение:</span>
+          <input type="text" id="enc-msg" value="Meet me at the library at 6pm" maxlength="80">
+        </label>
+        <label>
+          <span id="enc-key-label">Key:</span>
+          <input type="text" id="enc-key" value="secret-key" maxlength="40">
+        </label>
+      </div>
+
+      <div id="enc-stages" class="enc-stages"></div>
+      <div id="enc-eve" class="enc-eve"></div>
+      <div id="enc-note" class="enc-note"></div>
+    </section>
+
     <!-- ============ STUDY NOTES ============ -->
-    <section id="notes-21">
+    <section id="notes-211">
       <h2 class="section-title">
-        <span class="lang-en-inline">A2.1 Network fundamentals — notes</span>
-        <span class="lang-ru-inline">A2.1 Основы сетей — конспект</span>
+        <span class="lang-en-inline">A2.1.1 Purpose & characteristics of networks</span>
+        <span class="lang-ru-inline">A2.1.1 Назначение и характеристики сетей</span>
       </h2>
-      <div id="notes-21-content"></div>
+      <div id="notes-211-content"></div>
+    </section>
+
+    <section id="notes-212">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.1.2 Modern digital infrastructures</span>
+        <span class="lang-ru-inline">A2.1.2 Современная цифровая инфраструктура</span>
+      </h2>
+      <div id="notes-212-content"></div>
+    </section>
+
+    <section id="notes-213">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.1.3 Function of network devices</span>
+        <span class="lang-ru-inline">A2.1.3 Сетевые устройства</span>
+      </h2>
+      <div id="notes-213-content"></div>
+    </section>
+
+    <section id="notes-214">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.1.4 Network protocols</span>
+        <span class="lang-ru-inline">A2.1.4 Сетевые протоколы</span>
+      </h2>
+      <div id="notes-214-content"></div>
+    </section>
+
+    <section id="notes-215">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.1.5 Functions of TCP/IP (HL)</span>
+        <span class="lang-ru-inline">A2.1.5 Функции TCP/IP (HL)</span>
+      </h2>
+      <div id="notes-215-content"></div>
     </section>
 
     <section id="notes-22">
       <h2 class="section-title">
-        <span class="lang-en-inline">A2.2 Architecture & topologies</span>
+        <span class="lang-en-inline">A2.2 Network architecture & topologies</span>
         <span class="lang-ru-inline">A2.2 Архитектура и топологии</span>
       </h2>
       <div id="notes-22-content"></div>
@@ -216,10 +370,18 @@
 
     <section id="notes-23">
       <h2 class="section-title">
-        <span class="lang-en-inline">A2.3 Transmission & security</span>
-        <span class="lang-ru-inline">A2.3 Передача и безопасность</span>
+        <span class="lang-en-inline">A2.3 Data transmission</span>
+        <span class="lang-ru-inline">A2.3 Передача данных</span>
       </h2>
       <div id="notes-23-content"></div>
+    </section>
+
+    <section id="notes-24">
+      <h2 class="section-title">
+        <span class="lang-en-inline">A2.4 Network security</span>
+        <span class="lang-ru-inline">A2.4 Сетевая безопасность</span>
+      </h2>
+      <div id="notes-24-content"></div>
     </section>
 
     <div style="margin-top: 40px; text-align:center">
@@ -241,18 +403,26 @@
   </p>
 </footer>
 
-<script src="js/data.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
-<script src="js/notes-render.js?v=2"></script>
-<script src="js/topology.js?v=2"></script>
-<script src="js/protocols.js?v=2"></script>
-<script src="js/layers.js?v=2"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
+<script src="js/notes-render.js?v=4"></script>
+<script src="js/topology.js?v=4"></script>
+<script src="js/protocols.js?v=4"></script>
+<script src="js/layers.js?v=4"></script>
+<script src="js/cloud-edge.js?v=4"></script>
+<script src="js/devices.js?v=4"></script>
+<script src="js/encryption.js?v=4"></script>
 <script>
   // Render the study notes
   document.addEventListener('DOMContentLoaded', () => {
-    renderNotes('notes-21-content', 'a2_1');
+    renderNotes('notes-211-content', 'a2_1');
+    renderNotes('notes-212-content', 'a2_1_2');
+    renderNotes('notes-213-content', 'a2_1_3');
+    renderNotes('notes-214-content', 'a2_1_4');
+    renderNotes('notes-215-content', 'a2_1_5');
     renderNotes('notes-22-content', 'a2_2');
     renderNotes('notes-23-content', 'a2_3');
+    renderNotes('notes-24-content', 'a2_4');
   });
 </script>
 

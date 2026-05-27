@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3 Databases · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=4">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -37,6 +37,7 @@
     <a href="#sql-sim"><span class="lang-en-inline">💾 SQL playground</span><span class="lang-ru-inline">💾 SQL-песочница</span></a>
     <a href="#norm-sim"><span class="lang-en-inline">📐 Normalization</span><span class="lang-ru-inline">📐 Нормализация</span></a>
     <a href="#erd-sim"><span class="lang-en-inline">🔗 M:N resolver</span><span class="lang-ru-inline">🔗 M:N связь</span></a>
+    <a href="#acid-sim"><span class="lang-en-inline">⚛️ ACID transaction</span><span class="lang-ru-inline">⚛️ ACID-транзакция</span></a>
     <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
     <a href="#notes-31"><span class="lang-en-inline">A3.1 Fundamentals</span><span class="lang-ru-inline">A3.1 Основы</span></a>
     <a href="#notes-32"><span class="lang-en-inline">A3.2 Design</span><span class="lang-ru-inline">A3.2 Проект</span></a>
@@ -168,6 +169,49 @@ WHERE APPOINTMENT.DoctorName = 'Dr. Smith';</textarea>
       </div>
     </section>
 
+    <!-- ============ ACID TRANSACTION ============ -->
+    <section id="acid-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A3.3 · HL</span>
+          <h3>
+            <span class="lang-en-inline">ACID transaction — bank transfer simulator</span>
+            <span class="lang-ru-inline">ACID-транзакция — симулятор банковского перевода</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Step through a transfer of <b>$100</b> from Alice (A) to Bob (B). Hit the <b>Crash mid-transaction</b> button to see why <b>atomicity</b> matters — without ROLLBACK, money would disappear.</span>
+            <span class="lang-ru-inline">Пошагово прогоните перевод <b>$100</b> с Алисы (A) на Боба (B). Нажмите <b>Сбой посреди транзакции</b>, чтобы увидеть, зачем нужна <b>атомарность</b> — без ROLLBACK деньги бы исчезли.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <button class="btn btn-primary btn-sm" id="acid-run">
+          <span class="lang-en-inline">▶ Run transaction</span><span class="lang-ru-inline">▶ Выполнить транзакцию</span>
+        </button>
+        <button class="btn btn-accent btn-sm" id="acid-crash">
+          <span class="lang-en-inline">💥 Crash mid-transaction</span><span class="lang-ru-inline">💥 Сбой посреди</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="acid-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin: 18px 0;">
+        <div class="dev-detail" style="border-left-color: var(--green); text-align:center">
+          <h4>👩 Alice</h4>
+          <div id="acid-a-bal" style="font-size:1.8rem; font-weight:700; color:var(--green)">$500</div>
+        </div>
+        <div class="dev-detail" style="border-left-color: var(--accent); text-align:center">
+          <h4>👨 Bob</h4>
+          <div id="acid-b-bal" style="font-size:1.8rem; font-weight:700; color:var(--accent)">$200</div>
+        </div>
+      </div>
+
+      <div id="acid-log" class="enc-stages"></div>
+      <div id="acid-note" class="enc-note"></div>
+    </section>
+
     <!-- ============ STUDY NOTES ============ -->
     <section id="notes-31">
       <h2 class="section-title">A3.1 <span class="lang-en-inline">Database fundamentals</span><span class="lang-ru-inline">Основы БД</span></h2>
@@ -205,14 +249,15 @@ WHERE APPOINTMENT.DoctorName = 'Dr. Smith';</textarea>
   </p>
 </footer>
 
-<script src="js/data.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
-<script src="js/notes-render.js?v=2"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
+<script src="js/notes-render.js?v=4"></script>
 <!-- sql.js from CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
-<script src="js/sql-playground.js?v=2"></script>
-<script src="js/normalization.js?v=2"></script>
-<script src="js/erd.js?v=2"></script>
+<script src="js/sql-playground.js?v=4"></script>
+<script src="js/normalization.js?v=4"></script>
+<script src="js/erd.js?v=4"></script>
+<script src="js/acid.js?v=4"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     renderNotes('notes-31-content', 'a3_1');

@@ -1351,231 +1351,649 @@ window.QUIZ_DATA = [
 // Study notes data (compact, structured)
 window.NOTES_DATA = {
   a2_1: {
-    title: { en: 'A2.1 Network fundamentals', ru: 'A2.1 Основы сетей' },
+    title: { en: 'A2.1.1 Purpose & characteristics of networks', ru: 'A2.1.1 Назначение и характеристики сетей' },
     en: {
-      'Types of network': [
-        '<b>LAN</b> (Local Area Network) — short distance (~1 km), high speed, low latency. Examples: school, office.',
-        '<b>WAN</b> (Wide Area Network) — cities, countries, continents. Joins many LANs. Slower than LAN.',
-        '<b>PAN</b> (Personal Area Network) — ~10 m, Bluetooth/Wi-Fi Direct (phone ↔ smartwatch).',
-        '<b>VPN</b> (Virtual Private Network) — encrypted tunnel over the public internet; cheap secure remote access.'
+      'Core principles': [
+        'A <b>network</b> is two or more devices connected so they can <b>share data and resources</b> (files, printers, internet connection, processing power).',
+        '<b>Purpose</b> — transfer data, exchange information, share hardware and software, enable collaboration.',
+        '<b>Characteristics</b> that define a network: <b>scope/distance</b> covered, <b>data transfer rate</b> (bandwidth), <b>reliability</b> (uptime), <b>security</b> (encryption, access control), <b>scalability</b> (room to add devices) and <b>cost</b>.'
       ],
-      'Modern infrastructure': [
-        '<b>Internet</b> — global network using standardized protocols (WWW runs on HTTP).',
-        '<b>Cloud</b> — on-demand remote servers; scalable but needs connectivity and raises data-sovereignty concerns.',
-        '<b>Distributed system</b> — many nodes acting as one. More power & fault tolerance, harder consistency.',
-        '<b>Edge computing</b> — processing near the source. Lower latency; harder to secure many devices.',
-        '<b>Mobile (2G→5G)</b> — convenient but dead zones, congestion, security risks.'
+      'LAN — Local Area Network': [
+        '<b>Scope:</b> a single site — one room, building, school or office (up to ~1 km).',
+        '<b>Properties:</b> high speed (1–100 Gbps), very low latency, owned by one organisation, easy to secure.',
+        '<b>Use:</b> school computer labs, office workgroups, home Wi-Fi.'
       ],
-      'Devices': [
-        '<b>Router</b> — forwards packets <b>between</b> networks by IP (Network layer).',
-        '<b>Switch</b> — forwards frames <b>within</b> one LAN by MAC (Data-Link layer). Hubs broadcast → collisions.',
-        '<b>Modem</b> — modulates/demodulates digital ↔ analogue for the ISP line.',
-        '<b>NIC</b> — network interface card; holds the 48-bit MAC address.',
-        '<b>Gateway</b> — bridges networks with different protocols (e.g. NAT).',
-        '<b>Firewall</b> — filters traffic against rules.'
+      'WAN — Wide Area Network': [
+        '<b>Scope:</b> cities, countries, continents — connects many LANs/MANs into one logical network.',
+        '<b>Built from:</b> leased lines, fibre backbones, satellite links and the public internet (often secured by VPN).',
+        '<b>Properties:</b> lower throughput per user and higher latency than a LAN, but global reach.',
+        '<b>Use:</b> a multinational connecting its global offices, the internet itself.'
       ],
-      'Protocols & TCP/IP model': [
-        '<b>TCP</b> — connection-oriented; acks, sequencing, retransmission → reliable.',
-        '<b>UDP</b> — connectionless; no delivery guarantee, but faster (streaming/VoIP).',
-        '<b>HTTP/HTTPS, SMTP, FTP, DNS, DHCP</b> — application-layer protocols.',
-        '<b>Port number</b> — identifies a service on a host (HTTP 80, HTTPS 443).',
-        '<b>4 layers:</b> Application · Transport · Internet · Network Access. Data is encapsulated going down, de-encapsulated going up.'
+      'PAN — Personal Area Network': [
+        '<b>Scope:</b> centred on one person — radius ~10 m.',
+        '<b>Technology:</b> Bluetooth, Wi-Fi Direct, Zigbee, NFC.',
+        '<b>Use:</b> phone ↔ smartwatch ↔ wireless earbuds; tethering a laptop to a phone.'
+      ],
+      'VPN — Virtual Private Network': [
+        '<b>Extends</b> a private network across the public internet using an <b>encrypted tunnel</b>.',
+        'A remote worker behaves as if directly plugged into the office LAN.',
+        '<b>Benefits:</b> secure remote access; hides the user\'s IP/location; can bypass geo-restrictions; <b>no need for expensive dedicated lines</b> between sites.',
+        '<b>Trade-offs:</b> slight latency from encryption; trust in the VPN provider.'
       ]
     },
     ru: {
-      'Типы сетей': [
-        '<b>LAN</b> (локальная) — до ~1 км, высокая скорость, низкая задержка. Школа, офис.',
-        '<b>WAN</b> (глобальная) — города, страны, континенты. Объединяет много LAN.',
-        '<b>PAN</b> (персональная) — ~10 м, Bluetooth/Wi-Fi Direct (телефон ↔ часы).',
-        '<b>VPN</b> — шифрованный туннель через публичный интернет; безопасный удалённый доступ.'
+      'Базовые принципы': [
+        '<b>Сеть</b> — два и более устройств, соединённых так, чтобы <b>совместно использовать данные и ресурсы</b> (файлы, принтеры, интернет-канал, вычислительную мощность).',
+        '<b>Назначение</b> — передача данных, обмен информацией, совместное использование железа и ПО, поддержка совместной работы.',
+        '<b>Характеристики</b>, которыми описывают сеть: <b>радиус/расстояние</b>, <b>скорость передачи</b> (полоса), <b>надёжность</b> (uptime), <b>безопасность</b> (шифрование, контроль доступа), <b>масштабируемость</b> и <b>стоимость</b>.'
       ],
-      'Современная инфраструктура': [
-        '<b>Интернет</b> — глобальная сеть по стандартным протоколам (WWW поверх HTTP).',
-        '<b>Облако</b> — доступ по требованию к удалённым серверам; нужна связь, вопросы суверенитета данных.',
-        '<b>Распределённая система</b> — много узлов как одно целое. Больше отказоустойчивости, сложнее согласованность.',
-        '<b>Edge</b> — обработка рядом с источником. Низкая задержка; сложнее защищать.',
-        '<b>Мобильные сети (2G→5G)</b> — удобно, но «мёртвые зоны», заторы, риски безопасности.'
+      'LAN — локальная сеть': [
+        '<b>Радиус:</b> одна площадка — комната, здание, школа, офис (до ~1 км).',
+        '<b>Свойства:</b> высокая скорость (1–100 Гбит/с), очень низкая задержка, принадлежит одной организации, легко защитить.',
+        '<b>Примеры:</b> школьные кабинеты информатики, офисные рабочие группы, домашний Wi-Fi.'
       ],
-      'Устройства': [
-        '<b>Маршрутизатор</b> — пакеты <b>между</b> сетями по IP (сетевой уровень).',
-        '<b>Коммутатор</b> — кадры <b>внутри</b> LAN по MAC (канальный уровень). Хаб рассылает → коллизии.',
-        '<b>Модем</b> — модулирует/демодулирует цифра ↔ аналог для линии провайдера.',
-        '<b>Сетевая карта (NIC)</b> — хранит 48-битный MAC.',
-        '<b>Шлюз</b> — соединяет сети с разными протоколами (напр. NAT).',
-        '<b>Файрвол</b> — фильтрует трафик по правилам.'
+      'WAN — глобальная сеть': [
+        '<b>Радиус:</b> города, страны, континенты — объединяет много LAN/MAN в одну логическую сеть.',
+        '<b>Строится из:</b> арендованных линий, оптических магистралей, спутниковых каналов и публичного интернета (часто защищается VPN).',
+        '<b>Свойства:</b> ниже пропускная способность на пользователя и выше задержка, чем у LAN, но глобальный охват.',
+        '<b>Примеры:</b> международная компания со множеством офисов, сам интернет.'
       ],
-      'Протоколы и TCP/IP': [
-        '<b>TCP</b> — с соединением; подтверждения, порядок, повтор → надёжно.',
-        '<b>UDP</b> — без соединения; без гарантий, зато быстрее (стриминг/VoIP).',
-        '<b>HTTP/HTTPS, SMTP, FTP, DNS, DHCP</b> — прикладные протоколы.',
-        '<b>Порт</b> — идентификатор сервиса (HTTP 80, HTTPS 443).',
-        '<b>4 уровня:</b> прикладной · транспортный · межсетевой · сетевого доступа. Данные инкапсулируются вниз и разбираются вверх.'
+      'PAN — персональная сеть': [
+        '<b>Радиус:</b> вокруг одного человека — ~10 м.',
+        '<b>Технологии:</b> Bluetooth, Wi-Fi Direct, Zigbee, NFC.',
+        '<b>Примеры:</b> телефон ↔ умные часы ↔ беспроводные наушники; раздача интернета с телефона на ноутбук.'
+      ],
+      'VPN — виртуальная частная сеть': [
+        '<b>Расширяет</b> частную сеть через публичный интернет с помощью <b>шифрованного туннеля</b>.',
+        'Удалённый работник работает так, будто напрямую включён в офисную LAN.',
+        '<b>Плюсы:</b> безопасный удалённый доступ; скрывает IP/местоположение; обходит гео-ограничения; <b>не нужны дорогие выделенные линии</b> между офисами.',
+        '<b>Минусы:</b> небольшая задержка из-за шифрования; нужно доверять провайдеру VPN.'
+      ]
+    }
+  },
+
+  a2_1_2: {
+    title: { en: 'A2.1.2 Modern digital infrastructures', ru: 'A2.1.2 Современная цифровая инфраструктура' },
+    en: {
+      'The internet': [
+        'A <b>global network of networks</b>: independent autonomous systems interconnected by standardised protocols (TCP/IP).',
+        'The <b>World Wide Web</b> is one service that runs <b>over</b> the internet using HTTP/HTTPS.',
+        '<b>Strengths:</b> universal reach, low marginal cost, open standards. <b>Limits:</b> variable bandwidth, censorship, security threats.'
+      ],
+      'Cloud computing': [
+        '<b>On-demand</b> remote computing — storage, processing, software-as-a-service (SaaS), platform-as-a-service (PaaS), infrastructure-as-a-service (IaaS).',
+        '<b>Pros:</b> scales elastically, pay-as-you-go, accessible anywhere, professional backups.',
+        '<b>Cons:</b> needs reliable internet; raises <b>data-sovereignty</b> concerns (data stored in another country obeys that country\'s laws); third-party trust; egress and transfer costs; possible latency.'
+      ],
+      'Distributed systems': [
+        'Many independent computers (<b>nodes</b>) cooperate as one coherent system by passing messages.',
+        '<b>Benefits:</b> more compute, fault tolerance (one node down ≠ whole system down), geographic reach.',
+        '<b>Challenges:</b> harder <b>consistency</b>, concurrency, security, partial failure handling.',
+        '<b>Examples:</b> Google search index, blockchain, Bittorrent, large-scale databases.'
+      ],
+      'Edge & fog computing': [
+        '<b>Edge:</b> processing happens <b>at or near the data source</b> (sensors, gateways, phones) instead of a distant data centre.',
+        '<b>Why:</b> cuts latency, reduces bandwidth to the cloud, works during connectivity loss, helps privacy.',
+        '<b>Use cases:</b> autonomous vehicles, industrial IoT, real-time video analytics.',
+        '<b>Fog</b> sits between edge and cloud (regional micro-data-centres) — a middle tier for aggregation.',
+        '<b>Trade-off:</b> many distributed devices are harder and costlier to secure and maintain.'
+      ],
+      'Mobile networks': [
+        'Cellular networks (<b>2G → 3G → 4G/LTE → 5G</b>) hand connections from cell to cell as users move.',
+        '<b>5G</b> adds higher bandwidth and very low latency, enabling new edge/IoT use cases.',
+        '<b>Limitations:</b> dead zones, congestion, security risks (spoofed cell towers), battery cost of high-frequency radios.'
+      ]
+    },
+    ru: {
+      'Интернет': [
+        '<b>Глобальная сеть сетей</b> — независимые автономные системы, соединённые стандартными протоколами (TCP/IP).',
+        '<b>WWW (всемирная паутина)</b> — это лишь один сервис <b>поверх</b> интернета, работающий по HTTP/HTTPS.',
+        '<b>Плюсы:</b> универсальный охват, низкая стоимость, открытые стандарты. <b>Минусы:</b> разная полоса, цензура, угрозы безопасности.'
+      ],
+      'Облачные вычисления': [
+        '<b>По требованию</b>: удалённые хранилище, вычисления, ПО как услуга (SaaS), платформа (PaaS), инфраструктура (IaaS).',
+        '<b>Плюсы:</b> эластичное масштабирование, оплата по факту, доступ откуда угодно, профессиональные бэкапы.',
+        '<b>Минусы:</b> нужна устойчивая связь; вопросы <b>суверенитета данных</b> (данные в другой стране подчиняются её законам); доверие сторонним; стоимость трафика; возможные задержки.'
+      ],
+      'Распределённые системы': [
+        'Много независимых компьютеров (<b>узлов</b>) работают как одно целое, обмениваясь сообщениями.',
+        '<b>Плюсы:</b> больше мощности, отказоустойчивость (отказ одного ≠ отказу всего), географический охват.',
+        '<b>Сложности:</b> <b>согласованность</b>, параллелизм, безопасность, обработка частичных отказов.',
+        '<b>Примеры:</b> поисковый индекс Google, блокчейн, Bittorrent, крупные БД.'
+      ],
+      'Граничные (edge) и fog-вычисления': [
+        '<b>Edge:</b> обработка происходит <b>рядом с источником</b> (датчики, шлюзы, телефоны), а не в далёком ЦОД.',
+        '<b>Зачем:</b> снижает задержку, экономит канал к облаку, работает при потере связи, повышает приватность.',
+        '<b>Применение:</b> беспилотные авто, промышленный IoT, видеоанализ в реальном времени.',
+        '<b>Fog</b> — промежуточный слой (региональные мини-ЦОД) между edge и облаком, для агрегации.',
+        '<b>Минус:</b> много распределённых устройств тяжело и дорого защищать и обслуживать.'
+      ],
+      'Мобильные сети': [
+        'Сотовые сети (<b>2G → 3G → 4G/LTE → 5G</b>) передают соединение от ячейки к ячейке по мере движения.',
+        '<b>5G</b> — выше скорость и очень низкая задержка, что открывает новые сценарии edge/IoT.',
+        '<b>Ограничения:</b> «мёртвые зоны», заторы, безопасность (поддельные вышки), расход батареи на высокочастотные радио.'
+      ]
+    }
+  },
+
+  a2_1_3: {
+    title: { en: 'A2.1.3 Function of network devices', ru: 'A2.1.3 Сетевые устройства' },
+    en: {
+      'Routers': [
+        '<b>Function:</b> forward packets <b>between different networks</b> using the destination <b>IP address</b> and a routing table.',
+        '<b>Layer:</b> Internet/Network (TCP/IP layer 3).',
+        '<b>Where:</b> the boundary between a LAN and the internet (or between subnets).'
+      ],
+      'Switches': [
+        '<b>Function:</b> connect devices <b>within the same LAN</b>, forwarding a frame only to the port of the destination <b>MAC address</b>.',
+        '<b>Layer:</b> Network Access/Data-Link (TCP/IP layer 2).',
+        '<b>Versus a hub:</b> a hub broadcasts every frame to every port → collisions and shared bandwidth. A switch learns MAC→port and sends only where needed.'
+      ],
+      'Modems': [
+        '<b>Function:</b> <b>modulate</b> digital data into an analogue signal for the line and <b>demodulate</b> the incoming analogue signal back into digital data.',
+        '<b>Where:</b> connects a home/office network to the ISP\'s line (DSL, cable, fibre ONT).'
+      ],
+      'NIC — Network Interface Card': [
+        'The component that physically <b>connects a device to a network</b>.',
+        'Holds the device\'s globally unique <b>48-bit MAC address</b>.',
+        'Converts data between the device\'s binary form and the signals used on the medium.'
+      ],
+      'Gateway': [
+        'Bridges <b>two networks that use different protocols</b> (e.g. a VoIP gateway translating between SIP and the public phone system; NAT between a private LAN and the internet).',
+        'A home router is usually a combined modem + router + switch + Wi-Fi access point + NAT <b>gateway</b>.'
+      ],
+      'Other devices': [
+        '<b>Wireless access point (WAP)</b> — lets wireless clients join a wired LAN; operates at layer 2.',
+        '<b>Repeater / range extender</b> — amplifies a signal to cover greater distance (layer 1).',
+        '<b>Bridge</b> — joins two LAN segments, learns MAC addresses; conceptually a two-port switch.',
+        '<b>Firewall</b> — filters traffic by rules (covered in A2.4).'
+      ]
+    },
+    ru: {
+      'Маршрутизаторы (router)': [
+        '<b>Функция:</b> передают пакеты <b>между разными сетями</b> по IP-адресу получателя и таблице маршрутизации.',
+        '<b>Уровень:</b> межсетевой (TCP/IP уровень 3).',
+        '<b>Где:</b> граница между LAN и интернетом (или между подсетями).'
+      ],
+      'Коммутаторы (switch)': [
+        '<b>Функция:</b> соединяют устройства <b>внутри одной LAN</b>, направляя кадр только на порт нужного <b>MAC-адреса</b>.',
+        '<b>Уровень:</b> канальный (TCP/IP уровень 2).',
+        '<b>Против хаба:</b> хаб рассылает каждый кадр на все порты — коллизии и общая полоса. Коммутатор запоминает MAC↔порт и шлёт точечно.'
+      ],
+      'Модемы': [
+        '<b>Функция:</b> <b>модулируют</b> цифровые данные в аналоговый сигнал линии и <b>демодулируют</b> входящий аналоговый сигнал в цифру.',
+        '<b>Где:</b> соединяет домашнюю/офисную сеть с линией провайдера (DSL, кабель, оптика ONT).'
+      ],
+      'Сетевая карта (NIC)': [
+        'Компонент, который физически <b>подключает устройство к сети</b>.',
+        'Хранит уникальный <b>48-битный MAC-адрес</b> устройства.',
+        'Преобразует данные между двоичной формой устройства и сигналами среды передачи.'
+      ],
+      'Шлюз (gateway)': [
+        'Соединяет <b>две сети с разными протоколами</b> (например, VoIP-шлюз между SIP и обычной телефонией; NAT между приватной LAN и интернетом).',
+        'Домашний роутер обычно — это модем + маршрутизатор + коммутатор + Wi-Fi точка + NAT-<b>шлюз</b> в одном корпусе.'
+      ],
+      'Другие устройства': [
+        '<b>Точка доступа Wi-Fi (WAP)</b> — подключает беспроводных клиентов к проводной LAN; уровень 2.',
+        '<b>Репитер / усилитель</b> — усиливает сигнал для большего радиуса (уровень 1).',
+        '<b>Мост (bridge)</b> — соединяет два сегмента LAN, учит MAC-адреса; фактически двухпортовый коммутатор.',
+        '<b>Файрвол</b> — фильтрует трафик по правилам (см. A2.4).'
+      ]
+    }
+  },
+
+  a2_1_4: {
+    title: { en: 'A2.1.4 Network protocols', ru: 'A2.1.4 Сетевые протоколы' },
+    en: {
+      'Transport: TCP vs UDP': [
+        '<b>TCP (Transmission Control Protocol)</b> — connection-oriented, reliable. Uses <b>handshake, acknowledgements, sequencing and retransmission</b>. Guarantees in-order, complete delivery — but has more overhead.',
+        '<b>UDP (User Datagram Protocol)</b> — connectionless, <b>no delivery guarantee</b>, no ordering. Much lower overhead, much faster.',
+        '<b>Choose TCP</b> when correctness matters: web pages (HTTP), email, file transfer, database transactions.',
+        '<b>Choose UDP</b> when speed matters more than perfection: live video/voice, online gaming, DNS lookups — a lost packet that arrives late is worse than a missing one.'
+      ],
+      'Application protocols': [
+        '<b>HTTP / HTTPS</b> — web pages and APIs (ports 80 / 443). HTTPS adds TLS encryption.',
+        '<b>FTP / SFTP</b> — file transfer between computers.',
+        '<b>SMTP</b> — send email (port 25/465/587).',
+        '<b>IMAP / POP3</b> — retrieve email from a server (IMAP keeps it on the server, POP downloads & removes).',
+        '<b>DNS</b> — translates human domain names to IP addresses (port 53, mainly UDP).',
+        '<b>DHCP</b> — automatically assigns IP addresses, subnet mask, gateway and DNS to new devices.'
+      ],
+      'Port numbers': [
+        'A 16-bit number identifying a specific <b>application/service</b> on a host, so one IP address can run many services in parallel (multiplexing).',
+        '<b>Well-known ports:</b> HTTP 80, HTTPS 443, SSH 22, FTP 21, SMTP 25, DNS 53, DHCP 67/68.',
+        'Combined with an IP address, a port forms a <b>socket</b> — the endpoint of a network connection.'
+      ]
+    },
+    ru: {
+      'Транспорт: TCP vs UDP': [
+        '<b>TCP</b> — с установлением соединения, надёжный. Использует <b>рукопожатие, подтверждения, нумерацию и повтор</b>. Гарантирует упорядоченную полную доставку, но больше накладных расходов.',
+        '<b>UDP</b> — без соединения, <b>без гарантии доставки</b> и порядка. Минимум накладных, гораздо быстрее.',
+        '<b>TCP</b> — когда важна корректность: веб-страницы (HTTP), почта, передача файлов, транзакции БД.',
+        '<b>UDP</b> — когда важнее скорость: видео/голос в реальном времени, онлайн-игры, DNS — опоздавший пакет хуже потерянного.'
+      ],
+      'Прикладные протоколы': [
+        '<b>HTTP / HTTPS</b> — веб и API (порты 80 / 443). HTTPS добавляет TLS-шифрование.',
+        '<b>FTP / SFTP</b> — передача файлов между компьютерами.',
+        '<b>SMTP</b> — отправка почты (25/465/587).',
+        '<b>IMAP / POP3</b> — получение почты с сервера (IMAP хранит на сервере, POP скачивает и удаляет).',
+        '<b>DNS</b> — переводит доменные имена в IP-адреса (порт 53, в основном UDP).',
+        '<b>DHCP</b> — автоматически выдаёт IP-адрес, маску, шлюз и DNS новым устройствам.'
+      ],
+      'Порты': [
+        '16-битное число, идентифицирующее конкретное <b>приложение/сервис</b> на хосте; один IP обслуживает много сервисов параллельно (мультиплексирование).',
+        '<b>Известные порты:</b> HTTP 80, HTTPS 443, SSH 22, FTP 21, SMTP 25, DNS 53, DHCP 67/68.',
+        'IP + порт = <b>сокет</b>, конечная точка сетевого соединения.'
+      ]
+    }
+  },
+
+  a2_1_5: {
+    title: { en: 'A2.1.5 Functions of the TCP/IP model (HL)', ru: 'A2.1.5 Функции модели TCP/IP (HL)' },
+    en: {
+      'The four layers': [
+        '<b>Application layer</b> — user-facing protocols (HTTP, FTP, SMTP, DNS). Generates the data.',
+        '<b>Transport layer</b> — TCP or UDP. Adds <b>port numbers</b>, segments the data, handles reliability if TCP.',
+        '<b>Internet (Network) layer</b> — IP. Adds <b>IP addresses</b>, decides routing between networks. Routers operate here.',
+        '<b>Network Access (Link/Data-Link) layer</b> — Ethernet, Wi-Fi. Adds the <b>MAC address</b> and turns frames into electrical/optical/radio signals. Switches operate here.'
+      ],
+      'Encapsulation': [
+        '<b>Sender:</b> each layer wraps the data with its own <b>header</b> as it goes down — Application → Transport (adds port) → Internet (adds IP) → Link (adds MAC). The result is a <b>frame</b> on the wire.',
+        '<b>Receiver:</b> each layer strips its header on the way up (de-encapsulation), passing the payload to the next layer until the application receives the original data.',
+        '<b>Why it matters:</b> separation of concerns — each layer can be redesigned without breaking the others (e.g. Wi-Fi replacing Ethernet at layer 2 with no change to HTTP).'
+      ],
+      'Routing & switching in practice': [
+        'A <b>router</b> reads the IP header to decide the next hop between networks; it rewrites the layer-2 (MAC) header for each hop but the IP packet survives end-to-end.',
+        'A <b>switch</b> reads the MAC header to forward a frame within one LAN; it does <b>not</b> change the IP header.',
+        'A web request from your laptop to a server: app HTTP → TCP port 443 → IP src/dst → Wi-Fi frame → router hops across the internet → server reverses the stack and the web page returns.'
+      ]
+    },
+    ru: {
+      'Четыре уровня': [
+        '<b>Прикладной</b> — пользовательские протоколы (HTTP, FTP, SMTP, DNS). Создаёт данные.',
+        '<b>Транспортный</b> — TCP или UDP. Добавляет <b>порты</b>, делит данные на сегменты, надёжность (если TCP).',
+        '<b>Межсетевой</b> — IP. Добавляет <b>IP-адреса</b>, решает маршрутизацию между сетями. Здесь работают маршрутизаторы.',
+        '<b>Сетевого доступа (канальный)</b> — Ethernet, Wi-Fi. Добавляет <b>MAC</b> и превращает кадры в электрические/оптические/радио-сигналы. Здесь работают коммутаторы.'
+      ],
+      'Инкапсуляция': [
+        '<b>Отправитель:</b> каждый уровень оборачивает данные своим <b>заголовком</b> сверху вниз — прикладной → транспортный (порт) → межсетевой (IP) → канальный (MAC). На проводе это уже <b>кадр</b>.',
+        '<b>Получатель:</b> каждый уровень снимает свой заголовок снизу вверх (де-инкапсуляция), передавая нагрузку следующему, пока приложение не получит исходные данные.',
+        '<b>Зачем:</b> разделение ответственности — любой уровень можно переделать, не ломая других (Wi-Fi заменил Ethernet на 2-м, HTTP не заметил).'
+      ],
+      'Маршрутизация и коммутация на практике': [
+        '<b>Маршрутизатор</b> читает IP-заголовок и решает следующий хоп между сетями; на каждом хопе переписывает канальный (MAC) заголовок, но IP-пакет идёт сквозь всю сеть.',
+        '<b>Коммутатор</b> читает MAC-заголовок и пересылает кадр внутри одной LAN; IP-заголовок <b>не меняет</b>.',
+        'Запрос с ноутбука к серверу: HTTP → TCP порт 443 → IP отправителя/получателя → Wi-Fi-кадр → маршрутизаторы в интернете → сервер раскрывает стек обратно, страница возвращается.'
       ]
     }
   },
 
   a2_2: {
-    title: { en: 'A2.2 Network architecture & topologies', ru: 'A2.2 Архитектура и топологии' },
+    title: { en: 'A2.2 Network architecture, topologies & segmentation', ru: 'A2.2 Архитектура, топологии и сегментация' },
     en: {
-      'Topologies': [
-        '<b>Star</b> — every device → central switch. Easy to scale, but the centre is a single point of failure.',
-        '<b>Mesh</b> — nodes connect to many others; very high redundancy, no single point of failure, but expensive.',
-        '<b>Hybrid</b> — mixes topologies (star core + mesh edge) — balance of cost, speed and resilience.'
+      'Topology basics': [
+        'A <b>topology</b> is the arrangement of nodes and links. <b>Physical</b> topology = the actual cabling layout; <b>logical</b> topology = how data flows.',
+        'Choice affects <b>cost, reliability, speed, ease of fault-finding</b> and <b>scalability</b>.'
       ],
-      'Servers & models': [
-        '<b>Server types:</b> DNS, DHCP, web, mail, file, print.',
-        '<b>Client-Server</b> — central server provides resources. Easier to administer, but a single point of failure.',
-        '<b>Peer-to-Peer (P2P)</b> — every node is client + server. Decentralised; scales naturally; harder to secure. Used for blockchain, file-sharing.'
+      'Star, mesh & hybrid': [
+        '<b>Star</b> — every device connects to a central switch. Easy to add devices, fault on one cable affects only one device. <b>Centre is a single point of failure.</b> Used in most home/office LANs.',
+        '<b>Mesh</b> — nodes connect to many other nodes (full mesh = every node to every other). <b>Very high redundancy</b>; data reroutes around failures; no single point of failure. <b>Expensive</b> to cable and scale. Used in Wi-Fi mesh systems and mission-critical networks.',
+        '<b>Hybrid</b> — combines topologies (e.g. star core + mesh edge) to balance cost, speed and resilience. Used in most large/complex networks.',
+        '<b>Bus / ring</b> — older topologies: a bus shares one backbone (one break breaks everything); a ring passes a token (failure of one node can break the loop).'
       ],
-      'Segmentation': [
-        '<b>VLAN</b> — Layer-2 logical grouping on switches; isolates traffic regardless of physical location.',
-        '<b>Subnetting</b> — Layer-3 division of IP space into sub-networks.'
+      'Servers': [
+        'A <b>server</b> delivers data/resources/services to <b>clients</b>.',
+        '<b>Key types:</b> <b>DNS</b> (domain name → IP), <b>DHCP</b> (auto-assign IPs), <b>web</b>, <b>mail</b>, <b>file</b>, <b>print</b>, <b>database</b>, <b>authentication</b>.'
+      ],
+      'Networking models': [
+        '<b>Client-Server</b> — a central server provides resources to clients. Centralised administration, security, backups; the server is a <b>bottleneck / single point of failure</b>. Used for web, email, banking, school networks.',
+        '<b>Peer-to-Peer (P2P)</b> — every node is both client and server. Decentralised — scales naturally as peers add bandwidth, no central point of failure — but harder to secure and manage. Used for blockchain, file-sharing (BitTorrent), some VoIP.',
+        '<b>Hybrid</b> — many real systems mix both (e.g. a chat app uses a server for discovery and authentication but P2P for the media stream).'
+      ],
+      'Network segmentation': [
+        'Splitting one network into smaller parts improves <b>security</b> (isolating sensitive departments) and <b>performance</b> (smaller broadcast domains = less congestion).',
+        '<b>VLAN (Virtual LAN)</b> — a <b>logical</b> grouping at Layer 2 on switches; isolates traffic regardless of physical location (e.g. Finance VLAN spans 3 buildings).',
+        '<b>Subnetting</b> — dividing the IP address space at Layer 3 into sub-networks (e.g. 192.168.10.0/24).'
       ]
     },
     ru: {
-      'Топологии': [
-        '<b>Звезда</b> — все устройства → центральный коммутатор. Легко масштабируется, но центр = единая точка отказа.',
-        '<b>Mesh</b> — узлы связаны со многими; очень надёжна, нет единой точки отказа, но дорого.',
-        '<b>Гибрид</b> — ядро-звезда + край-mesh — баланс цены, скорости и устойчивости.'
+      'Основы топологии': [
+        '<b>Топология</b> — расположение узлов и связей. <b>Физическая</b> = реальная разводка кабелей; <b>логическая</b> = как движутся данные.',
+        'Выбор влияет на <b>стоимость, надёжность, скорость, удобство поиска неисправностей</b> и <b>масштабируемость</b>.'
       ],
-      'Серверы и модели': [
-        '<b>Виды серверов:</b> DNS, DHCP, веб, почтовый, файловый, принт.',
-        '<b>Клиент-сервер</b> — центральный сервер выдаёт ресурсы. Проще управление, но единая точка отказа.',
-        '<b>P2P</b> — каждый узел и клиент, и сервер. Децентрализована, сама масштабируется, сложнее защищать. Блокчейн, файлообмен.'
+      'Звезда, mesh и гибрид': [
+        '<b>Звезда</b> — все устройства подключены к центральному коммутатору. Легко добавлять устройства, обрыв одного кабеля влияет только на одно устройство. <b>Центральный коммутатор — единая точка отказа.</b> Большинство домашних/офисных LAN.',
+        '<b>Mesh</b> — узлы связаны со многими другими (полная сетка — каждый с каждым). <b>Очень высокая надёжность/резервирование</b>; данные обходят отказы; нет единой точки отказа. <b>Дорого</b> прокладывать и масштабировать. Wi-Fi mesh, отказоустойчивые сети.',
+        '<b>Гибрид</b> — сочетает топологии (ядро-звезда + край-mesh) для баланса цены, скорости и устойчивости. Большинство крупных сетей.',
+        '<b>Шина / кольцо</b> — старые топологии: шина — одна общая магистраль (один обрыв ломает всё); кольцо — передача токена (отказ узла может разорвать кольцо).'
       ],
-      'Сегментация': [
-        '<b>VLAN</b> — логическое разделение на 2-м уровне; изолирует трафик независимо от размещения.',
-        '<b>Подсети</b> — деление пространства IP на 3-м уровне.'
+      'Серверы': [
+        '<b>Сервер</b> предоставляет данные/ресурсы/сервисы <b>клиентам</b>.',
+        '<b>Важные типы:</b> <b>DNS</b> (домен → IP), <b>DHCP</b> (автоназначение IP), <b>веб</b>, <b>почтовый</b>, <b>файловый</b>, <b>принт</b>, <b>БД</b>, <b>аутентификация</b>.'
+      ],
+      'Сетевые модели': [
+        '<b>Клиент-сервер</b> — центральный сервер выдаёт ресурсы клиентам. Проще централизованное администрирование, безопасность, бэкапы; сервер — <b>узкое место и единая точка отказа</b>. Веб, почта, банкинг, школьные сети.',
+        '<b>P2P (одноранговая)</b> — каждый узел и клиент, и сервер. Децентрализована — масштабируется сама, нет единой точки отказа — но сложнее защищать и управлять. Блокчейн, файлообмен (BitTorrent), часть VoIP.',
+        '<b>Гибрид</b> — на практике многие сервисы смешивают (мессенджер использует сервер для поиска контактов и аутентификации, но P2P для медиапотока).'
+      ],
+      'Сегментация сети': [
+        'Разбиение сети на части повышает <b>безопасность</b> (изоляция важных отделов) и <b>производительность</b> (меньше широковещательных доменов = меньше заторов).',
+        '<b>VLAN (виртуальная LAN)</b> — <b>логическое</b> разделение на 2-м уровне на коммутаторах; изолирует трафик независимо от физического размещения (например, VLAN финансов охватывает 3 здания).',
+        '<b>Подсети (subnetting)</b> — деление пространства IP-адресов на 3-м уровне (например, 192.168.10.0/24).'
       ]
     }
   },
 
   a2_3: {
-    title: { en: 'A2.3 Data transmission & security', ru: 'A2.3 Передача и безопасность' },
+    title: { en: 'A2.3 Data transmission (IP, media, packet switching)', ru: 'A2.3 Передача данных (IP, среды, коммутация пакетов)' },
     en: {
-      'IP & media': [
-        '<b>IPv4</b> 32-bit (~4.3B addresses). <b>IPv6</b> 128-bit (~3.4×10³⁸).',
-        '<b>NAT</b> lets many private devices share one public IP, conserving IPv4 and hiding internal hosts.',
-        '<b>Media:</b> twisted pair (cheap, short), coaxial (better shielded), fibre (very fast, EMI-immune, fragile), wireless (mobile, more interference).'
+      'IP addressing': [
+        '<b>IPv4</b> — 32-bit (~4.3 billion addresses), dotted decimal e.g. <code>192.168.1.1</code>.',
+        '<b>IPv6</b> — 128-bit (~3.4×10³⁸ addresses), hexadecimal with colons. Created because IPv4 addresses ran out.',
+        '<b>Public vs private</b> — public addresses are globally unique and routed on the internet; private ranges (<code>192.168.x.x</code>, <code>10.x.x.x</code>, <code>172.16–31.x.x</code>) are reused inside LANs and are not routed on the internet.',
+        '<b>Static vs dynamic</b> — static IPs are fixed and manually set (good for servers); dynamic IPs are leased temporarily by a <b>DHCP</b> server from a pool.',
+        '<b>NAT (Network Address Translation)</b> — lets many private devices share one public IP, conserving IPv4 and hiding internal hosts (a basic security benefit).'
       ],
-      'Packets & routing': [
-        '<b>Packet switching</b> — data split into packets with header (src/dst IP, sequence); independent paths, reassembled at destination.',
-        '<b>Static routing</b> — manual, fixed routes. <b>Dynamic routing</b> — routers exchange info, adapt to congestion/failure.'
+      'Transmission media': [
+        '<b>Twisted pair (UTP)</b> — cheap, easy, but limited range (~100 m) and prone to interference.',
+        '<b>Coaxial</b> — better shielding than UTP; used in cable broadband.',
+        '<b>Fibre optic</b> — uses light pulses; very high speed over long distances; immune to electromagnetic interference (EMI); expensive and fragile.',
+        '<b>Wireless</b> (Wi-Fi, cellular, satellite) — high mobility, but more interference and security risk.'
       ],
-      'Security': [
-        '<b>Firewall</b> — filters by rules. Vulnerable to insider threats, costly to configure deeply.',
-        '<b>Threats:</b> DDoS, malware, phishing, MitM, SQL injection.',
-        '<b>Encryption</b> — symmetric (one shared key, fast) vs asymmetric (public/private pair, secure key exchange).',
-        '<b>Digital certificates</b> — issued by CAs; bind a server to a public key (makes HTTPS trustworthy).'
+      'Packet switching': [
+        'Data is split into <b>packets</b>, each with a header (source IP, destination IP, <b>sequence number</b>, checksum) and payload.',
+        'Packets travel <b>independently</b> by the best available route and are <b>reassembled in order</b> at the destination — efficient, fault-tolerant use of the network.',
+        'Contrast with old <b>circuit switching</b> (e.g. classic telephone) which reserved a dedicated line for the whole call.'
+      ],
+      'Routing': [
+        '<b>Static routing</b> — routes are fixed and configured manually; predictable but doesn\'t adapt.',
+        '<b>Dynamic routing</b> — routers exchange information (OSPF, BGP) and automatically adapt to congestion or failure.'
       ]
     },
     ru: {
-      'IP и среды': [
-        '<b>IPv4</b> 32-битный (~4,3 млрд). <b>IPv6</b> 128-битный (~3,4×10³⁸).',
-        '<b>NAT</b> — много частных устройств за одним публичным IP; экономит IPv4 и скрывает хосты.',
-        '<b>Среды:</b> витая пара (дёшево, короткое), коаксиал (лучше экранирование), оптоволокно (быстро, без EMI, хрупко), беспроводная (мобильно, помехи).'
+      'IP-адресация': [
+        '<b>IPv4</b> — 32-битный (~4,3 млрд адресов), формат <code>192.168.1.1</code>.',
+        '<b>IPv6</b> — 128-битный (~3,4×10³⁸ адресов), шестнадцатеричный с двоеточиями. Создан из-за нехватки IPv4.',
+        '<b>Публичные и частные</b> — публичные уникальны и маршрутизируются в интернете; частные диапазоны (<code>192.168.x.x</code>, <code>10.x.x.x</code>, <code>172.16–31.x.x</code>) повторно используются в LAN и не идут в интернет.',
+        '<b>Статические и динамические</b> — статические фиксированы и заданы вручную (для серверов); динамические сервер <b>DHCP</b> выдаёт временно из пула.',
+        '<b>NAT</b> — много частных устройств за одним публичным IP: экономит адреса IPv4 и скрывает внутренние хосты (базовая защита).'
       ],
-      'Пакеты и маршрутизация': [
-        '<b>Коммутация пакетов</b> — данные делятся на пакеты с заголовком (src/dst IP, номер последовательности); идут независимо, собираются в получателе.',
-        '<b>Статическая</b> — маршруты заданы вручную. <b>Динамическая</b> — роутеры обмениваются и сами подстраиваются под заторы/отказы.'
+      'Среды передачи': [
+        '<b>Витая пара (UTP)</b> — дёшево и просто, но малый радиус (~100 м) и помехи.',
+        '<b>Коаксиальный кабель</b> — лучше экранирован, чем UTP; используется в кабельных провайдерах.',
+        '<b>Оптоволокно</b> — свет, очень высокая скорость на больших расстояниях, не подвержено электромагнитным помехам (EMI); дорого и хрупко.',
+        '<b>Беспроводная</b> (Wi-Fi, сотовая, спутник) — мобильно, но больше помех и рисков безопасности.'
       ],
-      'Безопасность': [
-        '<b>Файрвол</b> — фильтрует по правилам. Слаб против инсайдеров, дорог в глубокой настройке.',
-        '<b>Угрозы:</b> DDoS, вредоносное ПО, фишинг, «человек посередине», SQL-инъекция.',
-        '<b>Шифрование</b> — симметричное (один ключ, быстро) vs асимметричное (пара ключей, безопасный обмен).',
-        '<b>Сертификаты</b> — выдаются CA; связывают сервер с открытым ключом (делают HTTPS доверенным).'
+      'Коммутация пакетов': [
+        'Данные делятся на <b>пакеты</b> с заголовком (IP отправителя, IP получателя, <b>порядковый номер</b>, контрольная сумма) и нагрузкой.',
+        'Пакеты идут <b>независимо</b> по лучшему маршруту и <b>собираются по порядку</b> у получателя — эффективное, отказоустойчивое использование сети.',
+        'Сравните с устаревшей <b>коммутацией каналов</b> (классическая телефония), где на весь разговор резервировалась выделенная линия.'
+      ],
+      'Маршрутизация': [
+        '<b>Статическая</b> — маршруты заданы вручную; предсказуемо, но не подстраивается.',
+        '<b>Динамическая</b> — маршрутизаторы обмениваются информацией (OSPF, BGP) и автоматически реагируют на заторы и отказы.'
+      ]
+    }
+  },
+
+  a2_4: {
+    title: { en: 'A2.4 Network security', ru: 'A2.4 Сетевая безопасность' },
+    en: {
+      'Firewalls': [
+        'A <b>firewall</b> monitors and filters packets against rules — by source/destination IP, port, protocol, or application content. Can be a dedicated appliance, a router function, or host software.',
+        '<b>Strengths:</b> traffic logging, access control, application-level inspection.',
+        '<b>Limitations:</b> weak against insider threats; can be bypassed by sophisticated/encrypted attacks; complex to configure; deep inspection adds latency.'
+      ],
+      'Common threats': [
+        '<b>DDoS</b> — flooding a service with traffic to exhaust it.',
+        '<b>Malware</b> — viruses, worms, ransomware, trojans, spyware.',
+        '<b>Phishing / social engineering</b> — tricking a user into revealing credentials or running attacker code.',
+        '<b>Man-in-the-Middle (MitM)</b> — secretly relaying and possibly altering communications between two parties.',
+        '<b>SQL injection</b> — exploiting unfiltered input to a database (more in A3).'
+      ],
+      'Countermeasures': [
+        'Firewalls + intrusion detection/prevention systems (IDS/IPS).',
+        '<b>Strong authentication</b> — multi-factor authentication (MFA), unique passwords.',
+        '<b>Encryption</b> in transit (TLS/HTTPS) and at rest (disk encryption).',
+        'Regular <b>patching</b> of OS and applications.',
+        '<b>VPNs</b> for remote access.',
+        '<b>User training</b> — many breaches start with a human click.'
+      ],
+      'Encryption': [
+        '<b>Encryption</b> converts plaintext into ciphertext so only authorised parties can read it.',
+        '<b>Symmetric</b> — one shared key used for both encrypt and decrypt (fast, but key distribution is the problem). Algorithms: AES.',
+        '<b>Asymmetric</b> — a <b>public/private key pair</b>; anything encrypted with one can only be decrypted with the other. Slower, but solves key exchange and enables digital signatures. Algorithms: RSA, elliptic curve.',
+        'HTTPS uses asymmetric encryption to <b>exchange a fresh symmetric key</b>, then encrypts the bulk data symmetrically (fast + secure).'
+      ],
+      'Digital certificates': [
+        'Issued by a trusted <b>Certificate Authority (CA)</b>; bind a server\'s identity to a public key.',
+        'Your browser ships with a list of trusted CAs; when it sees a certificate, it verifies the chain back to one — that\'s why HTTPS is trustworthy.',
+        'A certificate also lets the server <b>prove its identity</b>, preventing MitM impersonation.'
+      ]
+    },
+    ru: {
+      'Файрволы': [
+        '<b>Межсетевой экран</b> отслеживает и фильтрует пакеты по правилам — IP отправителя/получателя, порт, протокол, содержимое приложения. Бывает отдельным устройством, функцией роутера или ПО на хосте.',
+        '<b>Плюсы:</b> логирование трафика, контроль доступа, проверка на уровне приложений.',
+        '<b>Минусы:</b> слаб против внутренних угроз; обходится сложными/шифрованными атаками; сложен в настройке; глубокая проверка добавляет задержку.'
+      ],
+      'Типичные угрозы': [
+        '<b>DDoS</b> — перегрузка сервиса трафиком для отказа в обслуживании.',
+        '<b>Вредоносное ПО</b> — вирусы, черви, шифровальщики, трояны, шпионы.',
+        '<b>Фишинг / социальная инженерия</b> — обман пользователя для получения паролей или запуска кода атакующего.',
+        '<b>Атака «человек посередине» (MitM)</b> — скрытое посредничество в обмене между двумя сторонами, иногда с подменой.',
+        '<b>SQL-инъекция</b> — эксплуатация необработанного ввода в БД (см. A3).'
+      ],
+      'Меры защиты': [
+        'Файрволы + системы обнаружения/предотвращения вторжений (IDS/IPS).',
+        '<b>Сильная аутентификация</b> — многофакторная (MFA), уникальные пароли.',
+        '<b>Шифрование</b> в пути (TLS/HTTPS) и на диске.',
+        'Регулярные <b>обновления</b> ОС и приложений.',
+        '<b>VPN</b> для удалённого доступа.',
+        '<b>Обучение пользователей</b> — большая часть взломов начинается с клика человека.'
+      ],
+      'Шифрование': [
+        '<b>Шифрование</b> превращает открытый текст в шифртекст, читаемый только авторизованным сторонам.',
+        '<b>Симметричное</b> — один общий ключ для шифрования и расшифровки (быстро, но проблема — как обменяться ключом). Алгоритмы: AES.',
+        '<b>Асимметричное</b> — пара <b>открытый/закрытый ключ</b>; зашифрованное одним расшифровывается только другим. Медленнее, но решает обмен ключами и даёт цифровые подписи. Алгоритмы: RSA, эллиптические кривые.',
+        'HTTPS использует асимметричное шифрование, чтобы <b>обменяться новым симметричным ключом</b>, а затем шифрует основные данные симметрично (быстро + безопасно).'
+      ],
+      'Цифровые сертификаты': [
+        'Выдаются доверенным <b>центром сертификации (CA)</b>; связывают сервер с открытым ключом.',
+        'Браузер содержит список доверенных CA; видя сертификат, он проверяет цепочку до одного из них — поэтому HTTPS можно доверять.',
+        'Сертификат также позволяет серверу <b>подтвердить свою личность</b>, защищая от MitM-подмены.'
       ]
     }
   },
 
   a3_1: {
-    title: { en: 'A3.1 Database fundamentals', ru: 'A3.1 Основы БД' },
+    title: { en: 'A3.1 Database fundamentals', ru: 'A3.1 Основы баз данных' },
     en: {
-      'Core terms': [
-        '<b>Database</b> — an organised collection of data stored and accessed electronically.',
-        '<b>Entity = table</b>, <b>tuple = record/row</b>, <b>attribute = column</b>.',
-        '<b>Primary key</b> — uniquely identifies a record. <b>Foreign key</b> — refers to another table\'s primary key.',
-        '<b>Referential integrity</b> — every foreign key must point to a valid existing primary key.'
+      'What is a database': [
+        'A <b>database</b> is an organised collection of data, stored logically (usually in interconnected tables) and accessed electronically from a computer system.',
+        'A <b>DBMS</b> (database management system) is the software that lets users define, query and administer the data (e.g. MySQL, PostgreSQL, SQLite, Oracle).'
       ],
-      'Relationships & limits': [
-        '<b>1:1, 1:M, M:N</b>. M:N must be resolved with a <b>junction/link table</b> (e.g. Appointment).',
-        '<b>Flat-file problems</b>: insert / delete / update anomalies → fixed by normalization.',
-        '<b>Relational limits</b>: rigid schema fits poorly with unstructured media; object-relational mismatch for complex OOP.'
+      'Flat-file problems & anomalies': [
+        'Storing everything in one wide table repeats data, wastes space and causes inconsistency. Three anomalies result:',
+        '• <b>Insert anomaly</b> — you cannot add one entity without data about another (e.g. cannot record a new vet until they treat a patient).',
+        '• <b>Delete anomaly</b> — deleting one record removes other needed data too.',
+        '• <b>Update anomaly</b> — if a repeated value is changed in some places but not all, the data becomes inconsistent.',
+        'Solution: <b>normalization</b> (see A3.2).'
+      ],
+      'Relational model terms': [
+        '<b>Entity / table</b> — a real-world object data is stored about (e.g. <i>Member</i>, <i>Book</i>).',
+        '<b>Tuple / record / row</b> — one instance of that entity.',
+        '<b>Attribute / field / column</b> — one property of the entity.'
+      ],
+      'Keys & integrity': [
+        '<b>Primary key (PK)</b> — uniquely identifies each record in a table (e.g. <code>StudentID</code>).',
+        '<b>Foreign key (FK)</b> — a field that refers to the PK of another table, creating the <b>link/relationship</b>.',
+        '<b>Referential integrity</b> — a set of rules keeping relationships consistent: every foreign key must always point to a valid existing primary key (e.g. you cannot loan a book to a member who does not exist).'
+      ],
+      'Relationships': [
+        '<b>One-to-one (1:1)</b> — each A relates to one B (e.g. Person ↔ Passport).',
+        '<b>One-to-many (1:M)</b> — each A relates to many B but each B to one A (e.g. Author → Books).',
+        '<b>Many-to-many (M:N)</b> — many A relate to many B (e.g. Students ↔ Courses). <b>M:N must be resolved using a junction (link) table</b>.'
+      ],
+      'Limits of the relational model': [
+        'A rigid predefined <b>schema</b> fits poorly with varied/unstructured data (audio, images, X-rays).',
+        '<b>Object-relational mismatch</b> — complex OOP objects (with inheritance) are awkward to map into flat tables.',
+        'For such data a <b>NoSQL/document</b> or specialised store may be a better fit (see A3.4).'
       ]
     },
     ru: {
-      'Базовые термины': [
-        '<b>База данных</b> — организованная коллекция данных, доступная электронно.',
-        '<b>Сущность = таблица</b>, <b>кортеж = запись/строка</b>, <b>атрибут = столбец</b>.',
-        '<b>Первичный ключ</b> — однозначно идентифицирует запись. <b>Внешний</b> — ссылается на первичный другой таблицы.',
-        '<b>Ссылочная целостность</b> — внешний ключ всегда указывает на существующий первичный.'
+      'Что такое БД': [
+        '<b>База данных</b> — организованная коллекция данных, хранимая логически (обычно во взаимосвязанных таблицах) и доступная электронно.',
+        '<b>СУБД</b> — программа, которая позволяет создавать, запрашивать и администрировать данные (MySQL, PostgreSQL, SQLite, Oracle).'
       ],
-      'Связи и ограничения': [
-        '<b>1:1, 1:M, M:N</b>. M:N разрешается через <b>связующую таблицу</b> (напр. «Приём»).',
-        '<b>Аномалии плоского файла:</b> вставка / удаление / обновление → решает нормализация.',
-        '<b>Ограничения реляционной модели:</b> жёсткая схема плохо подходит для неструктурированных данных; mismatch со сложными OOP-структурами.'
+      'Проблемы плоского файла и аномалии': [
+        'Хранение всего в одной широкой таблице дублирует данные, тратит место и порождает несогласованность. Три аномалии:',
+        '• <b>Аномалия вставки</b> — нельзя добавить одну сущность без данных о другой (нельзя внести нового ветеринара, пока он не лечит пациента).',
+        '• <b>Аномалия удаления</b> — удаление одной записи стирает и другие нужные данные.',
+        '• <b>Аномалия обновления</b> — если повторяющееся значение поменяли не везде, данные становятся противоречивыми.',
+        'Решение — <b>нормализация</b> (см. A3.2).'
+      ],
+      'Термины реляционной модели': [
+        '<b>Сущность / таблица</b> — объект реального мира, о котором хранят данные (<i>Читатель</i>, <i>Книга</i>).',
+        '<b>Кортеж / запись / строка</b> — один экземпляр сущности.',
+        '<b>Атрибут / поле / столбец</b> — одно свойство сущности.'
+      ],
+      'Ключи и целостность': [
+        '<b>Первичный ключ (PK)</b> — однозначно идентифицирует запись (<code>StudentID</code>).',
+        '<b>Внешний ключ (FK)</b> — поле, ссылающееся на PK другой таблицы; создаёт <b>связь</b>.',
+        '<b>Ссылочная целостность</b> — правила, поддерживающие согласованность: внешний ключ всегда указывает на существующий первичный (нельзя выдать книгу несуществующему читателю).'
+      ],
+      'Типы связей': [
+        '<b>1:1</b> — каждый A связан с одним B (Человек ↔ Паспорт).',
+        '<b>1:M (один-ко-многим)</b> — A связан со многими B, но каждый B — с одним A (Автор → Книги).',
+        '<b>M:N (многие-ко-многим)</b> — многие A связаны со многими B (Студенты ↔ Курсы). <b>M:N разрешается через связующую (junction) таблицу</b>.'
+      ],
+      'Ограничения реляционной модели': [
+        'Жёсткая заранее заданная <b>схема</b> плохо подходит для разнородных/неструктурированных данных (аудио, изображения, снимки).',
+        '<b>Object-relational mismatch</b> — сложные ООП-объекты с наследованием тяжело отображать в плоские таблицы.',
+        'Для таких данных лучше <b>NoSQL/документная</b> или специализированная БД (см. A3.4).'
       ]
     }
   },
 
   a3_2: {
-    title: { en: 'A3.2 Design & normalization', ru: 'A3.2 Проектирование и нормализация' },
+    title: { en: 'A3.2 Database design (schemas, normalization)', ru: 'A3.2 Проектирование БД (схемы, нормализация)' },
     en: {
-      'Schemas & ERD': [
-        '<b>Schema</b> — blueprint without data. <b>Conceptual</b> (abstract), <b>logical</b> (attributes + keys), <b>physical</b> (data types, indices).',
-        '<b>ERD</b> — entities (rectangles), attributes, relationships (verbs), cardinality (1, M, N).'
+      'Schemas': [
+        '<b>Schema</b> — a blueprint of the database (entities, attributes, relationships, constraints) that contains <b>no actual data</b>. Three levels:',
+        '<b>Conceptual</b> — most abstract: just entities and the relationships between them (seen via an ERD).',
+        '<b>Logical</b> — adds attributes, primary and foreign keys, normalization.',
+        '<b>Physical</b> — adds data types, storage structures, indexes: how data is actually stored on disk.'
       ],
-      'Normal forms': [
-        '<b>1NF</b> — atomic values, no repeating groups.',
-        '<b>2NF</b> — 1NF + no <b>partial dependency</b> (non-key attribute depends on whole composite key).',
-        '<b>3NF</b> — 2NF + no <b>transitive dependency</b> (non-key doesn\'t depend on another non-key).',
-        '<b>Denormalization</b> — deliberately add redundancy for read speed; costs storage + risk of update anomalies.'
+      'Entity-Relationship Diagram (ERD)': [
+        'Visual model showing <b>entities</b> (rectangles), <b>attributes</b> (ovals or listed inside), and <b>relationships</b> (verbs on the line between them).',
+        '<b>Cardinality</b> is marked at each end (1, M, N) — defines whether each row in A relates to one or many rows in B.',
+        'A <b>M:N</b> relationship is split into two 1:M relationships using a <b>junction table</b> (e.g. Vet–Pet → Appointment table holding VetID + PetID).'
+      ],
+      'Normalization': [
+        'Reorganising data to reduce redundancy and eliminate update/insert/delete anomalies.',
+        '<b>1NF (First Normal Form)</b> — all values <b>atomic</b> (one value per cell) and no repeating groups.',
+        '<b>2NF</b> — in 1NF <b>and</b> no <b>partial dependency</b>: a non-key attribute must depend on the <i>whole</i> composite key, not just part of it.',
+        '<b>3NF</b> — in 2NF <b>and</b> no <b>transitive dependency</b>: a non-key attribute must depend only on the primary key, not on another non-key attribute.'
+      ],
+      'Denormalization': [
+        '<b>Denormalization</b> — deliberately re-introducing redundancy to improve <b>read performance</b> (fewer joins) at the cost of extra storage and the risk of update anomalies.',
+        'Used in high-traffic / analytical systems where reads vastly outnumber writes (social media feeds, dashboards).'
       ]
     },
     ru: {
-      'Схемы и ERD': [
-        '<b>Схема</b> — план без данных. <b>Концептуальная</b> (абстрактная), <b>логическая</b> (атрибуты + ключи), <b>физическая</b> (типы, индексы).',
-        '<b>ERD</b> — сущности (прямоугольники), атрибуты, связи (глаголы), кардинальность (1, M, N).'
+      'Схемы': [
+        '<b>Схема</b> — план базы (сущности, атрибуты, связи, ограничения) <b>без реальных данных</b>. Три уровня:',
+        '<b>Концептуальная</b> — самая абстрактная: только сущности и связи между ними (через ERD).',
+        '<b>Логическая</b> — добавляет атрибуты, первичные/внешние ключи, нормализацию.',
+        '<b>Физическая</b> — добавляет типы данных, структуры хранения, индексы: как данные лежат на диске.'
       ],
-      'Нормальные формы': [
-        '<b>1НФ</b> — атомарные значения, нет повторяющихся групп.',
-        '<b>2НФ</b> — 1НФ + нет <b>частичной зависимости</b> (неключевой зависит от всего составного ключа).',
-        '<b>3НФ</b> — 2НФ + нет <b>транзитивной зависимости</b> (неключевой не зависит от другого неключевого).',
-        '<b>Денормализация</b> — намеренно вводят избыточность ради скорости чтения; ценой места и риска аномалий обновления.'
+      'Диаграмма «сущность-связь» (ERD)': [
+        'Визуальная модель: <b>сущности</b> (прямоугольники), <b>атрибуты</b> (овалы или внутри), <b>связи</b> (глаголы на линии).',
+        '<b>Кардинальность</b> отмечается на концах (1, M, N) — сколько строк A соответствует одной строке B.',
+        '<b>M:N</b> разбивается на две связи 1:M через <b>связующую таблицу</b> (Ветеринар–Питомец → таблица «Приём» с VetID и PetID).'
+      ],
+      'Нормализация': [
+        'Реорганизация данных для снижения избыточности и устранения аномалий.',
+        '<b>1НФ</b> — все значения <b>атомарны</b> (одно значение в ячейке), нет повторяющихся групп.',
+        '<b>2НФ</b> — уже в 1НФ <b>и</b> нет <b>частичной зависимости</b>: неключевой атрибут зависит от <i>всего</i> составного ключа, а не от части.',
+        '<b>3НФ</b> — уже в 2НФ <b>и</b> нет <b>транзитивной зависимости</b>: неключевой атрибут зависит только от первичного ключа, а не от другого неключевого.'
+      ],
+      'Денормализация': [
+        '<b>Денормализация</b> — намеренное добавление избыточности ради <b>скорости чтения</b> (меньше join\'ов) ценой места и риска аномалий обновления.',
+        'Применяется в высоконагруженных / аналитических системах, где чтений намного больше, чем записей (ленты соцсетей, дашборды).'
       ]
     }
   },
 
   a3_3: {
-    title: { en: 'A3.3 SQL programming', ru: 'A3.3 Программирование SQL' },
+    title: { en: 'A3.3 Database programming (SQL, views, transactions)', ru: 'A3.3 Программирование БД (SQL, представления, транзакции)' },
     en: {
-      'SQL families': [
-        '<b>DDL</b> — defines structure: CREATE, ALTER, DROP.',
-        '<b>DML</b> — manipulates data: SELECT, INSERT, UPDATE, DELETE.',
-        '<b>DCL</b> — controls access: GRANT, REVOKE.',
-        '<b>TCL</b> (HL) — transaction control: COMMIT, ROLLBACK.'
+      'SQL language families': [
+        '<b>DDL (Data Definition Language)</b> — defines structure: <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>.',
+        '<b>DML (Data Manipulation Language)</b> — handles data: <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>.',
+        '<b>DCL (Data Control Language)</b> — controls access: <code>GRANT</code>, <code>REVOKE</code>.',
+        '<b>TCL (Transaction Control)</b> (HL) — <code>COMMIT</code>, <code>ROLLBACK</code>, <code>SAVEPOINT</code>.'
       ],
-      'Querying': [
-        '<b>SELECT … FROM … WHERE …</b> with <b>JOIN ON</b> matching FK to PK.',
-        'WHERE is critical in UPDATE/DELETE — without it, <b>every row</b> is affected.',
-        '<b>Aggregates:</b> SUM, AVG, COUNT, MIN, MAX (often with GROUP BY).',
-        '<b>Views (HL)</b> — virtual tables from a stored query; data not stored separately.',
-        '<b>Transactions (HL)</b> — atomic "all or nothing"; ROLLBACK reverts to last COMMIT (ACID).'
+      'Queries & joins': [
+        '<code>SELECT … FROM … WHERE …</code> retrieves columns from rows that match a filter.',
+        '<b>JOIN</b> combines rows from two tables on a matching condition — usually <b>FK = PK</b> (e.g. <code>JOIN APPOINTMENT ON PATIENT.PatientID = APPOINTMENT.PatientID</code>).',
+        'Without a JOIN condition you get a <b>Cartesian product</b> (every row × every row — usually a bug).'
+      ],
+      'The WHERE clause matters': [
+        'Critical in <code>UPDATE</code> and <code>DELETE</code>: without it, <b>every row</b> in the table is changed/removed — a serious data-integrity error.',
+        'Always target the intended records, e.g. <code>WHERE ProductID = \'P105\'</code>.'
+      ],
+      'Aggregates & grouping': [
+        '<code>SUM</code>, <code>AVG</code>, <code>COUNT</code>, <code>MIN</code>, <code>MAX</code> compute over a set of rows.',
+        'Often combined with <code>GROUP BY</code> to get one row per group (e.g. total sales per product).'
+      ],
+      'Views (HL)': [
+        'A <b>view</b> is a <b>virtual table</b> defined by a stored <code>SELECT</code> query.',
+        'Data is <b>not</b> stored separately — it is generated from the underlying base tables each time the view is queried.',
+        'Views simplify complex queries and improve security by exposing only the selected columns/rows.'
+      ],
+      'Transactions & ACID (HL)': [
+        'A <b>transaction</b> groups operations to be treated as one logical unit.',
+        '<b>Atomicity</b> — "all or nothing": if any step fails, <code>ROLLBACK</code> undoes everything back to the last <code>COMMIT</code>.',
+        '<b>Consistency</b> — the database moves from one valid state to another (constraints, FKs respected).',
+        '<b>Isolation</b> — concurrent transactions don\'t see each other\'s partial work.',
+        '<b>Durability</b> — once committed, the change survives crashes.',
+        'Classic example: bank transfer — debit A then credit B must both succeed or money would vanish.'
       ]
     },
     ru: {
       'Семейства SQL': [
-        '<b>DDL</b> — структура: CREATE, ALTER, DROP.',
-        '<b>DML</b> — данные: SELECT, INSERT, UPDATE, DELETE.',
-        '<b>DCL</b> — доступ: GRANT, REVOKE.',
-        '<b>TCL</b> (HL) — транзакции: COMMIT, ROLLBACK.'
+        '<b>DDL</b> — структура: <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>.',
+        '<b>DML</b> — данные: <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>.',
+        '<b>DCL</b> — доступ: <code>GRANT</code>, <code>REVOKE</code>.',
+        '<b>TCL</b> (HL) — транзакции: <code>COMMIT</code>, <code>ROLLBACK</code>, <code>SAVEPOINT</code>.'
       ],
-      'Запросы': [
-        '<b>SELECT … FROM … WHERE …</b> с <b>JOIN ON</b>, связывая внешний и первичный ключи.',
-        'WHERE критичен в UPDATE/DELETE — без него меняются/удаляются <b>все строки</b>.',
-        '<b>Агрегаты:</b> SUM, AVG, COUNT, MIN, MAX (часто с GROUP BY).',
-        '<b>Views (HL)</b> — виртуальная таблица из сохранённого запроса; отдельно не хранится.',
-        '<b>Транзакции (HL)</b> — атомарность «всё или ничего»; ROLLBACK возвращает к последнему COMMIT (ACID).'
+      'Запросы и соединения': [
+        '<code>SELECT … FROM … WHERE …</code> — выбор столбцов из строк, удовлетворяющих фильтру.',
+        '<b>JOIN</b> объединяет строки двух таблиц по условию — обычно <b>FK = PK</b> (например, <code>JOIN APPOINTMENT ON PATIENT.PatientID = APPOINTMENT.PatientID</code>).',
+        'Без условия соединения получите <b>декартово произведение</b> (каждую строку × каждую — обычно баг).'
+      ],
+      'Важность WHERE': [
+        'Критично в <code>UPDATE</code> и <code>DELETE</code>: без него меняются/удаляются <b>все строки</b> — серьёзная ошибка целостности.',
+        'Всегда таргетируйте нужные записи: <code>WHERE ProductID = \'P105\'</code>.'
+      ],
+      'Агрегаты и группировка': [
+        '<code>SUM</code>, <code>AVG</code>, <code>COUNT</code>, <code>MIN</code>, <code>MAX</code> — считают по набору строк.',
+        'Часто с <code>GROUP BY</code>, чтобы получить одну строку на группу (например, сумма продаж по товару).'
+      ],
+      'Представления (Views, HL)': [
+        '<b>Представление</b> — <b>виртуальная таблица</b> на основе сохранённого <code>SELECT</code>.',
+        'Данные <b>не</b> хранятся отдельно — формируются из базовых таблиц при каждом обращении к представлению.',
+        'Упрощают сложные запросы и повышают безопасность, показывая лишь нужные столбцы/строки.'
+      ],
+      'Транзакции и ACID (HL)': [
+        '<b>Транзакция</b> объединяет операции как одно логическое целое.',
+        '<b>Атомарность</b> — «всё или ничего»: при сбое любого шага <code>ROLLBACK</code> отменяет всё до последнего <code>COMMIT</code>.',
+        '<b>Согласованность</b> — БД переходит из одного валидного состояния в другое (соблюдены ограничения, FK).',
+        '<b>Изолированность</b> — параллельные транзакции не видят промежуточной работы друг друга.',
+        '<b>Устойчивость (Durability)</b> — после COMMIT изменение переживает падение системы.',
+        'Классический пример: банковский перевод — списание с A и зачисление B должны пройти оба, иначе деньги «исчезнут».'
       ]
     }
   },
@@ -1603,135 +2021,237 @@ window.NOTES_DATA = {
   },
 
   a4_1: {
-    title: { en: 'A4.1 ML fundamentals', ru: 'A4.1 Основы ML' },
+    title: { en: 'A4.1 Machine-learning fundamentals', ru: 'A4.1 Основы машинного обучения' },
     en: {
-      'AI hierarchy': [
-        'AI ⊃ ML ⊃ DL.',
-        '<b>AI</b> — broad concept (machines imitating intelligence).',
-        '<b>ML</b> — learns from data without being explicitly programmed.',
-        '<b>Deep Learning</b> — multi-layer neural networks for complex patterns.'
+      'The AI hierarchy': [
+        '<b>Artificial Intelligence (AI)</b> — the broad idea of machines imitating human intelligence.',
+        '<b>Machine Learning (ML)</b> — a <b>subset</b> of AI that learns from data without being explicitly programmed.',
+        '<b>Deep Learning (DL)</b> — a <b>subset</b> of ML using multi-layered neural networks for complex patterns.',
+        'So: <b>AI ⊃ ML ⊃ DL</b>.'
       ],
-      'Five types of ML': [
-        '<b>Supervised</b> — labelled data. Split into <b>classification</b> (discrete) and <b>regression</b> (continuous).',
-        '<b>Unsupervised</b> — unlabelled; main method <b>clustering</b>.',
-        '<b>Reinforcement</b> — agent learns by trial/error from rewards and penalties.',
-        '<b>Deep learning</b> — deep neural nets (CNNs, RNNs).',
-        '<b>Transfer learning</b> — reuse a trained model on a related task.'
+      'The five types of machine learning': [
+        '<b>Supervised learning</b> — trains on a <b>labelled</b> dataset (inputs + correct outputs) to predict outputs for new data. Split into <b>classification</b> (discrete categories — spam/not-spam) and <b>regression</b> (continuous values — house price).',
+        '<b>Unsupervised learning</b> — finds patterns in <b>unlabelled</b> data; main method is <b>clustering</b> (grouping by similarity), also dimensionality reduction and market-basket analysis.',
+        '<b>Reinforcement learning</b> — an <b>agent</b> learns by trial and error in an environment, receiving <b>rewards</b> for good actions and <b>penalties</b> for bad ones (robotics, game-playing, recommendation systems).',
+        '<b>Deep learning</b> — deep artificial neural networks (CNNs for images, RNNs/Transformers for sequence data) for complex tasks like vision and language.',
+        '<b>Transfer learning</b> — reuses a model trained on one task as the starting point for a related task, saving time and data.'
       ],
-      'Hardware': [
-        '<b>GPU</b> — massively parallel; ideal for neural-net training.',
-        '<b>ASIC</b> — custom-built; highest speed/efficiency but inflexible (e.g. HFT).',
-        '<b>FPGA</b> — reconfigurable; flexible but slower than ASIC.',
-        '<b>TPU</b> — Google\'s tensor processor for ML workloads.'
+      'Hardware for ML': [
+        '<b>GPU</b> — massively parallel; ideal for training neural networks.',
+        '<b>ASIC</b> (Application-Specific Integrated Circuit) — custom-built for one fixed task; highest speed/efficiency but inflexible (e.g. high-frequency trading where microseconds matter).',
+        '<b>FPGA</b> — reconfigurable hardware; flexible but slower than a dedicated ASIC.',
+        '<b>TPU</b> — Google\'s tensor processing unit, optimised for ML workloads.'
       ]
     },
     ru: {
       'Иерархия ИИ': [
-        'ИИ ⊃ ML ⊃ DL.',
-        '<b>ИИ</b> — общая идея (машины имитируют интеллект).',
-        '<b>ML</b> — учится на данных без явного программирования.',
-        '<b>Глубокое обучение</b> — многослойные нейросети для сложных закономерностей.'
+        '<b>Искусственный интеллект (ИИ)</b> — общая идея машин, имитирующих интеллект человека.',
+        '<b>Машинное обучение (ML)</b> — <b>подмножество</b> ИИ, которое обучается на данных без явного программирования.',
+        '<b>Глубокое обучение (DL)</b> — <b>подмножество</b> ML на многослойных нейросетях для сложных закономерностей.',
+        'Итого: <b>ИИ ⊃ ML ⊃ DL</b>.'
       ],
-      'Пять типов ML': [
-        '<b>С учителем</b> — размеченные данные. Делится на <b>классификацию</b> (дискретное) и <b>регрессию</b> (непрерывное).',
-        '<b>Без учителя</b> — неразмеченные данные; основной метод — <b>кластеризация</b>.',
-        '<b>С подкреплением</b> — агент учится методом проб и ошибок по наградам/штрафам.',
-        '<b>Глубокое</b> — глубокие нейросети (CNN, RNN).',
-        '<b>Перенос обучения</b> — переиспользование обученной модели на похожей задаче.'
+      'Пять типов машинного обучения': [
+        '<b>Обучение с учителем</b> — на <b>размеченных</b> данных (вход + правильный выход) для прогноза по новым данным. Делится на <b>классификацию</b> (дискретные категории — спам/не спам) и <b>регрессию</b> (непрерывные значения — цена дома).',
+        '<b>Обучение без учителя</b> — ищет закономерности в <b>неразмеченных</b> данных; основной метод — <b>кластеризация</b> (группировка по сходству), также снижение размерности и анализ корзины покупок.',
+        '<b>Обучение с подкреплением</b> — <b>агент</b> учится методом проб и ошибок, получая <b>награды</b> за хорошие действия и <b>штрафы</b> за плохие (робототехника, игры, рекомендации).',
+        '<b>Глубокое обучение</b> — глубокие нейросети (CNN для изображений, RNN/трансформеры для последовательностей) для сложных задач зрения и языка.',
+        '<b>Перенос обучения (transfer)</b> — повторное использование модели, обученной на одной задаче, как старт для похожей; экономит время и данные.'
       ],
-      'Аппаратное обеспечение': [
-        '<b>GPU</b> — массовый параллелизм; идеально для нейросетей.',
-        '<b>ASIC</b> — заказная микросхема; максимум скорости/эффективности, но негибкая (HFT).',
-        '<b>FPGA</b> — перепрограммируемая; гибкая, но медленнее ASIC.',
-        '<b>TPU</b> — тензорный процессор Google для задач ML.'
+      'Аппаратное обеспечение для ML': [
+        '<b>GPU</b> — массовый параллелизм; идеален для обучения нейросетей.',
+        '<b>ASIC</b> — заказная микросхема под одну задачу; максимум скорости/эффективности, но негибкая (например, высокочастотный трейдинг, где важны микросекунды).',
+        '<b>FPGA</b> — перепрограммируемое железо; гибкое, но медленнее специализированного ASIC.',
+        '<b>TPU</b> — тензорный процессор Google под задачи ML.'
       ]
     }
   },
 
   a4_2: {
-    title: { en: 'A4.2 Preprocessing (HL)', ru: 'A4.2 Предобработка (HL)' },
+    title: { en: 'A4.2 Data preprocessing (HL)', ru: 'A4.2 Предобработка данных (HL)' },
     en: {
-      'Cleaning & features': [
-        'Good data = good predictions ("garbage in, garbage out").',
-        '<b>Data cleaning</b> — fix invalid values, missing data, duplicates, format inconsistencies.',
-        '<b>Outliers</b> — points deviating significantly. Detect with <b>Z-score</b> (>~3σ) or <b>IQR</b> (>1.5×IQR).',
-        '<b>Feature selection</b> — remove irrelevant/redundant features. Filter (statistical, fast) vs wrapper (train model, accurate but slow).',
-        '<b>Dimensionality reduction</b> — fewer variables (e.g. PCA) → faster training, less overfitting, avoid curse of dimensionality.'
+      'Why preprocess': [
+        'Preprocessing improves data quality <b>before</b> training — <b>good data = good predictions</b> ("garbage in, garbage out").',
+        'Raw data contains errors, missing values, duplicates and noise; a model would learn all of that and produce unreliable predictions.'
+      ],
+      'Data cleaning': [
+        'Make data consistent, accurate and error-free:',
+        '• Correct invalid values (e.g. negative age).',
+        '• Handle missing data (drop rows, impute mean/median, predict the value).',
+        '• Remove duplicates.',
+        '• Standardise formats (dates → YYYY-MM-DD, units, capitalisation).',
+        '"Noise" = irrelevant or inaccurate data that distracts the model.'
+      ],
+      'Outliers': [
+        'Data points that deviate significantly from the rest.',
+        '<b>Z-score</b> — flag values lying beyond about <b>3 standard deviations</b> from the mean.',
+        '<b>IQR method</b> — flag values outside <b>1.5 × IQR</b> below Q1 or above Q3.',
+        'Decide carefully whether to remove them — sometimes outliers are the most interesting data (fraud detection!).'
+      ],
+      'Feature selection': [
+        'Choose the most relevant input variables and remove irrelevant/redundant ones → improves accuracy and reduces computational cost.',
+        '<b>Filter methods</b> — evaluate features with statistical tests <b>independently of the model</b>; fast and cheap.',
+        '<b>Wrapper methods</b> — evaluate subsets by actually training the model and comparing performance; more accurate but computationally expensive.'
+      ],
+      'Dimensionality reduction': [
+        'Reduce the number of variables (e.g. with <b>PCA</b> — Principal Component Analysis).',
+        '<b>Why:</b> simplifies the model, speeds up training, helps avoid the <b>"curse of dimensionality"</b> and overfitting, while preserving important trends.'
       ]
     },
     ru: {
-      'Очистка и признаки': [
-        'Хорошие данные = хорошие прогнозы («мусор на входе — мусор на выходе»).',
-        '<b>Очистка</b> — неверные значения, пропуски, дубли, форматы.',
-        '<b>Выбросы</b> — точки, значительно отклоняющиеся. Z-оценка (>~3σ) или IQR (>1,5×IQR).',
-        '<b>Отбор признаков</b> — убираем нерелевантные/избыточные. Фильтр (статистика, быстро) vs обёрточный (обучая модель, точнее, но медленно).',
-        '<b>Снижение размерности</b> — меньше переменных (PCA) → быстрее, меньше переобучения, избегаем «проклятия размерности».'
+      'Зачем предобрабатывать': [
+        'Предобработка повышает качество данных <b>до</b> обучения — <b>хорошие данные = хорошие прогнозы</b> («мусор на входе — мусор на выходе»).',
+        'Сырые данные содержат ошибки, пропуски, дубли и шум; модель выучит всё это и даст ненадёжные прогнозы.'
+      ],
+      'Очистка данных': [
+        'Привести данные к согласованному, точному, безошибочному виду:',
+        '• Исправить неверные значения (например, отрицательный возраст).',
+        '• Обработать пропуски (удалить строки, подставить среднее/медиану, предсказать значение).',
+        '• Удалить дубли.',
+        '• Стандартизировать форматы (даты → ГГГГ-ММ-ДД, единицы измерения, регистр).',
+        '«Шум» — нерелевантные или неточные данные, отвлекающие модель.'
+      ],
+      'Выбросы (outliers)': [
+        'Точки, сильно отклоняющиеся от остальных.',
+        '<b>Z-оценка</b> — значения дальше ~3 стандартных отклонений от среднего.',
+        '<b>Метод IQR</b> — значения за пределами <b>1,5 × IQR</b> ниже Q1 или выше Q3.',
+        'Решайте аккуратно, удалять ли — иногда выбросы и есть самое интересное (например, обнаружение мошенничества!).'
+      ],
+      'Отбор признаков': [
+        'Выбор самых значимых входов и удаление лишних/избыточных → повышает точность и снижает вычислительные затраты.',
+        '<b>Фильтрующие методы</b> — оценивают признаки статистически <b>независимо от модели</b>; быстро и дёшево.',
+        '<b>Обёрточные (wrapper)</b> — проверяют подмножества, реально обучая модель и сравнивая результат; точнее, но дорого.'
+      ],
+      'Снижение размерности': [
+        'Уменьшить число переменных (например, <b>PCA</b> — метод главных компонент).',
+        '<b>Зачем:</b> упрощает модель, ускоряет обучение, помогает избежать <b>«проклятия размерности»</b> и переобучения, сохраняя важные тренды.'
       ]
     }
   },
 
   a4_3: {
-    title: { en: 'A4.3 ML approaches (HL)', ru: 'A4.3 Подходы ML (HL)' },
+    title: { en: 'A4.3 Machine-learning approaches (HL)', ru: 'A4.3 Подходы машинного обучения (HL)' },
     en: {
       'Supervised techniques': [
-        '<b>Linear regression</b> — line of best fit minimising error → predict continuous outcomes.',
-        '<b>Classification</b> — predicts discrete categories.',
-        '<b>Hyperparameter tuning</b> — settings fixed before training (learning rate, k, tree depth). Compare with accuracy/precision/recall/F1 from a confusion matrix.'
+        '<b>Linear regression</b> — models the relationship between a dependent variable and one or more independent variables, fitting a <b>line of best fit</b> (minimising squared error) to predict <b>continuous</b> outcomes (house prices from size/location).',
+        '<b>Classification</b> — supervised technique predicting <b>discrete</b> categories (spam/ham, disease/no disease).',
+        '<b>K-nearest neighbours (KNN)</b> — classifies a new point by the majority label of its <i>k</i> closest training points.',
+        '<b>Decision trees / random forests</b> — split data on features to reach a class or value; forests average many trees for robustness.',
+        '<b>Hyperparameter tuning</b> — settings fixed <b>before</b> training (learning rate, number of clusters <i>k</i>, tree depth) that the model cannot learn from data. Good tuning improves accuracy, efficiency and robustness. Models are compared using <b>accuracy, precision, recall and F1-score</b> from a <b>confusion matrix</b>.'
       ],
-      'Unsupervised & beyond': [
-        '<b>K-means clustering</b> — partition data into k clusters by nearest centroid.',
-        '<b>Association rule learning</b> — "people who buy X also buy Y".',
-        '<b>Reinforcement learning</b> — agent ↔ environment; reward/penalty; exploration vs exploitation.',
-        '<b>Genetic algorithms</b> — selection, crossover, mutation; inspired by natural selection.',
-        '<b>ANNs/CNNs</b> — convolutional + pooling layers learn spatial hierarchies (image pixels).'
+      'Unsupervised techniques': [
+        '<b>K-means clustering</b> — unsupervised; partitions data into <i>k</i> clusters by assigning each point to the nearest <b>centroid</b> (mean position), then re-computing centroids — repeat until stable.',
+        '<b>Association rule learning</b> — finds relationships between attributes in large datasets (market-basket analysis: "people who buy X also buy Y").',
+        '<b>Dimensionality reduction</b> — PCA, t-SNE for visualisation.'
+      ],
+      'Reinforcement learning': [
+        'An <b>agent</b> interacts with an <b>environment</b>, taking actions and observing the resulting state.',
+        'It receives <b>rewards</b> for good actions and <b>penalties</b> for bad ones, and adjusts its policy to <b>maximise cumulative reward</b>.',
+        'Key tension: <b>exploration</b> (try new actions) vs <b>exploitation</b> (use what already works).',
+        'Used in robotics, game-playing (AlphaGo), recommendation systems.'
+      ],
+      'Genetic algorithms': [
+        'Optimisation/search heuristics inspired by <b>natural selection</b>.',
+        'A population of candidate solutions evolves over generations through <b>selection, crossover and mutation</b> to find an optimal solution.',
+        'Useful where the search space is huge and gradients aren\'t available.'
+      ],
+      'Neural networks & CNNs': [
+        'An <b>artificial neural network (ANN)</b> has input, hidden and output layers of weighted neurons that model complex patterns; trained with backpropagation.',
+        '<b>CNN (Convolutional Neural Network)</b> — applies learnable <b>convolutional layers</b> (filters) that slide across the image to detect features such as edges.',
+        '<b>Pooling layers</b> downsample to reduce size and keep key features.',
+        'Stacking these layers lets the network learn <b>spatial hierarchies</b> — from simple edges to complex shapes, faces, objects.'
       ]
     },
     ru: {
       'Обучение с учителем': [
-        '<b>Линейная регрессия</b> — линия наилучшего соответствия (минимум ошибки) → непрерывный прогноз.',
-        '<b>Классификация</b> — предсказывает дискретные категории.',
-        '<b>Гиперпараметры</b> — настройки до обучения (скорость обучения, k, глубина дерева). Сравнение по accuracy/precision/recall/F1 из матрицы ошибок.'
+        '<b>Линейная регрессия</b> — моделирует связь зависимой переменной с одной/несколькими независимыми, подбирая <b>линию наилучшего соответствия</b> (минимум квадратичной ошибки) для прогноза <b>непрерывных</b> значений (цена дома по площади/району).',
+        '<b>Классификация</b> — обучение с учителем для предсказания <b>дискретных</b> категорий (спам/не спам, болезнь/нет).',
+        '<b>k-ближайших соседей (KNN)</b> — относит новую точку к категории большинства её <i>k</i> ближайших соседей из обучающего множества.',
+        '<b>Деревья решений / случайные леса</b> — разделяют данные по признакам до класса/значения; лес усредняет много деревьев для устойчивости.',
+        '<b>Настройка гиперпараметров</b> — настройки, заданные <b>до</b> обучения (скорость обучения, число кластеров <i>k</i>, глубина дерева), которые модель не выводит из данных. Хорошая настройка повышает точность, эффективность, устойчивость. Модели сравнивают по <b>accuracy, precision, recall, F1</b> из <b>матрицы ошибок</b>.'
       ],
-      'Без учителя и далее': [
-        '<b>K-means</b> — деление на k кластеров по ближайшему центроиду.',
-        '<b>Ассоциативные правила</b> — «кто покупает X, берёт и Y».',
-        '<b>RL</b> — агент ↔ среда; награды/штрафы; баланс исследования/эксплуатации.',
-        '<b>Генетические алгоритмы</b> — селекция, скрещивание, мутация; принцип отбора.',
-        '<b>ANN/CNN</b> — свёрточные и пулинг-слои учат пространственные иерархии (пиксели).'
+      'Обучение без учителя': [
+        '<b>Кластеризация K-means</b> — без учителя; делит данные на <i>k</i> кластеров, относя точку к ближайшему <b>центроиду</b> (среднее положение), пересчитывает центроиды — повторяет до стабильности.',
+        '<b>Ассоциативные правила</b> — находят связи между атрибутами в больших данных (анализ корзины: «кто покупает X, берёт и Y»).',
+        '<b>Снижение размерности</b> — PCA, t-SNE для визуализации.'
+      ],
+      'Обучение с подкреплением': [
+        '<b>Агент</b> взаимодействует со <b>средой</b>: совершает действия и видит результат.',
+        'Получает <b>награды</b> за хорошие действия и <b>штрафы</b> за плохие; со временем меняет стратегию, максимизируя <b>суммарную награду</b>.',
+        'Ключевое противоречие: <b>исследование</b> (пробовать новое) против <b>эксплуатации</b> (использовать проверенное).',
+        'Применяется в робототехнике, играх (AlphaGo), рекомендациях.'
+      ],
+      'Генетические алгоритмы': [
+        'Эвристики оптимизации по принципу <b>естественного отбора</b>.',
+        'Популяция решений эволюционирует через поколения с помощью <b>селекции, скрещивания и мутации</b>, ища оптимум.',
+        'Полезно там, где пространство поиска огромно, а градиента нет.'
+      ],
+      'Нейросети и CNN': [
+        '<b>Искусственная нейросеть (ИНС)</b> — входной, скрытые и выходной слои взвешенных нейронов; моделирует сложные закономерности; обучается обратным распространением.',
+        '<b>CNN (свёрточная нейросеть)</b> — применяет обучаемые <b>свёрточные слои</b> (фильтры), скользящие по изображению, чтобы выявить признаки вроде граней.',
+        '<b>Слои пулинга</b> уменьшают размер, сохраняя ключевые признаки.',
+        'Стек этих слоёв учит <b>пространственные иерархии</b> — от простых граней к сложным формам, лицам, объектам.'
       ]
     }
   },
 
   a4_4: {
-    title: { en: 'A4.4 Ethics & NLP', ru: 'A4.4 Этика и NLP' },
+    title: { en: 'A4.4 Ethical considerations & NLP', ru: 'A4.4 Этика и NLP' },
     en: {
-      'Ethical considerations': [
-        '<b>Accountability</b> — who is responsible when AI causes harm: developer, user, deployer?',
-        '<b>Bias</b> — models inherit prejudice from training data → discriminatory outcomes; mitigate with diverse data, teams, ongoing testing.',
-        '<b>Privacy & consent</b> — ML often uses personal data; informed consent and anonymisation matter.',
-        '<b>Surveillance</b> — facial recognition raises consent issues and "chilling effects".',
-        '<b>Environment</b> — large models consume significant energy/resources.'
+      'Accountability': [
+        'When an AI system causes harm, <b>who is responsible</b>: the developer, the user, or the deployer?',
+        'Clear lines of accountability are essential for decisions affecting people\'s lives — lending, hiring, medical, criminal justice.'
       ],
-      'NLP': [
-        'NLP — branch of AI for understanding/processing human language.',
-        '<b>Sarcasm & ambiguity</b> — surface analysis misreads ironic language; context matters.',
-        '<b>False positive</b> — flags something that is not there (e.g. innocent post marked bullying).',
-        '<b>False negative</b> — misses a real event (e.g. missed storm forecast). Often life-and-death.'
+      'Algorithmic fairness & bias': [
+        'A model inherits bias from its <b>training data</b>. If the data reflects historical prejudice or is unrepresentative, the system produces <b>discriminatory outcomes</b> in hiring, lending or justice.',
+        '<b>Mitigation:</b> diverse training data, diverse teams reviewing the model, ongoing fairness testing, transparency about how the model is used.'
+      ],
+      'Privacy, consent & surveillance': [
+        '<b>Privacy & consent</b> — ML often uses personal data, so <b>informed consent</b> and anonymisation matter, especially in health, finance and education.',
+        '<b>Surveillance</b> — facial recognition in public raises concerns over lack of consent and a "<b>chilling effect</b>" on free movement and expression.',
+        'Even encrypted communications leak <b>metadata</b> (who, when, how often) that unsupervised clustering can use to profile social groups.'
+      ],
+      'Environmental impact': [
+        'Training large models consumes <b>significant energy and water</b> (for cooling).',
+        'Inference at scale also has a real-world footprint — the more popular the model, the larger.',
+        'Trade-off: model size & accuracy vs efficiency.'
+      ],
+      'Natural Language Processing (NLP)': [
+        '<b>NLP</b> is a branch of AI that enables machines to <b>understand and process human text and speech</b> (chatbots, translation, search, summarisation).',
+        '<b>Sarcasm and ambiguity</b> — a model must use <b>context</b> to interpret tone; otherwise it misjudges intent and may misclassify ironic language as genuine bullying (false positive) or miss disguised abuse (false negative).'
+      ],
+      'False positives vs false negatives': [
+        '<b>False positive</b> — flags something that is not actually there (a harmless post marked as bullying). Hurts user trust; affects innocent users.',
+        '<b>False negative</b> — misses a real event (failing to predict a storm; missing genuine cyberbullying). Often <b>life-and-death consequences</b>.',
+        'Choosing thresholds is an ethical decision — which type of error is worse in this context?'
       ]
     },
     ru: {
-      'Этика': [
-        '<b>Ответственность</b> — кто отвечает за вред ИИ: разработчик, пользователь, внедривший?',
-        '<b>Предвзятость</b> — модель наследует смещение из обучающих данных → дискриминация; борьба: разнообразные данные, команды, тестирование.',
-        '<b>Приватность и согласие</b> — ML часто использует персональные данные; важны информированное согласие и анонимизация.',
-        '<b>Слежка</b> — распознавание лиц = проблемы согласия и «сдерживающий эффект».',
-        '<b>Экология</b> — большие модели расходуют много энергии и ресурсов.'
+      'Ответственность': [
+        'Когда ИИ-система причиняет вред, <b>кто отвечает</b>: разработчик, пользователь или внедривший?',
+        'Чёткие границы ответственности нужны для решений, затрагивающих жизнь людей — кредиты, найм, медицина, правосудие.'
       ],
-      'NLP': [
-        'NLP — раздел ИИ для понимания и обработки человеческого языка.',
-        '<b>Сарказм и неоднозначность</b> — поверхностный анализ ошибается; нужен контекст.',
-        '<b>Ложноположительный</b> — отмечает то, чего нет (безобидный пост помечен как травля).',
-        '<b>Ложноотрицательный</b> — пропускает реальное событие (шторм). Может быть критично.'
+      'Справедливость и предвзятость': [
+        'Модель наследует смещение из <b>обучающих данных</b>. Если они отражают прошлые предубеждения или непредставительны, система даёт <b>дискриминационные результаты</b> в найме, кредитовании, правосудии.',
+        '<b>Снижение:</b> разнообразные обучающие данные, разнообразные команды, постоянное тестирование на справедливость, прозрачность использования.'
+      ],
+      'Приватность, согласие, слежка': [
+        '<b>Приватность и согласие</b> — ML часто использует персональные данные, поэтому важны <b>информированное согласие</b> и анонимизация, особенно в медицине, финансах, образовании.',
+        '<b>Слежка</b> — распознавание лиц в общественных местах вызывает вопросы об отсутствии согласия и <b>«сдерживающем эффекте»</b> на свободу передвижения и слова.',
+        'Даже шифрованные сообщения раскрывают <b>метаданные</b> (кто, когда, как часто), по которым кластеризация без учителя профилирует социальные группы.'
+      ],
+      'Экологический след': [
+        'Обучение больших моделей потребляет <b>много энергии и воды</b> (на охлаждение).',
+        'Массовая инференция тоже имеет реальный след — чем популярнее модель, тем больше.',
+        'Компромисс: размер и точность модели против эффективности.'
+      ],
+      'Обработка естественного языка (NLP)': [
+        '<b>NLP</b> — раздел ИИ, позволяющий машинам <b>понимать и обрабатывать человеческий текст и речь</b> (чат-боты, перевод, поиск, реферирование).',
+        '<b>Сарказм и неоднозначность</b> — модель должна учитывать <b>контекст</b> для интерпретации тона; иначе примет иронию за настоящую травлю (ложноположительный) или пропустит скрытую агрессию (ложноотрицательный).'
+      ],
+      'Ложноположительные и ложноотрицательные': [
+        '<b>Ложноположительный</b> — отмечает то, чего на самом деле нет (безобидный пост помечен как травля). Подрывает доверие; страдают невиновные.',
+        '<b>Ложноотрицательный</b> — пропускает реальное событие (не предсказал шторм; пропустил настоящий кибербуллинг). Часто <b>тяжёлые, вплоть до жизни и смерти</b>, последствия.',
+        'Выбор порога — этическое решение: какая ошибка хуже в этом контексте?'
       ]
     }
   }
