@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4.4 Этические соображения · Экзамен-вопросы · IB CS Theme A</title>
+<meta name="description" content="A4.4 Этические соображения в машинном обучении — официальные экзамен-вопросы преподавателя на русском: алгоритмическая предвзятость в банковском кредитовании, видеонаблюдение и распознавание лиц, NLP и кибербуллинг, false positives/negatives в системах предсказания катастроф.">
+<link rel="stylesheet" href="styles.css?v=10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+    line-height: 1.5;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .question-card .sub-q {
+    margin: 14px 0 6px;
+    padding: 6px 10px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.95rem;
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .scenario-box {
+    background: rgba(14,165,233,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    margin: 12px 0;
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+  [data-theme="dark"] .scenario-box { background: rgba(14,165,233,0.10); }
+  .scenario-box .label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .danger-tip {
+    background: rgba(220,38,38,0.08);
+    border-left: 4px solid #dc2626;
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .danger-tip { background: rgba(220,38,38,0.14); }
+  .sim-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    margin: 6px 6px 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background 0.15s;
+  }
+  .sim-link:hover { background: var(--border); }
+  .sim-link .icon {
+    font-size: 1.1rem;
+    margin-right: 6px;
+  }
+  .term-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0 28px;
+  }
+  .case-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .case-card b { color: var(--primary); display: block; margin-bottom: 4px; font-size: 0.95rem; }
+  .fp-fn-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.93rem;
+  }
+  .fp-fn-table th, .fp-fn-table td {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+  .fp-fn-table th {
+    background: var(--surface-2);
+    font-weight: 600;
+  }
+  .fp-fn-table .fp { background: rgba(245,158,11,0.08); }
+  .fp-fn-table .fn { background: rgba(220,38,38,0.08); }
+  [data-theme="dark"] .fp-fn-table .fp { background: rgba(245,158,11,0.14); }
+  [data-theme="dark"] .fp-fn-table .fn { background: rgba(220,38,38,0.16); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+
+  <span class="hero-eyebrow" style="background:rgba(239,68,68,0.12); color:#b91c1c">
+    A4.4 · Ethical Considerations
+  </span>
+
+  <h1>Этические соображения в ML — экзамен-вопросы</h1>
+
+  <p class="lede">
+    Эта страница — сборник <b>официальных вопросов преподавателя</b> по теме <b>A4.4 «Этические соображения»</b>. Четыре сценария — банковское кредитование, городское видеонаблюдение, NLP-детектор кибербуллинга и предсказание катастроф — покрывают всю обязательную этическую программу подтемы: алгоритмическая предвзятость, приватность и согласие, обработка естественного языка, последствия ошибок (false positives / false negatives). После этих четырёх вопросов ты сможешь применять этический анализ к любому новому сценарию ML на экзамене.
+  </p>
+
+  <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
+    <b>✅ Официальные вопросы преподавателя.</b> Все 4 вопроса и схемы оценивания (mark schemes) взяты из учебного документа «A4.4 Ethical Considerations — Exam Questions». Это <b>основной банк этических кейсов</b> для экзамена: банкинг, surveillance, NLP-модерация, прогноз катастроф.
+  </div>
+
+  <p>
+    <a class="sim-link" href="ml.html#bias-sim"><span class="icon">⚖️</span>Симуляция: алгоритмическая предвзятость (как смещённые данные обучают смещённую модель)</a>
+  </p>
+
+  <!-- ============ CONTEXT ============ -->
+  <h2>Контекст темы</h2>
+
+  <p>
+    Тема <b>A4.4</b> — это <b>социальная и этическая сторона</b> машинного обучения. Не «как работает модель», а «что произойдёт с реальными людьми, когда мы её запустим». Программа требует понимать четыре основных этических риска: <b>алгоритмическая предвзятость (algorithmic bias)</b> — модель наследует исторические человеческие предубеждения из обучающих данных; <b>приватность и согласие (privacy &amp; consent)</b> — массовое видеонаблюдение и анализ личной переписки часто происходят без явного согласия пользователей; <b>двусмысленность языка</b> — NLP-модели плохо справляются с сарказмом и контекстом, что ведёт к ложным обвинениям; <b>ошибки модели</b> — false positives и false negatives имеют принципиально разные последствия в зависимости от области применения (модерация vs предсказание катастроф).
+  </p>
+
+  <div class="case-grid">
+    <div class="case-card">
+      <b>🏦 Q1. Банк</b>
+      Автоматизация одобрения ипотеки → algorithmic bias из исторических данных дискриминации.
+    </div>
+    <div class="case-card">
+      <b>📹 Q2. Город</b>
+      Камеры с распознаванием лиц → нарушение приватности, surveillance bias, ложные аресты.
+    </div>
+    <div class="case-card">
+      <b>💬 Q3. Соцсеть</b>
+      NLP-детектор кибербуллинга → сарказм/контекст, приватность переписки.
+    </div>
+    <div class="case-card">
+      <b>🌍 Q4. Катастрофы</b>
+      False positive (модерация) vs false negative (землетрясение) — разная цена ошибки.
+    </div>
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Этический риск</th>
+        <th>Главная идея для экзамена</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Algorithmic bias</td><td>Модель учится на исторических данных → <b>наследует и усиливает</b> прошлые человеческие предубеждения.</td></tr>
+      <tr><td>Privacy / Consent</td><td>Surveillance и анализ личных данных идут <b>без явного согласия</b> пользователей.</td></tr>
+      <tr><td>Surveillance bias</td><td>Распознавание лиц <b>хуже работает на этнических меньшинствах</b> → дискриминация в правоприменении.</td></tr>
+      <tr><td>NLP & ambiguity</td><td>Модель может неправильно понять <b>сарказм</b>, шутки, контекст → ложные обвинения в bullying.</td></tr>
+      <tr><td>False Positive</td><td>Модель <b>обвиняет невиновного</b> → бан, цензура, эмоциональный вред. Высокая цена в модерации.</td></tr>
+      <tr><td>False Negative</td><td>Модель <b>пропускает реальную угрозу</b> → нет эвакуации, гибель людей. Высокая цена в безопасности.</td></tr>
+      <tr><td>Removal of human judgment</td><td>Делегирование критических решений машине <b>убирает эмпатию, контекст и индивидуальное рассмотрение</b>.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Подсказка для экзамена:</b> на любой этический вопрос отвечай по схеме <b>«механизм → жертва → последствие»</b>. Например: «модель учится на данных с историей дискриминации (механизм) → новые заявители из ущемлённой группы (жертва) → получают необоснованные отказы (последствие)». Эта структура почти всегда даёт максимум баллов.
+  </div>
+
+  <!-- ============ OFFICIAL EXAM QUESTIONS ============ -->
+  <h2>Официальные вопросы преподавателя</h2>
+
+  <p class="muted" style="font-size:0.92rem">
+    Нажми на вопрос, чтобы развернуть mark scheme (схему оценивания). Цифры в скобках — максимальное число баллов за пункт.
+  </p>
+
+  <!-- Q1 -->
+  <details class="question-card">
+    <summary>Вопрос 1. Национальный банк внедряет ML-систему для автоматизации одобрения ипотечных кредитов, заменяя человеческих кредитных специалистов. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий — Банковское кредитование</span>
+        Национальный банк <b>заменяет человеческих кредитных офицеров на ML-систему</b>, которая автоматически одобряет или отклоняет заявки на ипотеку.
+      </div>
+
+      <div class="sub-q">(a) Обрисуй одно этическое опасение по поводу использования ML для автоматического принятия решений в кредитовании. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Такие системы могут <b>значительно влиять на жизнь людей</b> — например, <b>отказать семье в ипотеке на жильё</b>. [1]</li>
+        <li>Делегирование таких решений машине <b>убирает человеческий контекст, эмпатию и индивидуальное рассмотрение каждого случая</b> из критических финансовых решений. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Объясни, как в этой автоматизированной системе кредитования может возникать <b>алгоритмическая предвзятость (algorithmic bias)</b> и как это может повлиять на заявителей. <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li>ML-модели — это <b>системы, основанные на знаниях, извлечённых из исторических обучающих данных (knowledge-driven systems based on historical training data)</b>. [1]</li>
+        <li>Если исторические данные содержат <b>человеческие предубеждения</b> — например, <b>прошлые дискриминационные практики кредитования</b> против определённых демографических групп (по расе, полу, району проживания), [1]</li>
+        <li>ML-система <b>унаследует и усилит эти предубеждения</b>, что приведёт к <b>несправедливым или дискриминационным отказам в кредите</b> для будущих заявителей. [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ключ к 5/5:</b> в (а) — «значительное влияние на жизнь» + «удаление эмпатии/контекста». В (b) — три шага: <b>historical data</b> → <b>human biases</b> → <b>inherits + amplifies</b>. Слова «amplify», «inherit» и «discriminatory» — на вес золота.</p>
+    </div>
+  </details>
+
+  <!-- Q2 -->
+  <details class="question-card">
+    <summary>Вопрос 2. Городские власти разворачивают сеть камер с ML-распознаванием лиц для мониторинга общественных пространств в целях правоохранительной деятельности. Обсуди этические последствия. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий — Видеонаблюдение в городе</span>
+        Городские власти разворачивают сеть <b>камер с ML-распознаванием лиц</b> в общественных местах (улицы, парки, метро) для <b>правоохранительных целей</b>.
+      </div>
+
+      <p><b>Что писать (за 4/4 нужно покрыть несколько разных аспектов, по 1 баллу за каждый):</b></p>
+      <ul>
+        <li><b>Согласие и приватность (Consent &amp; Privacy):</b> граждане находятся под <b>непрерывным наблюдением без их явного согласия</b>, что нарушает их <b>разумное ожидание приватности</b> в повседневной жизни. [1]</li>
+        <li><b>Контроль (Control):</b> системы наблюдения могут быть <b>использованы властями злонамеренно</b> для несправедливого мониторинга, контроля или <b>отслеживания определённых групп населения или политических диссидентов</b>. [1]</li>
+        <li><b>Surveillance bias (предвзятость наблюдения):</b> модели распознавания лиц часто страдают от предвзятости — они <b>значительно чаще ошибаются на людях из этнических меньшинств</b>, чем на представителях большинства (это задокументированная проблема, например, у MIT Media Lab «Gender Shades»). [1]</li>
+        <li><b>Ложные аресты (False arrests):</b> эта предвзятость может приводить к <b>дискриминационным правоохранительным практикам</b>, включая <b>ложные аресты и несправедливое задержание</b> на основании ошибочного матчинга алгоритма. [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Структура ответа:</b> по 1 баллу за каждое из четырёх измерений — приватность, контроль, bias, последствия. Если осветить только два — получишь максимум 2 балла. Помни: «discuss» требует <b>широкого охвата</b>, а не глубокого разбора одного аспекта.</p>
+    </div>
+  </details>
+
+  <!-- Q3 -->
+  <details class="question-card">
+    <summary>Вопрос 3. Софтверная компания разрабатывает автоматическую систему для детекции и флагирования случаев кибербуллинга в популярной соцсети, используя NLP и ML. <span class="marks-tag">8 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий — NLP-детектор кибербуллинга</span>
+        Соцсеть (TikTok / Instagram / Twitter) внедряет <b>автоматический детектор кибербуллинга</b>, который сканирует комментарии и посты на естественном языке с помощью NLP + ML.
+      </div>
+
+      <div class="sub-q">(a) Дай определение термина <b>«Обработка естественного языка» (Natural Language Processing — NLP)</b>. <span class="marks-tag">1 балл</span></div>
+      <ul>
+        <li><b>NLP</b> — это ветвь AI / машинного обучения, которая занимается тем, чтобы <b>компьютеры могли понимать, интерпретировать и обрабатывать человеческий язык</b>. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Опиши потенциальные шаги предобработки, необходимые для текстовых данных из постов соцсети, чтобы подготовить их для ML-моделей. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Текст должен быть <b>очищен от нерелевантного шума</b> — например, <b>удаление сложных URL</b> или <b>стандартизация эмодзи</b> (замена :) на «smile» и т.д.). [1]</li>
+        <li>Текст должен быть <b>разбит на анализируемые фрагменты (токенизация — tokenization)</b> или <b>стандартизирован</b> (например, <b>приведение всего текста к нижнему регистру (lowercase)</b>), чтобы алгоритм мог обработать слова математически. [1]</li>
+      </ul>
+
+      <div class="sub-q">(c) Объясни важность обработки <b>сарказма и двусмысленностей</b> в тексте при настройке пайплайна предобработки для детекции кибербуллинга. <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li><b>Сарказм</b> использует язык, который означает <b>прямо противоположное буквальной интерпретации</b> («Ой, какой ты умный…» — это критика, а не похвала). [1]</li>
+        <li>Если модель <b>не может уловить нюансированный контекст</b> (например, шутка между друзьями), она <b>воспримет агрессивные слова буквально</b>. [1]</li>
+        <li>Это приведёт к тому, что модель <b>ложно пометит пост как буллинг (false positive)</b>, что <b>несправедливо накажет пользователя</b> (бан, ограничение, удаление поста). [1]</li>
+      </ul>
+
+      <div class="sub-q">(d) Опиши потенциальные последствия для приватности от анализа контента пользователей в соцсетях для детекции кибербуллинга. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Чтобы детектировать буллинг, алгоритму нужно <b>активно сканировать и читать частные или полу-частные пользовательские коммуникации</b> (личные сообщения, комментарии в закрытых группах). [1]</li>
+        <li>Это поднимает <b>серьёзные вопросы согласия</b>: <b>кто имеет доступ к этим чувствительным разговорным данным</b>, <b>хранятся ли они</b>, и <b>используются ли для других целей</b> (рекламы, профилирования, передачи государству). [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Стратегия 8/8:</b> это самый длинный вопрос на странице, разбит на 4 подвопроса (1+2+3+2 = 8 баллов). Не пропусти ни одного подпункта. В (c) обязательно слово <b>«sarcasm»</b> и сценарий «безобидная шутка → ложное обвинение». В (d) — слово <b>«consent»</b> и упоминание <b>«stored / used for other purposes»</b>.</p>
+    </div>
+  </details>
+
+  <!-- Q4 -->
+  <details class="question-card">
+    <summary>Вопрос 4. Будь то предсказание стихийных бедствий или детекция кибербуллинга — ML-модели редко бывают 100% точными. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий — Цена ошибки модели</span>
+        Сравниваем две принципиально разные области: <b>модерация контента</b> (кибербуллинг) и <b>безопасность жизни</b> (предсказание землетрясений / наводнений). Одна и та же ошибка модели имеет совершенно разную «стоимость» в каждом случае.
+      </div>
+
+      <table class="fp-fn-table">
+        <thead>
+          <tr><th>Тип ошибки</th><th>Что значит</th><th>Где особенно опасно</th></tr>
+        </thead>
+        <tbody>
+          <tr class="fp"><td><b>False Positive</b><br>«Ложная тревога»</td><td>Модель <b>сказала «да»</b>, а на самом деле <b>«нет»</b>.</td><td>Модерация контента: обвинить невиновного пользователя.</td></tr>
+          <tr class="fn"><td><b>False Negative</b><br>«Пропущенная угроза»</td><td>Модель <b>сказала «нет»</b>, а на самом деле <b>«да»</b>.</td><td>Безопасность жизни: пропустить землетрясение / диагноз / угрозу.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-q">(a) Обрисуй этические последствия <b>ложноположительного срабатывания (false positive)</b> в контексте автоматической системы детекции кибербуллинга. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>False positive означает, что система <b>ошибочно помечает безвредное или шутливое сообщение как кибербуллинг</b>. [1]</li>
+        <li>Это может привести к <b>несправедливому бану аккаунта, цензуре свободы слова и эмоциональному стрессу</b> для ложно обвинённого пользователя. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Обрисуй этические последствия <b>ложноотрицательного срабатывания (false negative)</b> в контексте ML-модели, используемой для предсказания катастроф (например, землетрясения или наводнения). <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li>False negative означает, что модель предсказания <b>не предсказала катастрофу, которая на самом деле произошла</b>. [1]</li>
+        <li>Власти <b>не объявят эвакуацию и не подготовят экстренные службы</b>, потому что они <b>доверились модели</b>. [1]</li>
+        <li>Этическое последствие — <b>катастрофическое</b>: потенциально <b>массовая, предотвратимая гибель людей</b> и разрушение имущества. [1]</li>
+      </ul>
+
+      <div class="danger-tip">
+        ⚠️ <b>Главная идея для экзамена:</b> в одной области <b>false positive</b> — бóльшая проблема (модерация: лучше пропустить хейтера, чем забанить невиновного). В другой области <b>false negative</b> — катастрофа (медицина, безопасность: лучше ложная тревога, чем пропущенная угроза). Это решает <b>выбор порога модели</b> (precision vs recall trade-off).
+      </div>
+      <p class="muted" style="font-size:0.9rem"><b>Ключ к 5/5:</b> в (а) — два слова: <b>«false flag harmless post»</b> + последствие <b>«unjust ban / censorship / emotional distress»</b>. В (b) — три шага: <b>«failed to predict»</b> → <b>«no evacuation / preparation»</b> → <b>«loss of human life»</b>. Слово «catastrophic» добавляет вес.</p>
+    </div>
+  </details>
+
+  <!-- ============ EXAM TIPS ============ -->
+  <h2>Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><b>Algorithmic bias — формула 3 шагов:</b> <b>исторические данные</b> → <b>человеческие предубеждения внутри данных</b> → модель <b>наследует и усиливает</b>. Слова «inherit», «amplify», «discriminatory» — обязательны.</li>
+    <li><b>Surveillance — четыре измерения:</b> приватность/согласие, контроль/злоупотребление властью, surveillance bias (хуже работает на меньшинствах), ложные аресты. На «discuss» за 4 балла нужны минимум четыре разных аспекта, а не глубокий разбор одного.</li>
+    <li><b>NLP-определение:</b> «branch of AI/ML that lets computers <b>understand, interpret and process human language</b>». Одна строчка = 1 балл — не упустить.</li>
+    <li><b>Preprocessing для NLP:</b> два шага — <b>cleaning</b> (URLs, эмодзи) и <b>tokenization / lowercasing</b>. Это базовый минимум.</li>
+    <li><b>Сарказм — почему важен:</b> модель понимает буквально → ложное обвинение → несправедливый бан. Сарказм = <b>«opposite of literal meaning»</b>.</li>
+    <li><b>Приватность переписки:</b> чтобы детектировать буллинг, модель <b>читает</b> личные сообщения. Главные ключевые слова — <b>«consent»</b>, <b>«access»</b>, <b>«stored»</b>, <b>«used for other purposes»</b>.</li>
+    <li><b>False Positive vs False Negative — разная цена:</b> в модерации хуже FP (несправедливый бан); в безопасности хуже FN (пропущенная катастрофа = гибель людей). На экзамене обязательно <b>привязать тип ошибки к контексту сценария</b>.</li>
+    <li><b>Универсальная схема ответа на этику:</b> «механизм (откуда берётся проблема) → жертва (кто пострадает) → последствие (что произойдёт)». Эта структура работает для любого нового кейса — даже если в exam paper попадётся сценарий, которого нет здесь.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+    &nbsp; · &nbsp;
+    <a href="a4-1-ml-fundamentals.html" class="back-link">→ A4.1 Основы ML</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A4.4" class="back-link">К квизу A4.4 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A4.4 Этические соображения · Официальные вопросы преподавателя · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=10"></script>
+</body>
+</html>

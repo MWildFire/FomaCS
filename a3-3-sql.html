@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3.3 SQL и программирование БД · IB CS Theme A</title>
 <meta name="description" content="A3.3 Database programming (SQL) — подробный разбор на русском: DDL/DML/DCL/TCL, SELECT с WHERE/JOIN/GROUP BY, агрегатные функции, подзапросы, CREATE TABLE с ограничениями, транзакции и ACID. Полный экзаменационный конспект IB CS.">
-<link rel="stylesheet" href="styles.css?v=9">
+<link rel="stylesheet" href="styles.css?v=10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone SQL deep-dive page — single-language Russian */
@@ -345,6 +345,10 @@
     Эта тема (<b>A3.3</b>) — про то, как реально <b>разговаривать с базой данных</b>. Язык, на котором мы говорим, называется <b>SQL</b> (Structured Query Language — «структурированный язык запросов»). С его помощью мы создаём таблицы, добавляем данные, ищем, обновляем, удаляем и связываем информацию из разных таблиц. Тут мы разберём <b>четыре подсемейства SQL</b> (DDL/DML/DCL/TCL), все ключевые операторы, объединения таблиц (JOIN), агрегатные функции, подзапросы, транзакции и свойства ACID.
   </p>
 
+  <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
+    <b>✅ 12 официальных вопросов от преподавателя.</b> Все задачи (по двум сценариям — TechStore и Medical Clinic) взяты из учебных Google Docs по A3.3 — это именно то, что будет на экзамене.
+  </div>
+
   <!-- Quick CTA to the live SQL playground -->
   <div class="sim-cta">
     <div class="icon">💾</div>
@@ -352,7 +356,7 @@
       <strong>Открой живую SQL-песочницу прямо сейчас</strong>
       Реальный SQLite в браузере: пиши <code>SELECT</code>, <code>JOIN</code>, <code>GROUP BY</code> по школьной БД пациентов и врачей. Любая теория ниже — её можно тут же проверить.
     </div>
-    <a class="btn-link" href="databases.html?v=9#sql-sim">→ Запустить SQL-песочницу</a>
+    <a class="btn-link" href="databases.html?v=10#sql-sim">→ Запустить SQL-песочницу</a>
   </div>
 
   <!-- Mini TOC -->
@@ -430,27 +434,6 @@
   <div class="ru-tip">
     💡 <b>Аналогия:</b> DDL — это <b>архитектор</b> (строит здание). DML — <b>жилец</b> (двигает мебель внутри). DCL — <b>охранник</b> (выдаёт пропуска). TCL — <b>нотариус</b> (фиксирует или отменяет сделку).
   </div>
-
-  <details class="question-card">
-    <summary>Вопрос 1.1. К какой категории SQL относится команда <code>UPDATE</code>, а к какой <code>GRANT</code>? Обоснуй ответ. <span class="marks-tag">2 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><code>UPDATE</code> относится к <b>DML (Data Manipulation Language)</b> — она <b>меняет данные</b> внутри существующей записи. Структура таблицы не трогается.</li>
-        <li><code>GRANT</code> относится к <b>DCL (Data Control Language)</b> — она <b>выдаёт права доступа</b> пользователю (например, разрешает делать <code>SELECT</code> на таблицу). К данным напрямую не обращается.</li>
-      </ul>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 1.2. Объясни разницу между <code>DROP TABLE</code>, <code>DELETE FROM</code> и <code>TRUNCATE TABLE</code>. <span class="marks-tag">4 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><b><code>DROP TABLE имя;</code></b> (DDL) — удаляет таблицу <b>целиком</b>: и данные, и саму структуру. После этого таблицы просто не существует.</li>
-        <li><b><code>DELETE FROM имя WHERE ...;</code></b> (DML) — удаляет <b>отдельные строки</b>, которые подходят под условие. Таблица и её колонки остаются. Можно откатить через <code>ROLLBACK</code> (если в транзакции).</li>
-        <li><b><code>TRUNCATE TABLE имя;</code></b> (DDL) — удаляет <b>все строки</b> сразу, но оставляет структуру. Обычно быстрее, чем <code>DELETE</code> без условия, и часто не логируется построчно — поэтому откатить сложнее.</li>
-      </ul>
-    </div>
-  </details>
 
   <!-- ============ 2. DDL ============ -->
   <h2 id="ddl">2. DDL — строим структуру базы</h2>
@@ -568,29 +551,6 @@ DROP COLUMN deliveryPreference;</code></pre>
     FOREIGN KEY (ClassID) REFERENCES Class(ClassID)
 );</code></pre>
 
-  <details class="question-card">
-    <summary>Вопрос 3.1. В чём разница между <code>PRIMARY KEY</code> и <code>UNIQUE</code>? <span class="marks-tag">2 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li>Оба гарантируют <b>уникальность значений</b> в колонке.</li>
-        <li><code>PRIMARY KEY</code> + не может быть <code>NULL</code> + только <b>один</b> PRIMARY KEY на таблицу + автоматически индексируется.</li>
-        <li><code>UNIQUE</code> + может быть <code>NULL</code> (одно NULL-значение допустимо в большинстве СУБД) + можно поставить <b>на несколько колонок</b> одновременно.</li>
-      </ul>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 3.2. Зачем нужен <code>FOREIGN KEY</code>? Что произойдёт, если попытаться добавить запись в таблицу <code>Order</code> с <code>CustomerID = 999</code>, которого нет в таблице <code>Customer</code>? <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><code>FOREIGN KEY</code> обеспечивает <b>ссылочную целостность</b>: запись в одной таблице ссылается на существующую запись в другой.</li>
-        <li>Без него можно было бы записать заказ на <b>несуществующего</b> клиента — это бессмыслица.</li>
-        <li>СУБД <b>откажет</b> в операции и вернёт ошибку: <i>«FOREIGN KEY constraint failed»</i>. Запись не будет вставлена.</li>
-        <li>Это защищает БД от «осиротевших» (orphan) записей и логических несоответствий.</li>
-      </ul>
-    </div>
-  </details>
-
   <!-- ============ 4. SELECT ============ -->
   <h2 id="select">4. SELECT — главный оператор</h2>
 
@@ -705,28 +665,6 @@ WHERE CustomerCountry = 'Italy' OR CustomerCountry = 'France';</code></pre>
 WHERE NOT CustomerCountry = 'Italy' AND NOT CustomerCountry = 'France';</code></pre>
   <p>(оставит покупателей, которые <b>не</b> из Италии и <b>не</b> из Франции.)</p>
 
-  <details class="question-card">
-    <summary>Вопрос 5.1. Напиши SQL-запрос: найти всех студентов 11 класса (Grade = 11) с фамилией, начинающейся на «И». <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>SELECT FirstName, LastName
-FROM Student
-WHERE Grade = 11
-  AND LastName LIKE 'И%';</code></pre>
-      <p>Ключевое: используем <code>%</code> в шаблоне, чтобы захватить любое продолжение после «И». <code>AND</code> объединяет оба условия.</p>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 5.2. Чем <code>BETWEEN 10 AND 20</code> отличается от <code>&gt;10 AND &lt;20</code>? <span class="marks-tag">2 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><code>BETWEEN 10 AND 20</code> — <b>включает</b> оба значения (10 и 20).</li>
-        <li><code>&gt;10 AND &lt;20</code> — <b>исключает</b> оба граничных значения (только 11..19).</li>
-        <li>Чтобы получить тот же результат, что и BETWEEN — нужно писать <code>&gt;=10 AND &lt;=20</code>.</li>
-      </ul>
-    </div>
-  </details>
-
   <!-- ============ 6. ORDER / DISTINCT / LIMIT / AS ============ -->
   <h2 id="order-distinct">6. ORDER BY, DISTINCT, LIMIT, AS</h2>
 
@@ -824,16 +762,6 @@ SELECT AVG(ItemCost) AS AverageItemPrice FROM Item;</code></pre>
     </table>
   </div>
 
-  <details class="question-card">
-    <summary>Вопрос 7.1. Напиши SQL: посчитать общее количество книг в библиотеке и среднюю цену штрафа за просрочку. <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>SELECT COUNT(*) AS TotalBooks,
-       AVG(Fees)  AS AverageFine
-FROM Book;</code></pre>
-      <p>Обе функции применяются к таблице <code>Book</code>; <code>AS</code> даёт человекочитаемые названия колонок в результате.</p>
-    </div>
-  </details>
-
   <!-- ============ 8. GROUP / HAVING ============ -->
   <h2 id="group">8. GROUP BY и HAVING</h2>
 
@@ -884,28 +812,6 @@ HAVING COUNT(CustomerID) &gt; 2;</code></pre>
     <code>FROM</code> → <code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>SELECT</code> → <code>ORDER BY</code> → <code>LIMIT</code>.<br>
     Сначала откуда, потом фильтр строк, потом группировка, потом фильтр групп, потом выбор колонок, потом сортировка, потом ограничение.
   </div>
-
-  <details class="question-card">
-    <summary>Вопрос 8.1. Напиши SQL: для каждого класса в школе показать количество студентов, отсортировано по убыванию. <span class="marks-tag">4 балла</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>SELECT ClassID, COUNT(StudentID) AS NumStudents
-FROM Student
-GROUP BY ClassID
-ORDER BY NumStudents DESC;</code></pre>
-      <p>Группируем по <code>ClassID</code>, считаем количество студентов в каждой группе, сортируем по этому количеству в убывающем порядке.</p>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 8.2. Почему <code>WHERE COUNT(*) &gt; 5</code> вызовет ошибку, а <code>HAVING COUNT(*) &gt; 5</code> — нет? <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><code>WHERE</code> срабатывает <b>до</b> группировки — на этом этапе агрегатные функции ещё <b>не посчитаны</b>, поэтому СУБД не знает, что такое <code>COUNT(*)</code> в контексте отдельной строки.</li>
-        <li><code>HAVING</code> срабатывает <b>после</b> <code>GROUP BY</code> — на каждую группу уже есть результат агрегата, и сравнение становится осмысленным.</li>
-        <li>Правило: <b>агрегатные функции — только в HAVING и SELECT</b>, не в WHERE.</li>
-      </ul>
-    </div>
-  </details>
 
   <!-- ============ 9. JOINs ============ -->
   <h2 id="joins">9. JOIN — объединяем таблицы</h2>
@@ -1012,40 +918,6 @@ INNER JOIN Customer ON Purchase.CustomerID = Customer.CustomerID
 WHERE Customer.CustomerCountry = 'Italy'
   AND Purchase.Date &lt; '2025-07-01';</code></pre>
 
-  <details class="question-card">
-    <summary>Вопрос 9.1. В библиотечной БД есть таблицы <code>Borrower</code> и <code>Loan</code>. Напиши запрос, который покажет имя каждого читателя и количество книг, которые он сейчас взял. <span class="marks-tag">5 баллов</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>SELECT Borrower.Borrower_Name,
-       COUNT(Loan.Book_Number) AS BooksOnLoan
-FROM Borrower
-LEFT JOIN Loan ON Borrower.Borrower_ID = Loan.Borrower_ID
-GROUP BY Borrower.Borrower_ID, Borrower.Borrower_Name;</code></pre>
-      <ul>
-        <li><b>LEFT JOIN</b> — чтобы показать <b>всех</b> читателей, даже тех, у кого 0 книг.</li>
-        <li><code>GROUP BY</code> — собираем строки по каждому читателю.</li>
-        <li><code>COUNT(Loan.Book_Number)</code> — считает книги; для читателя без книг даст 0 (поскольку NULL не считается).</li>
-      </ul>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 9.2. Чем <code>INNER JOIN</code> отличается от <code>LEFT JOIN</code>? Приведи пример, где использование <code>INNER JOIN</code> вместо <code>LEFT JOIN</code> приведёт к потере данных. <span class="marks-tag">4 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><b>INNER JOIN</b> возвращает только строки, где совпадение есть <b>в обеих</b> таблицах.</li>
-        <li><b>LEFT JOIN</b> возвращает <b>все</b> строки левой таблицы; если справа нет совпадения — поля справа заполняются <code>NULL</code>.</li>
-        <li><b>Пример:</b> Школьная БД, таблицы <code>Student</code> и <code>Mark</code> (оценки). Запрос «показать всех студентов и их средние оценки»:
-          <pre class="code-block"><code>-- INNER JOIN потеряет студентов, у которых ещё нет оценок
-SELECT Student.Name, AVG(Mark.Score)
-FROM Student
-INNER JOIN Mark ON Student.ID = Mark.StudentID
-GROUP BY Student.ID;</code></pre>
-          Новички без оценок <b>исчезнут</b> из отчёта. LEFT JOIN бы их сохранил с <code>NULL</code> в среднем.
-        </li>
-      </ul>
-    </div>
-  </details>
-
   <!-- ============ 10. SUBQUERIES ============ -->
   <h2 id="subqueries">10. Подзапросы (вложенный SELECT)</h2>
 
@@ -1082,16 +954,6 @@ FROM (
     GROUP BY Customer.CustomerID
 ) AS PerCustomer
 GROUP BY Country;</code></pre>
-
-  <details class="question-card">
-    <summary>Вопрос 10.1. Напиши запрос: найти самого молодого пациента в больнице. <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>SELECT FirstName, LastName, DateOfBirth
-FROM Patient
-WHERE DateOfBirth = (SELECT MAX(DateOfBirth) FROM Patient);</code></pre>
-      <p>Самый <b>молодой</b> — это пациент с <b>самой поздней</b> датой рождения (MAX по дате). Подзапрос возвращает одно значение, по которому фильтруется основная таблица.</p>
-    </div>
-  </details>
 
   <!-- ============ 11. INSERT / UPDATE / DELETE ============ -->
   <h2 id="insert-update-delete">11. INSERT, UPDATE, DELETE — изменяем данные</h2>
@@ -1140,27 +1002,6 @@ WHERE StudentID = 105;</code></pre>
     <li>Если всё ок — <code>COMMIT;</code>. Если что-то не так — <code>ROLLBACK;</code> (см. раздел 12).</li>
   </ol>
 
-  <details class="question-card">
-    <summary>Вопрос 11.1. В таблице <code>Patient</code> у пациента ID=42 сменился номер телефона на <code>+7-916-123-4567</code>. Напиши SQL. <span class="marks-tag">2 балла</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>UPDATE Patient
-SET PhoneNumber = '+7-916-123-4567'
-WHERE PatientID = 42;</code></pre>
-      <p>Обязательно с <code>WHERE</code> по уникальному <code>PatientID</code> — иначе телефон сменится у <b>всех</b> пациентов.</p>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 11.2. Напиши SQL: удалить все книги, которые ни разу не выдавались (нет записей в таблице <code>Loan</code>). <span class="marks-tag">4 балла</span></summary>
-    <div class="answer">
-      <pre class="code-block"><code>DELETE FROM Book
-WHERE Book_Number NOT IN (
-    SELECT DISTINCT Book_Number FROM Loan
-);</code></pre>
-      <p>Подзапрос <code>SELECT DISTINCT Book_Number FROM Loan</code> возвращает все книги, которые когда-либо выдавались. <code>NOT IN</code> исключает их из удаления — остаются только «нетронутые» книги.</p>
-    </div>
-  </details>
-
   <!-- ============ 12. TRANSACTIONS / ACID ============ -->
   <h2 id="transactions">12. Транзакции и ACID</h2>
 
@@ -1192,7 +1033,7 @@ COMMIT;                       -- если оба прошли — фиксиру
       <strong>Симуляция ACID-транзакции (с инжекцией сбоя)</strong>
       Запусти перевод 100$ со счёта на счёт, а потом нажми «крах» — увидишь, как ROLLBACK защищает целостность.
     </div>
-    <a class="btn-link" href="databases.html?v=9#acid-sim">→ Открыть ACID-симуляцию</a>
+    <a class="btn-link" href="databases.html?v=10#acid-sim">→ Открыть ACID-симуляцию</a>
   </div>
 
   <h3>12.2 Свойства ACID</h3>
@@ -1238,47 +1079,6 @@ COMMIT;                       -- если оба прошли — фиксиру
     <li>При перезапуске СУБД видит незавершённую транзакцию → автоматический <code>ROLLBACK</code> → баланс Алисы восстановлен.</li>
   </ol>
 
-  <details class="question-card">
-    <summary>Вопрос 12.1. Объясни, как свойство Atomicity защищает от частичного выполнения банковского перевода. <span class="marks-tag">4 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li>Atomicity означает «<b>всё или ничего</b>»: транзакция выполняется как <b>одна неделимая единица</b>.</li>
-        <li>Перевод между счетами состоит из <b>двух операций</b>: списание и зачисление. Если выполнить только одну — деньги пропадут или появятся из ниоткуда.</li>
-        <li>Atomicity гарантирует, что СУБД либо <b>применит обе</b> операции (после <code>COMMIT</code>), либо <b>отменит обе</b> (через <code>ROLLBACK</code>) — например, если сервер упал после первого <code>UPDATE</code>.</li>
-        <li>В результате баланс счетов всегда консистентен: сумма денег в системе сохраняется.</li>
-      </ul>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 12.2. Что делает <code>ROLLBACK</code> и в каких ситуациях его применяют? <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li><code>ROLLBACK</code> <b>отменяет</b> все изменения, сделанные после последнего <code>BEGIN TRANSACTION</code> или <code>COMMIT</code>, восстанавливая БД к предыдущему стабильному состоянию.</li>
-        <li>Применяют когда:
-          <ul>
-            <li>Произошла <b>ошибка</b> в одной из SQL-операций (нарушение ограничения, деление на ноль и т.п.);</li>
-            <li>Логическая проверка показала, что <b>результат неприемлем</b> (например, баланс ушёл в минус);</li>
-            <li><b>Сервер аварийно перезапустился</b> — СУБД автоматически откатит незавершённые транзакции при восстановлении.</li>
-          </ul>
-        </li>
-        <li>Это ключевой механизм поддержания <b>атомарности</b> и <b>согласованности</b>.</li>
-      </ul>
-    </div>
-  </details>
-
-  <details class="question-card">
-    <summary>Вопрос 12.3. Два кассира одновременно бронируют один и тот же последний билет на концерт. Какое свойство ACID и как это решает? <span class="marks-tag">4 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li>Эту ситуацию решает <b>Isolation</b> (изолированность).</li>
-        <li>Без неё обе транзакции прочитали бы «свободно: 1 билет», обе списали бы его → продали <b>два билета на одно место</b>.</li>
-        <li>СУБД с изоляцией <b>сериализует</b> такие транзакции (например, блокировкой строки): первая транзакция увидит «1 билет», заберёт его и закоммитит; вторая увидит уже «0 билетов» и получит отказ.</li>
-        <li>Результат как если бы они выполнялись по очереди — несмотря на то, что физически шли параллельно.</li>
-      </ul>
-    </div>
-  </details>
-
   <!-- ============ 13. VIEWS / DCL ============ -->
   <h2 id="views">13. Представления (VIEW) и DCL</h2>
 
@@ -1315,45 +1115,230 @@ GRANT ALL PRIVILEGES ON school_db.* TO admin;
 -- Забрать право на удаление
 REVOKE DELETE ON Book FROM librarian;</code></pre>
 
-  <details class="question-card">
-    <summary>Вопрос 13.1. В чём преимущество представлений (views) с точки зрения безопасности? <span class="marks-tag">3 балла</span></summary>
-    <div class="answer">
-      <ul>
-        <li>VIEW позволяет показать пользователю <b>подмножество</b> данных — только нужные колонки и строки.</li>
-        <li>Например, бухгалтер видит view <code>EmployeeBasic</code> с именами и отделами, но <b>не</b> видит зарплаты.</li>
-        <li>Сама таблица <code>Employee</code> при этом остаётся защищённой — на неё через GRANT доступ не выдан.</li>
-        <li>Это реализация принципа <b>наименьших привилегий</b> и <b>сокрытия информации</b> (information hiding).</li>
-      </ul>
-    </div>
-  </details>
-
   <!-- ============ 14. PRACTICE TASKS ============ -->
-  <h2 id="practice">14. Практика — пиши SQL в живой песочнице</h2>
+  <h2 id="practice">14. Официальные экзаменационные вопросы</h2>
 
   <p>
-    Реально освоить SQL можно <b>только написав много запросов руками</b>. Открой нашу SQL-песочницу — там настоящий SQLite в браузере, с готовой школьной БД (PATIENT, DOCTOR, APPOINTMENT). Попробуй каждое из заданий ниже.
+    Ниже — <b>12 официальных вопросов от преподавателя</b> (то, что будет на экзамене), разделённые на два сценария:
+    <b>TechStore</b> (магазин электроники) и <b>Medical Clinic</b> (медицинская клиника).
+    Раскрой каждый вопрос, чтобы увидеть SQL-решение и критерии оценки.
   </p>
 
   <div class="sim-cta">
     <div class="icon">🧪</div>
     <div class="text">
-      <strong>Запусти SQL-задачи прямо в браузере</strong>
-      Любой запрос — JOIN, GROUP BY, подзапрос — пробуй и сразу видишь результат. Кнопка «reset DB» возвращает данные в исходный вид.
+      <strong>Проверь каждый запрос в живой SQL-песочнице</strong>
+      Открой песочницу, создай таблицы из сценария и убедись, что твой запрос работает.
     </div>
-    <a class="btn-link" href="databases.html?v=9#sql-sim">→ К SQL-песочнице</a>
+    <a class="btn-link" href="databases.html?v=10#sql-sim">→ К SQL-песочнице</a>
   </div>
 
-  <h4>Задания (от простого к сложному)</h4>
-  <ol>
-    <li>Покажи все колонки таблицы <code>PATIENT</code>.</li>
-    <li>Покажи только имена и фамилии всех пациентов, отсортированных по фамилии.</li>
-    <li>Найди пациентов старше 50 лет (если есть колонка возраста / даты рождения).</li>
-    <li>Используя <code>JOIN</code>, выведи имена пациентов и фамилии их лечащих врачей.</li>
-    <li>Сколько приёмов (<code>APPOINTMENT</code>) запланировано на каждого врача? (GROUP BY)</li>
-    <li>Покажи врачей, у которых больше 3 приёмов в системе (HAVING).</li>
-    <li>Используя подзапрос, найди пациента, у которого было больше всего приёмов.</li>
-    <li>Создай <code>UPDATE</code>, который меняет специальность врача с ID=1 (не забудь WHERE!).</li>
-  </ol>
+  <h3 style="margin-top:32px">📦 Сценарий 1: TechStore (магазин электроники)</h3>
+
+  <p>
+    Местный магазин электроники использует реляционную БД для отслеживания товаров и продаж. Схема:
+  </p>
+  <ul>
+    <li><b>PRODUCT</b> (ProductID, ProductName, Category, Price)</li>
+    <li><b>SALE</b> (SaleID, ProductID, QuantitySold, SaleDate)</li>
+  </ul>
+  <p><i>Примечание: ProductID в таблице SALE — внешний ключ, ссылающийся на PRODUCT.</i></p>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Язык определения данных (DDL). Напиши SQL-инструкцию для создания таблицы PRODUCT. Явно укажи первичный ключ. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>SQL-решение:</b></p>
+      <pre class="code-block"><code>CREATE TABLE PRODUCT (
+  ProductID VARCHAR(10),
+  ProductName VARCHAR(50),
+  Category VARCHAR(30),
+  Price DECIMAL(10,2),
+  PRIMARY KEY (ProductID)
+);</code></pre>
+      <p><b>Что засчитают:</b></p>
+      <ul>
+        <li>[1] за использование <code>CREATE TABLE PRODUCT ( ... )</code></li>
+        <li>[1] за правильное перечисление атрибутов (ProductID, ProductName, Category, Price)</li>
+        <li>[1] за назначение подходящих типов данных атрибутам (VARCHAR/String, DECIMAL/Float/Currency)</li>
+        <li>[1] за явное определение первичного ключа через <code>PRIMARY KEY (ProductID)</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Обновление данных. Магазин проводит флэш-распродажу на конкретный товар. Напиши SQL-инструкцию для обновления Price у товара с ProductID = 'P105' на 25.50. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>SQL-решение:</b></p>
+      <pre class="code-block"><code>UPDATE PRODUCT
+SET Price = 25.50
+WHERE ProductID = 'P105';</code></pre>
+      <p><b>Что засчитают:</b></p>
+      <ul>
+        <li>[1] за <code>UPDATE PRODUCT</code></li>
+        <li>[1] за <code>SET Price = 25.50</code></li>
+        <li>[1] за <code>WHERE ProductID = 'P105'</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Запросы по двум таблицам. Менеджер магазина хочет просмотреть продажи за конкретный день. Напиши SQL-запрос, который вернёт ProductName и QuantitySold для всех продаж, совершённых '2026-11-24'. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>SQL-решение:</b></p>
+      <pre class="code-block"><code>SELECT PRODUCT.ProductName, SALE.QuantitySold
+FROM PRODUCT, SALE
+WHERE PRODUCT.ProductID = SALE.ProductID
+  AND SALE.SaleDate = '2026-11-24';</code></pre>
+      <p><b>Что засчитают:</b></p>
+      <ul>
+        <li>[1] за <code>SELECT PRODUCT.ProductName, SALE.QuantitySold</code> (без префиксов таблиц тоже принимается, если нет неоднозначности)</li>
+        <li>[1] за <code>FROM PRODUCT, SALE</code> (корректный синтаксис <code>INNER JOIN</code> также принимается)</li>
+        <li>[1] за правильное связывание первичного и внешнего ключей: <code>WHERE PRODUCT.ProductID = SALE.ProductID</code></li>
+        <li>[1] за правильное условие по дате: <code>AND SALE.SaleDate = '2026-11-24'</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Агрегатные функции (HL Extension). Команде по управлению запасами нужно узнать общий объём продаж конкретного товара за всё время работы БД. Напиши SQL-запрос с использованием агрегатной функции, чтобы посчитать суммарное QuantitySold для товара с ProductName = 'Mechanical Keyboard'. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>SQL-решение:</b></p>
+      <pre class="code-block"><code>SELECT SUM(SALE.QuantitySold)
+FROM PRODUCT, SALE
+WHERE PRODUCT.ProductID = SALE.ProductID
+  AND PRODUCT.ProductName = 'Mechanical Keyboard';</code></pre>
+      <p><b>Что засчитают:</b></p>
+      <ul>
+        <li>[1] за корректное использование агрегатной функции <code>SELECT SUM(SALE.QuantitySold)</code></li>
+        <li>[1] за <code>FROM PRODUCT, SALE</code></li>
+        <li>[1] за правильное связывание таблиц через ключи <code>WHERE PRODUCT.ProductID = SALE.ProductID</code></li>
+        <li>[1] за условие по конкретному товару <code>AND PRODUCT.ProductName = 'Mechanical Keyboard'</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Представления (Views, HL Extension). Маркетинговой команде нужны только товары категории 'Audio', и им не должен быть открыт доступ ко всей БД. Напиши SQL-инструкцию для создания представления AudioView, которое показывает только ProductName и Price для товаров, где Category = 'Audio'. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>SQL-решение:</b></p>
+      <pre class="code-block"><code>CREATE VIEW AudioView AS
+SELECT ProductName, Price
+FROM PRODUCT
+WHERE Category = 'Audio';</code></pre>
+      <p><b>Что засчитают:</b></p>
+      <ul>
+        <li>[1] за <code>CREATE VIEW AudioView AS</code></li>
+        <li>[1] за <code>SELECT ProductName, Price FROM PRODUCT</code></li>
+        <li>[1] за <code>WHERE Category = 'Audio'</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 6. Социально-этические последствия (AO3). Команды DML очень мощные. Обсуди одно этическое или профессиональное последствие, если администратор БД выполнит инструкцию UPDATE из Вопроса 2, но случайно пропустит WHERE. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что засчитают (до 3 баллов за обсуждение последствий):</b></p>
+      <ul>
+        <li>[1] Если <code>WHERE</code> пропущен, команда <code>UPDATE</code> глобально перезапишет <code>Price</code> у <i>каждого товара</i> в магазине на 25.50.</li>
+        <li>[1] Это полностью разрушает целостность данных в системе учёта запасов и может привести к огромным финансовым потерям, если дорогие товары начнут автоматически продаваться онлайн за долю их реальной стоимости.</li>
+        <li>[1] <i>Этическое/профессиональное последствие:</i> это демонстрирует серьёзное нарушение профессиональной компетентности и халатность, нарушая этический долг администратора защищать критически важные данные организации.</li>
+      </ul>
+    </div>
+  </details>
+
+  <h3 style="margin-top:32px">🏥 Сценарий 2: Medical Clinic (медицинская клиника)</h3>
+
+  <p>
+    Медицинская клиника использует БД для управления записями пациентов и приёмами. Схема:
+  </p>
+  <ul>
+    <li><b>PATIENT</b> (PatientID, FirstName, LastName, DateOfBirth)</li>
+    <li><b>APPOINTMENT</b> (ApptID, ApptDate, DoctorName, PatientID)</li>
+  </ul>
+
+  <details class="question-card">
+    <summary>Вопрос 1. Типы языков SQL. Объясни разницу между Data Definition Language (DDL) и Data Manipulation Language (DML), приведя по одному конкретному примеру SQL-команды для каждого. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что засчитают (до 3 баллов):</b></p>
+      <ul>
+        <li>[1] DDL используется для создания, изменения или удаления самих <b>структур данных</b> (объектов/схемы) БД, тогда как DML используется для манипуляции, вставки или извлечения данных, хранящихся внутри этих структур.</li>
+        <li>[1] <i>За корректный пример DDL:</i> <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code></li>
+        <li>[1] <i>За корректный пример DML:</i> <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 2. Построение запросов. Напиши SQL-запрос, который возвращает FirstName и LastName всех пациентов, у которых есть приём у "Dr. Smith". <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <p><b>SQL-решение:</b></p>
+      <pre class="code-block"><code>SELECT PATIENT.FirstName, PATIENT.LastName
+FROM PATIENT, APPOINTMENT
+WHERE PATIENT.PatientID = APPOINTMENT.PatientID
+  AND APPOINTMENT.DoctorName = "Dr. Smith";</code></pre>
+      <p><b>Что засчитают (по 1 баллу за каждый правильный элемент, до 4 баллов):</b></p>
+      <ul>
+        <li>[1] <code>SELECT PATIENT.FirstName, PATIENT.LastName</code> (или просто <code>FirstName, LastName</code>, если нет неоднозначности)</li>
+        <li>[1] <code>FROM PATIENT, APPOINTMENT</code> (или с использованием синтаксиса <code>JOIN</code>)</li>
+        <li>[1] <code>WHERE PATIENT.PatientID = APPOINTMENT.PatientID</code> (правильное связывание первичного/внешнего ключа)</li>
+        <li>[1] <code>AND APPOINTMENT.DoctorName = "Dr. Smith"</code> (одинарные кавычки тоже принимаются)</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 3. Обновление данных — важность WHERE. Администратору БД в клинике нужно обновить адрес пациента. Объясни критическую важность включения WHERE при выполнении инструкции UPDATE в SQL. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что засчитают (до 3 баллов):</b></p>
+      <ul>
+        <li>[1] Инструкция <code>UPDATE</code> используется для изменения существующих записей в таблице.</li>
+        <li>[1] Если <code>WHERE</code> пропущен, СУБД не знает, какую именно запись нужно изменить.</li>
+        <li>[1] В результате команда <code>UPDATE</code> глобально применит изменение к <i>каждой строке</i> в таблице (например, изменит адрес у всех пациентов на новый), что приведёт к серьёзной потере/повреждению данных.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 4. Представления БД (HL Extension). Чтобы защитить конфиденциальность пациентов, клиника создаёт «представление БД» для регистраторов, которое скрывает колонки медицинской истории. Опиши, что такое представление БД, и укажи, хранятся ли данные представления физически в БД как отдельная таблица. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что засчитают (до 3 баллов):</b></p>
+      <ul>
+        <li>[1] Представление (view) — это виртуальная таблица, основанная на результате SQL-запроса <code>SELECT</code>.</li>
+        <li>[1] Оно работает как сохранённый запрос, к которому можно обращаться как к обычной таблице — для целей безопасности или удобства.</li>
+        <li>[1] Представление <i>не</i> хранится в БД физически; сохраняется только сам SQL-запрос, определяющий view, а данные динамически извлекаются из исходных базовых таблиц каждый раз при обращении к представлению.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 5. Транзакции и целостность данных (HL Extension). Финансовое учреждение использует БД для обработки онлайн-переводов денег между счетами. (a) Дай определение термина <i>транзакция БД</i>. [1 балл] (b) На примере перевода денег со счёта A на счёт B опиши, как свойство <i>Atomicity</i> и команда ROLLBACK работают вместе для поддержания целостности данных в случае сбоя системы. [4 балла] <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <p><b>Что засчитают:</b></p>
+      <p><b>(a) [1 балл]:</b></p>
+      <ul>
+        <li>[1] Транзакция — это единая, неделимая логическая единица работы, выполняемая над БД (которая может состоять из нескольких отдельных SQL-операций).</li>
+      </ul>
+      <p><b>(b) Описание Atomicity и Rollback в контексте (до 4 баллов):</b></p>
+      <ul>
+        <li>[1] Atomicity диктует правило «всё или ничего» для транзакций.</li>
+        <li>[1] В сценарии перевода деньги должны быть <i>списаны</i> со счёта A и <i>зачислены</i> на счёт B; оба шага должны выполниться успешно вместе.</li>
+        <li>[1] Если система упала после списания со счёта A, но до зачисления на счёт B, транзакция остаётся незавершённой.</li>
+        <li>[1] Команда <code>ROLLBACK</code> срабатывает, чтобы отменить частичную транзакцию, возвращая счёт A в исходное состояние, тем самым предотвращая «исчезновение» денег и поддерживая согласованность/целостность БД.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="question-card">
+    <summary>Вопрос 6. Социально-этические последствия / TOK (AO3). Развитие технологии БД опирается на высокоструктурированные языки запросов (SQL) для извлечения информации. Обсуди одно ограничение или этическое следствие опоры на структурированные запросы к БД для обработки и получения знаний — по сравнению с использованием богатого, неоднозначного естественного человеческого языка. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что засчитают (до 3 баллов за критическое обсуждение):</b></p>
+      <ul>
+        <li>[1] SQL требует абсолютной точности, строгой категоризации и однозначной логики (например, <code>TRUE</code>/<code>FALSE</code>, точные совпадения).</li>
+        <li>[1] Естественный человеческий язык и опыт часто богаты, неоднозначны, многослойны — и не могут быть легко уложены в строгие столбцы и строки.</li>
+        <li>[1] <i>Ограничение / этическое следствие:</i> опора исключительно на БД для обработки знаний загоняет нас в высокоструктурированный, но потенциально ограниченный способ познания — мы теряем нюансы человеческого контекста или принимаем жёсткие алгоритмические решения, игнорирующие сложность реальных человеческих ситуаций.</li>
+      </ul>
+    </div>
+  </details>
 
   <!-- ============ CLOSING ============ -->
   <h2 id="remember">Что важно запомнить</h2>
@@ -1373,9 +1358,9 @@ REVOKE DELETE ON Book FROM librarian;</code></pre>
   <p style="margin-top:32px">
     <a href="databases.html" class="back-link">← Назад к A3 Базы данных</a>
     &nbsp; · &nbsp;
-    <a href="databases.html?v=9#sql-sim" class="back-link">💾 SQL-песочница →</a>
+    <a href="databases.html?v=10#sql-sim" class="back-link">💾 SQL-песочница →</a>
     &nbsp; · &nbsp;
-    <a href="databases.html?v=9#acid-sim" class="back-link">⚛️ ACID-симуляция →</a>
+    <a href="databases.html?v=10#acid-sim" class="back-link">⚛️ ACID-симуляция →</a>
     &nbsp; · &nbsp;
     <a href="quiz.html?topic=A3.3" class="back-link">К квизу A3.3 →</a>
   </p>
@@ -1388,7 +1373,7 @@ REVOKE DELETE ON Book FROM librarian;</code></pre>
   </p>
 </footer>
 
-<script src="js/app.js?v=9"></script>
+<script src="js/app.js?v=10"></script>
 </body>
 </html>
 </content>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4.3 Подходы к машинному обучению (HL) · Экзамен-вопросы · IB CS Theme A</title>
+<meta name="description" content="A4.3 Подходы к машинному обучению (HL only) — официальные экзамен-вопросы преподавателя на русском: linear regression, classification, hyperparameter tuning, clustering, association rules, ANN, CNN, reinforcement learning, genetic algorithms.">
+<link rel="stylesheet" href="styles.css?v=10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .hl-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border-radius: 99px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+    line-height: 1.5;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .question-card .sub-q {
+    margin: 14px 0 6px;
+    padding: 6px 10px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.95rem;
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .scenario-box {
+    background: rgba(14,165,233,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    margin: 12px 0;
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+  [data-theme="dark"] .scenario-box { background: rgba(14,165,233,0.10); }
+  .scenario-box .label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .sim-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    margin: 6px 6px 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background 0.15s;
+  }
+  .sim-link:hover { background: var(--border); }
+  .sim-link .icon {
+    font-size: 1.1rem;
+    margin-right: 6px;
+  }
+  .term-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .ann-diagram {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .ann-layer {
+    padding: 12px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+  .ann-layer.input { background: rgba(14,165,233,0.12); border-color: var(--accent); }
+  .ann-layer.hidden { background: rgba(139,92,246,0.10); border-color: var(--violet); }
+  .ann-layer.output { background: rgba(16,185,129,0.12); border-color: var(--green); }
+  .ann-layer b { display: block; margin-bottom: 4px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+
+  <span class="hero-eyebrow" style="background:rgba(239,68,68,0.12); color:#b91c1c">
+    A4.3 · Machine Learning Approaches
+  </span>
+  <span class="hl-badge" style="margin-left:8px">HL only</span>
+
+  <h1>Подходы к машинному обучению <span class="hl-badge" style="vertical-align:middle">HL</span></h1>
+
+  <p class="lede">
+    Эта страница — сборник <b>официальных HL-вопросов преподавателя</b> по теме <b>A4.3 «Подходы к машинному обучению»</b>. Пять вопросов покрывают весь HL-материал подтемы: линейная регрессия и классификация (supervised), настройка гиперпараметров и сравнение моделей, кластеризация и поиск ассоциативных правил (unsupervised), архитектура ANN и CNN (deep learning), reinforcement learning и генетические алгоритмы. Это <b>HL only</b> материал — на SL-экзамене таких вопросов не будет.
+  </p>
+
+  <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
+    <b>✅ Официальные HL-вопросы преподавателя.</b> Все 5 вопросов и схемы оценивания (mark schemes) взяты из учебного документа «A4.3 Machine Learning Approaches — Exam Questions (HL)». Формулировки и распределение баллов сохранены 1-в-1 с официальным mark scheme.
+  </div>
+
+  <div class="ru-tip">
+    💡 <b>Покрытие по программе IB:</b> A4.3 — это HL-расширение темы A4.1. Вместо того чтобы просто «знать названия алгоритмов», ты должен <b>объяснить, как они работают внутри</b>: что такое «линия наилучшего соответствия», что такое гиперпараметры, чем CNN отличается от обычной ANN, какие шаги (mutation, crossover, selection) есть в генетических алгоритмах.
+  </div>
+
+  <p>
+    <a class="sim-link" href="ml.html#kmeans-sim"><span class="icon">🎯</span>Симуляция: K-means кластеризация (unsupervised)</a>
+    <a class="sim-link" href="ml.html#knn-sim"><span class="icon">🔍</span>Симуляция: K-Nearest Neighbours (supervised, classification)</a>
+    <a class="sim-link" href="ml.html#classifier-sim"><span class="icon">🧠</span>Симуляция: классификатор (учим границу разделения)</a>
+  </p>
+
+  <!-- ============ CONTEXT ============ -->
+  <h2>Контекст темы <span class="hl-badge">HL</span></h2>
+
+  <p>
+    Тема <b>A4.3</b> — это <b>«как именно работают алгоритмы»</b>. Если в A4.1 ты учился отличать regression от classification «снаружи» (по выходу), то здесь нужно объяснить, <b>что модель делает внутри</b>: как линейная регрессия минимизирует ошибку, как классификатор учится «границе» между классами, как нейронная сеть передаёт сигнал между слоями. Также HL добавляет <b>гиперпараметры</b> (learning rate, число слоёв и т.д.) и <b>сравнение моделей</b> (никакой алгоритм не идеален для всех задач). В unsupervised различай <b>clustering</b> (группировка похожих объектов) и <b>association rule learning</b> (поиск «если-то» зависимостей). В deep learning — общий <b>ANN</b> и его специализация для изображений <b>CNN</b>. Завершает раздел <b>reinforcement learning</b> и <b>генетические алгоритмы</b>, вдохновлённые естественным отбором.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Подход</th>
+        <th>Ключевая идея для HL-экзамена</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Linear regression</td><td>Минимизирует расстояние от <b>линии наилучшего соответствия</b> до точек данных; выход — непрерывное число.</td></tr>
+      <tr><td>Classification</td><td>Учит <b>границу</b> между классами на размеченных данных; выход — категория с вероятностью.</td></tr>
+      <tr><td>Hyperparameter tuning</td><td>Настройка <b>внешних</b> параметров <b>до</b> обучения (learning rate, число слоёв); баланс underfitting ↔ overfitting.</td></tr>
+      <tr><td>Clustering</td><td>Unsupervised: группирует данные по <b>математической близости признаков</b>, без меток.</td></tr>
+      <tr><td>Association rule</td><td>Ищет «if-then»-зависимости в больших данных (например, «купил хлеб → купит масло»).</td></tr>
+      <tr><td>ANN (нейросеть)</td><td>Input layer → <b>hidden layers</b> → output layer; веса и смещения, нелинейные функции активации.</td></tr>
+      <tr><td>CNN (свёрточная)</td><td>Спец-нейросеть для <b>изображений</b>; свёрточные слои-фильтры + pooling; учит иерархию признаков.</td></tr>
+      <tr><td>Reinforcement</td><td>Агент в среде → действие → reward/penalty → обновление политики; максимизирует кумулятивную награду.</td></tr>
+      <tr><td>Genetic algorithm</td><td>Поисковая эвристика на основе <b>естественного отбора</b>: mutation + crossover + selection.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>HL-фокус:</b> на экзамене различают «опиши» (describe — 2 балла) и «объясни» (explain — 3 балла). Для 3 баллов нужно дать <b>механизм</b> (как именно работает) + <b>обоснование</b> (почему именно так) + <b>пример из контекста сценария</b>.
+  </div>
+
+  <!-- ============ OFFICIAL EXAM QUESTIONS ============ -->
+  <h2>Официальные вопросы преподавателя <span class="hl-badge">HL</span></h2>
+
+  <p class="muted" style="font-size:0.92rem">
+    Нажми на вопрос, чтобы развернуть mark scheme (схему оценивания). Цифры в скобках — максимальное число баллов за пункт.
+  </p>
+
+  <!-- Q1 -->
+  <details class="question-card">
+    <summary>Вопрос 1. Data scientist строит модели для агентства недвижимости — оценивает тренды на рынке жилья и категоризирует типы объектов. <span class="marks-tag">6 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Агентство недвижимости использует supervised ML. Нужно как (а) предсказать <b>будущую цену дома</b>, так и (б) определить <b>тип объекта</b> — «townhouse», «apartment» или «detached home».
+      </div>
+
+      <div class="sub-q">(a) Объясни, как <b>линейная регрессия (linear regression)</b> используется для предсказания непрерывных величин (например, будущей цены дома). <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li>Линейная регрессия <b>моделирует зависимость между независимыми переменными (входы)</b> и <b>зависимой переменной (выход)</b>, подгоняя математическую <b>линию (или плоскость) наилучшего соответствия</b> (line / plane of best fit). [1]</li>
+        <li>Поскольку выход — <b>непрерывное численное значение</b>, она может предсказать <b>бесконечное число возможных вариантов</b> внутри диапазона (например, конкретные суммы в долларах). [1]</li>
+        <li>Достигается это путём <b>минимизации ошибки / расстояния</b> между предсказанной линией и реальными точками данных из обучающего набора. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Объясни, как <b>методы классификации (classification techniques)</b> в supervised learning используются для предсказания дискретных категорий — например, «townhouse», «apartment», «detached home». <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li>Алгоритмы классификации учат <b>границы (boundaries)</b>, чтобы разделить данные на <b>заранее заданные дискретные категории / классы</b>. [1]</li>
+        <li>Они используют <b>размеченные обучающие данные</b>, чтобы выучить <b>признаки (features)</b>, связанные с каждой конкретной категорией. [1]</li>
+        <li>На <b>не виденных ранее данных</b> модель вычисляет <b>вероятность принадлежности к каждому классу</b> и выдаёт <b>категориальную метку</b> (например, «apartment»), а не непрерывное число. [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ключ к 6/6:</b> в (а) обязательны слова «line of best fit» и «minimize error/distance»; в (b) — «boundaries», «labelled training data», «probability of belonging». Сравни с supervised vs unsupervised — это разные вопросы; здесь оба пункта про supervised.</p>
+    </div>
+  </details>
+
+  <!-- Q2 -->
+  <details class="question-card">
+    <summary>Вопрос 2. При построении моделей из Вопроса 1 data scientist обучает несколько разных алгоритмов. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Тот же сценарий, что и в Q1 — модели для агентства недвижимости. Но теперь смотрим на <b>процесс выбора и настройки</b> алгоритма.
+      </div>
+
+      <div class="sub-q">(a) Объясни роль <b>настройки гиперпараметров (hyperparameter tuning)</b> при оценке supervised-алгоритмов. <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li><b>Гиперпараметры</b> — это <b>внешние настройки конфигурации модели</b>, которые задаются <b>до начала обучения</b> (в отличие от обычных параметров / весов, которые модель учит сама в процессе обучения). [1]</li>
+        <li>Настройка состоит в <b>подборе этих значений</b> (например, learning rate, число скрытых слоёв, количество эпох) на нескольких прогонах обучения и оценки. [1]</li>
+        <li>Цель настройки — <b>оптимизировать качество модели, балансируя между underfitting (недообучением) и overfitting (переобучением)</b>, чтобы получить максимальную точность <b>на не виденных ранее данных</b>. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Объясни важность <b>выбора и сравнения моделей (model selection and comparison)</b> перед финализацией ML-системы для запуска в продакшен. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Разные ML-алгоритмы <b>хороши для разных типов данных и задач</b> — <b>не существует одной модели</b>, которая работает лучше всего во всех случаях («no free lunch» теорема). [1]</li>
+        <li>Сравнение моделей по <b>стандартным метрикам</b> (accuracy, precision, recall и т.д.) позволяет разработчикам выбрать тот алгоритм, который даёт <b>оптимальный баланс точности, вычислительной эффективности и масштабируемости</b> для конкретной задачи. [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ловушка:</b> гиперпараметры ≠ параметры. Параметры (веса нейросети) — учатся <b>во время</b> обучения. Гиперпараметры (learning rate, число слоёв) — задаются <b>до</b>. Не путать эти два понятия — это типовая ошибка.</p>
+    </div>
+  </details>
+
+  <!-- Q3 -->
+  <details class="question-card">
+    <summary>Вопрос 3. У супермаркета большая база данных транзакций. Он хочет найти скрытые паттерны <b>без предзаданных меток</b>. <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Сеть супермаркетов хранит миллионы чеков. Меток («это VIP-клиент», «это студент») нет — только сырые транзакции. Нужны методы <b>unsupervised learning</b>.
+      </div>
+
+      <div class="sub-q">(a) Опиши, как <b>методы кластеризации (clustering techniques)</b> могут быть использованы для группировки этих данных на основе схожести признаков. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Алгоритмы кластеризации <b>анализируют неразмеченные данные</b> для поиска <b>скрытых структур</b> и <b>группируют точки данных, которые делят схожие признаки</b> или находятся в <b>математической близости</b> (близкое евклидово расстояние). [1]</li>
+        <li><b>Контекстный пример:</b> метод мог бы сгруппировать покупателей супермаркета в <b>разные покупательские профили</b> (например, «семейные с маленькими детьми», «здоровое питание», «студенты-минимум») на основе их покупательских привычек — <b>без того, чтобы заранее объявить, какие будут профили</b>. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Опиши, как методы <b>поиска ассоциативных правил (association rule learning)</b> могут быть использованы для обнаружения связей между разными атрибутами в этом большом наборе данных. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Association rule learning ищет интересные <b>«if-then» отношения</b> или <b>зависимости</b> между разными переменными в большом наборе данных. [1]</li>
+        <li><b>Контекстный пример:</b> метод выявляет правила вроде «<b>если клиент покупает хлеб, он с высокой вероятностью также купит масло</b>» — это позволяет оптимизировать <b>расстановку товаров на полках</b> или давать <b>персональные рекомендации</b> на кассе или в приложении. [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Разница clustering ↔ association rule:</b> clustering группирует <b>самих клиентов</b> (объекты). Association rule находит правила, связывающие <b>атрибуты</b> (товары / признаки) между собой. И то, и другое — unsupervised, и оба важны для retail-аналитики.</p>
+    </div>
+  </details>
+
+  <!-- Q4 -->
+  <details class="question-card">
+    <summary>Вопрос 4. Компания беспилотных автомобилей использует deep learning для обработки данных с сенсоров и видеокамер. <span class="marks-tag">7 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Автономный автомобиль (например, Tesla Autopilot или Waymo) получает поток данных с лидаров, радаров и камер. Распознавание пешеходов, знаков, разметки — всё это deep learning.
+      </div>
+
+      <div class="sub-q">(a) Опиши <b>структуру и функцию искусственных нейронных сетей (ANN)</b> и как многослойные сети используются для моделирования сложных паттернов в данных. <span class="marks-tag">4 балла</span></div>
+
+      <div class="ann-diagram">
+        <div class="ann-layer input"><b>Input layer</b>Пиксели, сенсоры</div>
+        <div class="ann-layer hidden"><b>Hidden layer 1</b>Простые признаки</div>
+        <div class="ann-layer hidden"><b>Hidden layer 2</b>Сложные признаки</div>
+        <div class="ann-layer output"><b>Output layer</b>Решение / класс</div>
+      </div>
+
+      <ul>
+        <li>ANN устроены из <b>входного слоя (input layer)</b>, одного или нескольких <b>«скрытых» слоёв (hidden layers)</b> и <b>выходного слоя (output layer)</b>, состоящих из взаимосвязанных узлов (<b>искусственных нейронов</b>). [1]</li>
+        <li>Данные передаются между узлами, причём связям присваиваются <b>веса (weights)</b> и <b>смещения (biases)</b>, которые <b>корректируются в процессе обучения</b>. [1]</li>
+        <li>Многослойные (<b>глубокие</b>) сети используют <b>функции активации (activation functions)</b>, чтобы внести <b>нелинейность</b> (без этого сеть была бы эквивалентна одной линейной модели). [1]</li>
+        <li>Эта многослойная структура позволяет сетям <b>прогрессивно извлекать и моделировать высоко-сложные нелинейные паттерны</b> из сырых данных, которые более простые модели не могут уловить. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Система зрения компании опирается на <b>свёрточные нейронные сети (CNN)</b>. Опиши, как CNN адаптивно выучивают <b>пространственные иерархии признаков</b> в изображениях. <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li>CNN используют специализированные <b>свёрточные слои (convolutional layers)</b>, которые работают как <b>фильтры, сканирующие сеточные данные</b> (например, пиксели изображения). [1]</li>
+        <li>Они адаптивно учат <b>пространственные иерархии</b>: <b>нижние слои</b> определяют простые признаки (например, рёбра, линии), а <b>более глубокие слои</b> комбинируют их в сложные признаки (например, формы, лица). [1]</li>
+        <li>Они также используют <b>pooling-слои</b>, чтобы уменьшить размерность, что делает модель <b>пространственно инвариантной</b> (способной распознавать объект независимо от того, в какой части кадра он находится). [1]</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ключ к 7/7:</b> в (а) — структура из 3 типов слоёв, веса/смещения, нелинейность, способность к сложным паттернам. В (b) — три ключевых слова: <b>convolutional layers</b> (фильтры), <b>spatial hierarchies</b> (от простого к сложному), <b>pooling</b> (инвариантность к положению).</p>
+    </div>
+  </details>
+
+  <!-- Q5 -->
+  <details class="question-card">
+    <summary>Вопрос 5. Обучение с подкреплением и генетические алгоритмы. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <div class="sub-q">(a) Опиши, как агент учится принимать решения, взаимодействуя со своей средой в <b>обучении с подкреплением (reinforcement learning)</b>. <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li>Reinforcement learning включает <b>агента</b>, помещённого в <b>среду (environment)</b>, в которой он <b>совершает конкретные действия (actions)</b>. [1]</li>
+        <li>Среда возвращает агенту <b>обратную связь</b> в форме <b>численной награды (reward)</b> (за хорошие действия) или <b>штрафа (penalty)</b> (за плохие). [1]</li>
+        <li>Со временем, через <b>пробы и ошибки</b>, агент обновляет свою внутреннюю <b>политику (policy)</b>, чтобы <b>максимизировать кумулятивную награду</b> — таким образом он учит оптимальный способ принятия решений. [1]</li>
+      </ul>
+
+      <div class="sub-q">(b) Опиши применение <b>генетических алгоритмов (genetic algorithms)</b> на реальном примере. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li>Генетические алгоритмы — это <b>поисковые эвристики</b>, вдохновлённые процессом <b>естественного отбора (natural selection)</b> — они используют операции <b>мутации (mutation), скрещивания (crossover) и отбора (selection)</b>. [1]</li>
+        <li><b>Балл за реальное применение</b> (любое из):
+          <ul>
+            <li>оптимизация сложных <b>расписаний / планирования</b> (например, школьное расписание уроков, размещение врачей в больнице);</li>
+            <li>проектирование <b>аэродинамических физических конструкций</b> (форма крыла самолёта);</li>
+            <li>оптимизация <b>финансовых торговых стратегий</b> путём «эволюции» лучшего решения через поколения. [1]</li>
+          </ul>
+        </li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ключ к 5/5:</b> в (а) обязательны 4 слова — agent, environment, action, reward/penalty (+ policy/cumulative reward). В (b) перечисли три операции (mutation, crossover, selection) и приведи <b>конкретный пример</b>. Просто «оптимизация» без примера = 0 баллов за пример.</p>
+    </div>
+  </details>
+
+  <!-- ============ EXAM TIPS ============ -->
+  <h2>Что важно запомнить <span class="hl-badge">HL</span></h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><b>Linear regression — три ключевых фразы:</b> «line of best fit», «continuous numerical output», «minimize error/distance». Без них 3/3 не дадут.</li>
+    <li><b>Classification — три ключевых фразы:</b> «boundaries between classes», «labelled training data», «probability of belonging to each class». Не путай с регрессией — здесь категория, не число.</li>
+    <li><b>Гиперпараметры vs параметры:</b> гиперпараметры задаются <b>до</b> обучения (learning rate, число слоёв); параметры (веса) учатся <b>во время</b> обучения. Тюнинг гиперпараметров балансирует <b>underfitting ↔ overfitting</b>.</li>
+    <li><b>Clustering vs Association rules:</b> clustering группирует <b>объекты</b> (клиентов); association rules ищет «if-then» зависимости между <b>атрибутами</b> (товарами). И то, и другое — unsupervised и работает на <b>неразмеченных</b> данных.</li>
+    <li><b>ANN-архитектура:</b> input → hidden(s) → output, веса и смещения корректируются при обучении, нелинейные activation functions нужны для сложных паттернов. На «опиши ANN» не забудь упомянуть все три типа слоёв.</li>
+    <li><b>CNN — три ключевых слова:</b> <b>convolutional layers</b> (фильтры по сетке пикселей), <b>spatial hierarchies</b> (низкие слои — рёбра, высокие — лица), <b>pooling</b> (инвариантность к положению объекта в кадре). CNN — это специализация ANN <b>для изображений</b>.</li>
+    <li><b>Reinforcement learning — формула «4 слова»:</b> agent, environment, action, reward/penalty. Для 3/3 добавь «policy» и «maximize cumulative reward».</li>
+    <li><b>Genetic algorithms — три операции:</b> mutation, crossover, selection. На вопрос «describe application» обязательно дай конкретный пример (расписание / аэродинамика / торговля).</li>
+    <li><b>«Explain» в HL = 3 балла:</b> механизм + обоснование + контекст сценария. Всегда привязывай ответ к условию задачи (недвижимость, супермаркет, автомобиль), даже если вопрос сформулирован абстрактно.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+    &nbsp; · &nbsp;
+    <a href="a4-2-preprocessing.html" class="back-link">→ A4.2 Предобработка (HL)</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A4.3" class="back-link">К квизу A4.3 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A4.3 Подходы к машинному обучению (HL) · Официальные вопросы преподавателя · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=10"></script>
+</body>
+</html>

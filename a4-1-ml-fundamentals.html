@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4.1 Основы машинного обучения · Экзамен-вопросы · IB CS Theme A</title>
+<meta name="description" content="A4.1 Основы машинного обучения — официальные экзамен-вопросы преподавателя на русском: AI vs ML vs Deep Learning, регрессия и классификация, обучение с подкреплением, ASIC vs FPGA, этика unsupervised-анализа.">
+<link rel="stylesheet" href="styles.css?v=10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+    line-height: 1.5;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .question-card .sub-q {
+    margin: 14px 0 6px;
+    padding: 6px 10px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.95rem;
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .scenario-box {
+    background: rgba(14,165,233,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    margin: 12px 0;
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+  [data-theme="dark"] .scenario-box { background: rgba(14,165,233,0.10); }
+  .scenario-box .label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .sim-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    margin: 6px 6px 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background 0.15s;
+  }
+  .sim-link:hover { background: var(--border); }
+  .sim-link .icon {
+    font-size: 1.1rem;
+    margin-right: 6px;
+  }
+  .term-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+
+  <span class="hero-eyebrow" style="background:rgba(139,92,246,0.12); color:#6d28d9">
+    A4.1 · ML Fundamentals
+  </span>
+
+  <h1>Основы машинного обучения — экзамен-вопросы</h1>
+
+  <p class="lede">
+    Эта страница — сборник <b>официальных вопросов преподавателя</b> по теме <b>A4.1 «Основы машинного обучения»</b>. Шесть вопросов покрывают всю обязательную программу подтемы: чем отличаются AI, ML и Deep Learning; как устроено обучение с учителем (регрессия и классификация); как работает reinforcement learning; зачем нужны специализированные процессоры ASIC и FPGA; и какие приватность-риски несёт unsupervised-анализ метаданных. После проработки этих шести вопросов ты сможешь ответить на любой экзаменационный вопрос по A4.1.
+  </p>
+
+  <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
+    <b>✅ Официальные вопросы преподавателя.</b> Все 6 вопросов и схемы оценивания (mark schemes) взяты из учебного документа «A4.1 Machine Learning Fundamentals — Exam Questions». Это именно то, что будет на экзамене — структура баллов, формулировки и ключевые слова сохранены.
+  </div>
+
+  <p>
+    <a class="sim-link" href="ml.html#regression-sim"><span class="icon">📈</span>Симуляция: линейная регрессия (supervised, continuous output)</a>
+    <a class="sim-link" href="ml.html#kmeans-sim"><span class="icon">🎯</span>Симуляция: K-means кластеризация (unsupervised)</a>
+    <a class="sim-link" href="ml.html#knn-sim"><span class="icon">🔍</span>Симуляция: K-Nearest Neighbours (supervised, classification)</a>
+  </p>
+
+  <!-- ============ CONTEXT ============ -->
+  <h2>Контекст темы</h2>
+
+  <p>
+    Тема <b>A4.1</b> вводит фундаментальные понятия машинного обучения. Сначала ты должен уметь чётко <b>отличить три уровня вложенности</b>: AI ⊃ ML ⊃ Deep Learning. Затем — три классических <b>парадигмы обучения</b>: с учителем (supervised), без учителя (unsupervised) и с подкреплением (reinforcement). В supervised различают <b>регрессию</b> (непрерывный числовой выход) и <b>классификацию</b> (дискретная категория). Программа также требует понимания <b>аппаратной стороны</b> — почему обычных CPU/GPU иногда не хватает и зачем индустрия использует ASIC (фиксированные «заточки» под одну задачу) и FPGA (перепрограммируемые чипы). Завершает раздел блок про <b>социальные и этические последствия</b> — особенно про то, как unsupervised-алгоритмы могут раскрывать частную информацию о людях даже там, где сообщения шифруются end-to-end.
+  </p>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Понятие</th>
+        <th>Главная идея для экзамена</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>AI</td><td>Широкая область — машины, имитирующие человеческий интеллект (рассуждение, принятие решений).</td></tr>
+      <tr><td>ML</td><td>Подмножество AI — машина учится <b>на данных</b>, а не на явно прописанных IF/THEN правилах.</td></tr>
+      <tr><td>Deep Learning</td><td>Подмножество ML — использует <b>многослойные нейронные сети</b> для извлечения признаков.</td></tr>
+      <tr><td>Supervised</td><td>Учится на <b>размеченных данных</b> (input + correct output). Делится на regression и classification.</td></tr>
+      <tr><td>Unsupervised</td><td>Ищет <b>скрытые структуры</b> в неразмеченных данных (кластеры, ассоциации).</td></tr>
+      <tr><td>Reinforcement</td><td>Агент учится <b>методом проб и ошибок</b> через награды и штрафы от среды.</td></tr>
+      <tr><td>ASIC</td><td>Чип, <b>заточенный под одну задачу</b>; нельзя перепрограммировать; максимальная скорость.</td></tr>
+      <tr><td>FPGA</td><td>Чип, который <b>можно перепрограммировать</b>; гибкость в ущерб пиковой производительности.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ru-tip">
+    💡 <b>Подсказка:</b> ключевое слово в каждом определении — <b>«учится на данных»</b> (ML), <b>«нейронные сети»</b> (DL), <b>«размеченные»</b> (supervised), <b>«скрытые структуры»</b> (unsupervised), <b>«награда/штраф»</b> (reinforcement), <b>«заточен под задачу / не перепрограммируется»</b> (ASIC), <b>«перепрограммируется»</b> (FPGA). За эти слова обычно дают балл.
+  </div>
+
+  <!-- ============ OFFICIAL EXAM QUESTIONS ============ -->
+  <h2>Официальные вопросы преподавателя</h2>
+
+  <p class="muted" style="font-size:0.92rem">
+    Нажми на вопрос, чтобы развернуть mark scheme (схему оценивания). Цифры в скобках — максимальное число баллов за пункт.
+  </p>
+
+  <!-- Q1 -->
+  <details class="question-card">
+    <summary>Вопрос 1. Различи понятия «искусственный интеллект» (artificial intelligence), «машинное обучение» (machine learning) и «глубокое обучение» (deep learning). <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <p><b>Что писать (по 1 баллу за каждое чёткое определение):</b></p>
+      <ul>
+        <li><b>Искусственный интеллект (Artificial Intelligence).</b> Широкая область, которая стремится создать компьютерные системы, способные <b>выполнять задачи и принимать решения</b> способом, который обычно требует человеческого интеллекта.</li>
+        <li><b>Машинное обучение (Machine Learning).</b> Подмножество искусственного интеллекта, где компьютеры <b>учатся на данных и опыте</b> для выполнения конкретных задач — <b>без того, чтобы их явно программировали</b> на это (без IF/THEN правил).</li>
+        <li><b>Глубокое обучение (Deep Learning).</b> Конкретный подход внутри ML, который использует <b>слои искусственных нейронных сетей</b> для постепенного извлечения признаков всё более высокого уровня из входных данных.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ключ к 3/3:</b> покажи иерархию <b>AI ⊃ ML ⊃ DL</b> (DL — частный случай ML, а ML — частный случай AI). Без явного отделения «учится на данных» от «явно запрограммировано» — балл за ML могут не засчитать.</p>
+    </div>
+  </details>
+
+  <!-- Q2 -->
+  <details class="question-card">
+    <summary>Вопрос 2. Агентство недвижимости использует модель машинного обучения с учителем (supervised). <span class="marks-tag">4 балла</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Реальное агентство недвижимости применяет supervised-модель для оценки рынка жилья и категоризации объектов.
+      </div>
+
+      <div class="sub-q">(a) Различи задачи регрессии (regression) и классификации (classification) в контексте обучения с учителем. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li><b>Регрессия (Regression).</b> Модель выдаёт на выходе <b>непрерывное численное значение</b> в пределах допустимого диапазона. <span class="term-pill">continuous, numerical value</span></li>
+        <li><b>Классификация (Classification).</b> Модель предсказывает <b>дискретную категорию (класс)</b> из заранее заданного набора возможных вариантов. <span class="term-pill">discrete category / class label</span></li>
+      </ul>
+
+      <div class="sub-q">(b) Приведи по одному примеру задачи регрессии и задачи классификации, которые агентство могло бы использовать. <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li><b>Пример регрессии:</b> предсказание <b>непрерывной цены продажи дома</b> (например, в долларах) на основе площади в квадратных метрах, района, количества комнат.</li>
+        <li><b>Пример классификации:</b> определение, к какой категории относится объект — например, <b>«жилая недвижимость» (residential)</b> или <b>«коммерческая» (commercial)</b>; либо «townhouse / apartment / detached house».</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Внимание:</b> примеры должны соответствовать контексту недвижимости — общий пример «предсказать погоду» баллов не даст. Главные ключевые слова: «continuous numerical value» для регрессии и «discrete category» для классификации.</p>
+    </div>
+  </details>
+
+  <!-- Q3 -->
+  <details class="question-card">
+    <summary>Вопрос 3. Почтовый сервис использует алгоритм для автоматической сортировки писем в папки «Основные» или «Спам» — без явных IF/THEN-правил. Определи тип машинного обучения и объясни, как алгоритм этому учится. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Email-провайдер автоматически раскладывает входящие сообщения в «Primary» или «Spam» — без того, чтобы программисты прописывали традиционные IF/THEN правила.
+      </div>
+
+      <p><b>Что писать (по 1 баллу):</b></p>
+      <ul>
+        <li><b>Идентификация типа:</b> это <b>обучение с учителем (supervised learning)</b>, конкретно — <b>задача классификации (classification)</b>, потому что выход — дискретная категория («Spam» или «Primary»).</li>
+        <li><b>Как учится — данные:</b> алгоритм обучается на <b>размеченном наборе данных (labelled data set)</b>, состоящем из парных элементов: «вход + правильный выход».</li>
+        <li><b>Как учится — обобщение:</b> ему даются примеры входов (письма) и соответствующие правильные метки («Spam» / «Primary»), чтобы он мог <b>обобщить</b> и <b>оценить ответ на ранее не виденных письмах</b>.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Подвох:</b> важно сказать, что данных <b>размечены</b> — без этого supervised от unsupervised не отличишь. Также упомяни обобщение на новые письма — это ключевая идея ML вообще.</p>
+    </div>
+  </details>
+
+  <!-- Q4 -->
+  <details class="question-card">
+    <summary>Вопрос 4. Робототехническая компания проектирует роботизированную руку, которая должна аккуратно поднимать хрупкие объекты. Опиши, как обучение с подкреплением (reinforcement learning) может быть использовано для обучения руки этой задаче. <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Робототехническая компания обучает роботизированную руку поднимать хрупкие предметы (стеклянные стаканы, фрукты, яйца), не разбивая их.
+      </div>
+
+      <p><b>Что писать (по 1 баллу):</b></p>
+      <ul>
+        <li>Reinforcement learning работает по принципу <b>«проб и ошибок» (trial and error)</b>.</li>
+        <li><b>Агент</b> (роботизированная рука) <b>выбирает действие</b> (action), которое нужно выполнить в данной среде (взять предмет с такой-то силой, под таким-то углом).</li>
+        <li>Среда возвращает <b>обратную связь в виде «награды» (reward)</b> — например, <b>штраф</b>, если предмет разбился, и <b>положительная награда</b>, если рука удержала его безопасно. Эту обратную связь алгоритм использует, чтобы <b>уточнять будущие решения</b>.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Ключевые слова:</b> «trial and error», «action», «environment», «reward / penalty», «refine future decisions». Без слова «reward» или «penalty» один балл скорее всего срежут.</p>
+    </div>
+  </details>
+
+  <!-- Q5 -->
+  <details class="question-card">
+    <summary>Вопрос 5. Высокочастотная трейдинговая компания внедряет ML-систему для биржевой торговли, где микросекунды решают прибыльность. Математические операции для сделок строго специфичны и меняться не будут. <span class="marks-tag">5 баллов</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        High-frequency trading (HFT) — биржевые сделки, где разница в микросекундах определяет прибыль. Алгоритм фиксированный, меняться не будет.
+      </div>
+
+      <div class="sub-q">(a) Опиши разницу между ASIC (Application-Specific Integrated Circuit) и FPGA (Field-Programmable Gate Array). <span class="marks-tag">2 балла</span></div>
+      <ul>
+        <li><b>ASIC.</b> <b>Кастомно спроектирован</b> под конкретное применение — выполняет один заранее заданный набор задач с <b>оптимальной эффективностью</b>; <b>не перепрограммируется</b>. <span class="term-pill">custom-designed, not reprogrammable</span></li>
+        <li><b>FPGA.</b> Может быть <b>запрограммирован и перепрограммирован</b> для выполнения специализированных вычислительных задач, обеспечивая <b>универсальность и гибкость</b>. <span class="term-pill">reprogrammable, flexible</span></li>
+      </ul>
+
+      <div class="sub-q">(b) Оцени, что более подходит этой компании — ASIC или FPGA. <span class="marks-tag">3 балла</span></div>
+      <ul>
+        <li><b>Вывод:</b> для этого сценария более подходит <b>ASIC</b>.</li>
+        <li><b>Почему не FPGA:</b> поскольку математические операции <b>строго специфичны и «меняться не будут»</b>, гибкость FPGA не нужна — а за неё пришлось бы платить производительностью.</li>
+        <li><b>Почему ASIC:</b> предлагает <b>пиковую производительность, оптимальную эффективность и более высокую скорость обработки</b>, чем процессоры общего назначения. Это критично, так как «<b>микросекунды значимо влияют на прибыльность</b>» в HFT.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Примечание из официального mark scheme:</b> допустим аргумент в пользу FPGA, если ученик убедительно покажет, что фирме может понадобиться <b>гибкость для адаптации к будущим рыночным изменениям</b> — в этом случае дают до 2 баллов за обоснование. Но «по умолчанию» правильный ответ — ASIC.</p>
+    </div>
+  </details>
+
+  <!-- Q6 -->
+  <details class="question-card">
+    <summary>Вопрос 6. Обсуди одно последствие для приватности от использования алгоритмов обучения без учителя (unsupervised learning) для анализа социальных групп на платформах обмена сообщениями со сквозным шифрованием (end-to-end encryption). <span class="marks-tag">3 балла</span></summary>
+    <div class="answer">
+      <div class="scenario-box">
+        <span class="label">Сценарий</span>
+        Мессенджер (WhatsApp, Signal, Telegram secret chats) шифрует <b>содержимое</b> сообщений end-to-end — никто посередине не может прочитать сам текст. Но платформа всё равно «видит» <b>метаданные</b>: кто кому пишет, как часто, в какое время.
+      </div>
+
+      <p><b>Что писать (по 1 баллу):</b></p>
+      <ul>
+        <li>Алгоритмы unsupervised learning могут выявлять <b>социальную группу пользователя</b>, анализируя <b>метаданные</b> — например, <b>объём (volume) и частоту сообщений</b>, которыми обмениваются конкретные люди.</li>
+        <li>Этот анализ происходит <b>без необходимости читать сам контент</b> сообщений или чатов — алгоритму достаточно «кто-с-кем-сколько-раз».</li>
+        <li><b>Этическое / приватность-последствие:</b> поэтому даже если платформа использует end-to-end шифрование для защиты содержимого, <b>частные социальные связи и поведение пользователей всё равно могут быть раскрыты / выведены</b> — <b>без их явного согласия</b>.</li>
+      </ul>
+      <p class="muted" style="font-size:0.9rem"><b>Главная идея:</b> «encrypted ≠ private». Шифрование защищает <b>содержание</b>, но не <b>социальный граф</b>. Кластеризация по метаданным может выявить активистов, журналистских информаторов, политических оппонентов и т.д. — без чтения единого сообщения.</p>
+    </div>
+  </details>
+
+  <!-- ============ EXAM TIPS ============ -->
+  <h2>Что важно запомнить</h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><b>Иерархия терминов:</b> AI ⊃ ML ⊃ Deep Learning. На вопросе типа «distinguish» нужно показать именно вложенность и одну отличительную фразу для каждого уровня (для DL — «нейронные сети с несколькими слоями»).</li>
+    <li><b>Regression vs Classification:</b> запомни ровно два ключевых слова — <b>«continuous numerical value»</b> для регрессии и <b>«discrete category / class»</b> для классификации. Этого хватит на 2 балла.</li>
+    <li><b>Supervised vs Unsupervised:</b> различие — в наличии или отсутствии <b>меток (labels)</b> в обучающих данных. Если задача — рассортировать почту на «Spam/Primary» по обучающей выборке с примерами — это supervised classification.</li>
+    <li><b>Reinforcement Learning:</b> всегда упоминай три слова — <b>trial and error</b>, <b>action / environment</b>, <b>reward / penalty</b>. Это «формула» 3/3.</li>
+    <li><b>ASIC vs FPGA:</b> ASIC = «навсегда заточен под одну задачу, максимальная скорость, не перепрограммируется». FPGA = «гибкий, перепрограммируемый, но медленнее ASIC». При выборе смотри на условие: «не изменится» → ASIC; «может потребоваться адаптация» → FPGA.</li>
+    <li><b>Этика unsupervised на E2E-мессенджерах:</b> ключевая идея — <b>метаданные раскрывают социальный граф даже при шифровании контента</b>. Это типичный 3-балльный вопрос про приватность: метаданные → социальная группа → без согласия пользователя.</li>
+    <li><b>На «evaluate» (Q5b):</b> всегда сначала дай вывод («ASIC более подходит»), потом обоснуй контекстом сценария и приведи альтернативу с оговоркой — это даёт максимум баллов за structure.</li>
+  </ul>
+
+  <p style="margin-top:32px">
+    <a href="ml.html" class="back-link">← Назад к A4 ML</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A4.1" class="back-link">К квизу A4.1 →</a>
+  </p>
+
+</main>
+
+<footer class="footer">
+  <p>
+    IB CS Тема A · A4.1 Основы машинного обучения · Официальные вопросы преподавателя · <a href="index.html">На главную</a>
+  </p>
+</footer>
+
+<script src="js/app.js?v=10"></script>
+</body>
+</html>
