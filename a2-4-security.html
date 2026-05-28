@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2.4 Сетевая безопасность · IB CS Theme A</title>
 <meta name="description" content="A2.4 Network security — подробный разбор на русском: межсетевые экраны, уязвимости (DDoS, malware, фишинг, MITM, SQL-инъекции), контрмеры (IDS/IPS, MFA, VPN), шифрование симметричное и асимметричное, цифровые сертификаты, аутентификация и контроль доступа.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -274,6 +274,30 @@
   [data-theme="dark"] .pill-green { color: #6ee7b7; }
   [data-theme="dark"] .pill-amber { color: #fcd34d; }
   [data-theme="dark"] .pill-blue { color: #7dd3fc; }
+  /* English parallel-summary block */
+  .en-summary {
+    background: rgba(14,165,233,0.06);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin: 18px 0 24px;
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+  [data-theme="dark"] .en-summary { background: rgba(14,165,233,0.10); }
+  .en-summary .en-eyebrow {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .en-summary p { margin: 6px 0; }
+  .en-summary ul { margin: 6px 0; padding-left: 22px; }
+  .en-summary li { margin: 3px 0; }
 </style>
 </head>
 <body>
@@ -317,10 +341,27 @@
       <b>⚠️ Официальных экзамен-вопросов от преподавателя по этой теме пока нет.</b> Вопросы в разделе ниже — мои разработанные, в стиле IB-экзамена с детальными mark schemes. Используйте их для тренировки. Когда преподаватель опубликует официальный набор — заменю их.
     </div>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a2-networks/a2-4-network-security?authuser=4" target="_blank" rel="noopener">A2.4 Network security (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <a href="networks.html#encryption-sim" class="sim-link">🔐 Открыть симуляцию: симметричное vs асимметричное шифрование →</a>
 
   <!-- ============ SECTION 1: BIG PICTURE ============ -->
   <h2>1. С чего начать: триада CIA и общая картина</h2>
+
+  <div class="en-summary">
+    <span class="en-eyebrow">English summary · CIA triad</span>
+    <p>Network security is built around three goals, known as the <b>CIA triad</b>:</p>
+    <ul>
+      <li><b>Confidentiality</b> — only intended recipients can read the data (achieved with encryption, access control, authentication).</li>
+      <li><b>Integrity</b> — data is not altered in transit or at rest (achieved with hashing, digital signatures, checksums).</li>
+      <li><b>Availability</b> — the service is reachable when needed (achieved with DDoS protection, backups, redundancy).</li>
+    </ul>
+    <p>Almost any A2.4 exam question maps to one of these three letters: name <i>which</i> goal a technology protects or breaks and half the answer is already written.</p>
+  </div>
 
   <p>
     Сетевая безопасность строится вокруг трёх целей — их часто называют <b>триадой CIA</b>:
@@ -359,6 +400,17 @@
 
   <!-- ============ SECTION 2: FIREWALLS ============ -->
   <h2>2. 🛡️ Межсетевые экраны (Firewalls) — подтема A2.4.1</h2>
+
+  <div class="en-summary">
+    <span class="en-eyebrow">English summary · Firewalls (A2.4.1)</span>
+    <p>A <b>firewall</b> is hardware or software that inspects packets entering and leaving a network and applies an ordered rule set based on source/destination IP, port number, and protocol. Next-generation firewalls (NGFW, layer 7) also inspect packet contents via deep packet inspection.</p>
+    <ul>
+      <li><b>Whitelist</b> — deny by default, allow only listed sources (safer).</li>
+      <li><b>Blacklist</b> — allow by default, block listed sources (must know every attacker in advance).</li>
+    </ul>
+    <p><b>Strengths:</b> access control, traffic logging and alerting, layer-7 filtering, easy scaling. <b>Limitations:</b> blind to insider threats, bypassed by sophisticated or zero-day attacks hidden in encrypted traffic, hard to configure, and DPI adds latency.</p>
+    <p><b>NAT</b> hides internal IP addresses behind one public address (IP masquerading) — a basic form of access control on top of address conservation.</p>
+  </div>
 
   <p>
     <b>Файрвол</b> (firewall) — это устройство или программа, которая <b>отслеживает и фильтрует входящий и исходящий сетевой трафик на уровне пакетов</b>. Современные файрволы «нового поколения» (next-generation firewall, NGFW), они же <b>layer 7</b>-файрволы, умеют смотреть не только заголовки пакетов, но и сам контент.
@@ -447,6 +499,23 @@
 
   <!-- ============ SECTION 3: VULNERABILITIES ============ -->
   <h2>3. ⚠️ Распространённые сетевые уязвимости — подтема A2.4.2</h2>
+
+  <div class="en-summary">
+    <span class="en-eyebrow">English summary · Common network vulnerabilities (A2.4.2)</span>
+    <p>A <b>vulnerability</b> is a weakness an attacker can exploit. Core IB CS list:</p>
+    <ul>
+      <li><b>DDoS</b> — botnet floods a service so legitimate users are locked out (hits Availability).</li>
+      <li><b>Insecure protocols</b> — Telnet, FTP send credentials as cleartext, easy to sniff.</li>
+      <li><b>Malware</b> — virus (attached to a host program), worm (self-spreading across networks), trojan (disguised as legitimate software), ransomware (encrypts files for payment), spyware (silently exfiltrates data).</li>
+      <li><b>MITM</b> — attacker secretly relays between two endpoints, often via a rogue Wi-Fi access point.</li>
+      <li><b>Phishing / social engineering</b> — fake messages trick users into revealing credentials.</li>
+      <li><b>SQL injection</b> — malicious SQL fragments in input fields execute against the database.</li>
+      <li><b>Cross-site scripting (XSS)</b> — injected scripts run inside other users' browsers.</li>
+      <li><b>Brute force / weak authentication</b> — automated password guessing against poorly protected logins.</li>
+      <li><b>Unpatched software</b> — known fixes exist but were not installed (e.g. Equifax 2017).</li>
+      <li><b>Zero-day exploits</b> — attacks against unknown vulnerabilities with no patch available (e.g. Heartbleed).</li>
+    </ul>
+  </div>
 
   <p>
     <b>Уязвимость</b> (vulnerability) — это слабое место в системе, через которое возможна атака. Ниже — десять ключевых уязвимостей, которые требует знать IB CS.
@@ -552,6 +621,28 @@
 
   <!-- ============ SECTION 4: COUNTERMEASURES ============ -->
   <h2>4. 🛡️ Контрмеры (Countermeasures) — подтема A2.4.3</h2>
+
+  <div class="en-summary">
+    <span class="en-eyebrow">English summary · Countermeasures (A2.4.3)</span>
+    <p>Each vulnerability has matching defences. The IB list covers technical and policy controls:</p>
+    <ul>
+      <li><b>CSP</b> restricts script sources in the browser, stopping XSS injection.</li>
+      <li><b>Strong password policies</b> raise length and complexity, blocking dictionary and brute-force attempts.</li>
+      <li><b>Encrypted protocols (HTTPS / SSH)</b> protect traffic from eavesdropping and MITM.</li>
+      <li><b>SSL/TLS certificates</b> prove server identity so HTTPS resists impersonation.</li>
+      <li><b>Patch management</b> closes known exploits before attackers reach them.</li>
+      <li><b>DDoS mitigation</b> filters malicious flood traffic at the network edge.</li>
+      <li><b>Input validation</b> blocks SQL injection and XSS at the server.</li>
+      <li><b>Email filtering</b> catches phishing and malware attachments.</li>
+      <li><b>IDS</b> detects intrusions and raises alerts (passive); <b>IPS</b> detects and actively blocks (inline).</li>
+      <li><b>MFA / 2FA</b> requires multiple factors — knowledge, possession, biometrics — defeating credential leaks.</li>
+      <li><b>VPN</b> creates an encrypted tunnel for safe use of untrusted networks.</li>
+      <li><b>Authentication</b>: passwords, MFA, biometrics, SSO, OAuth (delegated authorisation; OIDC adds authentication).</li>
+      <li><b>Access control</b>: RBAC assigns rights by role; least privilege grants the minimum needed; ACLs list permissions per resource.</li>
+      <li><b>Wireless</b>: MAC filtering plus WPA2/WPA3 — but MAC spoofing limits filtering alone.</li>
+      <li><b>Penetration testing</b> and <b>security awareness training</b> close human and configuration gaps.</li>
+    </ul>
+  </div>
 
   <p>
     На каждую уязвимость существует своя контрмера. IB CS перечисляет следующие основные политики и инструменты защиты:
@@ -757,6 +848,20 @@
   <!-- ============ SECTION 5: ENCRYPTION ============ -->
   <h2>5. 🔐 Шифрование и цифровые сертификаты — подтема A2.4.4</h2>
 
+  <div class="en-summary">
+    <span class="en-eyebrow">English summary · Encryption &amp; certificates (A2.4.4)</span>
+    <p><b>Encryption</b> converts plaintext into ciphertext that only the holder of the correct key can decrypt.</p>
+    <ul>
+      <li><b>Symmetric</b> — one shared secret key encrypts and decrypts (AES, DES). Fast, low CPU; the hard part is distributing the key safely. Used for bulk data (files, video).</li>
+      <li><b>Asymmetric / public-key</b> — a public-private key pair (RSA, ECC). The public key encrypts or verifies; the private key decrypts or signs. Slower but no pre-shared secret needed. Used for key exchange and digital signatures.</li>
+      <li><b>Hybrid (TLS)</b> — asymmetric exchanges a symmetric session key, then symmetric encrypts the actual traffic — combining safety and speed.</li>
+      <li><b>Digital certificates</b> bind a public key to an identity. A trusted <b>Certificate Authority</b> signs the certificate; browsers verify the CA signature to trust the site, then run TLS to set up HTTPS.</li>
+      <li><b>Digital signatures</b> sign a document's hash with the sender's private key; the recipient verifies with the public key — providing authentication and integrity (not secrecy).</li>
+      <li><b>Hashing</b> is a one-way, deterministic function with avalanche effect (SHA-256 today; MD5/SHA-1 are broken). Used for file integrity, password storage with salt (bcrypt, Argon2), and signatures.</li>
+      <li><b>Key management</b> covers safe generation, rotation, backup, and restricted access — required by GDPR, HIPAA, PCI DSS.</li>
+    </ul>
+  </div>
+
   <p>
     <b>Шифрование (encryption)</b> — процесс превращения данных в закодированную форму, чтобы их не мог прочитать никто, кроме адресата. Алгоритмы превращают <b>открытый текст (plaintext)</b> в <b>шифртекст (ciphertext)</b>, который можно расшифровать только при наличии правильного ключа.
   </p>
@@ -958,6 +1063,17 @@
   <!-- ============ SECTION 6: POLICIES & PRIVACY ============ -->
   <h2>6. 📜 Политики безопасности и приватность</h2>
 
+  <div class="en-summary">
+    <span class="en-eyebrow">English summary · Policies &amp; privacy</span>
+    <ul>
+      <li><b>Backup strategy</b> — the 3-2-1 rule: three copies, two media types, one off-site. Full backups are simple to restore; incremental backups are fast to run. Restores must be tested regularly.</li>
+      <li><b>Patch management</b> — track, test, and deploy security patches on a schedule. Lapses cause mass breaches (Equifax, WannaCry).</li>
+      <li><b>Incident response</b> — six phases: preparation, identification, containment, eradication, recovery, lessons learned.</li>
+      <li><b>GDPR</b> — EU privacy law (2018). Core principles include lawful basis, data minimisation, purpose limitation, right to erasure, 72-hour breach notification, and fines up to 4% of global turnover.</li>
+      <li><b>Encryption in transit</b> protects data on the network (HTTPS/TLS, SSH, VPN); <b>encryption at rest</b> protects stored data (full-disk encryption, TDE, cloud server-side encryption). Mature security uses both — losing either layer exposes the data.</li>
+    </ul>
+  </div>
+
   <h3>Резервное копирование (backup strategies)</h3>
   <p>
     Защита от потери данных при сбое, ransomware, ошибке пользователя или физическом уничтожении.
@@ -1052,6 +1168,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

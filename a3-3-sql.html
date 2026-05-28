@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3.3 SQL и программирование БД · IB CS Theme A</title>
 <meta name="description" content="A3.3 Database programming (SQL) — подробный разбор на русском: DDL/DML/DCL/TCL, SELECT с WHERE/JOIN/GROUP BY, агрегатные функции, подзапросы, CREATE TABLE с ограничениями, транзакции и ACID. Полный экзаменационный конспект IB CS.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone SQL deep-dive page — single-language Russian */
@@ -345,6 +345,12 @@
     Эта тема (<b>A3.3</b>) — про то, как реально <b>разговаривать с базой данных</b>. Язык, на котором мы говорим, называется <b>SQL</b> (Structured Query Language — «структурированный язык запросов»). С его помощью мы создаём таблицы, добавляем данные, ищем, обновляем, удаляем и связываем информацию из разных таблиц. Тут мы разберём <b>четыре подсемейства SQL</b> (DDL/DML/DCL/TCL), все ключевые операторы, объединения таблиц (JOIN), агрегатные функции, подзапросы, транзакции и свойства ACID.
   </p>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a3-databases/a3-3/a-3-3-work?authuser=4" target="_blank" rel="noopener">A3.3 Database programming (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
     <b>✅ 12 официальных вопросов от преподавателя.</b> Все задачи (по двум сценариям — TechStore и Medical Clinic) взяты из учебных Google Docs по A3.3 — это именно то, что будет на экзамене.
   </div>
@@ -356,7 +362,7 @@
       <strong>Открой живую SQL-песочницу прямо сейчас</strong>
       Реальный SQLite в браузере: пиши <code>SELECT</code>, <code>JOIN</code>, <code>GROUP BY</code> по школьной БД пациентов и врачей. Любая теория ниже — её можно тут же проверить.
     </div>
-    <a class="btn-link" href="databases.html?v=10#sql-sim">→ Запустить SQL-песочницу</a>
+    <a class="btn-link" href="databases.html?v=11#sql-sim">→ Запустить SQL-песочницу</a>
   </div>
 
   <!-- Mini TOC -->
@@ -382,6 +388,11 @@
 
   <!-- ============ 1. CATEGORIES ============ -->
   <h2 id="categories">1. Четыре категории SQL</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Four SQL sub-languages.</b>
+    SQL is split into four families by purpose. <b>DDL</b> (Data Definition Language) defines the schema with commands like CREATE, ALTER and DROP. <b>DML</b> (Data Manipulation Language) works with the rows inside tables: SELECT, INSERT, UPDATE, DELETE. <b>DCL</b> (Data Control Language) manages permissions with GRANT and REVOKE. <b>TCL</b> (Transaction Control Language) controls transactions with COMMIT, ROLLBACK and SAVEPOINT. Exam questions often ask which family a given keyword belongs to, so the categorisation matters as much as the syntax itself.
+  </div>
 
   <p>
     СУБД (<b>Система Управления Базами Данных</b>, англ. <i>Database Management System</i>) использует <b>четыре подсемейства языка</b> SQL. Они отличаются <b>задачей</b>: одни строят структуру, другие работают с данными, третьи управляют доступом, четвёртые — целостностью транзакций. На экзамене любят спрашивать «к какой категории относится команда <code>X</code>?» — выучи эту таблицу.
@@ -437,6 +448,11 @@
 
   <!-- ============ 2. DDL ============ -->
   <h2 id="ddl">2. DDL — строим структуру базы</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — DDL builds the schema.</b>
+    DDL covers commands that define database structure rather than touch the data itself. <code>CREATE DATABASE</code> makes a new empty database; <code>CREATE TABLE</code> defines columns with data types and optional inline constraints such as primary key or foreign key. <code>ALTER TABLE</code> adds, removes or modifies columns on an existing table, and <code>DROP TABLE</code> deletes the table along with all of its rows. Because DDL changes shape rather than rows, mistakes here are destructive and usually require restoring from a backup.
+  </div>
 
   <h3 id="create-db">2.1 Создаём базу данных</h3>
   <pre class="code-block"><code>CREATE DATABASE school_db;</code></pre>
@@ -497,6 +513,11 @@ DROP COLUMN deliveryPreference;</code></pre>
   <!-- ============ 3. CONSTRAINTS ============ -->
   <h2 id="constraints">3. Ограничения (constraints)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Constraints enforce data integrity.</b>
+    Constraints are rules the DBMS checks automatically on every insert or update. A <b>primary key</b> uniquely identifies each row and cannot be NULL. A <b>foreign key</b> ensures a column only stores values that exist as a primary key in another table, preventing orphan records. <b>NOT NULL</b> requires a value, <b>UNIQUE</b> blocks duplicates (NULL allowed), <b>CHECK</b> validates a boolean condition and <b>DEFAULT</b> supplies a fallback value. If any rule is broken the operation is rejected, so constraints are the schema-level guarantee that bad data never enters the database.
+  </div>
+
   <p>
     Ограничения — это правила, которые СУБД <b>сама проверяет</b> при вставке или обновлении строки. Если правило нарушено — операция отменяется, и пользователь получает ошибку. Это важнейший инструмент <b>целостности данных</b>.
   </p>
@@ -554,6 +575,11 @@ DROP COLUMN deliveryPreference;</code></pre>
   <!-- ============ 4. SELECT ============ -->
   <h2 id="select">4. SELECT — главный оператор</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — SELECT retrieves data.</b>
+    A <b>query</b> is an SQL instruction that extracts information from a database. The <code>SELECT</code> statement names the columns to return and <code>FROM</code> names the source table. Listing column names explicitly is preferred over <code>SELECT *</code> because it is faster and the output is more predictable. Queries can filter rows, perform pattern matching and sort results — and form the foundation that more advanced features (joins, aggregation, subqueries) extend. When data comes from a single table no join is needed; multiple tables require a join expression.
+  </div>
+
   <p>
     <b>SELECT</b> — самый важный оператор в SQL. Им мы <b>извлекаем</b> данные из таблиц. В IB-учебнике <b>«запрос» (query)</b> определяется как «инструкция на SQL для извлечения информации из БД». Запросы умеют: <b>фильтровать</b> (find), <b>искать по образцу</b> (pattern matching), <b>сортировать</b> данные.
   </p>
@@ -591,6 +617,11 @@ SELECT * FROM Artist;</code></pre>
 
   <!-- ============ 5. WHERE & filters ============ -->
   <h2 id="where">5. WHERE и фильтрация</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — WHERE filters rows.</b>
+    <code>WHERE</code> keeps only rows whose condition is true, much like an <code>if</code> in a programming language. Comparison operators (=, &lt;, &gt;, !=) work on numbers, text and dates. <code>BETWEEN x AND y</code> matches an inclusive range. <code>LIKE</code> performs pattern matching with two wildcards — <code>_</code> for exactly one character and <code>%</code> for any number of characters. <code>IN (list)</code> is shorthand for several OR conditions. The boolean operators <code>AND</code>, <code>OR</code> and <code>NOT</code> combine and negate conditions, letting one WHERE clause express complex filters cleanly.
+  </div>
 
   <h3>5.1 <code>WHERE</code> — условие отбора</h3>
   <p>Аналогично оператору <code>if</code> в программировании — строка попадёт в результат только если условие <b>истинно</b>.</p>
@@ -668,6 +699,11 @@ WHERE NOT CustomerCountry = 'Italy' AND NOT CustomerCountry = 'France';</code></
   <!-- ============ 6. ORDER / DISTINCT / LIMIT / AS ============ -->
   <h2 id="order-distinct">6. ORDER BY, DISTINCT, LIMIT, AS</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Shaping the result set.</b>
+    Four clauses control how results are presented. <code>ORDER BY</code> sorts rows ascending (<code>ASC</code>, the default) or descending (<code>DESC</code>), and can sort by several columns in priority order. <code>DISTINCT</code> removes duplicate rows from the result. <code>LIMIT n</code> caps the number of rows returned, useful for top-N queries when combined with <code>ORDER BY</code>. <code>AS</code> assigns a temporary alias to a column or table, which improves readability and is essential when joining tables that share column names.
+  </div>
+
   <h3>6.1 <code>ORDER BY</code> — сортировка</h3>
   <p>По возрастанию <code>ASC</code> (по умолчанию) или по убыванию <code>DESC</code>. Можно сортировать сразу по нескольким полям.</p>
   <pre class="code-block"><code>-- От дешёвого к дорогому
@@ -720,6 +756,11 @@ INNER JOIN Class AS c ON s.ClassID = c.ClassID;</code></pre>
   <!-- ============ 7. AGGREGATES ============ -->
   <h2 id="aggregates">7. Агрегатные функции</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Aggregate functions collapse rows into one value.</b>
+    Aggregate functions reduce many rows down to a single summary number. <code>COUNT(*)</code> returns the total number of rows including NULLs, while <code>COUNT(column)</code> counts only non-NULL values in that column. <code>SUM</code> adds numeric values and <code>AVG</code> computes the arithmetic mean. <code>MIN</code> and <code>MAX</code> return the smallest and largest value respectively. A key rule: aggregate functions cannot appear in <code>WHERE</code> — they belong in <code>SELECT</code> or <code>HAVING</code>. Combined with grouping, they answer questions like total revenue, average price or how many records exist per category.
+  </div>
+
   <p>
     Агрегатные функции <b>сворачивают</b> множество строк в одно значение — это <b>A3.3.4</b> на экзамене. Главное правило: их нельзя использовать в <code>WHERE</code>, только в <code>SELECT</code> и в <code>HAVING</code>.
   </p>
@@ -764,6 +805,11 @@ SELECT AVG(ItemCost) AS AverageItemPrice FROM Item;</code></pre>
 
   <!-- ============ 8. GROUP / HAVING ============ -->
   <h2 id="group">8. GROUP BY и HAVING</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — GROUP BY buckets rows; HAVING filters those buckets.</b>
+    <code>GROUP BY column</code> collapses rows that share the same value of that column into one row per group, allowing aggregate functions to run per group rather than across the whole table. <code>HAVING</code> then filters those grouped results — it works on aggregate values, whereas <code>WHERE</code> filters individual rows before grouping. The full execution order for a query is FROM, then WHERE, then GROUP BY, then HAVING, then SELECT, then ORDER BY, then LIMIT. Remembering this pipeline explains why aggregates are blocked from WHERE.
+  </div>
 
   <h3>8.1 <code>GROUP BY</code> — группируем строки</h3>
   <p>
@@ -815,6 +861,11 @@ HAVING COUNT(CustomerID) &gt; 2;</code></pre>
 
   <!-- ============ 9. JOINs ============ -->
   <h2 id="joins">9. JOIN — объединяем таблицы</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Joins combine rows from related tables.</b>
+    A join links rows from two tables on a shared field, typically a foreign key that references the primary key of the other table. <b>INNER JOIN</b> returns only rows that match on both sides — the intersection. <b>LEFT JOIN</b> keeps every row from the left table and fills missing right-side matches with NULL. <b>RIGHT JOIN</b> mirrors that behaviour for the right table. <b>FULL OUTER JOIN</b> includes every row from both tables, with NULLs where there is no counterpart. The join condition (usually <code>ON tableA.fk = tableB.pk</code>) is what makes a relational schema actually relational.
+  </div>
 
   <p>
     <code>JOIN</code> склеивает строки из <b>двух разных</b> таблиц по <b>общему полю</b> — обычно по внешнему ключу. Это <b>A3.3.2</b> на экзамене. Есть несколько типов соединений.
@@ -921,6 +972,11 @@ WHERE Customer.CustomerCountry = 'Italy'
   <!-- ============ 10. SUBQUERIES ============ -->
   <h2 id="subqueries">10. Подзапросы (вложенный SELECT)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Subqueries nest one query inside another.</b>
+    A subquery is a <code>SELECT</code> statement embedded inside another SQL statement, often used when an intermediate value must be computed before the outer query can run. Subqueries in <code>WHERE</code> are common — for example, comparing each row to an aggregate value such as the average price. Combined with <code>IN</code>, a subquery returns a set of values to match against. Placed in <code>FROM</code>, the subquery becomes a derived table that the outer query treats as its source. Subqueries make complex multi-step questions answerable in a single statement.
+  </div>
+
   <p>
     <b>Подзапрос</b> — это <code>SELECT</code> внутри другого <code>SELECT</code> (или <code>UPDATE</code>, <code>DELETE</code>). Применяют, когда нужно сначала <b>вычислить промежуточное значение</b>, а затем по нему отфильтровать или соединить данные.
   </p>
@@ -957,6 +1013,11 @@ GROUP BY Country;</code></pre>
 
   <!-- ============ 11. INSERT / UPDATE / DELETE ============ -->
   <h2 id="insert-update-delete">11. INSERT, UPDATE, DELETE — изменяем данные</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — DML statements that modify rows.</b>
+    <code>INSERT INTO ... VALUES</code> adds a new row with explicit values, while <code>INSERT INTO ... SELECT</code> bulk-inserts rows taken from another query result. <code>UPDATE table SET column = value WHERE condition</code> modifies existing rows that match the condition. <code>DELETE FROM table WHERE condition</code> removes matching rows while leaving the table structure intact. The critical safety rule: omitting <code>WHERE</code> from <code>UPDATE</code> or <code>DELETE</code> applies the operation to every row in the table — one of the most damaging mistakes possible. Always run a matching <code>SELECT</code> first to preview affected rows.
+  </div>
 
   <h3>11.1 <code>INSERT INTO ... VALUES</code> — добавить запись</h3>
   <pre class="code-block"><code>INSERT INTO Customer (CustomerID, CustomerEmail, CustomerAddress, deliveryAddress)
@@ -1005,6 +1066,11 @@ WHERE StudentID = 105;</code></pre>
   <!-- ============ 12. TRANSACTIONS / ACID ============ -->
   <h2 id="transactions">12. Транзакции и ACID</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Transactions and the ACID properties.</b>
+    A <b>transaction</b> is a group of SQL operations treated as one indivisible unit of work — either every step succeeds and is committed, or none of them take effect. <code>BEGIN TRANSACTION</code> starts the block, <code>COMMIT</code> makes changes permanent, and <code>ROLLBACK</code> undoes everything since the begin. The DBMS guarantees four properties known as <b>ACID</b>. <b>Atomicity</b> enforces all-or-nothing execution. <b>Consistency</b> ensures the database moves from one valid state to another, respecting all constraints. <b>Isolation</b> hides intermediate states from concurrent transactions. <b>Durability</b> guarantees that once committed, changes survive crashes by being written to persistent storage.
+  </div>
+
   <p>
     Это <b>A3.3.6</b> на экзамене (AHL — Higher Level). <b>Транзакция</b> — это <b>группа SQL-операций</b>, которые СУБД выполняет как <b>одно целое</b>: либо все успешно, либо ни одной (как будто ничего не было).
   </p>
@@ -1033,7 +1099,7 @@ COMMIT;                       -- если оба прошли — фиксиру
       <strong>Симуляция ACID-транзакции (с инжекцией сбоя)</strong>
       Запусти перевод 100$ со счёта на счёт, а потом нажми «крах» — увидишь, как ROLLBACK защищает целостность.
     </div>
-    <a class="btn-link" href="databases.html?v=10#acid-sim">→ Открыть ACID-симуляцию</a>
+    <a class="btn-link" href="databases.html?v=11#acid-sim">→ Открыть ACID-симуляцию</a>
   </div>
 
   <h3>12.2 Свойства ACID</h3>
@@ -1081,6 +1147,11 @@ COMMIT;                       -- если оба прошли — фиксиру
 
   <!-- ============ 13. VIEWS / DCL ============ -->
   <h2 id="views">13. Представления (VIEW) и DCL</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.06);">
+    <b>🌐 EN summary — Views and access control.</b>
+    A <b>database view</b> is a virtual table built from a stored <code>SELECT</code> query. The view itself contains no duplicated data — every time it is queried the underlying SELECT runs again against the base tables. Views simplify complex joins behind a friendly name, provide a security layer by exposing only chosen columns to certain users, and shield application code from schema changes. <b>DCL</b> handles permissions: <code>GRANT</code> gives a user or role specific privileges on an object, while <code>REVOKE</code> takes them back. Together, views and DCL implement the principle of least privilege.
+  </div>
 
   <h3>13.1 Что такое VIEW</h3>
   <p>
@@ -1130,7 +1201,7 @@ REVOKE DELETE ON Book FROM librarian;</code></pre>
       <strong>Проверь каждый запрос в живой SQL-песочнице</strong>
       Открой песочницу, создай таблицы из сценария и убедись, что твой запрос работает.
     </div>
-    <a class="btn-link" href="databases.html?v=10#sql-sim">→ К SQL-песочнице</a>
+    <a class="btn-link" href="databases.html?v=11#sql-sim">→ К SQL-песочнице</a>
   </div>
 
   <h3 style="margin-top:32px">📦 Сценарий 1: TechStore (магазин электроники)</h3>
@@ -1358,9 +1429,9 @@ WHERE PATIENT.PatientID = APPOINTMENT.PatientID
   <p style="margin-top:32px">
     <a href="databases.html" class="back-link">← Назад к A3 Базы данных</a>
     &nbsp; · &nbsp;
-    <a href="databases.html?v=10#sql-sim" class="back-link">💾 SQL-песочница →</a>
+    <a href="databases.html?v=11#sql-sim" class="back-link">💾 SQL-песочница →</a>
     &nbsp; · &nbsp;
-    <a href="databases.html?v=10#acid-sim" class="back-link">⚛️ ACID-симуляция →</a>
+    <a href="databases.html?v=11#acid-sim" class="back-link">⚛️ ACID-симуляция →</a>
     &nbsp; · &nbsp;
     <a href="quiz.html?topic=A3.3" class="back-link">К квизу A3.3 →</a>
   </p>
@@ -1373,7 +1444,7 @@ WHERE PATIENT.PatientID = APPOINTMENT.PatientID
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>
 </content>

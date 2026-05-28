@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3.1 Основы баз данных · IB CS Theme A</title>
 <meta name="description" content="A3.1 Database fundamentals — подробный разбор на русском: что такое БД, СУБД, типы баз данных, ключи, целостность данных, аномалии, кардинальность и модальность, плюсы и минусы реляционных БД, роли DBA.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -321,8 +321,18 @@
     <b>✅ Официальные вопросы от преподавателя.</b> Все экзамен-вопросы взяты из учебного Google Doc «A3.1 Exam Questions and Answers» — это именно то, что будет на экзамене.
   </div>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a3-databases/a3-1-database-fundamentals?authuser=4" target="_blank" rel="noopener">A3.1 Database fundamentals (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <!-- ============ SECTION 1: WHAT IS A DATABASE ============ -->
   <h2>1. Что такое база данных и зачем она нужна</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — What is a database.</b> A <b>database</b> is a systematically organised store of data, typically arranged across multiple related tables so it can be searched, updated, secured and shared quickly. You interact with databases every day without realising: e-commerce shops track products, customers and stock; social platforms store profiles, posts and messages; hospitals keep patient histories; banks process billions of accurate transactions; online games persist your inventory and progress. The key idea is that data is structured by purpose, not just dumped into a file, so software and people can reason about it reliably.
+  </div>
 
   <p>
     <b>База данных (database)</b> — это систематически организованное хранилище данных. Данные хранятся <b>логично, обычно в нескольких связанных таблицах</b>, чтобы их можно было быстро искать, обновлять, защищать и совместно использовать. Ты постоянно взаимодействуешь с базами данных, часто этого не осознавая.
@@ -343,6 +353,10 @@
 
   <!-- ============ SECTION 2: FLAT FILE vs RELATIONAL ============ -->
   <h2>2. Плоский файл vs. база данных: зачем вообще нужны БД</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Flat file vs relational.</b> A <b>flat file</b> stores everything in one big table. When the same facts (owner name, vet address) repeat across many rows, you get <b>data redundancy</b>, which causes three classic anomalies. The <b>insert anomaly</b> means you cannot add a new vet until they treat a patient. The <b>delete anomaly</b> means removing one row can wipe out unrelated information. The <b>update anomaly</b> means changing an owner's address in only some rows leaves contradictory copies (<b>data inconsistency</b>). The fix is <b>normalisation</b>: split the flat file into several linked tables, giving you a <b>relational database</b>.
+  </div>
 
   <p>
     Самый простой способ хранить данные — это <b>плоский файл (flat file)</b>: одна большая таблица с одной «сущностью» (<b>entity</b> = table). Звучит удобно, но на практике быстро ломается. Возьмём пример из учебника — ветеринарная клиника, где всё свалено в одну таблицу: владелец, питомец, врач, лечение.
@@ -402,6 +416,10 @@
   <!-- ============ SECTION 3: DBMS ============ -->
   <h2>3. СУБД (DBMS) — что управляет базой</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — DBMS.</b> A <b>Database Management System (DBMS)</b> is the software layer that sits between users (or applications) and the actual data files. It handles efficient storage on disk, executes SQL queries (SELECT, INSERT, UPDATE, DELETE), manages <b>concurrency</b> so multiple users can work without clashing, enforces <b>security and access rights</b>, performs <b>backups and recovery</b>, and maintains <b>data integrity</b>. Common relational DBMSs include <b>MySQL</b>, <b>PostgreSQL</b>, <b>SQLite</b> (embedded, used in browsers and phones), <b>Oracle</b> and <b>Microsoft SQL Server</b>. <b>MongoDB</b> is a popular non-relational (NoSQL) DBMS for document data.
+  </div>
+
   <p>
     Сама база данных — это просто структурированные файлы на диске. Чтобы их создавать, изменять, искать в них и защищать, нужен специальный софт — <b>система управления базами данных (Database Management System, DBMS)</b>. СУБД — это посредник между пользователем (или приложением) и реальными данными.
   </p>
@@ -442,6 +460,10 @@
 
   <!-- ============ SECTION 4: DATABASE TYPES ============ -->
   <h2>4. Типы баз данных</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Database types.</b> The <b>relational</b> model (tables linked by keys, queried with SQL) is the default for structured business data where integrity matters. <b>NoSQL</b> covers document stores (MongoDB), key-value stores (Redis), graph databases (Neo4j) and column stores (Cassandra); these suit flexible schemas, real-time workloads and big data. <b>Object-oriented</b> databases store whole objects (with fields and methods) and fit CAD, multimedia or scientific simulations. <b>Hierarchical</b> databases use a parent-child tree, while <b>network</b> databases let a record have multiple parents — both are largely legacy, though the tree idea survives in file systems and XML/JSON.
+  </div>
 
   <p>
     Не все базы устроены одинаково. Реляционная — самая популярная, но не единственная. Вот основные модели, с которыми ты можешь встретиться:
@@ -500,6 +522,10 @@
 
   <!-- ============ SECTION 5: KEY CONCEPTS ============ -->
   <h2>5. Ключевые понятия реляционной БД</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Keys, tables and relationships.</b> A normalised relational database is built from <b>entities</b> (tables/relations), where each <b>row</b> (tuple) is one instance and each <b>column</b> (attribute) is one characteristic. A <b>primary key (PK)</b> uniquely identifies every row and cannot be null. A <b>foreign key (FK)</b> in one table references the PK of another, creating the relationship. A <b>candidate key</b> is any attribute that could serve as the PK; a <b>composite key</b> combines two or more attributes to achieve uniqueness. Relationships have <b>cardinality</b> (1:1, 1:N, M:N) and <b>modality</b> (mandatory or optional), describing how rows in one table relate to rows in another.
+  </div>
 
   <p>
     Когда плоский файл из ветклиники <b>нормализуют</b>, он превращается в четыре связанных таблицы: <b>OWNER</b>, <b>PATIENT</b>, <b>VET</b> и <b>TREATMENT</b>. Каждая таблица отвечает за одну вещь, а связи между ними строятся через <b>ключи</b>.
@@ -702,6 +728,10 @@
   <!-- ============ SECTION 6: DATA INTEGRITY ============ -->
   <h2>6. Целостность данных (Data Integrity)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Data integrity.</b> Integrity rules keep stored data accurate, consistent and trustworthy. <b>Entity integrity</b> requires every row to have a unique, non-null primary key, so no record is ambiguous. <b>Referential integrity</b> requires every foreign key to point at an existing primary key (or be null where the link is optional), which prevents <b>orphan records</b>. <b>Domain integrity</b> restricts each column's values to a defined type and range, blocking nonsense like negative ages or text in a numeric price field. On top of these, relational DBMSs enforce <b>ACID</b> properties on transactions — Atomicity, Consistency, Isolation and Durability — so multi-step operations such as a bank transfer either fully succeed or fully roll back.
+  </div>
+
   <p>
     <b>Целостность данных</b> — это набор правил, гарантирующих, что данные в базе <b>точные, согласованные и достоверные</b>. Без неё база — мусорка с противоречиями. Различают три классических типа.
   </p>
@@ -755,6 +785,10 @@
 
   <!-- ============ SECTION 7: ROLES ============ -->
   <h2>7. Кто работает с базой данных — роли</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Database roles.</b> The <b>Database Administrator (DBA)</b> is the technical specialist who runs the production database: installing and configuring the DBMS, managing security and access rights, taking backups and verifying recovery, tuning indexes and queries for performance, and resolving integrity issues. The <b>database designer</b> works earlier in the lifecycle, gathering requirements, drawing <b>ER diagrams</b>, choosing entities, attributes, keys and relationships, and applying normalisation. The <b>end user</b> never writes SQL directly; they interact through forms, search filters and reports — a cashier scanning items, a patient checking a portal, or you scrolling a social feed all count as end users of an underlying database.
+  </div>
 
   <div class="device-card">
     <h3><span class="device-emoji">👨‍💼</span> Администратор БД (DBA — Database Administrator)</h3>
@@ -815,6 +849,10 @@
   <!-- ============ SECTION 8: PROS AND CONS ============ -->
   <h2>8. Плюсы и минусы реляционной БД</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Benefits and limitations.</b> Relational databases give you strong <b>data consistency and integrity</b> (PKs, FKs, constraints), powerful querying through <b>SQL</b>, <b>ACID</b> transactions, fine-grained <b>security</b>, controlled concurrent access for many users, and reduced duplication thanks to normalisation. They are well-supported by mature tooling and huge developer communities. Their limitations show up with very large analytical workloads (column stores or NoSQL scale better), with deeply hierarchical data, and with <b>unstructured</b> content like images, audio or free-form JSON. The <b>rigid schema</b> makes structural changes costly (migrations), and the <b>object-relational impedance mismatch</b> complicates mapping objects in OOP code onto flat tables.
+  </div>
+
   <h3>Преимущества (Benefits)</h3>
   <table class="summary-table">
     <thead><tr><th>Преимущество</th><th>Что это значит</th></tr></thead>
@@ -867,6 +905,10 @@
   <!-- ============ SECTION 9: REAL WORLD EXAMPLES ============ -->
   <h2>9. Реальные примеры баз данных</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Real-world databases.</b> An <b>e-commerce</b> system typically has tables for Users, Products, Orders, OrderItems and Categories, linked through 1:N and N:1 relationships, and uses all three integrity rules together. A <b>bank</b> relies on ACID transactions so that money moved between accounts is either fully transferred or fully rolled back; a partial transfer is unacceptable, which is why a DBA's work in finance is high-stakes. A <b>hospital</b> system models complex many-to-many links (patients see many doctors, doctors see many patients) through a junction table such as Appointments, and adds strict role-based access control to satisfy laws like HIPAA or GDPR.
+  </div>
+
   <div class="device-card">
     <h3><span class="device-emoji">🛒</span> Онлайн-магазин (e-commerce)</h3>
     <p>Таблицы: <b>Users</b> (покупатели), <b>Products</b> (товары), <b>Orders</b> (заказы), <b>OrderItems</b> (позиции в заказе), <b>Categories</b> (категории).</p>
@@ -902,6 +944,10 @@
 
   <!-- ============ SECTION 10: PRACTICE TASKS ============ -->
   <h2>10. Практические задания</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08)">
+    <b>EN summary — Practice tasks.</b> Three activities check that you can apply A3.1 ideas, not just recall them. The <b>individual task</b> asks you to take a real flat table (a timetable, a menu) and normalise it: spot redundancy, split into entities, assign primary and foreign keys, draw an ER diagram with cardinalities, and explain which anomalies disappear. The <b>group task</b> designs a library database with members, books and loans, defines relationships and modality, and lists integrity rules and sample SQL queries. The <b>home research task</b> picks an app you actually use, identifies five entities and their relationships, and considers which type of database (relational, NoSQL, hybrid) best fits the workload.
+  </div>
 
   <p>Эти задания помогут проверить, что ты понимаешь A3.1 на уровне применения, а не только запоминания.</p>
 
@@ -980,6 +1026,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

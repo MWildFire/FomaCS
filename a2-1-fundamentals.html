@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2.1 Основы сетей · IB CS Theme A</title>
 <meta name="description" content="A2.1 Основы сетей — подробный разбор на русском: типы сетей (LAN/WAN/PAN/VPN), современная цифровая инфраструктура (интернет, облако, edge, fog, мобильные сети), сетевые протоколы (TCP, UDP, HTTP/HTTPS, FTP, SMTP, DNS, DHCP, ARP) и модель TCP/IP (HL).">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian deep-dive */
@@ -363,6 +363,12 @@
     Подтема <b>A2.1</b> — это фундамент всей темы «Сети». Здесь ты узнаёшь, <b>какие бывают сети</b> (LAN, WAN, PAN, VPN), <b>из чего состоит современная цифровая инфраструктура</b> (интернет, облако, распределённые системы, edge/fog, мобильные сети), <b>какие протоколы</b> заставляют всё это работать (TCP, UDP, HTTP/HTTPS, FTP, SMTP, DNS, DHCP, ARP), и <b>как устроена модель TCP/IP</b> с её четырьмя уровнями (HL). Цель страницы — чтобы после её чтения ты мог ответить на любой экзаменационный вопрос по A2.1.
   </p>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a2-networks/a2-1-network-fundamentals/a2-1-1-purpose-and-characteristics-of-networks?authuser=4" target="_blank" rel="noopener">A2.1 Network fundamentals (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <div class="toc">
     <h3>Содержание</h3>
     <ol>
@@ -593,6 +599,13 @@
         <li>VPN использует публичную сетевую инфраструктуру (интернет) для создания защищённого приватного «туннеля» для коммуникации [1].</li>
         <li>Шифрование позволяет устройствам обмениваться данными так, будто они напрямую соединены в собственной частной сети — это устраняет необходимость физически прокладывать выделенные дальние WAN-кабели [1].</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Networks are grouped by how far they reach and how quickly they move data. A <b>LAN</b> links devices inside one site (a school or office), typically under a kilometre, giving fast transfer and very low latency so people can share files, printers and software. A <b>WAN</b> stretches across cities or countries — usually built from many smaller networks joined by leased lines, satellites or the public internet — so speed drops and latency rises. A <b>PAN</b> covers roughly ten metres around one person, linking phones, watches and earbuds over Bluetooth or Wi-Fi Direct. A <b>VPN</b> is not a physical network but an encrypted tunnel over the internet, letting remote users reach a private network securely.</p>
     </div>
   </details>
 
@@ -850,6 +863,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Modern digital infrastructure is the layered plumbing behind everything online. The <b>internet</b> is the global mesh of routers and servers that speak shared protocols. <b>Cloud computing</b> rents on-demand compute and storage — sold as <b>SaaS</b> (ready apps like Google Docs), <b>PaaS</b> (a platform such as Heroku) or <b>IaaS</b> (raw machines such as AWS EC2). <b>Distributed systems</b> coordinate many independent nodes that look like one system, gaining parallel speed and resilience. <b>Edge computing</b> processes data right at the source for low latency, while <b>fog computing</b> sits one hop above the edge, aggregating locally before the cloud. <b>Mobile networks</b> (2G to 5G) provide cellular wireless access with handover between cells.</p>
+    </div>
+  </details>
+
   <!-- ============ A2.1.3 — link to existing page ============ -->
   <h2 id="a2-1-3">🔌 3. A2.1.3 — Функции сетевых устройств</h2>
 
@@ -882,6 +902,13 @@
         <li>Аппаратный межсетевой экран действует как защитный барьер между локально доверенной офисной сетью и недоверенным интернетом [1].</li>
         <li>Он отслеживает и разрешает или блокирует входящий и исходящий трафик на основе заранее заданного набора правил безопасности [1].</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Network devices each sit at a specific layer of the TCP/IP stack and do one focused job. The <b>NIC</b> turns frames into electrical, optical or radio signals on the link layer. A <b>modem</b> converts between digital and analog signals so a LAN can reach an ISP. A <b>switch</b> forwards frames inside one LAN using MAC addresses; a <b>WAP</b> does the same job wirelessly. A <b>router</b> reads IP headers to choose the best path between separate networks. A <b>firewall</b> inspects traffic against rules to allow or block it, and a <b>gateway</b> translates between networks that use different protocols. Full details and exam questions live on a standalone page.</p>
     </div>
   </details>
 
@@ -1188,6 +1215,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A protocol is the agreed rulebook for how devices format, send and check data. <b>Stateful</b> protocols (TCP, FTP, SMTP) remember session data between messages; <b>stateless</b> ones (HTTP, UDP, DNS) treat each request alone, so cookies fill the gap. At the transport layer, <b>TCP</b> sets up a handshake and guarantees ordered, error-checked delivery, while <b>UDP</b> fires datagrams quickly with no guarantees — perfect for streaming or VoIP. At the application layer, <b>HTTP/HTTPS</b> drives the web (HTTPS adds TLS encryption), <b>FTP</b> moves files, <b>SMTP</b> sends mail, <b>DNS</b> maps names to IP addresses and <b>DHCP</b> hands out IP settings. <b>ARP</b> resolves an IP to a MAC inside a LAN.</p>
+    </div>
+  </details>
+
   <!-- ============ A2.1.5 (HL) ============ -->
   <h2 id="a2-1-5">🧱 5. A2.1.5 — Модель TCP/IP <span class="hl-tag">HL</span></h2>
 
@@ -1412,6 +1446,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The <b>TCP/IP model</b> splits networking into four layers, each with a focused job and its own protocols. The <b>Application</b> layer (HTTP, DNS, SMTP, DHCP) is where programs build messages. The <b>Transport</b> layer (TCP, UDP) cuts messages into segments and either guarantees ordered delivery via a three-way handshake or fires datagrams without ceremony. The <b>Internet</b> layer (IP, ARP) packages segments into packets, attaches source and destination IP addresses, and routes them hop by hop. The <b>Network Interface</b> layer (Ethernet, Wi-Fi) wraps packets into frames with MAC addresses and pushes bits onto the wire. Each layer wraps a header on send and strips it on receive — <b>encapsulation</b>. Compared to the seven-layer <b>OSI</b> model, TCP/IP merges OSI's top three into Application and its bottom two into Network Interface.</p>
+    </div>
+  </details>
+
   <!-- ============ Closing ============ -->
   <h2 id="remember">📌 Что важно запомнить</h2>
 
@@ -1446,6 +1487,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

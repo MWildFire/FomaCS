@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2.2 Архитектура сетей · IB CS Theme A</title>
 <meta name="description" content="A2.2 Архитектура сетей — глубокий разбор на русском: топологии (звезда, шина, кольцо, mesh, дерево, гибрид), функции серверов (HL), клиент-сервер vs P2P, сегментация (VLAN, подсети). Тренировочные вопросы с разбором.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -327,8 +327,14 @@
   <div class="sim-callout">
     <span class="sim-icon">🎮</span>
     <div>
-      Хочешь сразу пощупать топологии? Открой <a href="networks.html?v=10#topology-sim">интерактивный симулятор топологий</a> — там можно построить звезду / шину / кольцо / mesh / гибрид и «убить» узел, чтобы посмотреть, как сеть реагирует на отказ.
+      Хочешь сразу пощупать топологии? Открой <a href="networks.html?v=11#topology-sim">интерактивный симулятор топологий</a> — там можно построить звезду / шину / кольцо / mesh / гибрид и «убить» узел, чтобы посмотреть, как сеть реагирует на отказ.
     </div>
+  </div>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a2-networks/a2-2-network-architecture/a2-2-1-network-topologies?authuser=4" target="_blank" rel="noopener">A2.2 Network architecture (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
   </div>
 
   <!-- ============ SECTION 0: PROGRAMME OF STUDY ============ -->
@@ -724,6 +730,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A network topology describes how nodes and links are arranged. The physical layout is the actual wiring; the logical layout is how data really flows, which can differ. Six common shapes are compared on five axes: reliability, speed, scalability, failure behaviour, and cost. <b>Star</b> uses a central switch — fast and easy to grow but the centre is a single point of failure (SPOF). <b>Bus</b> shares one backbone — cheap but one cable break kills the LAN. <b>Ring</b> passes data node-to-node, often with a token; a broken link disrupts the loop. <b>Mesh</b> connects many nodes directly — extremely reliable, no SPOF, but costly. <b>Tree</b> is hierarchical, good for campuses, yet the root is critical. <b>Hybrid</b> mixes shapes to balance trade-offs.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 2: SERVERS (HL) ============ -->
   <h2>🖥️ A2.2.2 — Функции серверов <span class="hl-badge">HL</span></h2>
 
@@ -920,6 +933,13 @@
     📝 <b>Примечание:</b> A2.2.2 (Функции серверов) — это HL-материал. Официальных экзаменационных вопросов от преподавателя по этому подразделу нет; для самопроверки используй сводную таблицу выше и описания серверов.
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A server is a dedicated machine or process that provides data, resources, or services to client devices. HL students should recognise several specialised roles. A <b>DNS server</b> resolves human-readable domain names to IP addresses, often via recursive lookups and cached TTL entries. A <b>DHCP server</b> automatically leases IP addresses and network settings through the Discover-Offer-Request-Acknowledge handshake. A <b>file server</b> centralises shared storage with access controls; a <b>mail server</b> handles SMTP, POP3, and IMAP traffic. A <b>proxy server</b> sits between clients and the internet to filter, cache, and log requests. A <b>web server</b> answers HTTP/HTTPS requests for pages and assets. <b>Database</b> and <b>application servers</b> handle stored data and business logic, often in a three-tier stack.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 3: NETWORKING MODELS ============ -->
   <h2>🤝 A2.2.3 — Клиент-сервер vs Peer-to-Peer (P2P)</h2>
 
@@ -1014,6 +1034,13 @@
         <li><b>Преимущество:</b> высокая <b>устойчивость / отказоустойчивость (fault-tolerance)</b>, потому что нет центрального сервера, который может упасть (нет single point of failure). Если один peer отключается, файлообмен или VoIP-сервис продолжает работать через других peer'ов [1].</li>
         <li><b>Недостаток:</b> <b>производительность и скорости передачи могут быть нестабильными</b>, так как полностью зависят от пропускной способности и доступности тех peer'ов, которые сейчас подключены к сети [1]. <i>(Также принимается: риски безопасности — например, сложнее фильтровать вредоносное ПО в P2P-файлообмене.)</i></li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The <b>client-server</b> model is centralised: dedicated servers store resources and respond to client requests. Control, security policies, and backups are easier to enforce, but the server is a single point of failure (SPOF) and a prime target for attacks. Scaling means buying more hardware, which is costly. The <b>peer-to-peer (P2P)</b> model is decentralised — every peer is both client and server, sharing resources directly. P2P scales almost for free as each new peer adds capacity, and the network keeps working when peers drop. Trade-offs include weaker oversight, harder security enforcement, and inconsistent performance that depends on which peers are online. Web browsing and online banking suit client-server; BitTorrent, Bitcoin, and classic Skype illustrate P2P.</p>
     </div>
   </details>
 
@@ -1206,6 +1233,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Network segmentation splits one large network into smaller isolated parts to improve security, performance, and management. Smaller segments limit the size of each <b>broadcast domain</b>, freeing bandwidth and reducing chatter. If malware or an attacker breaches one segment, lateral movement into others is blocked. Two common methods are <b>subnetting</b> and <b>VLANs</b>. Subnetting divides an IP range using a subnet mask (e.g. <code>/24</code>) so a router must move traffic between subnets — Access Control Lists (<b>ACLs</b>) at those boundaries enforce who can reach what. VLANs operate at the switch level, logically grouping ports or devices into separate broadcast domains regardless of physical location. Subnetting and VLANs typically work together, giving overlapping protection at IP and switch layers.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 5: PRACTICAL TASKS ============ -->
   <h2>🔬 Практические задания</h2>
 
@@ -1268,7 +1302,7 @@
     &nbsp; · &nbsp;
     <a href="setevye-ustroistva.html" class="back-link">← A2.1.3 Устройства</a>
     &nbsp; · &nbsp;
-    <a href="networks.html?v=10#topology-sim" class="back-link">🎮 К симулятору топологий →</a>
+    <a href="networks.html?v=11#topology-sim" class="back-link">🎮 К симулятору топологий →</a>
     &nbsp; · &nbsp;
     <a href="quiz.html?topic=A2.2" class="back-link">К квизу A2.2 →</a>
   </p>
@@ -1281,6 +1315,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

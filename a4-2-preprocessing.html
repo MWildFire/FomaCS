@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A4.2 Предобработка данных (HL) · IB CS Theme A</title>
 <meta name="description" content="A4.2 Предобработка данных (HL only) — подробный разбор на русском: очистка данных, выбросы, нормализация и стандартизация, кодирование категорий, отбор и инженерия признаков, понижение размерности, разделение на train/test/validation, кросс-валидация, утечки данных.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -312,6 +312,12 @@
     Эта тема (<b>A4.2</b>) — про то, что нужно сделать с данными <b>до того, как ты отдашь их модели машинного обучения</b>. Сырые данные почти всегда грязные: пропуски, дубликаты, выбросы, разные масштабы, текстовые категории, лишние столбцы. Главный принцип всего раздела: <b>«garbage in, garbage out»</b> — мусор на входе даёт мусор на выходе. Хорошие данные = хорошие предсказания.
   </p>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a4-machine-learning/hl-a4-2/a4-2-1-data-preprocessing?authuser=4" target="_blank" rel="noopener">A4.2 Data preprocessing (HL) (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
     <b>✅ Официальные вопросы от преподавателя (HL).</b> Все экзамен-вопросы взяты из учебного Google Doc «A4.2 - IB Data Preprocessing Exam Questions» — это именно то, что будет на HL-экзамене.
   </div>
@@ -353,6 +359,13 @@
       <tr><td>10</td><td>Deployment + Monitor and maintain</td><td>Запуск в продакшен, мониторинг качества во времени.</td></tr>
     </tbody>
   </table>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The full <b>ML workflow</b> is a ten-step cycle: define the problem, gather data, preprocess, do exploratory data analysis, engineer and select features, choose a model, split the data into train/validation/test, train, evaluate and tune hyperparameters, then deploy and monitor. Preprocessing sits early — right after data collection — and shapes everything downstream. Skipping or rushing it means later steps work on a flawed foundation, so picking a sophisticated model or tuning carefully cannot rescue the result. Each step feeds the next, and monitoring after deployment closes the loop as real-world data drifts over time.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 1: WHY IT MATTERS ============ -->
   <h2>1. 🗑️ Почему предобработка критична: garbage in, garbage out <span class="hl-badge">HL</span></h2>
@@ -397,6 +410,13 @@
     <p><b>2. Как улучшить?</b><br>
       Расширить набор, добавив больше резюме от женщин (балансировка классов), или изменить веса разных критериев. Это часть предобработки — обеспечение <b>разнообразия и репрезентативности</b> данных.</p>
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Raw data is almost always messy: <b>noise</b> means unwanted or inaccurate information mixed in with useful records. <b>Data cleaning</b> makes the dataset consistent, accurate, and compliant with relevant rules. Data quality directly drives a model's accuracy, reliability, and robustness — the phrase <i>garbage in, garbage out</i> captures this. Clean, representative data helps a model <b>generalize</b> to new observations; noisy or biased data causes <b>overfitting</b> and lets models reinforce historical bias (for instance, a hiring model trained on a male-dominated history will disadvantage qualified female candidates).</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 2: CLEANING ============ -->
   <h2>2. 🧹 Очистка данных: пропуски, дубликаты, форматы <span class="hl-badge">HL</span></h2>
@@ -494,6 +514,13 @@
     </tbody>
   </table>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Data cleaning</b> handles missing values, duplicates, formatting errors, and irrelevant entries. For <b>missing values</b>, three families of strategies exist: <b>imputation</b> (replace with mean for symmetric numeric data, median for skewed data, mode for categorical data, or use a K-NN approach), <b>deletion</b> (listwise removes whole rows; pairwise drops only the missing fields), and <b>predictive modelling</b> (use regression, decision trees, or neural networks to predict the gap). Duplicates are removed by key or consolidated, incorrect entries are caught by validation rules, formats are unified, and irrelevant columns get removed through feature selection.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 3: OUTLIERS ============ -->
   <h2>3. 📊 Выбросы (outliers): обнаружение и обработка <span class="hl-badge">HL</span></h2>
 
@@ -554,6 +581,13 @@
   <div class="ru-tip">
     💡 <b>Важно:</b> не всегда нужно «убивать» выбросы. Иногда выброс — это самая важная информация (мошенничество, поломка датчика, болезнь). Решение «удалять или оставить» — всегда зависит от контекста задачи.
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>An <b>outlier</b> is a data point far from the rest of the distribution. Two standard statistical detectors are the <b>IQR method</b> (compute Q1 and Q3, flag anything outside Q1 minus 1.5 times IQR or Q3 plus 1.5 times IQR) and the <b>Z-score</b> (flag points where the absolute value exceeds three standard deviations from the mean). Box plots and scatter plots make outliers visible. Once identified, three responses exist: <b>trim</b> (delete), <b>cap</b> (replace with a threshold, also called winsorization), or <b>transform</b> (apply log or square root to compress extreme values). Context decides — fraud, sensor faults, or rare diseases may matter most.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 4: NORMALIZATION vs STANDARDIZATION ============ -->
   <h2>4. 📏 Нормализация vs Стандартизация <span class="hl-badge">HL</span></h2>
@@ -643,6 +677,13 @@
       Из учебника (Figure 12): громкость аудио нормализуют так, чтобы пиковый звук не был «слишком громким», а тихий — «не слишком тихим». Сигнал перешкалируется в фиксированный диапазон, и алгоритмы распознавания речи работают стабильнее.
     </p>
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Both <b>normalization</b> and <b>standardization</b> rescale features so no single column dominates simply by having larger numbers. <b>Min-Max normalization</b> maps values into a fixed range like [0, 1] using (x minus min) divided by (max minus min); it suits gradient descent and algorithms with bounded inputs but is highly sensitive to outliers. <b>Z-score standardization</b> subtracts the mean and divides by the standard deviation, giving a distribution centred at zero with unit variance; it copes better with outliers and unknown ranges, so it suits logistic regression, SVM with linear kernels, and PCA. Choice depends on the algorithm and on how clean the tails are.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 5: CATEGORICAL ENCODING ============ -->
   <h2>5. 🔤 Кодирование категориальных признаков <span class="hl-badge">HL</span></h2>
@@ -740,6 +781,13 @@
     </tbody>
   </table>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Most ML algorithms need numeric inputs, so categorical text values must be encoded. <b>One-hot encoding</b> creates a separate binary column for every category and suits unordered (nominal) categories like colour or country, but explodes the feature count when there are many categories. <b>Label encoding</b> assigns each category an integer — fast and useful for tree-based models and target variables, but linear models or distance-based algorithms will wrongly interpret the integers as ordered magnitudes. <b>Ordinal encoding</b> assigns numbers that respect a real ordering (clothing sizes, education levels, severity grades) and lets the model exploit that natural sequence.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 6: FEATURE ENGINEERING ============ -->
   <h2>6. 🛠️ Инженерия признаков (feature engineering) <span class="hl-badge">HL</span></h2>
 
@@ -781,6 +829,13 @@
     </table>
     <p>Теперь модель видит, что 25 декабря — праздник, и может выучить «в праздники чек выше».</p>
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Feature engineering</b> creates new informative features from existing ones, often delivering more gain than swapping the algorithm. Typical techniques include <b>extracting parts of a date</b> (day of week, month, weekend flag, quarter) so a model can pick up seasonal or weekly patterns, building <b>polynomial features</b> for nonlinear relationships, applying <b>log or square root transforms</b> to compress skewed columns, <b>binning</b> continuous values into groups, <b>combining</b> related columns (price per bedroom, BMI), and converting text into numbers via bag-of-words, TF-IDF, or word embeddings. Domain knowledge often determines which engineered feature unlocks performance.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 7: FEATURE SELECTION ============ -->
   <h2>7. 🎯 Отбор признаков (feature selection) <span class="hl-badge">HL</span></h2>
@@ -851,6 +906,13 @@
       <tr><td>Irrelevant (нерелевантные)</td><td>Не имеют связи с целевой переменной — модель видит в них шум.</td><td>Их удаление улучшает точность и снижает риск переобучения.</td></tr>
     </tbody>
   </table>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Feature selection</b> (A4.2.2) keeps the most informative attributes and discards redundant or irrelevant ones, raising accuracy, lowering overfitting, speeding up training, and improving interpretability. Three families exist: <b>filter methods</b> rank features using statistics like correlation, Chi-square, ANOVA, or mutual information independently of any model — fast and useful as a first pass. <b>Wrapper methods</b> (forward selection, backward elimination, recursive feature elimination) train candidate models on different subsets and pick the best subset, giving stronger results at higher cost. <b>Embedded methods</b> integrate selection into training itself, as with Lasso or Elastic Net, whose regularization can shrink unhelpful coefficients to zero.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 8: DIMENSIONALITY REDUCTION ============ -->
   <h2>8. 📉 Понижение размерности (dimensionality reduction) <span class="hl-badge">HL</span></h2>
@@ -950,6 +1012,13 @@
     </p>
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Dimensionality reduction</b> (A4.2.3) shrinks the number of features while preserving as much useful variance as possible. It tackles the <b>curse of dimensionality</b>, coined by Richard Bellman: overfitting risk, exponential computational cost, data sparsity, distance metrics becoming meaningless, blocked visualization, ballooning sample-size requirements, and memory pressure. Unlike feature selection, <b>principal component analysis</b> (PCA) creates new features as combinations of the originals, keeping the directions of maximum variance. PCA and LDA are mentioned in the syllabus but their mathematics is beyond the IB course — students need the intuition, not the derivation. Benefits include better visualization, model performance, efficiency, and pattern discovery.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 9: TRAIN/VAL/TEST SPLIT ============ -->
   <h2>9. ✂️ Разделение на train / validation / test <span class="hl-badge">HL</span></h2>
 
@@ -1009,6 +1078,13 @@
     </p>
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Data is split into three parts so we can honestly measure generalization. The <b>training set</b> (typically 70 to 80 percent) is where the model fits its parameters. The <b>validation set</b> (10 to 15 percent) is used to tune hyperparameters and compare candidate models. The <b>test set</b> (10 to 15 percent) is held back, touched only once at the end, and reveals real-world performance — if you tune on it, you contaminate it. High training accuracy with low test accuracy signals <b>overfitting</b>; low scores everywhere signal <b>underfitting</b>. <b>Stratified splits</b> preserve class proportions in imbalanced classification problems.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 10: CROSS-VALIDATION ============ -->
   <h2>10. 🔁 Кросс-валидация (cross-validation) <span class="hl-badge">HL</span></h2>
 
@@ -1059,6 +1135,13 @@
     </tbody>
   </table>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A single train/validation split is sensitive to the luck of the partition, especially on small datasets. <b>K-fold cross-validation</b> divides the data into K equal folds (commonly 5 or 10), trains the model K times — each iteration holds one fold out as validation and uses the others for training — and averages the K scores for a more stable estimate. Every observation gets used for validation exactly once. <b>Stratified K-fold</b> preserves class proportions in each fold and is required for imbalanced classification so a fold cannot accidentally lose a rare class. Time-series problems need a forward-only variant so future data never leaks into the past.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 11: DATA LEAKAGE ============ -->
   <h2>11. 🚨 Утечка данных (data leakage) <span class="hl-badge">HL</span></h2>
 
@@ -1107,6 +1190,13 @@
       <li>Обучаем, измеряем — оценка теперь честная.</li>
     </ol>
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Data leakage</b> happens when information that would not be available at prediction time slips into training, producing wonderful validation scores that collapse in production. Common traps: scaling or imputing across the whole dataset before splitting (so test statistics influence train), including a feature that secretly encodes the target, duplicates appearing in both train and test, and ignoring chronological order in time-series data. The golden rule is to <b>split first, then fit preprocessing only on training data</b>, applying the same parameters to test. Always verify each feature would have been knowable at the moment of prediction.</p>
+    </div>
+  </details>
 
   <!-- ============ OFFICIAL TEACHER EXAM QUESTIONS ============ -->
   <h2>📝 Официальные экзамен-вопросы от преподавателя <span class="hl-badge">HL</span></h2>
@@ -1243,6 +1333,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

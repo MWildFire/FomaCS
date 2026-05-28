@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A1.1 Аппаратное обеспечение и работа компьютера · IB CS Theme A</title>
 <meta name="description" content="A1.1 Computer hardware and operation — глубокий разбор на русском: ЦП и его компоненты, GPU, отличие CPU vs GPU (HL), первичная и вторичная память, цикл fetch-decode-execute, конвейеризация (HL), сжатие данных, облачные сервисы SaaS / PaaS / IaaS. Подробные конспекты, экзаменационные вопросы и связи с симуляциями.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone deep-dive page — Russian, single language, focused reading */
@@ -328,6 +328,13 @@
   <p class="lede">
     Эта тема (<b>A1.1</b>) — про то, как «железо» компьютера на самом деле работает. От крошечного <b>центрального процессора (CPU)</b>, который умеет складывать числа за наносекунды, до <b>облачных сервисов</b>, в которых лежат твои фотографии. Мы разберём 9 подтем — компоненты ЦП, графический процессор (GPU), память (RAM, ROM, кэш), знаменитый цикл fetch-decode-execute, конвейеризацию в многоядерных процессорах, вторичную память (SSD, HDD, NAS), сжатие данных и облачные модели SaaS / PaaS / IaaS.
   </p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b> The official NLCS Dubai lesson page for this topic is at
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a1-computer-fundamentals/a1-1-a1-1-computer-hardware-and-operation?authuser=4" target="_blank" rel="noopener">A1.1 Computer hardware and operation →</a>.
+    Each section below has a short <b>English summary</b> after the Russian — for terminology cross-reference.
+  </div>
+
     <div class="ru-tip" style="border-left-color: var(--amber); background: rgba(245,158,11,0.08); margin: 20px 0;">
       <b>⚠️ Официальных экзамен-вопросов от преподавателя по этой теме пока нет.</b> Вопросы в разделе ниже — мои разработанные, в стиле IB-экзамена с детальными mark schemes. Используйте их для тренировки. Когда преподаватель опубликует официальный набор — заменю их.
     </div>
@@ -541,6 +548,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The CPU contains three functional groups working together. The <b>ALU (Arithmetic Logic Unit)</b> performs all arithmetic (add, subtract, multiply, divide) and logical operations (AND, OR, NOT, comparisons). The <b>Control Unit (CU)</b> orchestrates the fetch-decode-execute cycle, decoding instructions and issuing control signals. <b>Registers</b> are tiny ultra-fast storage cells: the <b>PC</b> (program counter) holds the address of the next instruction, the <b>IR</b> (instruction register) holds the current instruction, the <b>MAR</b> and <b>MDR</b> interface with memory, and the <b>AC</b> (accumulator) stores intermediate results. Three <b>buses</b> connect components: address bus (unidirectional, CPU to memory), data bus (bidirectional), and control bus (read/write/clock signals). Processors are classified as <b>single-core</b> (sequential execution), <b>multi-core</b> (parallel cores on one die), or <b>co-processors</b> (specialised units like GPUs and DSPs offloading work from the main CPU).</p>
+    </div>
+  </details>
+
   <!-- ====================================================== -->
   <!-- ============ A1.1.2 GPU ============ -->
   <!-- ====================================================== -->
@@ -646,6 +660,13 @@
         <li><b>Чтение пользовательского ввода (клик мыши, нажатие клавиши).</b> Это очень мелкие, нерегулярные события, которые надо обрабатывать с низкой задержкой; распараллелить тут нечего.</li>
         <li>Ключевая идея: GPU блистает, когда есть <b>много одинаковых операций над большим объёмом независимых данных</b>; CPU нужен, когда задачи сложные и последовательные.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A <b>GPU (Graphics Processing Unit)</b> is a specialised co-processor with thousands of simple cores designed for <b>massive parallelism</b>. Originally built to render graphics by manipulating image memory for the display, GPUs now power many compute-heavy workloads. They communicate with software through APIs such as <b>DirectX</b>, <b>OpenGL</b>, Vulkan and CUDA, and can be either <b>integrated</b> (sharing system RAM with the CPU) or <b>discrete</b> (with dedicated high-bandwidth <b>VRAM</b>). Key strengths are parallel processing, high throughput and large texture/data memory bandwidth. Typical applications include 3D video games and rendering, training machine-learning models (matrix multiplications parallelise beautifully), scientific simulations such as genome alignment and climate modelling, and creative tools like Blender and DaVinci Resolve. GPUs are unsuitable for sequential, branching workloads such as running an OS or handling sparse user input events.</p>
     </div>
   </details>
 
@@ -788,6 +809,13 @@
         <li>Приоритет GPU — <b>throughput</b>: накормить тысячи параллельных ядер данными, даже если отдельный запрос идёт чуть дольше.</li>
         <li>Итог: CPU оптимизирован для скорости отдельного доступа, GPU — для общего объёма передаваемых данных.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>HL only.</b> CPU and GPU embody two different design philosophies. <b>CPUs</b> prioritise <b>low latency</b> and flexibility: a small number of powerful cores running at high clock speeds, a rich <b>instruction set architecture (ISA)</b> with branch prediction and out-of-order execution, and a multi-level cache hierarchy (L1/L2/L3) tuned to deliver data quickly to whichever task is currently running. <b>GPUs</b> prioritise <b>high throughput</b> through massive parallelism: thousands of simpler cores executing a <b>SIMD (Single Instruction, Multiple Data)</b> model, lower per-core clock speed, and high-bandwidth memory feeding all cores simultaneously. In practice CPU and GPU collaborate — for example in a game, the CPU runs logic, AI, physics and input, while the GPU renders pixels. Data is exchanged over <b>PCIe</b> or through <b>unified memory</b>, and synchronisation primitives (<b>barriers, events</b>) coordinate work via APIs like <b>CUDA</b> or <b>OpenCL</b>.</p>
     </div>
   </details>
 
@@ -961,6 +989,13 @@
         <li>Она <b>non-volatile</b>, потому что эти инструкции должны быть доступны сразу при включении, даже если ОС ещё не загружена.</li>
         <li>ROM не участвует в обычном цикле «CPU ↔ память» во время работы программ — она используется на этапе <b>загрузки (boot-up)</b>, чтобы инициализировать железо и подгрузить ОС из SSD/HDD в RAM.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Primary memory sits in a <b>hierarchy</b>: the closer to the CPU, the faster but smaller and more expensive. <b>Registers</b> (~0.5 ns, bytes) are inside each CPU core. <b>Cache</b> sits on or beside the CPU in three levels: <b>L1</b> per-core (~32–256 KB, ~5 ns), <b>L2</b> (~MB), and <b>L3</b> shared across cores (~MB). <b>RAM (Random-Access Memory)</b> is the main volatile working store (~50 ns, GB scale) and is accessed via the memory controller. <b>ROM (Read-Only Memory)</b> is non-volatile and holds boot firmware/BIOS. Key terminology: <b>volatile</b> loses data without power (RAM, cache, registers); <b>non-volatile</b> retains it (ROM, SSD, HDD). When the CPU requests data, it checks each level in turn — a <b>cache hit</b> is fast, a <b>cache miss</b> forces a slower fetch from RAM. Optimisations such as <b>prefetching</b>, <b>spatial/temporal locality</b> and <b>LRU replacement policies</b> maximise the hit rate.</p>
     </div>
   </details>
 
@@ -1138,6 +1173,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The <b>fetch-decode-execute (FDE) cycle</b>, also called the instruction cycle, is how every machine instruction is processed — billions of times per second. <b>Fetch:</b> the PC supplies the next instruction's address; this is copied into the <b>MAR</b>, placed on the address bus, a <b>read</b> signal travels on the control bus, the instruction returns via the data bus into the <b>MDR</b>, and is transferred to the <b>IR</b>. The PC then increments. <b>Decode:</b> the <b>Control Unit</b> inspects the IR to identify the <b>opcode</b>, operands and addressing mode, and generates control signals. <b>Execute:</b> the appropriate action runs — arithmetic/logic in the <b>ALU</b>, a load/store to memory, or a jump that updates the PC. All three phases rely on the address bus (where), data bus (the content) and control bus (read/write/acknowledge signals).</p>
+    </div>
+  </details>
+
   <!-- ====================================================== -->
   <!-- ============ A1.1.6 Pipelining (HL) ============ -->
   <!-- ====================================================== -->
@@ -1271,6 +1313,13 @@
         <li><b>Параллельная обработка:</b> одну <b>большую задачу делят на части</b>, и каждое ядро работает над своей частью одновременно. Требует синхронизации через общие переменные или кэши.</li>
         <li>Независимая работа улучшает <b>многозадачность</b>; параллельная — <b>скорость выполнения одной тяжёлой задачи</b>.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>HL only.</b> <b>Pipelining</b> is a performance technique that splits instruction execution into stages (typically <b>fetch, decode, execute, writeback</b>) and overlaps them so that different instructions occupy different stages simultaneously — like a laundry pipeline where one load washes while another dries. After the pipeline fills, a new instruction completes every clock cycle, dramatically improving <b>throughput</b>. In a <b>multi-core architecture</b> each core has its own pipeline, multiplying throughput further. Cores can either run <b>independently</b> (each handling a different thread or process, scheduled by the OS) or <b>cooperate</b> on one large task split into parallel parts. When cores share an L3 cache or RAM, <b>cache coherence</b> protocols keep all cores' views of shared data consistent, and synchronisation primitives coordinate writes to shared memory.</p>
     </div>
   </details>
 
@@ -1446,6 +1495,13 @@
         <li><b>Масштабируемость:</b> при росте потребностей можно добавить новые диски.</li>
         <li><b>Управление:</b> администратор контролирует права доступа, бэкапы, расписания.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Secondary storage</b> is non-volatile and holds long-term data (files, programs, media), retaining contents when power is removed. Internal options include <b>HDD</b> (Hard Disk Drive), which records magnetically on spinning platters using a moving read/write head — cheap and high capacity but mechanical and slow (~100–200 MB/s); <b>SSD</b> (Solid State Drive), which stores bits in <b>NAND flash</b> floating-gate transistors with no moving parts — very fast (up to ~7000 MB/s), silent and shock-resistant, but more expensive per GB and limited in write cycles (mitigated by <b>wear-levelling</b>); and <b>eMMC</b>, an integrated flash-plus-controller chip common in phones and budget laptops. External options include <b>optical discs</b> (CD/DVD/Blu-ray, encoding bits as <b>pits and lands</b> read by a laser), <b>USB flash drives</b> and <b>memory cards</b>, and <b>NAS (Network Attached Storage)</b> — a networked appliance with disks (often configured in <b>RAID</b> for redundancy) shared across users.</p>
     </div>
   </details>
 
@@ -1634,6 +1690,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Compression</b> reduces file size to save storage, transmit data faster and lower bandwidth costs. <b>Lossless</b> compression preserves every bit — the decompressed file is identical to the original — and suits text, code, archives and medical images (formats: ZIP, PNG, FLAC, TIFF, GIF). <b>Lossy</b> compression discards data the human eye or ear is unlikely to notice (<b>perceptual redundancy</b>), achieving much higher ratios but irreversibly losing detail; it dominates photo, audio and video (JPEG, MP3, MPEG). A simple lossless technique is <b>Run-Length Encoding (RLE)</b>, which replaces runs of identical symbols with a count plus symbol — e.g. <code>AAAAABBB</code> becomes <code>5A3B</code>. <b>Transform coding</b>, used in JPEG and MP3, applies a mathematical transform such as the <b>Discrete Cosine Transform (DCT)</b> to move data into the frequency domain, where unimportant frequencies can be <b>quantised</b> away before further lossless encoding (e.g. Huffman).</p>
+    </div>
+  </details>
+
   <!-- ====================================================== -->
   <!-- ============ A1.1.9 Cloud computing ============ -->
   <!-- ====================================================== -->
@@ -1801,6 +1864,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Cloud computing</b> delivers computing resources — servers, storage, databases and software — over the internet from remote data centres, on a pay-for-what-you-use basis. Three service models differ by <b>level of control</b> and what the provider manages. <b>SaaS (Software as a Service)</b> delivers a ready-to-use application via a browser or mobile app; the provider runs everything, so the user simply consumes (examples: Gmail, Salesforce, Canva, Microsoft 365, Zoom). <b>PaaS (Platform as a Service)</b> supplies a development platform — OS, databases, middleware, tooling — so developers focus only on writing application code (examples: Heroku, Google App Engine, AWS Elastic Beanstalk). <b>IaaS (Infrastructure as a Service)</b> provides virtualised servers, storage and networking; the customer installs and configures their own OS and software, gaining maximum control (examples: AWS, Microsoft Azure, Google Cloud). IaaS relies on <b>virtualisation</b>, which splits one physical machine into multiple isolated <b>virtual machines (VMs)</b>.</p>
+    </div>
+  </details>
+
   <!-- ====================================================== -->
   <!-- ============ EXAM TIPS ============ -->
   <!-- ====================================================== -->
@@ -1825,6 +1895,13 @@
     🎯 <b>Главное правило:</b> в IB CS ответы оцениваются по <b>ключевым словам</b>. Используй точные термины (instruction register, program counter, cache coherence, perceptual redundancy, virtualization) — даже если объяснение короткое, термины приносят баллы.
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Exam essentials for A1.1: know the five CPU <b>registers</b> (IR, PC, MAR, MDR, AC) and their roles in the <b>fetch-decode-execute cycle</b>; distinguish the three <b>buses</b> by what they carry (address vs data vs control signal) and their directionality. For HL, contrast <b>CPU and GPU</b> as pairs — few powerful cores vs thousands of simple cores, low latency vs high throughput, general-purpose vs SIMD parallelism. Memorise <b>volatile vs non-volatile</b>, and link <b>cache hit/miss</b> to performance. For HL <b>pipelining</b>, use the laundry analogy. Compare <b>HDD vs SSD</b> (mechanical vs flash; slow vs fast; cheap vs expensive) and <b>lossless vs lossy</b> compression (identical vs degraded; lower vs higher ratio). For cloud, frame <b>SaaS/PaaS/IaaS</b> by level of control. IB CS answers are marked on <b>keywords</b> — use precise terminology even in short answers.</p>
+    </div>
+  </details>
+
   <p style="margin-top:32px">
     <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
     &nbsp; · &nbsp;
@@ -1843,6 +1920,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

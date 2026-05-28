@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2 Networks · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -41,6 +41,8 @@
     <a href="#protocols-sim"><span class="lang-en-inline">📦 TCP vs UDP</span><span class="lang-ru-inline">📦 TCP vs UDP</span></a>
     <a href="#layers-sim"><span class="lang-en-inline">🧱 TCP/IP layers</span><span class="lang-ru-inline">🧱 Уровни TCP/IP</span></a>
     <a href="#encryption-sim"><span class="lang-en-inline">🔐 Encryption demo</span><span class="lang-ru-inline">🔐 Шифрование</span></a>
+    <a href="#subnet-sim"><span class="lang-en-inline">🧮 Subnet calculator</span><span class="lang-ru-inline">🧮 Калькулятор подсетей</span></a>
+    <a href="#ddos-sim"><span class="lang-en-inline">💥 DDoS &amp; mitigation</span><span class="lang-ru-inline">💥 DDoS и защита</span></a>
     <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
     <a href="#notes-211"><span class="lang-en-inline">A2.1.1 Networks</span><span class="lang-ru-inline">A2.1.1 Сети</span></a>
     <a href="#notes-212"><span class="lang-en-inline">A2.1.2 Infrastructure</span><span class="lang-ru-inline">A2.1.2 Инфраструктура</span></a>
@@ -327,6 +329,123 @@
       <div id="enc-note" class="enc-note"></div>
     </section>
 
+    <!-- ============ SUBNETTING CALCULATOR ============ -->
+    <section id="subnet-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.3</span>
+          <h3>
+            <span class="lang-en-inline">Subnetting calculator</span>
+            <span class="lang-ru-inline">Калькулятор подсетей</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Enter an IPv4 address and a prefix length. See the binary breakdown, network and broadcast addresses, host range, total addresses, and whether the address is private, public or special. Pick a preset to load a common scenario.</span>
+            <span class="lang-ru-inline">Введите IPv4-адрес и длину префикса. Увидите двоичное представление, адрес сети и широковещания, диапазон хостов, количество адресов и тип (частный / публичный / специальный). Выберите пример, чтобы загрузить готовый сценарий.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Example:</span><span class="lang-ru-inline">Пример:</span>
+          <select id="subnet-example">
+            <option value="home">Home LAN (192.168.1.10/24)</option>
+            <option value="corp">Corporate (10.0.5.42/16)</option>
+            <option value="p2p">Point-to-point (203.0.113.5/30)</option>
+            <option value="loop">Loopback (127.0.0.1/8)</option>
+          </select>
+        </label>
+        <label>
+          <span class="lang-en-inline">IP address:</span><span class="lang-ru-inline">IP-адрес:</span>
+          <span id="subnet-octets"></span>
+        </label>
+        <label>
+          <span class="lang-en-inline">Mask:</span><span class="lang-ru-inline">Маска:</span>
+          <select id="subnet-mask">
+            <option value="8">/8 (255.0.0.0)</option>
+            <option value="16">/16 (255.255.0.0)</option>
+            <option value="24" selected>/24 (255.255.255.0)</option>
+            <option value="25">/25 (255.255.255.128)</option>
+            <option value="26">/26 (255.255.255.192)</option>
+            <option value="27">/27 (255.255.255.224)</option>
+            <option value="28">/28 (255.255.255.240)</option>
+            <option value="29">/29 (255.255.255.248)</option>
+            <option value="30">/30 (255.255.255.252)</option>
+            <option value="31">/31 (255.255.255.254)</option>
+            <option value="32">/32 (255.255.255.255)</option>
+            <option value="custom"><span class="lang-en-inline">Custom mask…</span></option>
+          </select>
+        </label>
+      </div>
+
+      <div id="subnet-custom-row" style="display:none; margin-bottom:12px">
+        <label>
+          <span class="lang-en-inline">Custom mask:</span><span class="lang-ru-inline">Своя маска:</span>
+          <span id="subnet-custom"></span>
+        </label>
+      </div>
+
+      <div class="sim-canvas-wrap" style="padding:14px">
+        <div id="subnet-binary"></div>
+      </div>
+
+      <div id="subnet-info" class="sim-stats"></div>
+    </section>
+
+    <!-- ============ DDoS ATTACK & MITIGATION ============ -->
+    <section id="ddos-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A2.4</span>
+          <h3>
+            <span class="lang-en-inline">DDoS attack &amp; mitigation</span>
+            <span class="lang-ru-inline">DDoS-атака и защита</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Slide up the number of attackers and watch a botnet overwhelm a single server. Then switch on a <b>rate limiter</b> or a <b>WAF</b> to filter malicious traffic and keep legitimate users served. The load bar shows how close the server is to collapse.</span>
+            <span class="lang-ru-inline">Увеличьте число атакующих и посмотрите, как ботнет «топит» сервер. Затем включите <b>rate-limit</b> или <b>WAF</b> — они фильтруют вредный трафик, и обычные пользователи остаются обслуженными. Индикатор нагрузки показывает близость сервера к отказу.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Attackers:</span><span class="lang-ru-inline">Атакующих:</span>
+          <input type="range" id="ddos-attackers" min="0" max="100" value="30" step="1">
+        </label>
+        <label>
+          <span class="lang-en-inline">Defence:</span><span class="lang-ru-inline">Защита:</span>
+          <select id="ddos-defense">
+            <option value="none">None</option>
+            <option value="rate-limit">Rate limiter</option>
+            <option value="waf">WAF (Web Application Firewall)</option>
+          </select>
+        </label>
+        <button class="btn btn-primary btn-sm" id="ddos-play">
+          <span class="lang-en-inline">▶ Start attack</span><span class="lang-ru-inline">▶ Запустить атаку</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="ddos-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+        <span>
+          <span class="lang-en-inline">Server load:</span><span class="lang-ru-inline">Нагрузка:</span>
+          <b id="ddos-load">0%</b>
+        </span>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <svg id="ddos-svg" viewBox="0 0 1000 460" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Diagram of a distributed denial-of-service attack with attackers, legitimate users and a server with optional defences."></svg>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Served</span><span class="lang-ru-inline">Обслужено</span></div><div class="value" id="ddos-stats-served" style="color:var(--green)">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Blocked</span><span class="lang-ru-inline">Заблокировано</span></div><div class="value" id="ddos-stats-blocked" style="color:var(--accent)">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Dropped</span><span class="lang-ru-inline">Потеряно</span></div><div class="value" id="ddos-stats-dropped" style="color:var(--red)">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Uptime</span><span class="lang-ru-inline">Доступность</span></div><div class="value" id="ddos-stats-uptime">100%</div></div>
+      </div>
+    </section>
+
     <!-- ============ STUDY NOTES ============ -->
     <section id="notes-211">
       <h2 class="section-title">
@@ -411,15 +530,17 @@
   </p>
 </footer>
 
-<script src="js/data.js?v=10"></script>
-<script src="js/app.js?v=10"></script>
-<script src="js/notes-render.js?v=10"></script>
-<script src="js/topology.js?v=10"></script>
-<script src="js/protocols.js?v=10"></script>
-<script src="js/layers.js?v=10"></script>
-<script src="js/cloud-edge.js?v=10"></script>
-<script src="js/devices.js?v=10"></script>
-<script src="js/encryption.js?v=10"></script>
+<script src="js/data.js?v=11"></script>
+<script src="js/app.js?v=11"></script>
+<script src="js/notes-render.js?v=11"></script>
+<script src="js/topology.js?v=11"></script>
+<script src="js/protocols.js?v=11"></script>
+<script src="js/layers.js?v=11"></script>
+<script src="js/cloud-edge.js?v=11"></script>
+<script src="js/devices.js?v=11"></script>
+<script src="js/encryption.js?v=11"></script>
+<script src="js/subnetting.js?v=11"></script>
+<script src="js/ddos.js?v=11"></script>
 <script>
   // Render the study notes
   document.addEventListener('DOMContentLoaded', () => {

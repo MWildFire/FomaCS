@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A1 Computer fundamentals · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -40,6 +40,14 @@
     <a href="#fde-sim"><span class="lang-en-inline">🧠 Fetch-Decode-Execute</span><span class="lang-ru-inline">🧠 Цикл ЦП</span></a>
     <a href="#mem-sim"><span class="lang-en-inline">📚 Memory hierarchy</span><span class="lang-ru-inline">📚 Иерархия памяти</span></a>
     <a href="#ci-sim"><span class="lang-en-inline">🔀 Compiler vs Interpreter</span><span class="lang-ru-inline">🔀 Компилятор vs интерпретатор</span></a>
+    <a href="#cache-sim"><span class="lang-en-inline">💾 Cache hit/miss</span><span class="lang-ru-inline">💾 Кэш — hit/miss</span></a>
+    <a href="#pipelining-sim"><span class="lang-en-inline">🚄 Pipelining (HL)</span><span class="lang-ru-inline">🚄 Конвейеризация (HL)</span></a>
+    <a href="#compression-sim"><span class="lang-en-inline">🗜 RLE compression</span><span class="lang-ru-inline">🗜 Сжатие RLE</span></a>
+    <a href="#ascii-sim"><span class="lang-en-inline">🔤 ASCII vs Unicode</span><span class="lang-ru-inline">🔤 ASCII vs Unicode</span></a>
+    <a href="#karnaugh-sim"><span class="lang-en-inline">🗺 Karnaugh map (HL)</span><span class="lang-ru-inline">🗺 Карта Карно (HL)</span></a>
+    <a href="#scheduling-sim"><span class="lang-en-inline">📅 CPU scheduling</span><span class="lang-ru-inline">📅 Планирование ЦП</span></a>
+    <a href="#polling-sim"><span class="lang-en-inline">🔔 Polling vs IRQ</span><span class="lang-ru-inline">🔔 Опрос vs IRQ</span></a>
+    <a href="#control-sim"><span class="lang-en-inline">🌡 Thermostat (HL)</span><span class="lang-ru-inline">🌡 Термостат (HL)</span></a>
     <h4><span class="lang-en-inline">Study notes</span><span class="lang-ru-inline">Конспекты</span></h4>
     <a href="#notes-11"><span class="lang-en-inline">A1.1 Hardware</span><span class="lang-ru-inline">A1.1 Железо</span></a>
     <a href="#notes-12"><span class="lang-en-inline">A1.2 Data & logic</span><span class="lang-ru-inline">A1.2 Данные и логика</span></a>
@@ -268,6 +276,417 @@
       <div id="ci-note" class="bin-explain" aria-live="polite"></div>
     </section>
 
+    <!-- ============ CACHE HIT/MISS (A1.1.4) ============ -->
+    <section id="cache-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.1.4</span>
+          <h3>
+            <span class="lang-en-inline">Cache hit/miss</span>
+            <span class="lang-ru-inline">Кэш — попадания и промахи</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Pick an access pattern and a replacement policy, then <b>Step</b> or auto-run. Watch hits (green) and misses (red) accumulate, and how the hit rate depends on locality and cache size.</span>
+            <span class="lang-ru-inline">Выберите шаблон доступа и политику замещения, затем <b>«Шаг»</b> или авто-режим. Смотрите, как накапливаются попадания (зелёные) и промахи (красные), и как hit rate зависит от локальности и размера кэша.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Pattern:</span><span class="lang-ru-inline">Шаблон:</span>
+          <select id="cache-pattern">
+            <option value="sequential">Sequential</option>
+            <option value="looped">Looped</option>
+            <option value="random">Random</option>
+            <option value="thrashing">Thrashing</option>
+          </select>
+        </label>
+        <label>
+          <span class="lang-en-inline">Policy:</span><span class="lang-ru-inline">Политика:</span>
+          <select id="cache-policy">
+            <option value="LRU">LRU</option>
+            <option value="FIFO">FIFO</option>
+            <option value="Random">Random</option>
+          </select>
+        </label>
+        <label>
+          <span class="lang-en-inline">Cache size:</span><span class="lang-ru-inline">Размер:</span>
+          <select id="cache-size">
+            <option value="4">4</option>
+            <option value="8" selected>8</option>
+            <option value="16">16</option>
+          </select>
+        </label>
+        <button class="btn btn-primary btn-sm" id="cache-step">
+          <span class="lang-en-inline">▶ Step</span><span class="lang-ru-inline">▶ Шаг</span>
+        </button>
+        <button class="btn btn-accent btn-sm" id="cache-run">
+          <span class="lang-en-inline">⏩ Auto-run</span><span class="lang-ru-inline">⏩ Авто</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="cache-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <svg id="cache-svg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Cache simulation showing RAM blocks and cache lines with hit/miss highlights."></svg>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Hits</span><span class="lang-ru-inline">Попадания</span></div><div class="value" id="cache-hits">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Misses</span><span class="lang-ru-inline">Промахи</span></div><div class="value" id="cache-misses">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Hit rate</span><span class="lang-ru-inline">Hit rate</span></div><div class="value" id="cache-rate">0%</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Avg time</span><span class="lang-ru-inline">Сред. время</span></div><div class="value" id="cache-time">0 ns</div></div>
+      </div>
+    </section>
+
+    <!-- ============ PIPELINING (A1.1.6 HL) ============ -->
+    <section id="pipelining-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.1.6 · HL</span>
+          <h3>
+            <span class="lang-en-inline">Pipelining (HL)</span>
+            <span class="lang-ru-inline">Конвейеризация (HL)</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Compare sequential execution (one instruction at a time) with a 5-stage pipeline (Fetch · Decode · Execute · Memory · Write-back). Toggle a data hazard to see a pipeline stall (bubble).</span>
+            <span class="lang-ru-inline">Сравните последовательное выполнение (по одной инструкции) с 5-стадийным конвейером (Выборка · Декодирование · Исполнение · Память · Запись). Включите data hazard, чтобы увидеть простой (bubble).</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Mode:</span><span class="lang-ru-inline">Режим:</span>
+          <select id="pipe-mode">
+            <option value="sequential">Sequential</option>
+            <option value="pipelined" selected>Pipelined</option>
+          </select>
+        </label>
+        <label style="flex-direction:row; align-items:center; gap:6px">
+          <input type="checkbox" id="pipe-hazard">
+          <span class="lang-en-inline">Data hazard</span><span class="lang-ru-inline">Data hazard</span>
+        </label>
+        <button class="btn btn-primary btn-sm" id="pipe-step">
+          <span class="lang-en-inline">▶ Step</span><span class="lang-ru-inline">▶ Шаг</span>
+        </button>
+        <button class="btn btn-accent btn-sm" id="pipe-run">
+          <span class="lang-en-inline">⏩ Auto-run</span><span class="lang-ru-inline">⏩ Авто</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="pipe-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+        <span style="margin-left:auto">
+          <span class="lang-en-inline">Cycle:</span><span class="lang-ru-inline">Такт:</span>
+          <b id="pipe-cycle" style="font-family:var(--mono); margin-left:4px">0</b>
+          <span class="muted" style="margin-left:14px">
+            <span class="lang-en-inline">Speedup:</span><span class="lang-ru-inline">Ускорение:</span>
+          </span>
+          <b id="pipe-speedup" style="font-family:var(--mono); margin-left:4px">1.0×</b>
+        </span>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <svg id="pipe-svg" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Pipeline diagram showing instructions flowing through Fetch, Decode, Execute, Memory and Write-back stages."></svg>
+      </div>
+    </section>
+
+    <!-- ============ RLE COMPRESSION (A1.1.8) ============ -->
+    <section id="compression-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.1.8</span>
+          <h3>
+            <span class="lang-en-inline">RLE compression</span>
+            <span class="lang-ru-inline">Сжатие RLE</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Run-length encoding replaces long runs of the same symbol with a (count, symbol) pair. Try text or a 16×16 pixel grid and see the compression ratio in real time.</span>
+            <span class="lang-ru-inline">Run-length encoding заменяет длинные серии одинаковых символов парой (счётчик, символ). Попробуйте текст или сетку пикселей 16×16 и смотрите коэффициент сжатия вживую.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Mode:</span><span class="lang-ru-inline">Режим:</span>
+          <select id="comp-mode">
+            <option value="text" selected>Text</option>
+            <option value="pixel">Pixel grid</option>
+          </select>
+        </label>
+        <button class="btn btn-accent btn-sm" id="comp-decode">
+          <span class="lang-en-inline">↩ Decode</span><span class="lang-ru-inline">↩ Декодировать</span>
+        </button>
+      </div>
+
+      <div id="comp-presets" style="margin:10px 0"></div>
+
+      <div class="sim-canvas-wrap" style="padding:14px">
+        <textarea id="comp-input" rows="3" style="width:100%; box-sizing:border-box; font-family:var(--mono); font-size:0.95rem; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface); color:var(--text); resize:vertical">AAAAABBBCCDAAAA</textarea>
+        <div id="comp-grid" style="margin-top:12px"></div>
+        <div id="comp-encoded" style="margin-top:12px; font-family:var(--mono); font-size:0.9rem; padding:10px; border:1px dashed var(--border); border-radius:8px; min-height:32px"></div>
+        <div id="comp-decoded" style="margin-top:8px; font-family:var(--mono); font-size:0.9rem; color:var(--text-faint)"></div>
+        <div id="comp-bars-orig" style="margin-top:10px"></div>
+        <div id="comp-bars-comp" style="margin-top:4px"></div>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Original</span><span class="lang-ru-inline">Оригинал</span></div><div class="value" id="comp-stats-orig">0 B</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Compressed</span><span class="lang-ru-inline">Сжато</span></div><div class="value" id="comp-stats-comp">0 B</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Ratio</span><span class="lang-ru-inline">Коэф.</span></div><div class="value" id="comp-stats-ratio">1.0×</div></div>
+      </div>
+
+      <div id="comp-explainer" class="bin-explain" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ ASCII vs UNICODE (A1.2.2) ============ -->
+    <section id="ascii-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.2.2</span>
+          <h3>
+            <span class="lang-en-inline">ASCII vs Unicode (UTF-8)</span>
+            <span class="lang-ru-inline">ASCII vs Unicode (UTF-8)</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Type any text — ASCII characters take 1 byte each; Cyrillic, accented and emoji characters take 2–4 bytes in UTF-8. Compare UTF-8 vs UTF-16 totals.</span>
+            <span class="lang-ru-inline">Введите любой текст — ASCII занимает 1 байт; кириллица, акценты и эмодзи занимают 2–4 байта в UTF-8. Сравните UTF-8 vs UTF-16.</span>
+          </p>
+        </div>
+      </div>
+
+      <div id="ascii-presets" style="margin-bottom:10px"></div>
+
+      <div class="sim-canvas-wrap" style="padding:14px">
+        <textarea id="ascii-input" rows="2" style="width:100%; box-sizing:border-box; font-family:var(--mono); font-size:0.95rem; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface); color:var(--text); resize:vertical">Hello, Привет! 👋</textarea>
+        <div id="ascii-output" style="margin-top:12px"></div>
+        <div id="ascii-summary" style="margin-top:10px"></div>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Chars</span><span class="lang-ru-inline">Символы</span></div><div class="value" id="ascii-stats-chars">0</div></div>
+        <div class="sim-stat"><div class="label">UTF-8</div><div class="value" id="ascii-stats-utf8">0 B</div></div>
+        <div class="sim-stat"><div class="label">UTF-16</div><div class="value" id="ascii-stats-utf16">0 B</div></div>
+      </div>
+
+      <div id="ascii-explainer" class="bin-explain" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ KARNAUGH MAP (A1.2.4 HL) ============ -->
+    <section id="karnaugh-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.2.4 · HL</span>
+          <h3>
+            <span class="lang-en-inline">Karnaugh map simplifier (HL)</span>
+            <span class="lang-ru-inline">Упрощение карт Карно (HL)</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Click cells (or rows in the truth table) to set 1s. The K-map groups adjacent 1s into prime implicants and reads out a minimised SOP expression.</span>
+            <span class="lang-ru-inline">Кликайте по клеткам (или строкам в таблице истинности), чтобы поставить 1. K-map группирует соседние единицы в простые импликанты и выводит минимизированное SOP-выражение.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Variables:</span><span class="lang-ru-inline">Переменные:</span>
+          <select id="kmap-vars">
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+          </select>
+        </label>
+        <label style="flex-direction:row; align-items:center; gap:6px">
+          <input type="checkbox" id="kmap-essential">
+          <span class="lang-en-inline">Essential only</span><span class="lang-ru-inline">Только существенные</span>
+        </label>
+        <button class="btn btn-accent btn-sm" id="kmap-random">
+          <span class="lang-en-inline">🎲 Random</span><span class="lang-ru-inline">🎲 Случайно</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="kmap-clear">
+          <span class="lang-en-inline">Clear</span><span class="lang-ru-inline">Очистить</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap" style="padding:18px">
+        <svg id="kmap-svg" viewBox="0 0 500 360" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Karnaugh map grid with groupings shown for the current truth table."></svg>
+      </div>
+
+      <div id="kmap-truth" style="margin-top:14px"></div>
+      <div id="kmap-expr" style="margin-top:12px; font-family:var(--mono); font-size:1.1rem; padding:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; text-align:center"></div>
+    </section>
+
+    <!-- ============ CPU SCHEDULING (A1.3.3) ============ -->
+    <section id="scheduling-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.3.3</span>
+          <h3>
+            <span class="lang-en-inline">CPU scheduling</span>
+            <span class="lang-ru-inline">Планирование процессов</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Add processes with arrival time, burst and priority, then pick a scheduling algorithm. The Gantt chart, average waiting time and turnaround time update live.</span>
+            <span class="lang-ru-inline">Добавьте процессы с временем прибытия, длительностью и приоритетом, затем выберите алгоритм. Диаграмма Ганта, среднее время ожидания и turnaround обновляются вживую.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Algorithm:</span><span class="lang-ru-inline">Алгоритм:</span>
+          <select id="sched-algo">
+            <option value="FCFS">FCFS</option>
+            <option value="RR">Round-Robin</option>
+            <option value="Priority">Priority</option>
+            <option value="SJF">SJF</option>
+          </select>
+        </label>
+        <span id="sched-quantum-wrap" style="display:none">
+          <label>
+            <span class="lang-en-inline">Quantum:</span><span class="lang-ru-inline">Квант:</span>
+            <input type="range" id="sched-quantum" min="1" max="5" value="2">
+          </label>
+        </span>
+        <button class="btn btn-primary btn-sm" id="sched-step">
+          <span class="lang-en-inline">▶ Step</span><span class="lang-ru-inline">▶ Шаг</span>
+        </button>
+        <button class="btn btn-accent btn-sm" id="sched-run">
+          <span class="lang-en-inline">⏩ Auto-run</span><span class="lang-ru-inline">⏩ Авто</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="sched-add">
+          <span class="lang-en-inline">+ Add process</span><span class="lang-ru-inline">+ Процесс</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="sched-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="sched-canvas" width="1000" height="400"
+                role="img" aria-label="Gantt chart of CPU scheduling for the configured processes."></canvas>
+      </div>
+
+      <div id="sched-table" style="margin-top:14px"></div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Avg wait</span><span class="lang-ru-inline">Сред. ожид.</span></div><div class="value" id="sched-avg-wait">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Avg TAT</span><span class="lang-ru-inline">Сред. TAT</span></div><div class="value" id="sched-avg-tat">0</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">CPU util</span><span class="lang-ru-inline">Загрузка ЦП</span></div><div class="value" id="sched-util">0%</div></div>
+      </div>
+    </section>
+
+    <!-- ============ POLLING vs INTERRUPTS (A1.3.4) ============ -->
+    <section id="polling-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.3.4</span>
+          <h3>
+            <span class="lang-en-inline">Polling vs Interrupts</span>
+            <span class="lang-ru-inline">Опрос vs Прерывания</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Two CPUs watch the same device. The polling CPU checks on a timer (wasting cycles when nothing happens); the IRQ CPU sleeps until the device signals. Compare CPU load and latency.</span>
+            <span class="lang-ru-inline">Два ЦП наблюдают за одним устройством. Polling-ЦП опрашивает по таймеру (тратит такты впустую); IRQ-ЦП спит, пока устройство не сигнализирует. Сравните загрузку и задержку.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Poll rate:</span><span class="lang-ru-inline">Частота опроса:</span>
+          <input type="range" id="poll-rate" min="1" max="20" value="5">
+          <span id="poll-rate-val" class="muted" style="font-family:var(--mono); margin-left:4px">5</span>
+        </label>
+        <button class="btn btn-primary btn-sm" id="poll-play">
+          <span class="lang-en-inline">▶ Play</span><span class="lang-ru-inline">▶ Старт</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="poll-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="poll-canvas" width="1000" height="340"
+                role="img" aria-label="Timeline comparing polling and interrupt-driven I/O CPU activity."></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">CPU load</span><span class="lang-ru-inline">Загрузка ЦП</span></div><div class="value" id="poll-stats-cpu">0%</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Latency</span><span class="lang-ru-inline">Задержка</span></div><div class="value" id="poll-stats-lat">0 ms</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Missed</span><span class="lang-ru-inline">Пропущено</span></div><div class="value" id="poll-stats-missed">0</div></div>
+      </div>
+    </section>
+
+    <!-- ============ CONTROL SYSTEM (A1.3.6 HL) ============ -->
+    <section id="control-sim" class="sim">
+      <div class="sim-header">
+        <div>
+          <span class="sim-tag">A1.3.6 · HL</span>
+          <h3>
+            <span class="lang-en-inline">Thermostat: open vs closed loop (HL)</span>
+            <span class="lang-ru-inline">Термостат: разомкнутый vs замкнутый контур (HL)</span>
+          </h3>
+          <p>
+            <span class="lang-en-inline">Open-loop heating runs blindly on a schedule. Closed-loop heating reads a temperature sensor and feeds back: it stabilises near the target even when the ambient changes or a window opens.</span>
+            <span class="lang-ru-inline">Разомкнутый контур греет «вслепую» по расписанию. Замкнутый — читает датчик и использует обратную связь: стабилизируется у цели даже при изменении внешней температуры или открытом окне.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <label>
+          <span class="lang-en-inline">Mode:</span><span class="lang-ru-inline">Режим:</span>
+          <select id="ctrl-mode">
+            <option value="open-loop">Open-loop</option>
+            <option value="closed-loop" selected>Closed-loop</option>
+          </select>
+        </label>
+        <label>
+          <span class="lang-en-inline">Target:</span><span class="lang-ru-inline">Цель:</span>
+          <input type="range" id="ctrl-target" min="15" max="30" value="21">
+        </label>
+        <label>
+          <span class="lang-en-inline">Ambient:</span><span class="lang-ru-inline">Снаружи:</span>
+          <input type="range" id="ctrl-ambient" min="-10" max="30" value="5">
+        </label>
+        <label>
+          <span class="lang-en-inline">Speed:</span><span class="lang-ru-inline">Скорость:</span>
+          <select id="ctrl-speed">
+            <option value="1">1×</option>
+            <option value="2" selected>2×</option>
+            <option value="4">4×</option>
+          </select>
+        </label>
+        <button class="btn btn-accent btn-sm" id="ctrl-disturb">
+          <span class="lang-en-inline">🌬 Open window</span><span class="lang-ru-inline">🌬 Открыть окно</span>
+        </button>
+        <button class="btn btn-primary btn-sm" id="ctrl-play">
+          <span class="lang-en-inline">▶ Play</span><span class="lang-ru-inline">▶ Старт</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="ctrl-reset">
+          <span class="lang-en-inline">Reset</span><span class="lang-ru-inline">Сброс</span>
+        </button>
+      </div>
+
+      <div class="sim-canvas-wrap">
+        <canvas id="ctrl-canvas" width="1000" height="400"
+                role="img" aria-label="Thermostat temperature plot comparing open- and closed-loop control over time."></canvas>
+      </div>
+
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Deviation</span><span class="lang-ru-inline">Отклонение</span></div><div class="value" id="ctrl-stats-dev">0 °C</div></div>
+        <div class="sim-stat"><div class="label"><span class="lang-en-inline">Energy used</span><span class="lang-ru-inline">Энергия</span></div><div class="value" id="ctrl-stats-energy">0</div></div>
+      </div>
+    </section>
+
     <!-- ============ STUDY NOTES ============ -->
     <section id="notes-11">
       <h2 class="section-title">
@@ -313,14 +732,22 @@
   </p>
 </footer>
 
-<script src="js/data.js?v=10"></script>
-<script src="js/app.js?v=10"></script>
-<script src="js/notes-render.js?v=10"></script>
-<script src="js/binary.js?v=10"></script>
-<script src="js/logic-gates.js?v=10"></script>
-<script src="js/fetch-execute.js?v=10"></script>
-<script src="js/memory-hierarchy.js?v=10"></script>
-<script src="js/compiler-interp.js?v=10"></script>
+<script src="js/data.js?v=11"></script>
+<script src="js/app.js?v=11"></script>
+<script src="js/notes-render.js?v=11"></script>
+<script src="js/binary.js?v=11"></script>
+<script src="js/logic-gates.js?v=11"></script>
+<script src="js/fetch-execute.js?v=11"></script>
+<script src="js/memory-hierarchy.js?v=11"></script>
+<script src="js/compiler-interp.js?v=11"></script>
+<script src="js/cache-sim.js?v=11"></script>
+<script src="js/pipelining.js?v=11"></script>
+<script src="js/compression.js?v=11"></script>
+<script src="js/ascii-unicode.js?v=11"></script>
+<script src="js/karnaugh.js?v=11"></script>
+<script src="js/scheduling.js?v=11"></script>
+<script src="js/polling-irq.js?v=11"></script>
+<script src="js/control-system.js?v=11"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     renderNotes('notes-11-content', 'a1_1');

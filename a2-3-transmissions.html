@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2.3 Передача данных · IB CS Theme A</title>
 <meta name="description" content="A2.3 Передача данных — детальный разбор на русском: IP-адресация (IPv4 vs IPv6, публичные/частные/статические/динамические IP, NAT), среды передачи (оптоволокно, витая пара, беспроводные), коммутация пакетов, маршрутизация (статическая/динамическая), пропускная способность и задержки, обнаружение ошибок.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -304,6 +304,12 @@
     <b>⚠️ Частичный набор вопросов.</b> Преподаватель дал официальные экзамен-задачи только по разделу «Среды передачи данных» (медь vs волокно, проводное vs беспроводное). По IP-адресации, packet switching и маршрутизации официальных вопросов пока нет — для них пользуйтесь общим квизом сайта.
   </div>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a2-networks/a2-3-data-transmissions?authuser=4" target="_blank" rel="noopener">A2.3 Data transmissions (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <!-- ============ SECTION 1: SYLLABUS MAP ============ -->
   <h2>1. Что входит в A2.3 (карта подтем)</h2>
 
@@ -340,6 +346,11 @@
   <p>
     <b>Internet Protocol (IP)</b> — это протокол, который отвечает за <b>маршрутизацию и доставку пакетов</b> между сетями. В центре IP — <b>IP-адрес</b>: уникальное числовое имя устройства в сети.
   </p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — IP addressing.</b>
+    An IP address is a unique numeric identifier assigned to a device on an IP network so that routers know where to deliver packets. <b>IPv4</b> uses 32 bits (about 4.3 billion addresses, written in dotted decimal such as <span class="mono">192.168.1.1</span>) and is essentially exhausted. <b>IPv6</b> uses 128 bits, written as eight hex groups, with mandatory IPsec support. <b>Public</b> addresses are globally unique and routable on the open internet; <b>private</b> ranges (RFC 1918: <span class="mono">10.x</span>, <span class="mono">172.16–31.x</span>, <span class="mono">192.168.x</span>) are reused inside local networks. <b>Static</b> IPs stay fixed (servers, printers); <b>dynamic</b> ones are leased by a DHCP server. <b>NAT</b> lets many private hosts share one public address by rewriting source IP and port. A <b>subnet mask</b> (or <b>CIDR</b> suffix like <span class="mono">/24</span>) splits an address into network and host parts. The loopback <span class="mono">127.0.0.1</span> always refers to the local machine.
+  </div>
 
   <div class="key-term">
     <b>IP-адрес.</b> Уникальный числовой идентификатор устройства в IP-сети. По нему другие устройства понимают, «куда» отправлять пакет.
@@ -558,6 +569,11 @@
     Сигнал должен по чему-то передаваться. Есть три большие категории: <b>оптоволокно</b>, <b>витая пара</b> (медь) и <b>беспроводные</b> технологии. Для каждой среды важны 7 факторов: пропускная способность, сложность установки, цена, дальность, помехоустойчивость, затухание, надёжность и безопасность.
   </p>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — transmission media.</b>
+    Three main families carry network signals. <b>Twisted-pair</b> copper cable (UTP or shielded STP) is cheap and easy to install, but suffers from electromagnetic interference and is usually limited to roughly 100 metres before a repeater is needed. <b>Coaxial</b> cable, with a central core inside braided shielding, was common in early Ethernet and is still used for cable TV and last-mile broadband. <b>Fibre-optic</b> sends pulses of light through glass strands, giving very high bandwidth, very long reach, low attenuation and immunity to EMI, but cabling and termination are expensive and require trained technicians. <b>Wireless</b> media — Wi-Fi, Bluetooth, cellular, satellite — use radio or microwave signals, offering mobility but suffering from interference, obstacles and weaker security. Exam answers should always compare at least three factors such as speed, range and reliability.
+  </div>
+
   <h3>📊 3.1. Сравнительная таблица сред</h3>
 
   <table class="summary-table compact">
@@ -749,6 +765,11 @@
     На экзамене легко путают эти термины. Каждый описывает <b>свой аспект</b> качества связи.
   </p>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — bandwidth, throughput, latency, jitter.</b>
+    These four metrics describe link quality and are often confused. <b>Bandwidth</b> is the theoretical maximum data rate of a channel, measured in bits per second (Mbps, Gbps) — the "pipe diameter". <b>Throughput</b> is the actual rate of useful data delivered; it is always less than bandwidth because of overhead, congestion and protocol limits. <b>Latency</b> is the time, in milliseconds, taken for a single packet to travel from sender to receiver — what gamers call ping. <b>Jitter</b> measures the variation in latency between consecutive packets; high jitter causes audio and video to stutter even when average latency is low. Bulk file downloads care most about bandwidth and throughput, while real-time video calls and online games depend on low latency and low jitter.
+  </div>
+
   <table class="summary-table">
     <thead>
       <tr>
@@ -799,6 +820,11 @@
   <p>
     Когда вы отправляете данные в сеть, они <b>не идут одним куском</b>. Они режутся на маленькие порции — <b>пакеты</b> — и каждый пакет отправляется независимо. Этот метод называется <b>packet switching</b> (коммутация пакетов) и лежит в основе всего интернета.
   </p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — packet switching.</b>
+    In <b>packet switching</b>, a message is divided into small units called <b>packets</b>. Each packet has a <b>header</b> (source and destination IP, sequence number, error-check code) plus a <b>payload</b> of data. Wrapping data with headers is called <b>encapsulation</b>; unwrapping at the destination is <b>decapsulation</b>. Packets travel independently through the network and can take different routes; the receiver reorders them using the sequence numbers and asks for any missing ones to be resent. This makes the network resilient (failed links are routed around), efficient (one channel carries many users' packets) and scalable. By contrast, <b>circuit switching</b> (used in the old telephone network) reserves a dedicated path for the whole conversation, giving guaranteed bandwidth but wasting capacity when idle. Within a LAN, a <b>switch</b> forwards frames by MAC address; between networks a <b>router</b> consults a routing table and forwards each packet to the next <b>hop</b>.
+  </div>
 
   <div class="key-term">
     <b>Пакет (Packet).</b> Структурная единица данных в сети: <b>payload</b> (полезная нагрузка — кусок исходных данных) + <b>header</b> (заголовок с метаданными: адрес отправителя и получателя, номер в последовательности, контрольная сумма).
@@ -931,6 +957,11 @@
     Любая передача — это риск, что один или несколько бит «перевернутся» из-за помех. Поэтому в каждый пакет встраивают <b>код для проверки на ошибки</b>. Учебник Oxford упоминает <b>error-checking codes</b> в составе заголовка; конкретные методы — это классика курса.
   </p>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — error detection.</b>
+    Every transmission risks bit flips due to electrical noise or interference, so packets carry extra bits used to detect errors. A <b>parity</b> bit appends a single 1 or 0 so the total number of ones is even or odd; it catches any odd number of flipped bits but misses even-numbered errors. A <b>checksum</b> sums the bytes of the message into a small fixed-size value that the receiver recomputes and compares; it catches most random corruption but can miss errors that cancel out. A <b>Cyclic Redundancy Check (CRC)</b> treats the data as a polynomial and stores the remainder when divided by a fixed generator, catching nearly all single-bit and burst errors typical of real channels. CRC is used in Ethernet frames, Wi-Fi, USB and archive formats. These methods only <b>detect</b> errors; correction needs Hamming or Reed-Solomon codes, or simple retransmission as TCP does.
+  </div>
+
   <table class="summary-table">
     <thead>
       <tr>
@@ -1001,6 +1032,11 @@
   <p>
     Это тема <b>A2.3.4</b> — её формально проходят только в <b>HL</b>, но для глубокого понимания сетей полезно знать всем.
   </p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — routing (AHL).</b>
+    A <b>router</b> moves packets between networks by consulting its <b>routing table</b>: rules that map a destination network to the next <b>hop</b> (the neighbouring router or output interface). With <b>static routing</b>, an administrator manually enters every route. This is simple, predictable and uses few resources, but does not scale and must be edited by hand whenever the topology changes — suitable for small offices or home networks. With <b>dynamic routing</b>, routers exchange reachability information using protocols such as <b>RIP</b> (uses hop count), <b>OSPF</b> (uses link cost, common inside an organisation) and <b>BGP</b> (between large internet providers). Routes are recalculated automatically when a link fails; the time for all routers to agree on the new topology is called <b>convergence</b>. Dynamic routing scales to thousands of routers but consumes more CPU, memory and bandwidth, and is harder to configure and secure.
+  </div>
 
   <h3>📋 8.1. Что такое routing</h3>
 
@@ -1119,6 +1155,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

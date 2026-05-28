@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A1.3 Операционные и управляющие системы · IB CS Theme A</title>
 <meta name="description" content="A1.3 Operating systems and control systems — подробный разбор на русском: роль ОС, функции, планирование (FCFS, round robin, multilevel, priority), polling vs interrupts, многозадачность (HL), компоненты управляющих систем (HL), реальные применения (HL).">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -329,6 +329,12 @@
       <b>⚠️ Официальных экзамен-вопросов от преподавателя по этой теме пока нет.</b> Вопросы в разделе ниже — мои разработанные, в стиле IB-экзамена с детальными mark schemes. Используйте их для тренировки. Когда преподаватель опубликует официальный набор — заменю их.
     </div>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a1-computer-fundamentals/a1-3-operating-systems-and-control-systems?authuser=4" target="_blank" rel="noopener">A1.3 Operating systems and control systems →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
   <!-- ============ SECTION 0: SYLLABUS MAP ============ -->
   <h2>0. Карта темы</h2>
   <p>
@@ -399,6 +405,13 @@
         <li>Это <b>упрощает разработку</b>: один и тот же код работает на разном железе.</li>
         <li>Это <b>повышает надёжность и безопасность</b>: программа не может случайно сломать систему или другие приложения.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>An <b>operating system</b> sits between the user and the hardware, sharing out the CPU, memory, storage and peripherals while offering services such as a file system, process management, security and a user interface. Common examples include Linux, Windows, macOS, Android and iOS — none is universally best; each suits different jobs. Its central trick is <b>hardware abstraction</b>: applications never poke registers or drivers directly, they make system calls and the OS handles the messy details. That lets the same program run on very different machines and stops one app from corrupting another.</p>
     </div>
   </details>
 
@@ -608,6 +621,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A modern OS juggles many duties at once. It schedules CPU time across processes and threads, allocates and protects memory (often with paging and virtual memory via the MMU), manages a file system on disk, drives peripherals through device drivers, and runs the network stack. It also enforces security through user/kernel separation, sandboxing, access control lists, encryption, firewalls and patching. A <b>process</b> is a running program with its own memory and PID, cycling through new, ready, running, blocked and terminated states; <b>threads</b> share a process's memory. Virtualisation, accounting and the GUI round out the picture.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 3: A1.3.3 SCHEDULING ============ -->
   <h2 id="scheduling">3. A1.3.3 Подходы к планированию</h2>
 
@@ -760,6 +780,13 @@
         <li>Между очередями — фиксированный приоритет или round robin.</li>
         <li><b>Преимущество:</b> можно эффективно обработать смешанную нагрузку — критичные системные задачи получают приоритет, но и пользовательские не голодают.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The scheduler chooses which ready process gets the CPU next, balancing throughput, turnaround, waiting time and utilisation. <b>FCFS</b> serves processes in arrival order — simple but vulnerable to the convoy effect. <b>Round-robin</b> pre-empts every quantum and is fair for time-sharing, though a poor quantum either thrashes the system with context switches or behaves like FCFS. <b>Multilevel queue</b> splits ready processes into separate queues (system vs user, foreground vs background) each with its own policy. <b>Priority</b> picks the highest-priority job first, fitting real-time work but risking starvation unless ageing gradually raises waiting processes' priority.</p>
     </div>
   </details>
 
@@ -929,6 +956,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The CPU learns that a device needs servicing in two ways. With an <b>interrupt</b>, the device raises a signal, the CPU saves its context and runs an Interrupt Service Routine before resuming. With <b>polling</b>, the CPU regularly asks each device whether anything has happened. Interrupts shine for frequent or unpredictable events, give low controlled latency, and let battery devices sleep between events — but a flood of them can be exploited as a denial-of-service vector. Polling is simpler and resists such floods, yet it burns CPU cycles on empty checks and can miss bursts that fall between polls.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 5: A1.3.5 MULTITASKING HL ============ -->
   <h2 id="multitasking">5. A1.3.5 Многозадачность и распределение ресурсов <span class="hl-badge">HL</span></h2>
 
@@ -1066,6 +1100,13 @@
         <li><b>Prevention:</b> deadlock avoidance algorithms (например, Banker's algorithm) <b>отказывают</b> в запросе ресурса, если это создаст цикл.</li>
         <li><b>Дизайн:</b> требовать процессы заказывать ресурсы в едином порядке — исключает один из условий deadlock.</li>
       </ul>
+    </div>
+  </details>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Multitasking gives the illusion of simultaneous execution by switching contexts between processes very quickly; on multi-core machines, threads can also run in genuine parallel. The OS tracks every process in a process table and allocates memory through paging, segmentation and virtual memory. Sharing finite resources brings <b>resource contention</b> hazards: <b>deadlock</b> (processes block one another in a cycle), <b>livelock</b> (constant activity with no progress), and <b>thrashing</b> (excessive swapping between RAM and disk). Defences include deadlock detection, the Banker's algorithm for avoidance, ageing to prevent starvation, ordered resource requests, and quotas.</p>
     </div>
   </details>
 
@@ -1248,6 +1289,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A control system regulates physical behaviour using the IPO model plus optional feedback. <b>Open-loop</b> systems (a timer-driven toaster) follow a fixed sequence regardless of result; <b>closed-loop</b> systems (thermostats, cruise control) feed measured output back to the controller so the input can be corrected in real time. The key components are the <b>controller</b> (often a microcontroller or PLC), <b>sensors</b> that convert temperature, light or pressure into electrical signals, <b>actuators</b> such as motors, valves and heaters that drive physical change, <b>transducers</b> that switch one energy form for another, and the <b>control algorithm</b> — frequently a PID loop — that decides the output.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 7: A1.3.7 REAL-WORLD HL ============ -->
   <h2>7. A1.3.7 Реальные применения управляющих систем <span class="hl-badge">HL</span></h2>
 
@@ -1413,6 +1461,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The same sensor–controller–actuator pattern shows up everywhere. Autonomous vehicles combine LIDAR, radar, cameras, ultrasonic sensors and IMUs with path-planning AI, steering and throttle actuators. Smart thermostats and building management systems read temperature and switch heating or cooling, often with PID or ML algorithms. Lifts use position sensors and dispatching logic to cut waiting time; washing machines vary cycle length using load, water-level and turbidity sensors; traffic lights run from inductive loops or vision, with adaptive controllers easing congestion. Irrigation systems trigger solenoid valves from soil-moisture readings; home security fuses PIR, contact and glass-break sensors; automatic doors run on microwave or infrared detection.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 8: PRACTICAL TASKS ============ -->
   <h2>8. Практические задания</h2>
 
@@ -1483,6 +1538,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

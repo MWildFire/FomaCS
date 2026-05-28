@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A1.4 Трансляция (HL) · IB CS Theme A</title>
 <meta name="description" content="A1.4 Трансляция (HL) — глубокий разбор на русском: компилятор vs интерпретатор vs JIT, байткод, этапы компиляции (лексика → синтаксис → семантика → оптимизация → генерация кода), ассемблер, машинный код, линкеры и загрузчики. С разбором задач и аналогиями.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -385,6 +385,13 @@
   <p class="lede">
     Эта тема (<b>A1.4 — Translation</b>, только HL) — про то, как код, который ты пишешь на Python, Java или C++, превращается в <b>машинные инструкции</b>, которые понимает процессор. Есть три основных подхода: <b>компилятор</b> (compiler) переводит всю программу заранее, <b>интерпретатор</b> (interpreter) — строка за строкой во время выполнения, а <b>JIT</b> (just-in-time) — гибрид, который компилирует «на лету». Каждый подход — это компромисс между скоростью разработки, скоростью выполнения, портируемостью и моментом обнаружения ошибок.
   </p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a1-computer-fundamentals/hl-a1-4-translation?authuser=4" target="_blank" rel="noopener">A1.4 Translation (HL) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
+  </div>
+
     <div class="ru-tip" style="border-left-color: var(--amber); background: rgba(245,158,11,0.08); margin: 20px 0;">
       <b>⚠️ Официальных экзамен-вопросов от преподавателя по этой теме пока нет.</b> Вопросы в разделе ниже — мои разработанные, в стиле IB-экзамена с детальными mark schemes. Используйте их для тренировки. Когда преподаватель опубликует официальный набор — заменю их.
     </div>
@@ -431,6 +438,13 @@
   <div class="ru-tip">
     💡 <b>Ассемблер (assembly language)</b> — это «чуть более читаемый» машинный код. Каждая ассемблерная команда (MOV, ADD, JMP) почти один-к-одному превращается в одну машинную инструкцию. Программист может пользоваться метками вместо адресов памяти, но всё ещё работает на уровне регистров CPU. <b>Ассемблер (assembler) как программа</b> — это переводчик из ассемблерного кода в машинный.
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A CPU only understands <b>machine code</b> — raw binary instructions tied to a specific architecture (x86, ARM, MIPS). Writing software directly in those bits is impractical, so programmers use high-level languages such as Python, Java or C++. A <b>translator</b> bridges this gap by converting human-readable source into instructions the processor can execute. Between the two extremes sits <b>assembly language</b>: human-readable mnemonics like <code>MOV</code> or <code>ADD</code> that map almost one-to-one onto machine instructions. The program performing that final mnemonic-to-binary step is called an <b>assembler</b>.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 2: SUMMARY COMPARISON ============ -->
   <h2>2. Кратко: компилятор vs интерпретатор vs JIT</h2>
@@ -500,6 +514,13 @@
     💡 <b>Аналогия:</b> представь, что нужно перевести книгу с английского на русский. <b>Компилятор</b> = переводчик переводит всю книгу заранее, ты потом читаешь готовый русский том. <b>Интерпретатор</b> = синхронист переводит фразу за фразой, пока ты слушаешь оратора. <b>JIT</b> = синхронист, который запоминает часто повторяющиеся фразы и держит их в кармане в готовом виде.
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A <b>compiler</b> translates the whole program once, ahead of time, producing a binary executable that the OS runs directly — fastest at runtime but slowest to rebuild and tied to one OS/CPU pair. An <b>interpreter</b> processes the source line by line each run, so editing is instant and the same script runs anywhere the interpreter is installed, but execution is slower and bugs only appear when the affected line actually runs. <b>JIT</b> compilers sit in the middle: code is shipped as portable bytecode, the VM interprets first, then compiles frequently used (hot) sections to native code that it caches for later calls.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 3: COMPILER ============ -->
   <h2>3. Компилятор (Compiler)</h2>
 
@@ -537,6 +558,13 @@
 }</pre>
     <p>После команды <code>rustc main.rs</code> компилятор создаёт исполняемый файл <code>main</code> (или <code>main.exe</code> на Windows), который при запуске напрямую выводит строку — без участия Rust-инструментов.</p>
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A <b>compiler</b> converts an entire source file into native machine code before the program is launched, producing a binary that the operating system loads directly. Because the CPU runs that output with no translation overhead, compiled programs are typically the fastest option. Most syntax, type and many semantic errors are caught at build time, and the compiler can optimise across the whole program (inlining, dead-code removal, constant folding). The trade-offs: a longer edit-build-run loop, and binaries that only work on the OS and CPU architecture they were built for. Representative languages include C, C++, Rust and Go; common compilers are GCC, Clang/LLVM and MSVC.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 4: INTERPRETER ============ -->
   <h2>4. Интерпретатор (Interpreter)</h2>
@@ -586,6 +614,13 @@
   <div class="ru-tip">
     💬 <b>Реальная история (из учебника):</b> когда команда Кэти Боуман получила первое изображение чёрной дыры, обработка огромных объёмов данных с радиотелескопов делалась на <b>Python</b> — потому что интерпретируемый язык позволял быстро менять алгоритм, прогонять заново и видеть результат, не теряя время на пересборку.
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>An <b>interpreter</b> reads source code line by line at runtime, parsing and executing each statement on the fly with no separate executable produced. This makes the edit-run cycle nearly instant and gives the same script high portability — anywhere the interpreter is installed, the code runs unchanged. Many interpreted languages also offer an interactive REPL for quick experimentation. The downsides are slower execution (translation happens every run) and the fact that errors only surface when a particular line is actually reached, so a typo inside a rarely-called branch can survive into production. Typical languages: Python, JavaScript, Ruby, PHP.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 5: JIT & BYTECODE ============ -->
   <h2>5. JIT-компиляция и байткод-интерпретаторы</h2>
@@ -675,6 +710,13 @@
   <div class="ru-tip">
     🧩 <b>Где граница между байткодом и JIT?</b> Сам по себе байткод-интерпретатор просто исполняет байты по очереди — без перевода в нативный код. <b>JIT — это слой сверху</b>, который замечает горячие участки и компилирует их в нативный код. Java и C# почти всегда идут с JIT; стандартный CPython — это «чистый» байткод-интерпретатор без JIT (а PyPy — с JIT).
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p><b>Bytecode</b> is a low-level but platform-independent intermediate representation designed for a software virtual machine rather than a real CPU. The source is compiled to bytecode once (Python <code>.pyc</code>, Java <code>.class</code>), and a VM then interprets those instructions on any supported OS. <b>Just-in-time (JIT)</b> compilation is an extra layer on top: the VM counts how often each method or loop runs, and once a section becomes hot enough it is translated into native machine code and cached, so later calls run at near-native speed. JIT also enables adaptive optimisation based on real runtime types. Examples: Java/JVM, C#/.NET CLR, JavaScript engines like V8, and PyPy.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 6: COMPILATION STAGES ============ -->
   <h2>6. Этапы компиляции (важно для экзамена)</h2>
@@ -775,6 +817,13 @@
     🎯 <b>Запомни мнемонику:</b> «Лена Сидит Семантически и Оптимально Готовит код» — <b>Л</b>ексика → <b>С</b>интаксис → <b>С</b>емантика → <b>О</b>птимизация → <b>Г</b>енерация кода. В интерпретаторе те же первые три этапа, затем сразу генерация байткода и исполнение — без полноценной оптимизации.
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Translation moves through five well-defined stages. <b>Lexical analysis</b> splits the source text into tokens such as keywords, identifiers, operators and literals. <b>Syntax analysis</b> (parsing) checks those tokens against the language grammar and builds an abstract syntax tree (AST), catching structural errors like missing brackets. <b>Semantic analysis</b> inspects the meaning of the code — verifying types, checking that variables are declared and functions exist. <b>Optimisation</b> rewrites the intermediate form to run faster or use less memory without changing behaviour (constant folding, dead-code removal, loop transformations). Finally, <b>code generation</b> emits the target output: native machine code for a compiler, or bytecode for a VM-based language.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 7: LINKERS & LOADERS ============ -->
   <h2>7. Линкеры и загрузчики (Linkers &amp; Loaders)</h2>
 
@@ -814,6 +863,13 @@
       </div>
     </div>
   </div>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Compilation usually produces several <b>object files</b> (one per source file) plus references to library code, none of which can run on their own. A <b>linker</b> stitches these object files together and resolves cross-file references so that a call to a function in another module ends up pointing at the right address. Linking can be <b>static</b> (library code is baked into the executable, making it larger but self-contained) or <b>dynamic</b> (the executable keeps a reference to a <code>.dll</code> or <code>.so</code> that is supplied at runtime). The <b>loader</b> is the part of the OS that reads the finished executable from disk, allocates memory for the process, copies code and data into place, resolves any dynamic libraries and finally jumps to the program's entry point.</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 8: USE CASES ============ -->
   <h2>8. Когда какой подход выбирать</h2>
@@ -855,6 +911,13 @@
     </div>
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The right translation approach depends on which property matters most. Pick a <b>compiler</b> (C, C++, Rust, Go) when raw performance, predictable timing or low-level hardware access are critical: operating systems, drivers, game engines, high-frequency trading. Pick an <b>interpreter</b> (Python, JavaScript, Bash) when iteration speed and easy cross-platform distribution outweigh runtime performance: prototypes, automation scripts, data analysis and teaching. Pick a <b>JIT + bytecode</b> stack (Java, C#, modern JavaScript engines) when you want a single artifact that runs on any OS while still getting near-native speed for long-running workloads such as enterprise back-ends, mobile apps and browser-side applications like Google Docs or Figma.</p>
+    </div>
+  </details>
+
   <h2>9. Связанные понятия</h2>
 
   <h3>Стандартная библиотека (Standard library)</h3>
@@ -880,6 +943,13 @@
   <p style="margin-top: 20px">
     <a href="fundamentals.html#ci-sim" class="back-link" style="font-size:1rem">→ Открыть симуляцию «Компилятор vs Интерпретатор» в A1 Основы</a>
   </p>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A few supporting terms reappear across this topic. A <b>standard library</b> is the bundle of ready-made modules and functions shipped with a language (Python's <code>os</code>, Java's <code>java.util</code>) so common tasks do not have to be rewritten. A <b>parser</b> takes a stream of tokens and applies grammar rules to build a hierarchical structure, usually an AST; the same idea drives HTML, JSON and SQL parsers, not just compilers. <b>Semantics</b> describes what a construct actually means at runtime, in contrast to syntax which only describes how it must look. A <b>binary executable</b> stores ready-to-run machine instructions in an OS-specific container (PE on Windows, ELF on Linux, Mach-O on macOS).</p>
+    </div>
+  </details>
 
   <!-- ============ SECTION 10: PRACTICE QUESTIONS ============ -->
   <h2>10. Тренировочные вопросы (нажми, чтобы увидеть подсказку к ответу)</h2>
@@ -1053,6 +1123,13 @@
     </div>
   </details>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The practice set drills the IB command terms most likely to appear on A1.4 questions. Expect to <b>describe</b> the five-stage translation pipeline, <b>outline</b> what a parser does to a token stream, <b>evaluate</b> bytecode by balancing portability against the need for a VM, and <b>compare/contrast</b> compilers and interpreters across translation time, error detection, portability and applicability. Other prompts cover how JIT blends both worlds, why interpreters miss bugs in unexercised branches, the trade-offs between C++ and Python for cross-platform shipping, and the distinct roles of linker and loader. Answers should lean on precise vocabulary — tokens, AST, semantics, optimisation, hot paths, static vs dynamic linking.</p>
+    </div>
+  </details>
+
   <!-- ============ SECTION 11: TASK ============ -->
   <h2>11. Практическое задание</h2>
 
@@ -1075,6 +1152,13 @@
     </ol>
   </div>
 
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The hands-on task asks you to feel the speed difference between the three translation approaches by running the same naive recursive Fibonacci program (<code>N = 35</code>) in three languages. Write equivalent versions in <b>C++</b>, <b>Python</b> and <b>Java</b>, then time each one: build the C++ source with <code>g++ -O2</code> and run the binary, run the Python script directly through the interpreter, and compile the Java source to bytecode with <code>javac</code> before launching it via <code>java</code>. C++ usually finishes in a fraction of a second, Java in a few seconds once the JIT warms up, and CPython in tens of seconds. Explain the gap using native machine code, JIT, bytecode interpretation and dynamic typing.</p>
+    </div>
+  </details>
+
   <!-- ============ CLOSING ============ -->
   <h2>Что важно запомнить</h2>
   <ul style="line-height: 1.8; font-size: 1.02rem;">
@@ -1089,6 +1173,13 @@
     <li>На экзамене вопрос «<i>evaluate</i>» — это всегда <b>сильные и слабые стороны</b>. «<i>Distinguish</i>» — контраст по чётким критериям (время, ошибки, портируемость, применимость).</li>
     <li><b>Машинный код</b> — это бинарные команды, привязанные к архитектуре CPU (x86, ARM, MIPS). <b>Ассемблер</b> — почти один-к-один с машинным кодом, но с читаемыми мнемониками (MOV, ADD, JMP).</li>
   </ul>
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Key takeaways for A1.4: translation converts human-readable code into instructions a CPU can execute, and the three core approaches are compilation, interpretation and JIT. Compilers (C, C++, Rust, Go) build native binaries that run fastest but are platform-specific; interpreters (Python, JavaScript, Ruby) translate at runtime and are portable but slower; JIT systems (Java, C#, modern JS engines) start from portable bytecode and selectively compile hot paths to native code. Memorise the five translation stages — lexical, syntax, semantic, optimisation, code generation — plus the roles of the parser (builds the AST), linker (combines object files and libraries) and loader (the OS component that brings the executable into memory).</p>
+    </div>
+  </details>
 
   <p style="margin-top:32px">
     <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
@@ -1106,6 +1197,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>

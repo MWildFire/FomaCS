@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3.2 Проектирование баз данных · IB CS Theme A</title>
 <meta name="description" content="A3.2 Database design — подробный разбор на русском: схемы (концептуальная, логическая, физическая), ER-диаграммы, кардинальность, нотация «вороньей лапки», нормализация UNF → 1NF → 2NF → 3NF, аномалии вставки/удаления/обновления, разрешение M:N связей через таблицу-связку, индексы.">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -328,8 +328,14 @@
   </p>
 
   <div style="margin: 20px 0 28px">
-    <a class="sim-link" href="databases.html?v=10#norm-sim">Симулятор: нормализация 1NF → 2NF → 3NF</a>
-    <a class="sim-link" href="databases.html?v=10#erd-sim">Симулятор: M:N через таблицу-связку</a>
+    <a class="sim-link" href="databases.html?v=11#norm-sim">Симулятор: нормализация 1NF → 2NF → 3NF</a>
+    <a class="sim-link" href="databases.html?v=11#erd-sim">Симулятор: M:N через таблицу-связку</a>
+  </div>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.10); margin: 20px 0;">
+    <b>🌐 English original:</b>
+    <a href="https://sites.google.com/nlcsdubai.ae/nlcs-dubai-ib-cs/a3-databases/a3-2?authuser=4" target="_blank" rel="noopener">A3.2 Database design (NLCS Dubai) →</a>.
+    Each section has a short <b>English summary</b> for cross-reference.
   </div>
 
   <div class="ru-tip" style="border-left-color: var(--green); background: rgba(16,185,129,0.08)">
@@ -338,6 +344,10 @@
 
   <!-- ============ SECTION 1: SUMMARY ============ -->
   <h2>1. Кратко: чему посвящён раздел A3.2</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Scope of A3.2.</b> The IB syllabus splits database design into seven sub-topics: schema levels (conceptual, logical, physical), ER diagram construction, data type selection, table construction with primary and foreign keys, the rationale for normalization, applying normalization through 3NF on realistic scenarios, and evaluating denormalization. The golden rule of normalization is that every non-key attribute must depend on the key, the whole key, and nothing but the key — any deviation signals a table that must be split.
+  </div>
 
   <p>
     A3.2 в учебнике IB поделён на <b>семь под-тем</b>. Запомни их структуру — на экзамене любые вопросы про дизайн БД ложатся в одну из этих ячеек:
@@ -397,6 +407,10 @@
   <!-- ============ SECTION 2: SCHEMA ============ -->
   <h2>2. Схема базы данных (A3.2.1)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Database schemas.</b> A schema is the blueprint of a database — entities, attributes, and relationships, but no actual rows. The IB recognises three levels of zoom. The conceptual schema lists entities and their relationships only, aimed at users and stakeholders. The logical schema adds attributes plus primary and foreign keys, suitable for developers. The physical schema layers on data types, storage structures, indexes, and file layout — the level the DBA actually deploys. Each level extends the previous one rather than replacing it.
+  </div>
+
   <p>
     <b>Схема (schema)</b> — это «чертёж» базы данных. Это <b>план</b>, который описывает <b>сущности</b> (таблицы), <b>атрибуты</b> (поля) и <b>связи</b> между ними — но <b>не содержит самих данных</b>. Схема показывает, как база <i>устроена</i>, а не что в ней лежит.
   </p>
@@ -451,6 +465,10 @@
 
   <!-- ============ SECTION 3: ERD ============ -->
   <h2>3. ER-диаграммы (A3.2.2)</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Entity-Relationship diagrams.</b> An ERD captures three building blocks: entities (the nouns we store data about), attributes (their characteristics), and relationships (how entities interact). Each relationship carries a cardinality — one-to-one, one-to-many, or many-to-many — and a modality flagging whether participation is mandatory or optional. Three notations are common in IB papers: Chen uses rectangles, ovals, and diamonds with labels; crow's foot uses line endings to encode counts; Barker prefers solid and dashed lines. All three express identical structure, just with different glyphs.
+  </div>
 
   <p>
     <b>ER-диаграмма (Entity-Relationship Diagram, ERD)</b> — это универсальная схема, понятная разработчикам в любой стране. Она показывает три вещи: <b>сущности</b>, <b>связи</b> между ними и (на детальных уровнях) <b>атрибуты</b>.
@@ -617,6 +635,10 @@
   <!-- ============ SECTION 4: M:N -> JUNCTION TABLE ============ -->
   <h2>4. Разрешение M:N через таблицу-связку</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Resolving M:N with a junction table.</b> Relational databases cannot store many-to-many relationships directly without massive duplication. The fix is a third table, often called a junction or link table, that holds pairs of foreign keys pointing back to the two parent entities. Together those foreign keys form a composite primary key, and the original M:N relationship is decomposed into two clean one-to-many links. The junction table is also the natural home for any attribute that describes the relationship itself, such as enrolment date or grade.
+  </div>
+
   <p>
     Реляционные базы данных <b>не умеют</b> напрямую хранить связь «многие-ко-многим». Если у тебя в ERD появляется M:N — её <b>обязательно</b> надо разбить через <b>третью таблицу (junction / link table)</b>, иначе ты не сможешь корректно сохранить данные без дублирования.
   </p>
@@ -686,6 +708,10 @@
 
   <!-- ============ SECTION 5: DATA TYPES ============ -->
   <h2>5. Типы данных (A3.2.3)</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Data types.</b> The syllabus uses MySQL types as a reference. String options include fixed-length CHAR, variable VARCHAR, longer TEXT variants, and constrained ENUM or SET lists. Numeric options span BIT, BOOL, INT, and FLOAT. Date and time options cover DATE, DATETIME, TIMESTAMP, TIME, and YEAR. Choosing the right type matters because storing numbers as strings breaks arithmetic, storing dates as strings breaks ordering, and ENUM enforces a closed value set. Type selection directly affects validation, sort order, and storage efficiency.
+  </div>
 
   <p>
     В курсе IB опирается на типы <b>MySQL</b> — это популярная СУБД. Главные категории — <b>строки</b>, <b>числа</b>, <b>дата/время</b>. Правильный тип данных важен, чтобы база могла корректно сравнивать, сортировать и вычислять.
@@ -824,6 +850,10 @@
   <!-- ============ SECTION 6: KEYS & CASCADE ============ -->
   <h2>6. Ключи и каскад (A3.2.4)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Keys and cascading actions.</b> Keys are what bind separate tables into a relational schema. A primary key uniquely identifies each row; a foreign key references the primary key of another table to establish links. A composite key combines several fields when no single attribute is unique, and a concatenated key joins substrings into a synthetic identifier. Cascade rules automate referential integrity: delete cascade removes dependent rows when the parent row is removed, and update cascade propagates a primary key change to every foreign key that pointed at it. Both must be applied with care.
+  </div>
+
   <p>
     Ключи — это то, что <b>склеивает</b> таблицы между собой. Если без них — у тебя просто набор отдельных таблиц, между которыми компьютер не видит связи.
   </p>
@@ -889,6 +919,10 @@
   <!-- ============ SECTION 7: ANOMALIES ============ -->
   <h2>7. Аномалии и зачем нужна нормализация (A3.2.5)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Anomalies and the case for normalization.</b> A flat, unnormalized table suffers three structural problems. An insert anomaly blocks new data because unrelated fields are required at the same time, such as not being able to add a vet who has no patients yet. A delete anomaly destroys information you wanted to keep when the only row carrying it is removed. An update anomaly forces the same fact to be edited in many rows, and missing one leaves the database inconsistent. Normalization fixes these by separating each fact into its own table.
+  </div>
+
   <p>
     Плохо спроектированная база (например, <b>плоский файл</b> — flat file, когда всё в одной таблице) страдает от трёх типов <b>аномалий</b>. Это не «ошибки кода», а структурные проблемы: данные плохо хранятся, и любое изменение ломает картинку.
   </p>
@@ -942,6 +976,10 @@
 
   <!-- ============ SECTION 8: NORMALIZATION ============ -->
   <h2>8. Нормализация: UNF → 1NF → 2NF → 3NF (A3.2.5–A3.2.6)</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Normalization through 3NF.</b> Normalization is a stepwise refactor that walks an unnormalized flat table toward a clean relational schema. From UNF to 1NF: enforce atomic values in every cell and pull repeating groups into a separate entity with its own primary key. From 1NF to 2NF: remove partial dependencies so that no non-key attribute relies on only part of a composite key. From 2NF to 3NF: remove transitive dependencies so that every non-key attribute depends solely on the primary key, not on another non-key attribute. Each step eliminates a category of anomaly.
+  </div>
 
   <p>
     Главное правило (повторю): <b>«Данные зависят от ключа, от всего ключа, и ни от чего, кроме ключа.»</b> Каждая стадия нормализации делает шаг к этому идеалу.
@@ -1253,6 +1291,10 @@
   <!-- ============ SECTION 9: SCHEMA DIAGRAM ============ -->
   <h2>9. Схема-диаграмма: логическая модель vs физическая</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Schema diagrams.</b> Once a database is normalised, a schema diagram offers a compact picture: each entity is drawn as a rectangle that lists its attributes, with relationships shown as lines between primary keys and foreign keys. The logical schema diagram lists the attributes alongside their key roles but omits data types. The physical schema diagram extends it by adding concrete types such as VARCHAR(25) and CHAR(6), plus storage hints like indexes. Both share the same entities and links — the physical version just makes the implementation choices explicit.
+  </div>
+
   <p>
     После того как ты нормализовал базу, удобно нарисовать <b>схему-диаграмму</b> — это компактная картинка, где каждая сущность — прямоугольник с полями, а между ними нарисованы связи через PK/FK.
   </p>
@@ -1328,6 +1370,10 @@
   <!-- ============ SECTION 10: INDEXING ============ -->
   <h2>10. Индексы (basics)</h2>
 
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Indexes.</b> An index is an auxiliary structure, usually a B-tree or hash, that lets the database locate rows by a field value without scanning the entire table. A clustered index physically orders the table itself on that key and is normally bound to the primary key; only one is allowed per table. Non-clustered indexes are separate structures holding row pointers and can be created on several fields. Indexes accelerate SELECT queries but slow down INSERT, UPDATE, and DELETE because the index must also be maintained — every index is a deliberate trade-off.
+  </div>
+
   <p>
     Индекс — это вспомогательная структура (обычно <b>B-tree</b> или hash), которая помогает СУБД <b>быстро найти строку</b> по значению поля без перебора всей таблицы. Похоже на <b>предметный указатель в книге</b>: вместо чтения всех страниц ты идёшь по алфавиту.
   </p>
@@ -1374,6 +1420,10 @@
 
   <!-- ============ SECTION 11: DENORMALIZATION ============ -->
   <h2>11. Денормализация (A3.2.7)</h2>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Denormalization.</b> Denormalization is the deliberate reintroduction of redundancy into a normalised schema, traded for raw query speed. It is common in read-heavy workloads where multi-table joins become a bottleneck, in data warehouses tuned for analytical aggregation rather than transactional consistency, and when historical snapshots must persist even after the source value changes — for example, freezing the price recorded on a receipt. The cost is the return of update and consistency anomalies, so denormalization should be an intentional engineering trade-off, never a shortcut taken at design time.
+  </div>
 
   <p>
     Парадокс: иногда нормализованную базу <b>намеренно «портят»</b> — добавляют дублирование данных. Это называется <b>денормализация (denormalization)</b>. Зачем?
@@ -1537,17 +1587,17 @@
   <h2>14. Связанные симуляторы</h2>
 
   <p>
-    На странице <a href="databases.html?v=10">A3 Базы данных</a> есть два интерактивных симулятора, которые помогут закрепить материал:
+    На странице <a href="databases.html?v=11">A3 Базы данных</a> есть два интерактивных симулятора, которые помогут закрепить материал:
   </p>
 
   <ul style="line-height: 1.8;">
-    <li><b>Шаги нормализации</b> — <a href="databases.html?v=10#norm-sim">databases.html#norm-sim</a> — пошагово видишь, как плоская таблица превращается в 1NF, 2NF и 3NF.</li>
-    <li><b>M:N → junction table</b> — <a href="databases.html?v=10#erd-sim">databases.html#erd-sim</a> — анимация, показывающая, как связь «многие-ко-многим» разбивается на две 1:N через промежуточную таблицу.</li>
+    <li><b>Шаги нормализации</b> — <a href="databases.html?v=11#norm-sim">databases.html#norm-sim</a> — пошагово видишь, как плоская таблица превращается в 1NF, 2NF и 3NF.</li>
+    <li><b>M:N → junction table</b> — <a href="databases.html?v=11#erd-sim">databases.html#erd-sim</a> — анимация, показывающая, как связь «многие-ко-многим» разбивается на две 1:N через промежуточную таблицу.</li>
   </ul>
 
   <div style="margin: 16px 0 32px">
-    <a class="sim-link" href="databases.html?v=10#norm-sim">Открыть симулятор нормализации</a>
-    <a class="sim-link" href="databases.html?v=10#erd-sim">Открыть симулятор M:N</a>
+    <a class="sim-link" href="databases.html?v=11#norm-sim">Открыть симулятор нормализации</a>
+    <a class="sim-link" href="databases.html?v=11#erd-sim">Открыть симулятор M:N</a>
   </div>
 
   <!-- ============ CLOSING ============ -->
@@ -1579,6 +1629,6 @@
   </p>
 </footer>
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>
