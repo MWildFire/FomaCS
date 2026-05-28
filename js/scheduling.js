@@ -30,7 +30,13 @@
 
   function L() { return document.documentElement.getAttribute('data-lang') === 'ru' ? 'ru' : 'en'; }
   function tr(en, ru) { return L() === 'ru' ? ru : en; }
-  function colorOf(i) { return window.Theme[PALETTE[i % PALETTE.length]]; }
+  // Defensive: if Theme or palette key is missing, fall back to sky-blue so the Gantt bar isn't invisible.
+  const COLOR_FALLBACK = '#0ea5e9';
+  function colorOf(i) {
+    const T = window.Theme;
+    const key = PALETTE[i % PALETTE.length];
+    return (T && T[key]) || COLOR_FALLBACK;
+  }
 
   function defaultProcesses() {
     return [
