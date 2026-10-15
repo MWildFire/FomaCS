@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1.3 Операционные и управляющие системы · IB CS Theme A</title>
+<meta name="description" content="A1.3 Operating systems and control systems — подробный разбор на русском: роль ОС, функции, планирование (FCFS, round robin, multilevel, priority), polling vs interrupts, многозадачность (HL), компоненты управляющих систем (HL), реальные применения (HL).">
+<link rel="stylesheet" href="styles.css?v=12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .hl-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--red);
+    color: #fff;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .device-card.hl-card {
+    border-left-color: var(--red);
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .analogy-list ul { margin: 4px 0; }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .loop-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .loop-diagram svg {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+  }
+  .loop-diagram .diagram-caption {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 18px 0;
+  }
+  @media (min-width: 720px) {
+    .two-col { grid-template-columns: 1fr 1fr; }
+  }
+  .mini-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .mini-card h4 {
+    margin: 0 0 6px;
+    color: var(--primary);
+    font-size: 1rem;
+  }
+  .mini-card p {
+    margin: 4px 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .term-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .term-list .term {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.92rem;
+  }
+  .term-list .term b {
+    color: var(--primary);
+  }
+  .loop-diagram .loop-mobile { display: none; }
+  @media (max-width: 620px) {
+    .loop-diagram .loop-desktop { display: none; }
+    .loop-diagram .loop-mobile { display: block; min-width: 0; width: 100%; max-width: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="lang-ru-inline">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </span><span class="lang-en-inline"><span class="brand-mark">A</span> IB CS · Theme A</span></a>
+    <div class="nav-links"><span class="lang-ru-inline">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </span><span class="lang-en-inline"><a href="index.html">Overview</a>
+      <a href="fundamentals.html">A1 Fundamentals</a>
+      <a href="networks.html">A2 Networks</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Network devices</a>
+      <a href="databases.html">A3 Databases</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Quiz</a></span></div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="fundamentals.html" class="back-link"><span class="lang-ru-inline">← Назад к A1 Основы</span><span class="lang-en-inline">← Back to A1 Fundamentals</span></a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A1.3 · Operating Systems &amp; Control Systems
+  </span>
+
+  <h1><span class="lang-ru-inline">Операционные и управляющие системы</span><span class="lang-en-inline">Operating systems and control systems</span></h1>
+
+  <p class="lede"><span class="lang-ru-inline">
+    Тема <b>A1.3</b> — про два типа «дирижёров» в мире вычислений. <b>Операционная система (OS)</b> управляет ресурсами компьютера: процессорным временем, памятью, дисками, сетью, безопасностью. <b>Управляющая система (control system)</b> регулирует поведение физического устройства — лифта, термостата, машины — через датчики, контроллер, актуаторы и обратную связь. Внутри одна и та же идея: <b>скрыть сложность</b> и <b>принять решение на основе данных</b>. Разделы <b>A1.3.5 – A1.3.7 — только для HL</b>.
+  </span><span class="lang-en-inline">Topic <b>A1.3</b> is about two kinds of “conductors” in computing. <b>Operating system (OS)</b> manages the computer's resources: processor time, memory, disks, the network and security. <b>Control system</b> regulates the behaviour of a physical device (an elevator, a thermostat, a car) through sensors, a controller, actuators and feedback. Both work on the same idea: <b>hide complexity</b> and <b>make decisions based on data</b>. Sections <b>A1.3.5 – A1.3.7 are HL only</b>.</span></p>
+    
+
+  
+
+  <!-- ============ SECTION 0: SYLLABUS MAP ============ -->
+  <h2><span class="lang-ru-inline">0. Карта темы</span><span class="lang-en-inline">0. Topic map</span></h2>
+  <p><span class="lang-ru-inline">
+    В этой теме семь подпунктов. Первые четыре — для всех (SL и HL), последние три — только для HL.
+  </span><span class="lang-en-inline">This topic has seven syllabus points. The first four are for everyone (SL and HL); the last three are for HL only.</span></p>
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Подпункт</span><span class="lang-en-inline">Syllabus point</span></th>
+        <th><span class="lang-ru-inline">О чём</span><span class="lang-en-inline">Content</span></th>
+        <th><span class="lang-ru-inline">Уровень</span><span class="lang-en-inline">Level</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>A1.3.1</td><td><span class="lang-ru-inline">Роль операционной системы (абстракция железа)</span><span class="lang-en-inline">Role of the operating system (hardware abstraction)</span></td><td>SL+HL</td></tr>
+      <tr><td>A1.3.2</td><td><span class="lang-ru-inline">Функции ОС: память, файлы, устройства, планирование, безопасность, учёт, GUI, виртуализация, сеть</span><span class="lang-en-inline">OS functions: memory, files, devices, scheduling, security, accounting, GUI, virtualisation, networking</span></td><td>SL+HL</td></tr>
+      <tr><td>A1.3.3</td><td><span class="lang-ru-inline">Подходы к планированию: FCFS, round robin, multilevel queue, priority</span><span class="lang-en-inline">Scheduling approaches: FCFS, round robin, multilevel queue, priority</span></td><td>SL+HL</td></tr>
+      <tr><td>A1.3.4</td><td><span class="lang-ru-inline">Polling vs interrupts — когда что использовать</span><span class="lang-en-inline">Polling vs interrupts: when to use each</span></td><td>SL+HL</td></tr>
+      <tr><td>A1.3.5</td><td><span class="lang-ru-inline">ОС управляет многозадачностью и ресурсами — deadlock, starvation</span><span class="lang-en-inline">The OS manages multitasking and resources: deadlock, starvation</span></td><td><span class="hl-badge">HL</span></td></tr>
+      <tr><td>A1.3.6</td><td><span class="lang-ru-inline">Компоненты управляющей системы: контроллер, датчики, актуаторы, преобразователи</span><span class="lang-en-inline">Control system components: controller, sensors, actuators, transducers</span></td><td><span class="hl-badge">HL</span></td></tr>
+      <tr><td>A1.3.7</td><td><span class="lang-ru-inline">Реальные применения: машины, термостаты, лифты, стиралки, светофоры, полив, охрана, двери</span><span class="lang-en-inline">Real-world uses: cars, thermostats, elevators, washing machines, traffic signals, irrigation, security, doors</span></td><td><span class="hl-badge">HL</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- ============ SECTION 1: A1.3.1 ============ -->
+  <h2><span class="lang-ru-inline">1. A1.3.1 Роль операционной системы</span><span class="lang-en-inline">1. A1.3.1 Role of the operating system</span></h2>
+
+  <p><span class="lang-ru-inline">
+    <b>Операционная система (OS)</b> — это <b>посредник (interface)</b> между пользователем, приложениями и аппаратным обеспечением (hardware). Её задача — <b>управлять системными ресурсами</b> (CPU, память, диск, сеть, периферия) и <b>предоставлять сервисы</b> приложениям и пользователю: файловую систему, управление процессами, безопасность, графический интерфейс.
+  </span><span class="lang-en-inline"><b>Operating system (OS)</b> is an <b>intermediary</b> between the user, applications and hardware. Its job is to <b>manage system resources</b> (CPU, memory, disk, network, peripherals) and to <b>provide services</b> to applications and the user: the file system, process management, security and the graphical interface.</span></p>
+
+  <p><span class="lang-ru-inline">
+    Примеры ОС: <b>Linux, Windows, macOS, Android, iOS, BSD, Orbis</b> (для PlayStation). У каждой свои сильные стороны — нет «лучшей» ОС, есть только <b>наиболее подходящая</b> под конкретную задачу.
+  </span><span class="lang-en-inline">Examples of operating systems: <b>Linux, Windows, macOS, Android, iOS, BSD, Orbis</b> (for PlayStation). Each has its own strengths. There is no “best” OS, only the <b>most suitable</b> one for a particular task.</span></p>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🎭</span> Абстракция железа (hardware abstraction)</span><span class="lang-en-inline"><span class="device-emoji">🎭</span> Hardware abstraction</span></h3>
+    <p><span class="lang-ru-inline">
+      <b>Абстракция (abstraction)</b> — это <b>сокрытие сложных деталей за простым интерфейсом</b>. Когда ты играешь в видеоигру, ты не думаешь о том, как распределяются потоки, как выделяется память, как драйверы общаются с GPU. Ты просто играешь. Это и есть работа ОС — спрятать всю сложность.
+    </span><span class="lang-en-inline"><b>Abstraction</b> is <b>hiding complex details behind a simple interface</b>. When you play a video game, you do not think about how threads are scheduled, how memory is allocated or how drivers talk to the GPU. You just play. This is exactly the job of the OS: to hide all that complexity.</span></p>
+    <p><span class="lang-ru-inline">
+      Аналогия из жизни: <b>руль и педали в машине</b>. Тебе не нужно понимать, как работает двигатель внутреннего сгорания, чтобы ехать. Руль, педали и коробка передач — это <b>интерфейс</b> к сложной механике.
+    </span><span class="lang-en-inline">A real-life analogy: <b>the steering wheel and pedals in a car</b>. You do not need to understand how an internal combustion engine works in order to drive. The steering wheel, pedals and gearbox are an <b>interface</b> to complex machinery.</span></p>
+    <div class="ru-tip"><span class="lang-ru-inline">
+      💡 Если бы каждое приложение само управляло памятью, диском и CPU, был бы <b>хаос (chaos)</b>: программы конфликтовали бы за ресурсы, ломали друг друга, нарушали безопасность. ОС играет роль <b>дирижёра оркестра</b> — каждый «инструмент» (приложение) играет свою партию в нужный момент.
+    </span><span class="lang-en-inline">💡 If every application managed memory, the disk and the CPU itself, there would be <b>chaos</b>: programs would fight over resources, break each other and undermine security. The OS plays the role of an <b>orchestra conductor</b>: each “instrument” (application) plays its part at the right moment.</span></div>
+  </div>
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>An <b>operating system</b> sits between the user and the hardware, sharing out the CPU, memory, storage and peripherals while offering services such as a file system, process management, security and a user interface. Common examples include Linux, Windows, macOS, Android and iOS — none is universally best; each suits different jobs. Its central trick is <b>hardware abstraction</b>: applications never poke registers or drivers directly, they make system calls and the OS handles the messy details. That lets the same program run on very different machines and stops one app from corrupting another.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 2: A1.3.2 ============ -->
+  <h2><span class="lang-ru-inline">2. A1.3.2 Функции операционной системы</span><span class="lang-en-inline">2. A1.3.2 Functions of the operating system</span></h2>
+
+  <p><span class="lang-ru-inline">
+    ОС не делает «одну вещь» — она делает <b>десяток связанных вещей одновременно</b>. Вот основные функции, которые надо знать на экзамене.
+  </span><span class="lang-en-inline">The OS does not do “one thing”: it does <b>about ten related things at the same time</b>. Here are the main functions you need to know for the exam.</span></p>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Функция</span><span class="lang-en-inline">Function</span></th>
+        <th><span class="lang-ru-inline">Что делает</span><span class="lang-en-inline">What it does</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>CPU</td><td><span class="lang-ru-inline">Планирует и распределяет время процессора между процессами и потоками; обрабатывает прерывания.</span><span class="lang-en-inline">Schedules and allocates processor time between processes and threads; handles interrupts.</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Память</span><span class="lang-en-inline">Memory</span></td><td><span class="lang-ru-inline">Выделяет/освобождает физическую и виртуальную память; пейджинг (paging) между RAM и диском; защита памяти.</span><span class="lang-en-inline">Allocates and frees physical and virtual memory; paging between RAM and disk; memory protection.</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Хранилище</span><span class="lang-en-inline">Storage</span></td><td><span class="lang-ru-inline">Файловая система: создание, удаление, чтение, запись файлов; права доступа; целостность диска.</span><span class="lang-en-inline">File system: creating, deleting, reading and writing files; access rights; disk integrity.</span></td></tr>
+      <tr><td>I/O</td><td><span class="lang-ru-inline">Управление потоком данных от клавиатуры, мыши, сетевой карты; обработка прерываний от устройств.</span><span class="lang-en-inline">Manages the flow of data from the keyboard, mouse and network card; handles interrupts from devices.</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Сеть</span><span class="lang-en-inline">Network</span></td><td><span class="lang-ru-inline">Сетевой стек (TCP/IP), сетевые соединения, распределение пропускной способности.</span><span class="lang-en-inline">Network stack (TCP/IP), network connections, allocation of bandwidth.</span></td></tr>
+      <tr><td>UI</td><td><span class="lang-ru-inline">Графический (GUI) и командный (CLI) интерфейс — перевод действий пользователя в системные вызовы.</span><span class="lang-en-inline">Graphical (GUI) and command-line (CLI) interfaces: turning user actions into system calls.</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Безопасность</span><span class="lang-en-inline">Security</span></td><td><span class="lang-ru-inline">Аутентификация, авторизация, шифрование, журналирование (logging).</span><span class="lang-en-inline">Authentication, authorisation, encryption, logging.</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Процессы</span><span class="lang-en-inline">Processes</span></td><td><span class="lang-ru-inline">Создание, выполнение, приостановка, завершение; межпроцессное взаимодействие (IPC); синхронизация.</span><span class="lang-en-inline">Creating, running, suspending and terminating; inter-process communication (IPC); synchronisation.</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Питание</span><span class="lang-en-inline">Power</span></td><td><span class="lang-ru-inline">Управление энергопотреблением (особенно важно для ноутбуков/телефонов).</span><span class="lang-en-inline">Power management (especially important for laptops and phones).</span></td></tr>
+      <tr><td><span class="lang-ru-inline">Периферия</span><span class="lang-en-inline">Peripherals</span></td><td><span class="lang-ru-inline">Драйверы для USB, Bluetooth и т.д. — обеспечивают совместимость и работу через универсальный интерфейс.</span><span class="lang-en-inline">Drivers for USB, Bluetooth, etc. provide compatibility and work through a single common interface.</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">2.1 Что такое процесс (process)?</span><span class="lang-en-inline">2.1 What is a process?</span></h3>
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">⚙️</span> Процесс — это выполняющаяся программа</span><span class="lang-en-inline"><span class="device-emoji">⚙️</span> A process is a running program</span></h3>
+    <p><span class="lang-ru-inline">
+      <b>Программа (program)</b> — пассивный набор инструкций на диске. <b>Процесс (process)</b> — активное выполнение этих инструкций в памяти. Когда ты дважды кликаешь иконку, ОС <b>создаёт процесс</b> для управления выполнением программы. Из одной программы можно запустить несколько процессов.
+    </span><span class="lang-en-inline"><b>Program</b> — a passive set of instructions on disk. <b>Process</b> — the active execution of these instructions in memory. When you double-click an icon, the OS <b>creates a process</b> to manage the running of the program. You can start several processes from one program.</span></p>
+    <p><span class="lang-ru-inline"><b>У каждого процесса есть:</b></span><span class="lang-en-inline"><b>Each process has:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Память</b> — приватная область для кода, данных и стека (call stack).</span><span class="lang-en-inline"><b>Memory</b> — a private area for code, data and the call stack.</span></li>
+      <li><span class="lang-ru-inline"><b>CPU-время</b> — «слоты» процессорного времени, выделенные планировщиком.</span><span class="lang-en-inline"><b>CPU time</b> — “slots” of processor time allocated by the scheduler.</span></li>
+      <li><span class="lang-ru-inline"><b>Открытые файлы / сетевые соединения</b>.</span><span class="lang-en-inline"><b>Open files / network connections</b>.</span></li>
+      <li><span class="lang-ru-inline"><b>PID</b> (Process ID) — уникальный идентификатор.</span><span class="lang-en-inline"><b>PID</b> (Process ID) — a unique identifier.</span></li>
+      <li><span class="lang-ru-inline"><b>Приоритет</b> — влияет на решения планировщика.</span><span class="lang-en-inline"><b>Priority</b> — affects the scheduler's decisions.</span></li>
+      <li><span class="lang-ru-inline"><b>Регистры</b> — текущие значения в CPU.</span><span class="lang-en-inline"><b>Registers</b> — current values held in the CPU.</span></li>
+    </ul>
+    <p><span class="lang-ru-inline"><b>Состояния процесса (process states):</b></span><span class="lang-en-inline"><b>Process states:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>New</b> — создаётся и загружается в память.</span><span class="lang-en-inline"><b>New</b> — being created and loaded into memory.</span></li>
+      <li><span class="lang-ru-inline"><b>Ready</b> — готов к выполнению, ждёт своей очереди на CPU.</span><span class="lang-en-inline"><b>Ready</b> — ready to run, waiting for its turn on the CPU.</span></li>
+      <li><span class="lang-ru-inline"><b>Running</b> — выполняется на CPU прямо сейчас.</span><span class="lang-en-inline"><b>Running</b> — executing on the CPU right now.</span></li>
+      <li><span class="lang-ru-inline"><b>Blocked / Waiting</b> — ждёт внешнего события (например, данных с диска или ввода пользователя).</span><span class="lang-en-inline"><b>Blocked / Waiting</b> — waiting for an external event (for example, data from the disk or user input).</span></li>
+      <li><span class="lang-ru-inline"><b>Terminated</b> — завершён, ОС освобождает его ресурсы.</span><span class="lang-en-inline"><b>Terminated</b> — finished; the OS frees its resources.</span></li>
+    </ul>
+  </div>
+
+  <h3><span class="lang-ru-inline">2.2 Поток (thread)</span><span class="lang-en-inline">2.2 Thread</span></h3>
+  <p><span class="lang-ru-inline">
+    <b>Поток (thread)</b> — это <b>самая маленькая единица выполнения</b>, которой управляет планировщик. Внутри одного процесса может быть много потоков, и они <b>делят память</b>. Пример: текстовый редактор может иметь поток для отрисовки документа, поток для проверки орфографии в фоне и поток для обработки ввода с клавиатуры — всё одновременно.
+  </span><span class="lang-en-inline"><b>Thread</b> — the <b>smallest unit of execution</b> that the scheduler manages. A process can contain many threads, and they <b>share memory</b>. Example: a word processor may have one thread for drawing the document, one for checking spelling in the background and one for handling keyboard input — all at the same time.</span></p>
+
+  <h3><span class="lang-ru-inline">2.3 Целостность системы (system integrity)</span><span class="lang-en-inline">2.3 System integrity</span></h3>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Изоляция процессов</span><span class="lang-en-inline">Process isolation</span></h4>
+      <p><span class="lang-ru-inline">Каждый процесс работает в своей виртуальной памяти — не может случайно сломать другой процесс или саму ОС.</span><span class="lang-en-inline">Each process runs in its own virtual memory — it cannot accidentally break another process or the OS itself.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Защита памяти</span><span class="lang-en-inline">Memory protection</span></h4>
+      <p><span class="lang-ru-inline">Memory protection — отдельные адресные пространства, которые ОС не даёт перезаписать чужим процессам.</span><span class="lang-en-inline">Memory protection — separate address spaces that the OS stops other processes from overwriting.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4>User mode vs kernel mode</h4>
+      <p><span class="lang-ru-inline">Прямой доступ к железу — только в режиме ядра (kernel mode). Приложения работают в режиме пользователя (user mode).</span><span class="lang-en-inline">Direct access to hardware is only possible in kernel mode. Applications run in user mode.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4>Sandboxing</h4>
+      <p><span class="lang-ru-inline">Ограничение приложения только теми ресурсами, которые ему нужны (файлы, сеть, память) — снижает риск от уязвимостей.</span><span class="lang-en-inline">Limiting an application to only the resources it needs (files, network, memory) reduces the risk from vulnerabilities.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Права доступа (ACL)</span><span class="lang-en-inline">Access rights (ACL)</span></h4>
+      <p><span class="lang-ru-inline">Каждый файл/каталог имеет права read/write/execute для владельца, группы и других. Это контролирует, кто и что может делать.</span><span class="lang-en-inline">Each file or directory has read, write and execute rights for the owner, the group and others. This controls who can do what.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">CIA-триада</span><span class="lang-en-inline">CIA triad</span></h4>
+      <p><span class="lang-ru-inline">Конфиденциальность (Confidentiality), Целостность (Integrity), Доступность (Availability) — рамка для оценки безопасности.</span><span class="lang-en-inline">Confidentiality, Integrity, Availability — a framework for assessing security.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Шифрование</span><span class="lang-en-inline">Encryption</span></h4>
+      <p><span class="lang-ru-inline">BitLocker (Windows), FileVault (macOS), dm-crypt/LUKS (Linux) — шифруют диск, защищая данные при краже.</span><span class="lang-en-inline">BitLocker (Windows), FileVault (macOS), dm-crypt/LUKS (Linux) — encrypt the disk, protecting the data if the computer is stolen.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Firewall + антивирус</span><span class="lang-en-inline">Firewall + antivirus</span></h4>
+      <p><span class="lang-ru-inline">Firewall фильтрует пакеты на сетевом уровне; антивирус ищет вредоносное поведение и сигнатуры известных вирусов.</span><span class="lang-en-inline">A firewall filters packets at the network level; antivirus looks for malicious behaviour and signatures of known viruses.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4>Patch management</h4>
+      <p><span class="lang-ru-inline">Обновления безопасности, исправления багов, новые функции. Часто проверяют целостность и подлинность обновления.</span><span class="lang-en-inline">Security updates, bug fixes, new features. The integrity and authenticity of an update are often checked.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Rollback (откат)</span><span class="lang-en-inline">Rollback</span></h4>
+      <p><span class="lang-ru-inline">Возврат к последнему рабочему состоянию: Windows System Restore, macOS Time Machine.</span><span class="lang-en-inline">Returning to the last working state: Windows System Restore, macOS Time Machine.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Контрольные суммы / хеши</span><span class="lang-en-inline">Checksums / hashes</span></h4>
+      <p><span class="lang-ru-inline">Checksums и hashes проверяют целостность файлов — изменилось ли что-то по сравнению с эталоном.</span><span class="lang-en-inline">Checksums and hashes check the integrity of files — whether anything has changed compared with the original.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Мониторинг и логирование</span><span class="lang-en-inline">Monitoring and logging</span></h4>
+      <p><span class="lang-ru-inline">Monitoring — текущее состояние. Logging — журнал событий (Event Viewer в Windows, Console в macOS, /var/log в Linux).</span><span class="lang-en-inline">Monitoring — the current state. Logging — the event log (Event Viewer in Windows, Console in macOS, /var/log in Linux).</span></p>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">2.4 Управление памятью (memory management)</span><span class="lang-en-inline">2.4 Memory management</span></h3>
+  <p><span class="lang-ru-inline">
+    ОС <b>выделяет и освобождает память</b> процессам, защищает адресные пространства друг от друга, и реализует <b>виртуальную память (virtual memory)</b>. Виртуальная память позволяет процессам «думать», что у них больше памяти, чем есть физически — за счёт <b>пейджинга (paging)</b>: лишние страницы памяти временно перекладываются на диск (swap space).
+  </span><span class="lang-en-inline">The OS <b>allocates and frees memory</b> for processes, protects their address spaces from one another, and implements <b>virtual memory</b>. Virtual memory lets processes “believe” that they have more memory than is physically available, through <b>paging</b>: surplus pages of memory are temporarily moved to disk (swap space).</span></p>
+  <p><span class="lang-ru-inline">
+    <b>Page (страница)</b> — это фиксированный непрерывный блок виртуальной памяти. Без виртуальной памяти такие блоки называются <b>page frames</b>. <b>MMU (Memory Management Unit)</b> в железе помогает ОС <b>динамически отображать виртуальные адреса на физические</b>.
+  </span><span class="lang-en-inline"><b>Page</b> — a fixed, contiguous block of virtual memory. Without virtual memory such blocks are called <b>page frames</b>. The <b>MMU (Memory Management Unit)</b> in the hardware helps the OS <b>map virtual addresses to physical addresses dynamically</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">2.5 Файловая система (file system)</span><span class="lang-en-inline">2.5 File system</span></h3>
+  <p><span class="lang-ru-inline">
+    Метод, которым ОС <b>хранит и читает данные</b>. Организует данные блоками на диске, определяет правила именования файлов, структуру каталогов, права доступа. Примеры: <b>NTFS</b> (Windows), <b>ext4</b> (Linux), <b>APFS</b> (macOS).
+  </span><span class="lang-en-inline">The method by which the OS <b>stores and reads data</b>. It organises data in blocks on the disk and defines rules for naming files, the directory structure and access rights. Examples: <b>NTFS</b> (Windows), <b>ext4</b> (Linux), <b>APFS</b> (macOS).</span></p>
+
+  <h3><span class="lang-ru-inline">2.6 Управление устройствами (device management)</span><span class="lang-en-inline">2.6 Device management</span></h3>
+  <p><span class="lang-ru-inline">
+    ОС общается с аппаратурой через <b>драйверы (drivers)</b>. Драйвер <b>переводит</b> команды ОС в специфические для устройства сигналы. Когда ты двигаешь мышь, она генерирует <b>прерывание</b> — драйвер передаёт его в ОС, та обновляет позицию курсора. Драйверы также дают единый интерфейс приложениям: они не должны знать, какая конкретно мышь подключена.
+  </span><span class="lang-en-inline">The OS communicates with hardware through <b>drivers</b>. A driver <b>translates</b> OS commands into signals specific to the device. When you move the mouse, it generates an <b>interrupt</b>: the driver passes it to the OS, which updates the position of the cursor. Drivers also give applications a single common interface: they do not need to know which particular mouse is connected.</span></p>
+
+  <h3><span class="lang-ru-inline">2.7 Планирование (scheduling)</span><span class="lang-en-inline">2.7 Scheduling</span></h3>
+  <p><span class="lang-ru-inline">
+    Решение, <b>кто и когда</b> получает время CPU. Учитывает приоритет, справедливость, эффективность, нагрузку. Подробно — в разделе <a href="#scheduling">A1.3.3</a>.
+  </span><span class="lang-en-inline">The decision about <b>which process gets CPU time, and when</b>. It takes into account priority, fairness, efficiency and load. For details, see section <a href="#scheduling">A1.3.3</a>.</span></p>
+
+  <h3><span class="lang-ru-inline">2.8 Безопасность (security)</span><span class="lang-en-inline">2.8 Security</span></h3>
+  <p><span class="lang-ru-inline">
+    ОС предоставляет firewall, шифрование, контроль доступа, аутентификацию пользователя, патчи безопасности, sandboxing, логирование, проверки целостности данных.
+  </span><span class="lang-en-inline">The OS provides a firewall, encryption, access control, user authentication, security patches, sandboxing, logging and data integrity checks.</span></p>
+
+  <h3><span class="lang-ru-inline">2.9 Учёт ресурсов (accounting)</span><span class="lang-en-inline">2.9 Resource accounting</span></h3>
+  <p><span class="lang-ru-inline">
+    ОС <b>отслеживает использование ресурсов</b>: сколько CPU-времени, памяти, диска, сетевого трафика «съел» каждый процесс. Раньше это нужно было, чтобы выставлять счета пользователям мейнфреймов. Сегодня — снова актуально для <b>облачных вычислений (cloud computing)</b>, где платишь «за использование».
+  </span><span class="lang-en-inline">The OS <b>tracks resource use</b>: how much CPU time, memory, disk and network traffic each process has “consumed”. Originally this was needed to bill users of mainframes. Today it matters again for <b>cloud computing</b>, where you pay “for use”.</span></p>
+
+  <h3><span class="lang-ru-inline">2.10 Графический интерфейс (GUI)</span><span class="lang-en-inline">2.10 Graphical user interface (GUI)</span></h3>
+  <p><span class="lang-ru-inline">
+    Windows, macOS и большинство Linux-сред имеют разные GUI, но их роль одна: <b>визуальный интерфейс</b> с иконками, окнами, меню, кнопками. Хороший GUI упрощает использование; плохой GUI мешает работе. Эта тема — часть <b>human–computer interaction (HCI)</b>.
+  </span><span class="lang-en-inline">Windows, macOS and most Linux desktop environments have different GUIs, but their role is the same: a <b>visual interface</b> with icons, windows, menus and buttons. A good GUI makes things easier to use; a poor GUI gets in the way of work. This topic is part of <b>human–computer interaction (HCI)</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">2.11 Виртуализация (virtualization)</span><span class="lang-en-inline">2.11 Virtualisation</span></h3>
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🏢</span> Один физический сервер, много виртуальных машин</span><span class="lang-en-inline"><span class="device-emoji">🏢</span> One physical server, many virtual machines</span></h3>
+    <p><span class="lang-ru-inline">
+      <b>Виртуализация</b> — создание <b>виртуальных копий физического железа</b>. Один компьютер может «хостить» несколько <b>виртуальных машин (VM)</b>, и каждая работает так, будто у неё своё собственное железо. Аналогия: один большой дом разделили на отдельные квартиры — каждая со своими «комнатами» (ресурсами), но в одном здании.
+    </span><span class="lang-en-inline"><b>Virtualisation</b> is creating <b>virtual copies of physical hardware</b>. One computer can “host” several <b>virtual machines (VMs)</b>, and each one works as if it had its own hardware. An analogy: one large building is divided into separate flats, each with its own “rooms” (resources), but all in the same building.</span></p>
+    <p><span class="lang-ru-inline">
+      Ключевая технология — <b>гипервизор (hypervisor)</b>: программный слой между виртуальными машинами и физическим железом. Гипервизор <b>распределяет</b> ресурсы между VM и <b>изолирует</b> их друг от друга.
+    </span><span class="lang-en-inline">The key technology is the <b>hypervisor</b>: a software layer between the virtual machines and the physical hardware. The hypervisor <b>allocates</b> resources between the VMs and <b>isolates</b> them from one another.</span></p>
+    <p><span class="lang-ru-inline"><b>Два главных преимущества:</b></span><span class="lang-en-inline"><b>Two main advantages:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Эффективное использование железа</b> — несколько VM делят один CPU/память/диск, повышая загрузку.</span><span class="lang-en-inline"><b>Efficient use of hardware</b> — several VMs share one CPU, memory and disk, which raises utilization.</span></li>
+      <li><span class="lang-ru-inline"><b>Изоляция</b> — сбой или взлом одной VM не влияет на другие.</span><span class="lang-en-inline"><b>Isolation</b> — a fault or breach in one VM does not affect the others.</span></li>
+    </ul>
+  </div>
+
+  <h3><span class="lang-ru-inline">2.12 Сетевые функции (networking)</span><span class="lang-en-inline">2.12 Networking functions</span></h3>
+  <p><span class="lang-ru-inline">
+    ОС реализует <b>сетевой стек (network stack)</b> — слои TCP/IP. Управляет сетевыми картами через драйверы, настраивает IP-адреса (статически или через DHCP), применяет шифрование (SSL/TLS), фильтрует пакеты файрволом. В комплекте идут утилиты: <code>ping</code>, <code>ifconfig/ipconfig</code>, <code>netstat</code>, <code>traceroute/tracert</code>.
+  </span><span class="lang-en-inline">The OS implements the <b>network stack</b> — the TCP/IP layers. It manages network cards through drivers, configures IP addresses (statically or through DHCP), applies encryption (SSL/TLS) and filters packets through a firewall. Built-in utilities include: <code>ping</code>, <code>ifconfig/ipconfig</code>, <code>netstat</code>, <code>traceroute/tracert</code>.</span></p>
+
+  
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A modern OS juggles many duties at once. It schedules CPU time across processes and threads, allocates and protects memory (often with paging and virtual memory via the MMU), manages a file system on disk, drives peripherals through device drivers, and runs the network stack. It also enforces security through user/kernel separation, sandboxing, access control lists, encryption, firewalls and patching. A <b>process</b> is a running program with its own memory and PID, cycling through new, ready, running, blocked and terminated states; <b>threads</b> share a process's memory. Virtualisation, accounting and the GUI round out the picture.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 3: A1.3.3 SCHEDULING ============ -->
+  <h2 id="scheduling"><span class="lang-ru-inline">3. A1.3.3 Подходы к планированию</span><span class="lang-en-inline">3. A1.3.3 Scheduling approaches</span></h2>
+
+  <p><span class="lang-ru-inline">
+    <b>Планирование (scheduling)</b> — это <b>решение, в каком порядке и сколько времени</b> каждому процессу даётся на CPU. ОС оценивает эффективность планировщика через <b>throughput</b> (сколько процессов завершено за единицу времени), <b>turnaround time</b> (сколько прошло от поступления до завершения), <b>waiting time</b> и <b>CPU utilization</b>.
+  </span><span class="lang-en-inline"><b>Scheduling</b> — <b>the decision about the order in which, and for how long, each process gets the CPU</b>. The OS evaluates the efficiency of the scheduler using <b>throughput</b> (how many processes finish per unit of time), <b>turnaround time</b> (the time from arrival to completion), <b>waiting time</b> and <b>CPU utilization</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">3.1 Ключевые термины</span><span class="lang-en-inline">3.1 Key terms</span></h3>
+  <div class="term-list">
+    <div class="term"><span class="lang-ru-inline"><b>Slice (квант времени, срез)</b> — сколько CPU-времени даётся процессу, прежде чем его прервут или заменят.</span><span class="lang-en-inline"><b>Time slice</b> — how much CPU time a process is given before it is interrupted or replaced.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Quantum</b> — фиксированный квант времени в pre-emptive системах (например, round robin).</span><span class="lang-en-inline"><b>Quantum</b> — a fixed time slice in pre-emptive systems (for example, round robin).</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Pre-emption (вытеснение)</b> — способность планировщика <b>прервать выполняющийся процесс</b> и отдать CPU более приоритетному.</span><span class="lang-en-inline"><b>Pre-emption</b> — the ability of the scheduler to <b>interrupt the running process</b> and give the CPU to a higher-priority one.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Fairness (справедливость)</b> — равноправное распределение CPU между всеми процессами.</span><span class="lang-en-inline"><b>Fairness</b> — an equal sharing of the CPU among all processes.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Starvation (голодание)</b> — процесс <b>никогда не получает CPU</b>, потому что другие постоянно мешают.</span><span class="lang-en-inline"><b>Starvation</b> — a process <b>never gets the CPU</b> because others keep getting in the way.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Efficiency (эффективность)</b> — максимум throughput, минимум waiting time.</span><span class="lang-en-inline"><b>Efficiency</b> — maximum throughput, minimum waiting time.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Context switching (переключение контекста)</b> — сохранение состояния одного процесса и загрузка другого; занимает время и снижает производительность.</span><span class="lang-en-inline"><b>Context switching</b> — saving the state of one process and loading another; it takes time and reduces performance.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Convoy effect (эффект каравана)</b> — короткие процессы ждут одного длинного, всё замедляется.</span><span class="lang-en-inline"><b>Convoy effect</b> — short processes wait for one long process, and everything slows down.</span></div>
+    <div class="term"><span class="lang-ru-inline"><b>Ageing (старение)</b> — приоритет ожидающего процесса <b>постепенно повышают</b>, чтобы избежать starvation.</span><span class="lang-en-inline"><b>Ageing</b> — the priority of a waiting process is <b>gradually raised</b> to avoid starvation.</span></div>
+  </div>
+
+  <h3><span class="lang-ru-inline">3.2 Четыре алгоритма планирования</span><span class="lang-en-inline">3.2 Four scheduling algorithms</span></h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🚶</span> FCFS — First-Come, First-Served</h3>
+    <p><span class="lang-ru-inline">
+      Процессы получают CPU <b>в том порядке, в котором пришли</b>. CPU обслуживает один процесс до конца, потом следующий. <b>Не вытесняющий (non-pre-emptive)</b>: начатый процесс работает до завершения.
+    </span><span class="lang-en-inline">Processes get the CPU <b>in the order in which they arrived</b>. The CPU serves one process to completion, then the next. <b>Non-pre-emptive</b>: a process that has started runs until it finishes.</span></p>
+    <p><span class="lang-ru-inline"><b>Аналогия:</b> очередь в кассе — кто раньше подошёл, тот раньше обслужен.</span><span class="lang-en-inline"><b>Analogy:</b> a checkout queue — whoever arrives first is served first.</span></p>
+    <p><span class="lang-ru-inline"><b>Где использовать:</b> простые среды с предсказуемой длиной задач, когда важна <b>простота и предсказуемость</b>, а не максимальная пропускная способность.</span><span class="lang-en-inline"><b>Where it is used:</b> simple environments with predictable job lengths, where <b>simplicity and predictability</b> matter more than maximum throughput.</span></p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔁</span> Round Robin</h3>
+    <p><span class="lang-ru-inline">
+      <b>Вытесняющий (pre-emptive)</b> алгоритм. Каждому процессу даётся <b>фиксированный квант времени (time quantum)</b>. Если процесс не завершился — его <b>отправляют в конец очереди</b>, следующий получает CPU. Круг повторяется — отсюда «round robin».
+    </span><span class="lang-en-inline"><b>Pre-emptive</b> algorithm. Each process is given a <b>fixed time quantum</b>. If the process has not finished, it is <b>sent to the back of the queue</b> and the next process gets the CPU. The cycle repeats — hence “round robin”.</span></p>
+    <p><span class="lang-ru-inline"><b>Аналогия:</b> учитель опрашивает учеников по очереди, каждому даёт 30 секунд.</span><span class="lang-en-inline"><b>Analogy:</b> a teacher questions students in turn, giving each one 30 seconds.</span></p>
+    <p><span class="lang-ru-inline"><b>Тонкость:</b> размер кванта критичен. Слишком короткий — много переключений контекста (большие накладные расходы). Слишком длинный — алгоритм вырождается в FCFS.</span><span class="lang-en-inline"><b>Subtlety:</b> the size of the quantum is critical. If it is too short, there are many context switches (a large overhead). If it is too long, the algorithm degenerates into FCFS.</span></p>
+    <p><span class="lang-ru-inline"><b>Где использовать:</b> системы с разделением времени (time-sharing), многозадачные системы, где важна <b>отзывчивость для всех пользователей</b>.</span><span class="lang-en-inline"><b>Where it is used:</b> time-sharing systems and multitasking systems where <b>responsiveness for all users</b> matters.</span></p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">📚</span> Multilevel Queue Scheduling</h3>
+    <p><span class="lang-ru-inline">
+      Очередь готовых процессов <b>разделена на несколько очередей</b>, каждая со своим алгоритмом и приоритетом. Процессы <b>навсегда закрепляются</b> за одной очередью по своему типу (например, системные vs пользовательские, фоновые vs интерактивные).
+    </span><span class="lang-en-inline">The ready queue is <b>divided into several queues</b>, each with its own algorithm and priority. Processes are <b>permanently assigned</b> to one queue according to their type (for example, system vs user processes, background vs interactive).</span></p>
+    <p><span class="lang-ru-inline">
+      Между очередями планирование может быть <b>фиксированно-приоритетным</b> (высокая очередь всегда первая) или по <b>round robin</b> между очередями.
+    </span><span class="lang-en-inline">Between the queues, scheduling can be <b>fixed-priority</b> (the higher queue always goes first) or <b>round robin</b> between the queues.</span></p>
+    <p><span class="lang-ru-inline"><b>Аналогия:</b> в больнице — три очереди: критические пациенты, срочные, плановые. Критических обслуживают первыми, но плановые тоже не забывают.</span><span class="lang-en-inline"><b>Analogy:</b> in a hospital there are three queues: critical patients, urgent cases and routine appointments. Critical patients are seen first, but routine cases are not forgotten either.</span></p>
+    <p><span class="lang-ru-inline"><b>Где использовать:</b> сложные системы со смешанными типами процессов — например, ОС, которая балансирует системные и пользовательские задачи.</span><span class="lang-en-inline"><b>Where it is used:</b> complex systems with mixed types of process — for example, an OS that balances system and user tasks.</span></p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">⭐</span> Priority Scheduling</h3>
+    <p><span class="lang-ru-inline">
+      У каждого процесса есть <b>приоритет</b>, и CPU получает тот, у кого приоритет выше. Бывает <b>вытесняющим (pre-emptive)</b> — пришёл более важный, вытеснил текущий — и <b>невытесняющим (non-pre-emptive)</b> — текущий доработает, потом проверим очередь.
+    </span><span class="lang-en-inline">Each process has a <b>priority</b>, and the CPU goes to the one with the higher priority. It can be <b>pre-emptive</b> — a more important process arrives and displaces the current one — or <b>non-pre-emptive</b> — the current process finishes first, and then the queue is checked.</span></p>
+    <p><span class="lang-ru-inline"><b>Аналогия:</b> в аэропорту — пассажиров с золотой картой пускают вперёд, остальные ждут.</span><span class="lang-en-inline"><b>Analogy:</b> at an airport, passengers with a gold card are let through first while the others wait.</span></p>
+    <p><span class="lang-ru-inline"><b>Минус:</b> риск <b>starvation</b> — низкоприоритетный процесс может «никогда» не получить CPU. Решение — <b>ageing</b> (постепенно повышать приоритет ожидающих).</span><span class="lang-en-inline"><b>Drawback:</b> a risk of <b>starvation</b> — a low-priority process may “never” get the CPU. The solution is <b>ageing</b> (gradually raising the priority of waiting processes).</span></p>
+    <p><span class="lang-ru-inline"><b>Где использовать:</b> <b>системы реального времени (real-time)</b>, где критично выполнить высокоприоритетные задачи вовремя — медицинская техника, автоматика, авиатехника.</span><span class="lang-en-inline"><b>Where it is used:</b> <b>real-time systems</b>, where it is critical to complete high-priority tasks on time — medical equipment, automation, aviation systems.</span></p>
+  </div>
+
+  <h3><span class="lang-ru-inline">3.3 Сравнительная таблица (Таблица 17 в учебнике)</span><span class="lang-en-inline">3.3 Comparison table (Table 17 in the textbook)</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Критерий</span><span class="lang-en-inline">Criterion</span></th>
+        <th>FCFS</th>
+        <th>Round Robin</th>
+        <th>Multilevel</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Справедливость</span><span class="lang-en-inline">Fairness</span></td>
+        <td><span class="lang-ru-inline">Справедлив «по очереди прихода». Но <b>convoy effect</b> — короткие ждут долгих.</span><span class="lang-en-inline">Fair “by order of arrival”. But the <b>convoy effect</b> — short jobs wait for long ones.</span></td>
+        <td><span class="lang-ru-inline">Спроектирован как справедливый: каждому равный квант.</span><span class="lang-en-inline">Designed to be fair: every process gets an equal quantum.</span></td>
+        <td><span class="lang-ru-inline">По сути <b>несправедлив</b>: одни очереди важнее других.</span><span class="lang-en-inline">In essence <b>unfair</b>: some queues are more important than others.</span></td>
+        <td><span class="lang-ru-inline">Риск <b>starvation</b> для низкоприоритетных, если нет ageing.</span><span class="lang-en-inline">Risk of <b>starvation</b> for low-priority processes if there is no ageing.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Эффективность / переключения</span><span class="lang-en-inline">Efficiency / switching</span></td>
+        <td><span class="lang-ru-inline">Самый <b>неэффективный</b> по CPU и времени отклика при смеси задач.</span><span class="lang-en-inline">The <b>least efficient</b> in CPU use and response time with a mix of tasks.</span></td>
+        <td><span class="lang-ru-inline">Хорошее использование CPU, но overhead от частых переключений контекста.</span><span class="lang-en-inline">Good CPU use, but overhead from frequent context switches.</span></td>
+        <td><span class="lang-ru-inline">Эффективен при правильной настройке очередей; добавляет сложность управления.</span><span class="lang-en-inline">Efficient if the queues are set up correctly; adds management complexity.</span></td>
+        <td><span class="lang-ru-inline">Очень эффективен, если приоритеты заданы верно; без pre-emption — высокий может ждать.</span><span class="lang-en-inline">Very efficient if priorities are set correctly; without pre-emption, a high-priority process may have to wait.</span></td>
+      </tr>
+      <tr>
+        <td>Pre-emption</td>
+        <td><span class="lang-ru-inline">Нет (non-pre-emptive).</span><span class="lang-en-inline">No (non-pre-emptive).</span></td>
+        <td><span class="lang-ru-inline">Да (по таймеру).</span><span class="lang-en-inline">Yes (timer-based).</span></td>
+        <td><span class="lang-ru-inline">Зависит от алгоритма в каждой очереди.</span><span class="lang-en-inline">Depends on the algorithm in each queue.</span></td>
+        <td><span class="lang-ru-inline">Бывает оба варианта.</span><span class="lang-en-inline">Both types are possible.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Где используется</span><span class="lang-en-inline">Where it is used</span></td>
+        <td><span class="lang-ru-inline">Простые системы с одинаковыми задачами.</span><span class="lang-en-inline">Simple systems with similar tasks.</span></td>
+        <td><span class="lang-ru-inline">Time-sharing, многопользовательские системы.</span><span class="lang-en-inline">Time-sharing, multi-user systems.</span></td>
+        <td><span class="lang-ru-inline">ОС с системными и пользовательскими процессами.</span><span class="lang-en-inline">Operating systems with system and user processes.</span></td>
+        <td><span class="lang-ru-inline">Real-time системы (медицина, авиация, промышленность).</span><span class="lang-en-inline">Real-time systems (medicine, aviation, industry).</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Запомни:</b> FCFS = простота, Round Robin = справедливость, Multilevel = смешанная нагрузка, Priority = реальное время.
+  </span><span class="lang-en-inline">💡 <b>Remember:</b> FCFS = simplicity, Round Robin = fairness, Multilevel = mixed workload, Priority = real-time.</span></div>
+
+  
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The scheduler chooses which ready process gets the CPU next, balancing throughput, turnaround, waiting time and utilisation. <b>FCFS</b> serves processes in arrival order — simple but vulnerable to the convoy effect. <b>Round-robin</b> pre-empts every quantum and is fair for time-sharing, though a poor quantum either thrashes the system with context switches or behaves like FCFS. <b>Multilevel queue</b> splits ready processes into separate queues (system vs user, foreground vs background) each with its own policy. <b>Priority</b> picks the highest-priority job first, fitting real-time work but risking starvation unless ageing gradually raises waiting processes' priority.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 4: A1.3.4 POLLING vs INTERRUPTS ============ -->
+  <h2>4. A1.3.4 Polling vs Interrupts</h2>
+
+  <p><span class="lang-ru-inline">
+    Два способа, которыми CPU узнаёт, что внешнее устройство или программа <b>требует внимания</b>.
+  </span><span class="lang-en-inline">Two ways in which the CPU finds out that an external device or program <b>needs attention</b>.</span></p>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🔔</span> Interrupt (прерывание)</span><span class="lang-en-inline"><span class="device-emoji">🔔</span> Interrupt</span></h3>
+    <p><span class="lang-ru-inline">
+      Устройство <b>само посылает сигнал</b> процессору: «эй, у меня данные, обработай!». CPU <b>прерывает</b> текущую работу, сохраняет контекст и запускает <b>Interrupt Service Routine (ISR)</b> — специальную процедуру для этого события. После ISR процессор возвращается к прерванному делу.
+    </span><span class="lang-en-inline">A device <b>sends a signal itself</b> to the processor: “hey, I have data, deal with it!”. The CPU <b>interrupts</b> the current work, saves the context and starts an <b>Interrupt Service Routine (ISR)</b> — a special procedure for this event. After the ISR, the processor returns to the interrupted task.</span></p>
+    <p><span class="lang-ru-inline"><b>Аналогия:</b> ты работаешь, и звонит дверной звонок. Ты прерываешься, идёшь открыть, потом возвращаешься к работе.</span><span class="lang-en-inline"><b>Analogy:</b> you are working when the doorbell rings. You stop, go to answer the door, then go back to your work.</span></p>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🔄</span> Polling (опрос)</span><span class="lang-en-inline"><span class="device-emoji">🔄</span> Polling</span></h3>
+    <p><span class="lang-ru-inline">
+      Процессор <b>сам периодически опрашивает</b> устройства: «есть ли что-то новое?». Если нет — возвращается к работе и через какое-то время опросит снова. Если да — обрабатывает.
+    </span><span class="lang-en-inline">The processor <b>itself periodically polls</b> the devices: “is there anything new?”. If not, it returns to its work and polls again after a while. If there is, it processes it.</span></p>
+    <p><span class="lang-ru-inline"><b>Аналогия:</b> ты ждёшь курьера, и каждые 5 минут идёшь к двери проверить, не пришёл ли он.</span><span class="lang-en-inline"><b>Analogy:</b> you are waiting for a courier, so every 5 minutes you walk to the door to check whether they have arrived.</span></p>
+  </div>
+
+  <h3><span class="lang-ru-inline">4.1 Сравнительная таблица факторов (Таблица 19 в учебнике)</span><span class="lang-en-inline">4.1 Comparison of factors (Table 19 in the textbook)</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Фактор</span><span class="lang-en-inline">Factor</span></th>
+        <th>Interrupt</th>
+        <th>Polling</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Частота событий</span><span class="lang-en-inline">Frequency of events</span></td>
+        <td><span class="lang-ru-inline"><b>Лучше при частых событиях:</b> CPU реагирует сразу, минимизируя ожидание.</span><span class="lang-en-inline"><b>Better for frequent events:</b> the CPU responds at once, minimising waiting.</span></td>
+        <td><span class="lang-ru-inline">Подходит для <b>редких событий:</b> CPU может позволить себе периодически проверять.</span><span class="lang-en-inline">Suitable for <b>rare events:</b> the CPU can afford to check periodically.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Накладные расходы CPU</span><span class="lang-en-inline">CPU overhead</span></td>
+        <td><span class="lang-ru-inline">Overhead от сохранения/восстановления контекста и выполнения ISR.</span><span class="lang-en-inline">Overhead from saving and restoring context and running the ISR.</span></td>
+        <td><span class="lang-ru-inline">Overhead от <b>пустых проверок</b> — CPU тратит циклы, даже если ничего не происходит.</span><span class="lang-en-inline">Overhead from <b>empty checks</b> — the CPU spends cycles even when nothing is happening.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Источник питания</span><span class="lang-en-inline">Power source</span></td>
+        <td><span class="lang-ru-inline"><b>Лучше для батарей:</b> CPU может уйти в <b>low-power sleep</b> между прерываниями.</span><span class="lang-en-inline"><b>Better for batteries:</b> the CPU can go into <b>low-power sleep</b> between interrupts.</span></td>
+        <td><span class="lang-ru-inline">Высасывает батарею — CPU всё время должен быть «бодрым» для опросов.</span><span class="lang-en-inline">Drains the battery — the CPU has to stay “awake” all the time to poll.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Предсказуемость событий</span><span class="lang-en-inline">Predictability of events</span></td>
+        <td><span class="lang-ru-inline">Лучше для <b>непредсказуемых</b> событий — реагирует когда угодно.</span><span class="lang-en-inline">Better for <b>unpredictable</b> events — it responds whenever they happen.</span></td>
+        <td><span class="lang-ru-inline">Эффективен при <b>регулярных, известных</b> интервалах.</span><span class="lang-en-inline">Efficient at <b>regular, known</b> intervals.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Контролируемая задержка (latency)</span><span class="lang-en-inline">Controlled latency</span></td>
+        <td><span class="lang-ru-inline"><b>Низкая и контролируемая</b> latency — реакция как только событие произошло.</span><span class="lang-en-inline"><b>Low and controlled</b> latency — the response comes as soon as the event occurs.</span></td>
+        <td><span class="lang-ru-inline"><b>Переменная latency</b> — зависит, когда событие произошло относительно цикла опроса.</span><span class="lang-en-inline"><b>Variable latency</b> — it depends on when the event occurs relative to the polling cycle.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Безопасность</span><span class="lang-en-inline">Security</span></td>
+        <td><span class="lang-ru-inline">Уязвимы для <b>DoS-атак:</b> поток прерываний может перегрузить CPU.</span><span class="lang-en-inline">Vulnerable to <b>DoS attacks:</b> a flood of interrupts can overload the CPU.</span></td>
+        <td><span class="lang-ru-inline">Меньше подвержен таким атакам, но <b>может пропустить аномалию</b>, если её не ожидает.</span><span class="lang-en-inline">Less exposed to such attacks, but <b>may miss an anomaly</b> if it is not expecting one.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">4.2 Реальные сценарии</span><span class="lang-en-inline">4.2 Real-world scenarios</span></h3>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Клавиатура и мышь</span><span class="lang-en-inline">Keyboard and mouse</span></h4>
+      <p><span class="lang-ru-inline">Используют <b>прерывания</b> — для мгновенной реакции. Polling дал бы заметные задержки. Игровые мыши работают на 1000 Hz polling rate для минимальной задержки.</span><span class="lang-en-inline">They use <b>interrupts</b> for an instant response. Polling would cause noticeable delays. Gaming mice work at a 1000 Hz polling rate to minimise delay.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Сетевые коммуникации</span><span class="lang-en-inline">Network communication</span></h4>
+      <p><span class="lang-ru-inline">Пакеты приходят <b>непредсказуемо</b> — нужны прерывания. NIC «будит» CPU, как только пришёл пакет.</span><span class="lang-en-inline">Packets arrive <b>unpredictably</b> — interrupts are needed. The NIC “wakes” the CPU as soon as a packet arrives.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Дисковые I/O</span><span class="lang-en-inline">Disk I/O</span></h4>
+      <p><span class="lang-ru-inline">Диски медленные по сравнению с CPU — прерывания позволяют CPU делать другое, пока диск работает, и сообщают, когда чтение/запись готовы.</span><span class="lang-en-inline">Disks are slow compared with the CPU — interrupts let the CPU do other work while the disk is busy, and signal when a read or write is complete.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Встроенные системы (IoT)</span><span class="lang-en-inline">Embedded systems (IoT)</span></h4>
+      <p><span class="lang-ru-inline">Прерывания критичны для <b>экономии батареи</b>: датчик «спит», просыпается только при событии.</span><span class="lang-en-inline">Interrupts are essential for <b>saving battery power</b>: the sensor “sleeps” and wakes up only when an event occurs.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Real-time системы</span><span class="lang-en-inline">Real-time systems</span></h4>
+      <p><span class="lang-ru-inline">Медицинская техника, автомобильные контроллеры — прерывания дают <b>гарантированную low latency</b>.</span><span class="lang-en-inline">Medical equipment and car controllers — interrupts give <b>guaranteed low latency</b>.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Когда подходит polling</span><span class="lang-en-inline">When polling is suitable</span></h4>
+      <p><span class="lang-ru-inline">Если события <b>предсказуемы, редки</b>, а устройство работает от сети (mains) — polling проще в реализации.</span><span class="lang-en-inline">If events are <b>predictable and rare</b>, and the device runs from mains power, polling is simpler to implement.</span></p>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">4.3 Пример: что происходит, когда ты двигаешь мышь</span><span class="lang-en-inline">4.3 Example: what happens when you move the mouse</span></h3>
+  <ol style="line-height:1.7">
+    <li><span class="lang-ru-inline"><b>Физическое движение:</b> ты двигаешь мышь, её датчики ловят движение.</span><span class="lang-en-inline"><b>Physical movement:</b> you move the mouse, and its sensors pick up the motion.</span></li>
+    <li><span class="lang-ru-inline"><b>Генерация сигнала:</b> сенсор превращает движение в электрические сигналы.</span><span class="lang-en-inline"><b>Signal generation:</b> the sensor converts the movement into electrical signals.</span></li>
+    <li><span class="lang-ru-inline"><b>Формирование пакета данных:</b> внутренний процессор мыши собирает данные о направлении и кнопках.</span><span class="lang-en-inline"><b>Forming a data packet:</b> the mouse's internal processor collects data about direction and buttons.</span></li>
+    <li><span class="lang-ru-inline"><b>Передача:</b> данные идут на компьютер по USB, PS/2 или беспроводно (Bluetooth, RF).</span><span class="lang-en-inline"><b>Transmission:</b> the data goes to the computer via USB, PS/2 or wirelessly (Bluetooth, RF).</span></li>
+    <li><span class="lang-ru-inline"><b>Сигнал прерывания:</b> USB- или Bluetooth-интерфейс посылает <b>interrupt</b> процессору.</span><span class="lang-en-inline"><b>Interrupt signal:</b> the USB or Bluetooth interface sends an <b>interrupt</b> to the processor.</span></li>
+    <li><span class="lang-ru-inline"><b>Активация ISR:</b> CPU сохраняет состояние, запускает Interrupt Service Routine для мыши.</span><span class="lang-en-inline"><b>Activating the ISR:</b> the CPU saves its state and starts the Interrupt Service Routine for the mouse.</span></li>
+    <li><span class="lang-ru-inline"><b>Расчёт позиции курсора:</b> ОС вычисляет новую позицию с учётом «скорости указателя».</span><span class="lang-en-inline"><b>Calculating the cursor position:</b> the OS works out the new position, taking into account the “pointer speed”.</span></li>
+    <li><span class="lang-ru-inline"><b>Обновление экрана:</b> ОС шлёт GPU команду перерисовать курсор.</span><span class="lang-en-inline"><b>Updating the screen:</b> the OS sends the GPU a command to redraw the cursor.</span></li>
+    <li><span class="lang-ru-inline"><b>Возврат:</b> CPU восстанавливает состояние и возвращается к прерванной задаче.</span><span class="lang-en-inline"><b>Return:</b> the CPU restores its state and goes back to the interrupted task.</span></li>
+  </ol>
+
+  
+
+  
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The CPU learns that a device needs servicing in two ways. With an <b>interrupt</b>, the device raises a signal, the CPU saves its context and runs an Interrupt Service Routine before resuming. With <b>polling</b>, the CPU regularly asks each device whether anything has happened. Interrupts shine for frequent or unpredictable events, give low controlled latency, and let battery devices sleep between events — but a flood of them can be exploited as a denial-of-service vector. Polling is simpler and resists such floods, yet it burns CPU cycles on empty checks and can miss bursts that fall between polls.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 5: A1.3.5 MULTITASKING HL ============ -->
+  <h2 id="multitasking"><span class="lang-ru-inline">5. A1.3.5 Многозадачность и распределение ресурсов <span class="hl-badge">HL</span></span><span class="lang-en-inline">5. A1.3.5 Multitasking and resource allocation <span class="hl-badge">HL</span></span></h2>
+
+  <p><span class="lang-ru-inline">
+    <b>Многозадачность (multitasking)</b> — способность ОС <b>управлять и выполнять несколько процессов</b> «одновременно». На самом деле в одно мгновение CPU выполняет один процесс, но переключается так быстро, что создаётся <b>иллюзия параллельности</b>. Этот механизм называется <b>context switching (переключение контекста)</b> — ОС сохраняет состояние текущего процесса (регистры, указатели памяти) и загружает состояние следующего.
+  </span><span class="lang-en-inline"><b>Multitasking</b> — the ability of the OS to <b>manage and run several processes</b> “at the same time”. In reality, at any one moment the CPU runs only one process, but it switches so quickly that an <b>illusion of simultaneous execution</b> is created. This mechanism is called <b>context switching</b> — the OS saves the state of the current process (registers, memory pointers) and loads the state of the next one.</span></p>
+
+  <p><span class="lang-ru-inline">
+    <b>Распределение ресурсов (resource allocation)</b> — эффективное раздавание CPU, памяти, диска, сети между процессами. Это сложная динамичная задача — миллионы решений в секунду.
+  </span><span class="lang-en-inline"><b>Resource allocation</b> — the efficient distribution of the CPU, memory, disk and network among processes. It is a complex, dynamic task — millions of decisions per second.</span></p>
+
+  <h3><span class="lang-ru-inline">5.1 Механизмы многозадачности</span><span class="lang-en-inline">5.1 Mechanisms of multitasking</span></h3>
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🎛️</span> Как ОС жонглирует сотнями процессов</span><span class="lang-en-inline"><span class="device-emoji">🎛️</span> How the OS juggles hundreds of processes</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Process management:</b> ОС ведёт <b>таблицу процессов (process table)</b> с состоянием (running/waiting/blocked), приоритетом, использованием ресурсов.</span><span class="lang-en-inline"><b>Process management:</b> the OS keeps a <b>process table</b> with each process's state (running/waiting/blocked), priority and resource use.</span></li>
+      <li><span class="lang-ru-inline"><b>Context switching:</b> при переключении ОС <b>сохраняет состояние</b> в таблице и <b>загружает</b> следующий — обычно за микросекунды.</span><span class="lang-en-inline"><b>Context switching:</b> when switching, the OS <b>saves the state</b> in the table and <b>loads</b> the next one — usually in microseconds.</span></li>
+      <li><span class="lang-ru-inline"><b>Многопоточность (multithreading):</b> внутри процесса несколько потоков разделяют память и могут выполняться параллельно на <b>multi-core</b> CPU.</span><span class="lang-en-inline"><b>Multithreading:</b> inside a process, several threads share memory and can run in parallel on a <b>multi-core</b> CPU.</span></li>
+    </ul>
+  </div>
+
+  <h3><span class="lang-ru-inline">5.2 Механизмы распределения ресурсов</span><span class="lang-en-inline">5.2 Mechanisms of resource allocation</span></h3>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Управление памятью</span><span class="lang-en-inline">Memory management</span></h4>
+      <p><span class="lang-ru-inline"><b>Paging</b> — разделение физической памяти на фиксированные блоки (страницы). <b>Segmentation</b> — деление памяти на сегменты разного размера (код, данные). <b>Virtual memory</b> = paging + segmentation: процессам кажется, что памяти больше, чем физически есть, за счёт swap-файла на диске.</span><span class="lang-en-inline"><b>Paging</b> — dividing physical memory into fixed-size blocks (pages). <b>Segmentation</b> — dividing memory into segments of different sizes (code, data). <b>Virtual memory</b> = paging + segmentation: processes appear to have more memory than is physically present, thanks to a swap file on the disk.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Управление устройствами</span><span class="lang-en-inline">Device management</span></h4>
+      <p><span class="lang-ru-inline">ОС через <b>драйверы</b> общается с устройствами, предотвращает конфликты, организует доступ к периферии (принтеры, сетевые карты).</span><span class="lang-en-inline">The OS communicates with devices through <b>drivers</b>, prevents conflicts and organises access to peripherals (printers, network cards).</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Файловые системы</span><span class="lang-en-inline">File systems</span></h4>
+      <p><span class="lang-ru-inline">Абстракция над диском: NTFS, ext4, APFS. Файлы и каталоги — поверх блоков на физическом носителе.</span><span class="lang-en-inline">An abstraction over the disk: NTFS, ext4, APFS. Files and directories sit on top of blocks on the physical storage medium.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Мониторинг и лимиты</span><span class="lang-en-inline">Monitoring and limits</span></h4>
+      <p><span class="lang-ru-inline">ОС следит за тем, сколько каждый процесс ест CPU, памяти, I/O. Может выставить <b>квоты (quotas)</b>, чтобы один процесс не съел всё.</span><span class="lang-en-inline">The OS monitors how much CPU, memory and I/O each process uses. It can set <b>quotas</b> so that one process does not use up everything.</span></p>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">5.3 Вызовы планирования задач (task scheduling)</span><span class="lang-en-inline">5.3 Challenges of task scheduling</span></h3>
+  <ul style="line-height:1.7">
+    <li><span class="lang-ru-inline"><b>Fairness vs efficiency:</b> справедливо раздать CPU всем — но высокоприоритетные не должны страдать, а низкоприоритетные не должны умирать.</span><span class="lang-en-inline"><b>Fairness vs efficiency:</b> the CPU should be shared fairly among everyone, but high-priority processes must not suffer and low-priority processes must not be starved.</span></li>
+    <li><span class="lang-ru-inline"><b>Pre-emption:</b> приостановка процесса в пользу более важного — даёт отзывчивость, но добавляет накладные расходы.</span><span class="lang-en-inline"><b>Pre-emption:</b> suspending a process in favour of a more important one — gives responsiveness, but adds overhead.</span></li>
+    <li><span class="lang-ru-inline"><b>Starvation:</b> в крайних случаях низкоприоритетные задачи <b>никогда</b> не получают CPU — нужны стратегии вроде ageing.</span><span class="lang-en-inline"><b>Starvation:</b> in extreme cases, low-priority tasks <b>never</b> get the CPU — strategies such as ageing are needed.</span></li>
+  </ul>
+
+  <h3><span class="lang-ru-inline">5.4 Resource contention (борьба за ресурсы)</span><span class="lang-en-inline">5.4 Resource contention</span></h3>
+  <p><span class="lang-ru-inline">
+    Происходит, когда <b>несколько процессов хотят один и тот же ресурс</b>, который не делится на всех. Это может привести к нескольким плохим состояниям:
+  </span><span class="lang-en-inline">This happens when <b>several processes want the same resource</b>, which cannot be shared by all of them. It can lead to several problem states:</span></p>
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🔒</span> Deadlock (взаимная блокировка)</span><span class="lang-en-inline"><span class="device-emoji">🔒</span> Deadlock</span></h3>
+    <p><span class="lang-ru-inline">
+      Два или больше процессов <b>ждут друг друга</b> по кругу — никто не может продолжить. Классический пример: процесс A держит ресурс 1 и хочет ресурс 2; процесс B держит ресурс 2 и хочет ресурс 1. Оба зависнут навсегда.
+    </span><span class="lang-en-inline">Two or more processes <b>wait for each other</b> in a circle — none of them can continue. A classic example: process A holds resource 1 and wants resource 2; process B holds resource 2 and wants resource 1. Both will hang forever.</span></p>
+    <p><span class="lang-ru-inline"><b>Что делает ОС:</b></span><span class="lang-en-inline"><b>What the OS does:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Detection (обнаружение):</b> алгоритмы мониторят зависимости ресурсов и ловят циклы ожидания.</span><span class="lang-en-inline"><b>Detection:</b> algorithms monitor resource dependencies and detect circular waits.</span></li>
+      <li><span class="lang-ru-inline"><b>Release the deadlock:</b> ОС может <b>завершить один из процессов</b>, <b>вытеснить его задачи</b>, или <b>перераспределить ресурсы</b>.</span><span class="lang-en-inline"><b>Release the deadlock:</b> the OS can <b>terminate one of the processes</b>, <b>pre-empt its tasks</b>, or <b>reallocate resources</b>.</span></li>
+      <li><span class="lang-ru-inline"><b>Prevention (предотвращение):</b> deadlock avoidance algorithms (например, <b>Banker's algorithm</b>) проверяют, не создаст ли запрос на ресурс цикл — и отказывают, если да.</span><span class="lang-en-inline"><b>Prevention:</b> deadlock avoidance algorithms (for example, the <b>Banker's algorithm</b>) check whether a resource request would create a cycle — and refuse it if it would.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">🔁</span> Livelock</h3>
+    <p><span class="lang-ru-inline">
+      Процессы постоянно <b>запрашивают и отпускают ресурсы</b>, но не продвигаются вперёд. В отличие от deadlock, они <b>активны</b>, но прогресса нет. Аналогия: два человека столкнулись в коридоре, оба отходят в одну сторону, опять блокируют друг друга, и так бесконечно.
+    </span><span class="lang-en-inline">Processes keep <b>requesting and releasing resources</b>, but never move forward. Unlike deadlock, they are <b>active</b>, but there is no progress. Analogy: two people meet in a corridor, both step aside in the same direction, block each other again, and so on indefinitely.</span></p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="device-emoji">💥</span> Thrashing</h3>
+    <p><span class="lang-ru-inline">
+      Возникает, когда страниц памяти не хватает, и ОС <b>постоянно подкачивает (swap)</b> страницы между RAM и диском. CPU тратит больше времени на пейджинг, чем на полезную работу. Решение — оптимизация <b>demand paging</b> и виртуальной памяти, добавление RAM.
+    </span><span class="lang-en-inline">It happens when there is not enough memory, and the OS <b>keeps swapping pages in and out</b> between RAM and disk. The CPU spends more time on paging than on useful work. The solution is optimising <b>demand paging</b> and virtual memory, and adding RAM.</span></p>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>Multitasking gives the illusion of simultaneous execution by switching contexts between processes very quickly; on multi-core machines, threads can also run in genuine parallel. The OS tracks every process in a process table and allocates memory through paging, segmentation and virtual memory. Sharing finite resources brings <b>resource contention</b> hazards: <b>deadlock</b> (processes block one another in a cycle), <b>livelock</b> (constant activity with no progress), and <b>thrashing</b> (excessive swapping between RAM and disk). Defences include deadlock detection, the Banker's algorithm for avoidance, ageing to prevent starvation, ordered resource requests, and quotas.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 6: A1.3.6 CONTROL SYSTEM COMPONENTS HL ============ -->
+  <h2><span class="lang-ru-inline">6. A1.3.6 Компоненты управляющей системы <span class="hl-badge">HL</span></span><span class="lang-en-inline">6. A1.3.6 Control system components <span class="hl-badge">HL</span></span></h2>
+
+  <p><span class="lang-ru-inline">
+    <b>Управляющая система (control system)</b> — это устройство или набор устройств, который <b>управляет, направляет или регулирует поведение</b> других устройств через <b>петли управления (control loops)</b>. Примеры: лифт, стиральная машина, светофор, термостат, круиз-контроль.
+  </span><span class="lang-en-inline"><b>Control system</b> — a device or set of devices that <b>controls, directs or regulates the behaviour</b> of other devices through <b>control loops</b>. Examples: an elevator, a washing machine, a traffic light, a thermostat, cruise control.</span></p>
+
+  <h3><span class="lang-ru-inline">6.1 Модель IPO + обратная связь</span><span class="lang-en-inline">6.1 IPO model + feedback</span></h3>
+  <p><span class="lang-ru-inline">
+    <b>IPO (Input – Process – Output)</b> — базовая модель: данные поступают на вход → обрабатываются → дают выход. <b>Feedback (обратная связь)</b> — выход <b>возвращается обратно в систему</b>, чтобы скорректировать дальнейшую работу.
+  </span><span class="lang-en-inline"><b>IPO (Input – Process – Output)</b> — the basic model: data enters as input → is processed → produces output. <b>Feedback</b> — the output <b>is fed back into the system</b> to correct its further operation.</span></p>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr><th><span class="lang-ru-inline">Элемент</span><span class="lang-en-inline">Element</span></th><th><span class="lang-ru-inline">Определение</span><span class="lang-en-inline">Definition</span></th><th><span class="lang-ru-inline">Пример (круиз-контроль)</span><span class="lang-en-inline">Example (cruise control)</span></th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Input</td>
+        <td><span class="lang-ru-inline">Данные / сигналы, поступающие в систему: команды пользователя, данные с датчиков.</span><span class="lang-en-inline">Data / signals entering the system: user commands, sensor data.</span></td>
+        <td><span class="lang-ru-inline">Водитель ставит желаемую скорость 100 км/ч; датчик измеряет текущую скорость.</span><span class="lang-en-inline">The driver sets the desired speed of 100 km/h; a sensor measures the current speed.</span></td>
+      </tr>
+      <tr>
+        <td>Process</td>
+        <td><span class="lang-ru-inline">Обработка входных данных в контроллере или микроконтроллере по предзаданным правилам или алгоритму.</span><span class="lang-en-inline">Processing the input data in a controller or microcontroller according to preset rules or an algorithm.</span></td>
+        <td><span class="lang-ru-inline">Контроллер сравнивает желаемую и текущую скорость, считает разницу (error), решает, насколько прибавить газу.</span><span class="lang-en-inline">The controller compares the desired and current speed, calculates the difference (error) and decides how much more throttle to apply.</span></td>
+      </tr>
+      <tr>
+        <td>Output</td>
+        <td><span class="lang-ru-inline">Реальное действие / поведение системы: движение, нагрев, открытие клапана.</span><span class="lang-en-inline">The actual action / behaviour of the system: movement, heating, opening a valve.</span></td>
+        <td><span class="lang-ru-inline">Актуатор дроссельной заслонки увеличивает подачу топлива — машина разгоняется.</span><span class="lang-en-inline">The throttle actuator increases the fuel supply — the car speeds up.</span></td>
+      </tr>
+      <tr>
+        <td>Feedback</td>
+        <td><span class="lang-ru-inline">Выход замеряется датчиком и возвращается в систему — для корректировки в реальном времени.</span><span class="lang-en-inline">The output is measured by a sensor and returned to the system — to correct it in real time.</span></td>
+        <td><span class="lang-ru-inline">Датчик скорости постоянно мерит реальную скорость — это <b>closed-loop</b> система.</span><span class="lang-en-inline">The speed sensor constantly measures the actual speed — this is a <b>closed-loop</b> system.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.2 Open-loop vs Closed-loop</h3>
+
+  <div class="loop-diagram">
+    <svg class="loop-desktop" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Открытая и закрытая петли управления">
+      <defs>
+        <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#1a3a5e"/>
+        </marker>
+        <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#10b981"/>
+        </marker>
+      </defs>
+      <!-- OPEN LOOP -->
+      <text class="lang-ru-inline" x="20" y="20" font-family="Helvetica" font-size="13" font-weight="700" fill="#1a3a5e">Open-loop (без обратной связи)</text><text class="lang-en-inline" x="20" y="20" font-family="Helvetica" font-size="13" font-weight="700" fill="#1a3a5e">Open-loop (no feedback)</text>
+      <rect x="20" y="35" width="90" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="65" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Input</text>
+      <line x1="110" y1="55" x2="160" y2="55" stroke="#1a3a5e" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="160" y="35" width="100" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="210" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Controller</text>
+      <line x1="260" y1="55" x2="310" y2="55" stroke="#1a3a5e" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="310" y="35" width="100" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="360" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Actuator</text>
+      <line x1="410" y1="55" x2="460" y2="55" stroke="#1a3a5e" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="460" y="35" width="100" height="40" rx="6" fill="#f1f3f8" stroke="#1a3a5e" stroke-width="1.5"/>
+      <text x="510" y="60" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Output</text>
+
+      <!-- CLOSED LOOP -->
+      <text class="lang-ru-inline" x="20" y="115" font-family="Helvetica" font-size="13" font-weight="700" fill="#10b981">Closed-loop (с обратной связью)</text><text class="lang-en-inline" x="20" y="115" font-family="Helvetica" font-size="13" font-weight="700" fill="#10b981">Closed-loop (with feedback)</text>
+      <rect x="20" y="130" width="90" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="65" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Input</text>
+      <line x1="110" y1="150" x2="160" y2="150" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <rect x="160" y="130" width="100" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="210" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Controller</text>
+      <line x1="260" y1="150" x2="310" y2="150" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <rect x="310" y="130" width="100" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="360" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Actuator</text>
+      <line x1="410" y1="150" x2="460" y2="150" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <rect x="460" y="130" width="100" height="40" rx="6" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="510" y="155" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#0f172a">Output</text>
+      <!-- Feedback arrow -->
+      <path d="M510 170 L510 200 L210 200 L210 170" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow2)"/>
+      <text class="lang-ru-inline" x="360" y="216" text-anchor="middle" font-family="Helvetica" font-size="11" font-style="italic" fill="#10b981">Feedback (датчик мерит выход)</text><text class="lang-en-inline" x="360" y="216" text-anchor="middle" font-family="Helvetica" font-size="11" font-style="italic" fill="#10b981">Feedback (sensor measures the output)</text>
+    </svg>
+    <svg class="loop-mobile" data-mobile-layout="vertical" viewBox="0 0 280 710" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open-loop and closed-loop control">
+    <defs><marker id="loop-mobile-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#10b981"/></marker></defs>
+    <text x="12" y="20" font-size="14" font-family="Helvetica" fill="var(--text, #0f172a)">Open-loop</text>
+    <text class="lang-ru-inline" x="12" y="38" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">Без обратной связи</text>
+    <text class="lang-en-inline" x="12" y="38" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">No feedback</text>
+    <rect x="40" y="50" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="75" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Вход</text>
+    <text class="lang-en-inline" x="120" y="75" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Input</text>
+    <path d="M120 90 V120" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="120" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="145" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Контроллер</text>
+    <text class="lang-en-inline" x="120" y="145" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Controller</text>
+    <path d="M120 160 V190" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="190" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="215" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Актуатор</text>
+    <text class="lang-en-inline" x="120" y="215" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Actuator</text>
+    <path d="M120 230 V260" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="260" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="285" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Выход</text>
+    <text class="lang-en-inline" x="120" y="285" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Output</text>
+    <text x="12" y="350" font-size="14" font-family="Helvetica" fill="var(--text, #0f172a)">Closed-loop</text>
+    <text class="lang-ru-inline" x="12" y="368" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">С обратной связью</text>
+    <text class="lang-en-inline" x="12" y="368" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">With feedback</text>
+    <rect x="40" y="380" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="405" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Вход</text>
+    <text class="lang-en-inline" x="120" y="405" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Input</text>
+    <path d="M120 420 V450" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="450" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="475" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Контроллер</text>
+    <text class="lang-en-inline" x="120" y="475" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Controller</text>
+    <path d="M120 490 V520" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="520" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="545" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Актуатор</text>
+    <text class="lang-en-inline" x="120" y="545" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Actuator</text>
+    <path d="M120 560 V590" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="590" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text class="lang-ru-inline" x="120" y="615" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Выход</text>
+    <text class="lang-en-inline" x="120" y="615" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Output</text>
+    <path d="M200 610 H258 V470 H200" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#loop-mobile-arrow)"/>
+    <text class="lang-ru-inline" x="12" y="660" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">Обратная связь: датчик измеряет</text>
+    <text class="lang-en-inline" x="12" y="660" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">Feedback: sensor measures</text>
+    <text class="lang-ru-inline" x="12" y="678" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">выход → сигнал контроллеру.</text>
+    <text class="lang-en-inline" x="12" y="678" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">output → signal to controller.</text>
+    </svg>
+    <div class="diagram-caption"><span class="lang-ru-inline">Сверху: open-loop. Снизу: closed-loop с обратной связью от датчика к контроллеру.</span><span class="lang-en-inline">Top: open-loop. Bottom: closed-loop, with feedback from the sensor to the controller.</span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Open-loop (без обратной связи)</span><span class="lang-en-inline">Open-loop (no feedback)</span></h4>
+      <p><span class="lang-ru-inline">Выполняет <b>предзаданный набор операций</b> и не корректируется по результату. Пример: <b>обычный тостер</b> — таймер на 2 минуты, неважно, поджарился хлеб или сгорел. Или <b>сушилка для одежды на таймере</b>.</span><span class="lang-en-inline">It runs a <b>preset sequence of operations</b> and is not corrected according to the result. Example: an <b>ordinary toaster</b> — a timer set for 2 minutes; it does not matter whether the bread is toasted or burnt. Or a <b>clothes dryer on a timer</b>.</span></p>
+    </div>
+    <div class="mini-card">
+      <h4><span class="lang-ru-inline">Closed-loop (с обратной связью)</span><span class="lang-en-inline">Closed-loop (with feedback)</span></h4>
+      <p><span class="lang-ru-inline">Непрерывно мониторит выход, сравнивает с целью и корректирует входы. Пример: <b>холодильник Samsung работает по closed-loop:</b> датчик температуры → контроллер → компрессор включается/выключается. Также: круиз-контроль, термостат, автопилот.</span><span class="lang-en-inline">It continuously monitors the output, compares it with the target and adjusts the inputs. Example: <b>a Samsung fridge works as a closed-loop system:</b> temperature sensor → controller → compressor switches on/off. Also: cruise control, thermostat, autopilot.</span></p>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">6.3 Пять ключевых компонентов (Таблица 21 в учебнике)</span><span class="lang-en-inline">6.3 Five key components (Table 21 in the textbook)</span></h3>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🧠</span> Controller (контроллер)</span><span class="lang-en-inline"><span class="device-emoji">🧠</span> Controller</span></h3>
+    <p><span class="lang-ru-inline">
+      Устройство или ПО, которое <b>обрабатывает входы</b> от датчиков и <b>посылает сигналы</b> актуаторам. Может быть встроенным микроконтроллером или промышленным <b>PLC (Programmable Logic Controller)</b>.
+    </span><span class="lang-en-inline">A device or software that <b>processes the inputs</b> from sensors and <b>sends signals</b> to actuators. It can be an embedded microcontroller or an industrial <b>PLC (Programmable Logic Controller)</b>.</span></p>
+    <p><span class="lang-ru-inline"><b>Пример:</b> На сборочной линии PLC координирует последовательность машин — мотор крутит конвейер, пневматическая рука переставляет деталь, датчик проверяет результат.</span><span class="lang-en-inline"><b>Example:</b> on an assembly line, a PLC coordinates a sequence of machines — a motor drives the conveyor, a pneumatic arm moves the part, and a sensor checks the result.</span></p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🌡️</span> Sensors (датчики)</span><span class="lang-en-inline"><span class="device-emoji">🌡️</span> Sensors</span></h3>
+    <p><span class="lang-ru-inline">
+      Устройства, которые <b>обнаруживают и измеряют физические величины</b> (температура, свет, давление, движение, влажность) и превращают их в сигналы, понятные контроллеру.
+    </span><span class="lang-en-inline">Devices that <b>detect and measure physical quantities</b> (temperature, light, pressure, motion, humidity) and convert them into signals that the controller can understand.</span></p>
+    <p><span class="lang-ru-inline"><b>Пример:</b> <b>Thermocouple (термопара)</b> в промышленной печи — мерит температуру и шлёт контроллеру, который регулирует подачу топлива.</span><span class="lang-en-inline"><b>Example:</b> a <b>thermocouple</b> in an industrial furnace — measures the temperature and sends it to the controller, which regulates the fuel supply.</span></p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">⚙️</span> Actuators (актуаторы / исполнительные устройства)</span><span class="lang-en-inline"><span class="device-emoji">⚙️</span> Actuators</span></h3>
+    <p><span class="lang-ru-inline">
+      Механические или электронные устройства, которые <b>совершают физическое действие</b> в ответ на сигналы контроллера: моторы, клапаны, нагреватели, сирены.
+    </span><span class="lang-en-inline">Mechanical or electronic devices that <b>carry out a physical action</b> in response to signals from the controller: motors, valves, heaters, sirens.</span></p>
+    <p><span class="lang-ru-inline"><b>Пример:</b> <b>Solenoid valve (соленоидный клапан)</b> в автоматической поливе — открывает/закрывает воду по команде контроллера, который читал данные с датчика влажности почвы.</span><span class="lang-en-inline"><b>Example:</b> a <b>solenoid valve</b> in an automatic watering system — opens and closes the water supply on command from the controller, which read data from the soil-moisture sensor.</span></p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🔄</span> Transducer (преобразователь)</span><span class="lang-en-inline"><span class="device-emoji">🔄</span> Transducer</span></h3>
+    <p><span class="lang-ru-inline">
+      Превращает <b>одну форму энергии или сигнала в другую</b>. Часто стоит между физическим миром и электроникой. Технически датчики и актуаторы — частный случай преобразователей.
+    </span><span class="lang-en-inline">It converts <b>one form of energy or signal into another</b>. It often sits between the physical world and electronics. Technically, sensors and actuators are a special case of transducers.</span></p>
+    <p><span class="lang-ru-inline"><b>Пример:</b> <b>Piezoelectric pressure sensor</b> в системе мониторинга давления шин — преобразует давление в электрический сигнал, который читает бортовой компьютер; если давление вне нормы, водителю показывают предупреждение.</span><span class="lang-en-inline"><b>Example:</b> a <b>piezoelectric pressure sensor</b> in a tyre-pressure monitoring system — converts pressure into an electrical signal, which the on-board computer reads; if the pressure is outside the normal range, the driver is shown a warning.</span></p>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">📐</span> Control algorithm (алгоритм управления)</span><span class="lang-en-inline"><span class="device-emoji">📐</span> Control algorithm</span></h3>
+    <p><span class="lang-ru-inline">
+      Математическая формула или логика, которой <b>контроллер пользуется</b>, чтобы решить, какой выход дать на основе входа, цели и текущего состояния.
+    </span><span class="lang-en-inline">A mathematical formula or logic that the <b>controller uses</b> to decide what output to produce, based on the input, the target and the current state.</span></p>
+    <p><span class="lang-ru-inline"><b>Пример:</b> <b>PID-контроль (proportional–integral–derivative)</b> в домашнем отоплении — мерит ошибку (разницу между целевой и фактической температурой), её интеграл (накопленную ошибку) и производную (скорость изменения), сглаживает регулирование. Меньше скачков, точнее температура, меньше расход энергии.</span><span class="lang-en-inline"><b>Example:</b> <b>PID control (proportional–integral–derivative)</b> in home heating — measures the error (the difference between the target and actual temperature), its integral (accumulated error) and its derivative (rate of change), and smooths the regulation. Fewer swings, a more accurate temperature and lower energy use.</span></p>
+  </div>
+
+  
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>A control system regulates physical behaviour using the IPO model plus optional feedback. <b>Open-loop</b> systems (a timer-driven toaster) follow a fixed sequence regardless of result; <b>closed-loop</b> systems (thermostats, cruise control) feed measured output back to the controller so the input can be corrected in real time. The key components are the <b>controller</b> (often a microcontroller or PLC), <b>sensors</b> that convert temperature, light or pressure into electrical signals, <b>actuators</b> such as motors, valves and heaters that drive physical change, <b>transducers</b> that switch one energy form for another, and the <b>control algorithm</b> — frequently a PID loop — that decides the output.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 7: A1.3.7 REAL-WORLD HL ============ -->
+  <h2><span class="lang-ru-inline">7. A1.3.7 Реальные применения управляющих систем <span class="hl-badge">HL</span></span><span class="lang-en-inline">7. A1.3.7 Real-world applications of control systems <span class="hl-badge">HL</span></span></h2>
+
+  <p><span class="lang-ru-inline">
+    Управляющие системы повсюду. Все они строятся на одной модели: <b>датчики собирают данные → контроллер с алгоритмом принимает решение → актуаторы выполняют действие → датчики снова мерят результат</b>. Меняется только сложность алгоритма и набор сенсоров.
+  </span><span class="lang-en-inline">Control systems are everywhere. They are all built on one model: <b>sensors collect data → a controller with an algorithm makes a decision → actuators carry out the action → sensors measure the result again</b>. Only the complexity of the algorithm and the set of sensors changes.</span></p>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🚗</span> Автономные транспортные средства (autonomous vehicles)</span><span class="lang-en-inline"><span class="device-emoji">🚗</span> Autonomous vehicles</span></h3>
+    <p><span class="lang-ru-inline">Сложнейшие управляющие системы.</span><span class="lang-en-inline">The most complex control systems.</span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> <b>LIDAR</b> (3D-картирование, обнаружение объектов), <b>radar</b> (плохая погода), <b>камеры</b> (визуальное распознавание), <b>ultrasonic</b> (ближняя проксимити), <b>IMU</b> (отслеживание движения самой машины).</span><span class="lang-en-inline"><b>Sensors:</b> <b>LIDAR</b> (3D mapping, object detection), <b>radar</b> (bad weather), <b>cameras</b> (visual recognition), <b>ultrasonic</b> (close-range proximity), <b>IMU</b> (tracking the car's own motion).</span></li>
+      <li><span class="lang-ru-inline"><b>Алгоритмы:</b> path planning (планирование маршрута), localization (где я нахожусь), obstacle avoidance (избегание препятствий), AI для интерпретации трафика.</span><span class="lang-en-inline"><b>Algorithms:</b> path planning (choosing a route), localization (knowing where the vehicle is), obstacle avoidance (avoiding obstacles), AI for interpreting traffic.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> электромеханический руль, electronic throttle, ABS (anti-lock braking).</span><span class="lang-en-inline"><b>Actuators:</b> electromechanical steering, electronic throttle, ABS (anti-lock braking).</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> Tesla Autopilot, Waymo. Мониторинг 360° на скорости 100+ км/ч в реальном времени.</span><span class="lang-en-inline"><b>Real-world:</b> Tesla Autopilot, Waymo. 360° monitoring at 100+ km/h in real time.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🌡️</span> Домашние термостаты и BMS (building management systems)</span><span class="lang-en-inline"><span class="device-emoji">🌡️</span> Home thermostats and BMS (building management systems)</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> биметаллические полоски или цифровые термисторы.</span><span class="lang-en-inline"><b>Sensors:</b> bimetallic strips or digital thermistors.</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> простое on/off или сложный PID-алгоритм.</span><span class="lang-en-inline"><b>Controller:</b> a simple on/off or a complex PID algorithm.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> реле или переключатели для печки/кондиционера.</span><span class="lang-en-inline"><b>Actuators:</b> relays or switches for the heater or air conditioner.</span></li>
+      <li><span class="lang-ru-inline"><b>BMS (масштаб здания):</b> сеть температурных датчиков, центральный контроллер учитывает занятость, погоду, цену энергии; продвинутые BMS используют ML для оптимизации.</span><span class="lang-en-inline"><b>BMS (building-wide):</b> a network of temperature sensors and a central controller that takes into account occupancy, weather and energy prices; advanced BMS use ML for optimisation.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> Nest Thermostat — учится привычкам и экономит до 15% энергии.</span><span class="lang-en-inline"><b>Real-world:</b> Nest Thermostat — learns habits and saves up to 15% of energy.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🛗</span> Автоматическое управление лифтами</span><span class="lang-en-inline"><span class="device-emoji">🛗</span> Automatic elevator control</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Цель:</b> минимизировать время ожидания и поездки пассажиров.</span><span class="lang-en-inline"><b>Goal:</b> to minimise passengers' waiting and travel time.</span></li>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> датчики положения каждой кабины, кнопки вызова на этажах и внутри.</span><span class="lang-en-inline"><b>Sensors:</b> position sensors for each car, call buttons on the floors and inside the car.</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> алгоритм назначает кабину на вызов — учитывает направление движения, нагрузку, расстояние.</span><span class="lang-en-inline"><b>Controller:</b> the algorithm assigns a car to each call — it takes into account direction of travel, load and distance.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> моторы перемещают кабину, двери.</span><span class="lang-en-inline"><b>Actuators:</b> motors move the car and the doors.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> небоскрёб с 10 лифтами использует <b>destination dispatch</b> — пассажир заранее указывает этаж, система группирует попутных.</span><span class="lang-en-inline"><b>Real-world:</b> a skyscraper with 10 elevators uses <b>destination dispatch</b> — the passenger enters their floor in advance, and the system groups together passengers going the same way.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🧺</span> Автоматические стиральные машины</span><span class="lang-en-inline"><span class="device-emoji">🧺</span> Automatic washing machines</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> датчики веса белья, уровня воды, <b>turbidity sensor</b> (мутность воды — определяет грязь).</span><span class="lang-en-inline"><b>Sensors:</b> sensors for the weight of the laundry and the water level, a <b>turbidity sensor</b> (the cloudiness of the water — detects dirt).</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> fuzzy logic или классические алгоритмы — выбирает длительность цикла, температуру, скорость вращения.</span><span class="lang-en-inline"><b>Controller:</b> fuzzy logic or classic algorithms — chooses the length of the cycle, the temperature and the spin speed.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> входной клапан воды, слив, мотор барабана, нагреватель.</span><span class="lang-en-inline"><b>Actuators:</b> the water inlet valve, the drain, the drum motor, the heater.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> современные машины подстраивают цикл — мало белья → меньше воды и времени; очень грязное → дольше стирка.</span><span class="lang-en-inline"><b>Real-world:</b> modern machines adjust the cycle — a small load → less water and time; very dirty laundry → a longer wash.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🚦</span> Управление светофорами</span><span class="lang-en-inline"><span class="device-emoji">🚦</span> Traffic signal control</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> <b>inductive loop detectors</b> в дорожном полотне (магнитное поле меняется от металла машины), камеры с computer vision, кнопки для пешеходов.</span><span class="lang-en-inline"><b>Sensors:</b> <b>inductive loop detectors</b> in the road surface (the magnetic field changes because of the metal in a car), cameras with computer vision, buttons for pedestrians.</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> старые — pre-timed schedule (фиксированный цикл); современные — <b>actuated controllers</b> с динамическим таймингом; продвинутые <b>ATCS</b> используют ИИ по всему городу.</span><span class="lang-en-inline"><b>Controller:</b> older systems use a pre-timed schedule (a fixed cycle); modern ones use <b>actuated controllers</b> with dynamic timing; advanced <b>ATCS</b> systems use AI across the whole city.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> сами лампы светофора (красный, жёлтый, зелёный) и пешеходные сигналы.</span><span class="lang-en-inline"><b>Actuators:</b> the signal lamps themselves (red, amber, green) and the pedestrian signals.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> Москва, Сингапур, многие крупные города используют AI-управляемые светофоры — снижают пробки на 20–30%.</span><span class="lang-en-inline"><b>Real-world:</b> Moscow, Singapore and many large cities use AI-controlled traffic lights — they reduce traffic jams by 20–30%.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">💧</span> Управление поливом (irrigation control systems)</span><span class="lang-en-inline"><span class="device-emoji">💧</span> Irrigation control systems</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> <b>tensiometers</b> (натяжение воды в почве), capacitance-based sensors (прямое измерение влажности).</span><span class="lang-en-inline"><b>Sensors:</b> <b>tensiometers</b> (the tension of water in the soil), capacitance-based sensors (direct measurement of moisture).</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> программы под конкретную культуру, иногда интегрируются с прогнозом погоды.</span><span class="lang-en-inline"><b>Controller:</b> programs tailored to a specific crop, sometimes integrated with the weather forecast.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> соленоидные клапаны на линиях полива.</span><span class="lang-en-inline"><b>Actuators:</b> solenoid valves on the irrigation lines.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> <b>variable-rate irrigation</b> — разные зоны поля получают разную воду по локальным датчикам. Экономия до 30% воды.</span><span class="lang-en-inline"><b>Real-world:</b> <b>variable-rate irrigation</b> — different zones of a field receive different amounts of water according to local sensors. Water savings of up to 30%.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🚨</span> Домашние охранные системы (home security)</span><span class="lang-en-inline"><span class="device-emoji">🚨</span> Home security systems</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> датчики движения (passive infrared, PIR), контакты на дверях и окнах, <b>glass break detectors</b> (акустика + датчик вибрации), датчики дыма и угарного газа.</span><span class="lang-en-inline"><b>Sensors:</b> motion sensors (passive infrared, PIR), contacts on doors and windows, <b>glass break detectors</b> (acoustics + vibration sensor), smoke and carbon monoxide sensors.</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> центральная панель с логикой — отличает реальную угрозу от ложной тревоги.</span><span class="lang-en-inline"><b>Controller:</b> a central panel with logic that distinguishes a real threat from a false alarm.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> сирены, smart locks, отправка уведомлений на телефон или в охранную фирму.</span><span class="lang-en-inline"><b>Actuators:</b> sirens, smart locks, sending notifications to a phone or to a security company.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> Ring, Arlo — сеть камер и сенсоров с уведомлениями в мобильное приложение.</span><span class="lang-en-inline"><b>Real-world:</b> Ring and Arlo — networks of cameras and sensors with notifications sent to a mobile app.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card hl-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🚪</span> Автоматические двери</span><span class="lang-en-inline"><span class="device-emoji">🚪</span> Automatic doors</span></h3>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Датчики:</b> microwave (импульсы и анализ отражения) или infrared (тепло), optical sensors (сетка инфракрасных лучей).</span><span class="lang-en-inline"><b>Sensors:</b> microwave (pulses and analysis of reflections) or infrared (heat), optical sensors (a grid of infrared beams).</span></li>
+      <li><span class="lang-ru-inline"><b>Контроллер:</b> логика против ложных открытий — открывать только когда подходят с определённой стороны.</span><span class="lang-en-inline"><b>Controller:</b> logic to prevent false openings — the door opens only when someone approaches from a particular side.</span></li>
+      <li><span class="lang-ru-inline"><b>Актуаторы:</b> электромоторы с шестернями или гидравлика.</span><span class="lang-en-inline"><b>Actuators:</b> electric motors with gears, or hydraulics.</span></li>
+      <li><span class="lang-ru-inline"><b>Доп. защита:</b> <b>light curtains</b> — не дают двери закрыться, если кто-то в проёме.</span><span class="lang-en-inline"><b>Extra protection:</b> <b>light curtains</b> — stop the door from closing if someone is in the doorway.</span></li>
+      <li><span class="lang-ru-inline"><b>Реальное:</b> двери в супермаркетах, аэропортах, метро.</span><span class="lang-en-inline"><b>Real-world:</b> doors in supermarkets, airports and metro stations.</span></li>
+    </ul>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <details class="en-summary" style="margin:12px 0; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius); border-left:3px solid var(--text-faint)">
+    <summary style="cursor:pointer; font-weight:600; color:var(--text-muted); font-size:0.92rem">🇬🇧 English summary (click to expand)</summary>
+    <div style="margin-top:10px; font-size:0.95rem; line-height:1.6">
+      <p>The same sensor–controller–actuator pattern shows up everywhere. Autonomous vehicles combine LIDAR, radar, cameras, ultrasonic sensors and IMUs with path-planning AI, steering and throttle actuators. Smart thermostats and building management systems read temperature and switch heating or cooling, often with PID or ML algorithms. Lifts use position sensors and dispatching logic to cut waiting time; washing machines vary cycle length using load, water-level and turbidity sensors; traffic lights run from inductive loops or vision, with adaptive controllers easing congestion. Irrigation systems trigger solenoid valves from soil-moisture readings; home security fuses PIR, contact and glass-break sensors; automatic doors run on microwave or infrared detection.</p>
+    </div>
+  </details>
+
+  <!-- ============ SECTION 8: PRACTICAL TASKS ============ -->
+  <h2><span class="lang-ru-inline">8. Практические задания</span><span class="lang-en-inline">8. Practice tasks</span></h2>
+
+  <div class="task-card">
+    <h3><span class="lang-ru-inline">🔍 Индивидуальное задание: Декомпозируй ОС, которой ты пользуешься</span><span class="lang-en-inline">🔍 Individual task: decompose the OS you use</span></h3>
+    <p><span class="lang-ru-inline"><b>Цель:</b> Связать абстрактные функции ОС с конкретным опытом.</span><span class="lang-en-inline"><b>Goal:</b> link the abstract functions of the OS with concrete experience.</span></p>
+    <ol>
+      <li><span class="lang-ru-inline">Открой <b>Task Manager</b> (Windows), <b>Activity Monitor</b> (macOS) или <code>top</code> / <code>htop</code> (Linux).</span><span class="lang-en-inline">Open <b>Task Manager</b> (Windows), <b>Activity Monitor</b> (macOS) or <code>top</code> / <code>htop</code> (Linux).</span></li>
+      <li><span class="lang-ru-inline">Найди <b>5 процессов</b> с наибольшим использованием CPU. Запиши их PID, имя, состояние, приоритет.</span><span class="lang-en-inline">Find <b>5 processes</b> with the highest CPU usage. Write down their PID, name, state and priority.</span></li>
+      <li><span class="lang-ru-inline">Открой <b>Event Viewer</b> (Windows), <b>Console</b> (macOS) или <code>/var/log/system.log</code> (Linux). Найди записи о входе пользователя за сегодня.</span><span class="lang-en-inline">Open <b>Event Viewer</b> (Windows), <b>Console</b> (macOS) or <code>/var/log/system.log</code> (Linux). Find the entries about user logins today.</span></li>
+      <li><span class="lang-ru-inline">Открой <b>диспетчер дисков</b> — какая файловая система используется? NTFS, APFS, ext4?</span><span class="lang-en-inline">Open the <b>disk manager</b> — which file system is used? NTFS, APFS, ext4?</span></li>
+      <li><span class="lang-ru-inline">Сделай таблицу: для каждого процесса укажи, какая <b>функция ОС</b> (память, CPU, I/O, сеть) преобладает в его работе.</span><span class="lang-en-inline">Make a table: for each process, state which <b>OS function</b> (memory, CPU, I/O, network) dominates its work.</span></li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="lang-ru-inline">👥 Групповое задание: Спроектируй планировщик для умного дома</span><span class="lang-en-inline">👥 Group task: design a scheduler for a smart home</span></h3>
+    <p><span class="lang-ru-inline"><b>Цель:</b> Сравнить алгоритмы планирования на реальном сценарии.</span><span class="lang-en-inline"><b>Goal:</b> compare scheduling algorithms in a realistic scenario.</span></p>
+    <div class="scenario"><span class="lang-ru-inline">
+      <b>Сценарий:</b> Умный дом с 30 задачами: 5 критических (датчики дыма, охрана), 10 интерактивных (голосовые команды, климат), 15 фоновых (логи, обновления, бэкап).
+    </span><span class="lang-en-inline"><b>Scenario:</b> a smart home with 30 tasks: 5 critical (smoke sensors, security), 10 interactive (voice commands, climate control), 15 background (logs, updates, backup).</span></div>
+    <ol>
+      <li><span class="lang-ru-inline"><b>Выбери</b> подходящий алгоритм для каждой группы — обоснуй (FCFS, round robin, multilevel queue, priority).</span><span class="lang-en-inline"><b>Choose</b> a suitable algorithm for each group and justify it (FCFS, round robin, multilevel queue, priority).</span></li>
+      <li><span class="lang-ru-inline"><b>Поясни:</b> что если использовать <b>один</b> алгоритм для всех? Какие проблемы возникнут?</span><span class="lang-en-inline"><b>Explain:</b> what if you use <b>one</b> algorithm for everything? What problems would arise?</span></li>
+      <li><span class="lang-ru-inline">Объясни, как <b>multilevel queue</b> решает эти проблемы — какие очереди создашь, какой приоритет дашь?</span><span class="lang-en-inline">Explain how a <b>multilevel queue</b> solves these problems — which queues would you create, and what priority would you give them?</span></li>
+      <li><span class="lang-ru-inline">Подготовь схему «процессы → очереди → CPU» с описанием правил.</span><span class="lang-en-inline">Prepare a diagram “processes → queues → CPU” with a description of the rules.</span></li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="lang-ru-inline">🏠 Домашнее задание: Разбери одну управляющую систему дома</span><span class="lang-en-inline">🏠 Homework: analyse one control system in your home</span></h3>
+    <p><span class="lang-ru-inline"><b>Цель:</b> Перевести модель IPO в реальное устройство.</span><span class="lang-en-inline"><b>Goal:</b> apply the IPO model to a real device.</span></p>
+    <ol>
+      <li><span class="lang-ru-inline">Выбери одно устройство дома: микроволновка, посудомойка, кондиционер, духовка, робот-пылесос, увлажнитель.</span><span class="lang-en-inline">Choose one household device: microwave, dishwasher, air conditioner, oven, robot vacuum cleaner, humidifier.</span></li>
+      <li><span class="lang-ru-inline">Опиши <b>каждый компонент</b>: input, process, output, feedback. Это open-loop или closed-loop? Обоснуй.</span><span class="lang-en-inline">Describe <b>each component</b>: input, process, output, feedback. Is it open-loop or closed-loop? Justify your answer.</span></li>
+      <li><span class="lang-ru-inline">Назови <b>конкретные</b> датчики, контроллер, актуаторы, control algorithm (если знаешь — какой алгоритм).</span><span class="lang-en-inline">Name the <b>specific</b> sensors, controller, actuators and control algorithm (if you know which algorithm it uses).</span></li>
+      <li><span class="lang-ru-inline">Что произойдёт, если <b>отключить feedback</b>? Опиши на примере.</span><span class="lang-en-inline">What would happen if you <b>disconnected the feedback</b>? Describe it with an example.</span></li>
+      <li><span class="lang-ru-inline">Подумай о <b>безопасности:</b> что если контроллер сломается, а актуатор продолжит работать?</span><span class="lang-en-inline">Think about <b>safety:</b> what if the controller fails but the actuator keeps working?</span></li>
+    </ol>
+  </div>
+
+  <!-- ============ Closing ============ -->
+  <h2><span class="lang-ru-inline">Что важно запомнить</span><span class="lang-en-inline">Key points to remember</span></h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><span class="lang-ru-inline"><b>ОС</b> — посредник между пользователем/приложениями и железом; её главная сила — <b>абстракция (abstraction)</b>.</span><span class="lang-en-inline"><b>OS</b> — an intermediary between the user/applications and the hardware; its main strength is <b>abstraction</b>.</span></li>
+    <li><span class="lang-ru-inline"><b>Десять функций ОС:</b> память, файлы, устройства, сеть, UI, безопасность, процессы, питание, периферия, планирование. Можешь назвать любые 4–6 — этого достаточно для большинства вопросов.</span><span class="lang-en-inline"><b>Ten OS functions:</b> memory, files, devices, network, UI, security, processes, power, peripherals, scheduling. You can name any 4–6 of them — that is enough for most questions.</span></li>
+    <li><span class="lang-ru-inline"><b>Процесс ≠ программа:</b> программа — пассивный код, процесс — активное выполнение.</span><span class="lang-en-inline"><b>Process ≠ program:</b> a program is passive code; a process is active execution.</span></li>
+    <li><span class="lang-ru-inline"><b>Планирование:</b> FCFS (просто), round robin (справедливо), multilevel (смешано), priority (real-time). На экзамене различай по двум осям — <b>fairness vs efficiency</b> и <b>pre-emptive vs non-pre-emptive</b>.</span><span class="lang-en-inline"><b>Scheduling:</b> FCFS (simple), round robin (fair), multilevel (mixed), priority (real-time). In the exam, distinguish them along two axes — <b>fairness vs efficiency</b> and <b>pre-emptive vs non-pre-emptive</b>.</span></li>
+    <li><span class="lang-ru-inline"><b>Polling vs Interrupts:</b> interrupts для частых, непредсказуемых, low-latency и batteries; polling для редких, регулярных, mains.</span><span class="lang-en-inline"><b>Polling vs interrupts:</b> interrupts for frequent, unpredictable, low-latency events and battery-powered devices; polling for rare, regular events and mains-powered devices.</span></li>
+    <li><span class="lang-ru-inline"><b>HL — многозадачность:</b> ОС жонглирует процессами через <b>context switching</b>. Главные риски — <b>deadlock</b>, <b>starvation</b>, <b>thrashing</b>; на каждое есть стратегия (detection/avoidance, ageing, оптимизация памяти).</span><span class="lang-en-inline"><b>HL — multitasking:</b> the OS juggles processes through <b>context switching</b>. The main risks are <b>deadlock</b>, <b>starvation</b> and <b>thrashing</b>; each has a strategy (detection/avoidance, ageing, memory optimisation).</span></li>
+    <li><span class="lang-ru-inline"><b>HL — управляющая система:</b> <b>IPO + feedback</b>. <b>Open-loop</b> — без обратной связи (тостер на таймере), <b>closed-loop</b> — с обратной связью (термостат, круиз-контроль).</span><span class="lang-en-inline"><b>HL — control system:</b> <b>IPO + feedback</b>. <b>Open-loop</b> — no feedback (a toaster on a timer), <b>closed-loop</b> — with feedback (a thermostat, cruise control).</span></li>
+    <li><span class="lang-ru-inline"><b>HL — пять компонентов:</b> controller, sensors, actuators, transducer, control algorithm. Запомни конкретные примеры: PLC, thermocouple, solenoid valve, piezoelectric sensor, PID.</span><span class="lang-en-inline"><b>HL — five components:</b> controller, sensors, actuators, transducer, control algorithm. Remember the specific examples: PLC, thermocouple, solenoid valve, piezoelectric sensor, PID.</span></li>
+    <li><span class="lang-ru-inline"><b>HL — реальные применения:</b> 8 канонических примеров — авто-машины, термостаты, лифты, стиралки, светофоры, полив, охрана, двери. Для каждого знай датчик → контроллер → актуатор.</span><span class="lang-en-inline"><b>HL — real-world applications:</b> 8 standard examples — cars, thermostats, elevators, washing machines, traffic signals, irrigation, security, doors. For each one, know the sensor → controller → actuator chain.</span></li>
+    <li><span class="lang-ru-inline">На экзамене часто спрашивают <b>«сравни X и Y»</b> — отвечай через таблицу: <b>fairness, efficiency, pre-emption, use case</b> для планирования; <b>event frequency, CPU overhead, power, latency, security</b> для polling vs interrupts.</span><span class="lang-en-inline">In the exam you are often asked <b>“compare X and Y”</b> — answer in a table: <b>fairness, efficiency, pre-emption, use case</b> for scheduling; <b>event frequency, CPU overhead, power, latency, security</b> for polling vs interrupts.</span></li>
+  </ul>
+
+  <p style="margin-top:32px"><span class="lang-ru-inline">
+    <a href="fundamentals.html" class="back-link">← Назад к A1 Основы</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A1.3" class="back-link">К квизу A1.3 →</a>
+  </span><span class="lang-en-inline"><a href="fundamentals.html" class="back-link">← Back to A1 Fundamentals</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A1.3" class="back-link">To the A1.3 quiz →</a></span></p>
+
+</main>
+
+<footer class="footer">
+  <p><span class="lang-ru-inline">
+    IB CS Тема A · A1.3 Операционные и управляющие системы · По материалам Oxford IB DP 2025 Computer Science · <a href="index.html">На главную</a>
+  </span><span class="lang-en-inline">IB CS Theme A · A1.3 Operating systems and control systems · Based on Oxford IB DP 2025 Computer Science · <a href="index.html">Home page</a></span></p>
+</footer>
+
+<script src="js/app.js?v=11"></script>
+</body>
+</html>

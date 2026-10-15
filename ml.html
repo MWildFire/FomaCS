@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A4 Machine Learning · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -298,8 +298,8 @@
             <span class="lang-ru-inline">Нейронная сеть — прямой проход (HL)</span>
           </h3>
           <p>
-            <span class="lang-en-inline">A 3-input → 4-hidden → 2-output network. Adjust inputs and weights, watch the forward pass animate, see which class wins. Click any weight line to tune it.</span>
-            <span class="lang-ru-inline">Сеть 3-вход → 4-скрытых → 2-выход. Меняйте входы и веса, смотрите анимацию прямого прохода, видите какой класс победит. Кликните на любую линию веса, чтобы настроить.</span>
+            <span class="lang-en-inline">A 3-input → 4-hidden → 2-output network. Adjust inputs and weights, watch the forward pass animate, see which class wins. Click a weight line to tune it; on a phone, you can also tap a value in the weight tables below the network.</span>
+            <span class="lang-ru-inline">Сеть 3-вход → 4-скрытых → 2-выход. Меняйте входы и веса, смотрите анимацию прямого прохода, видите какой класс победит. Нажмите на линию веса, чтобы изменить его; на телефоне можно также нажать на число в таблицах весов под сетью.</span>
           </p>
         </div>
       </div>
@@ -335,7 +335,13 @@
 
       <div class="sim-canvas-wrap">
         <svg id="nn-svg" viewBox="0 0 1000 480" preserveAspectRatio="xMidYMid meet"
-             role="img" aria-label="Neural network forward-pass visualization. Three input neurons connect to four hidden neurons, which connect to two output neurons. Click any weight line to tune it."></svg>
+             role="img" aria-label="Neural network forward-pass visualization. Three input neurons connect to four hidden neurons, which connect to two output neurons. Click a weight line to tune it; on a phone, you can also tap a value in the weight tables below the network."></svg>
+      </div>
+
+      <div class="sim-legend">
+        <span><span class="dot" style="background:#10b981; width:16px; height:4px; border-radius:2px"></span> <span class="lang-en-inline">Green line: positive weight (strengthens the signal)</span><span class="lang-ru-inline">Зелёная линия: положительный вес (усиливает сигнал)</span></span>
+        <span><span class="dot" style="background:#ef4444; width:16px; height:4px; border-radius:2px"></span> <span class="lang-en-inline">Red line: negative weight (weakens the signal)</span><span class="lang-ru-inline">Красная линия: отрицательный вес (ослабляет сигнал)</span></span>
+        <span><span class="lang-en-inline">Thicker, more vivid line = larger |weight|. On wide screens, values appear on lines when |weight| &gt; 0.25; on phones, all weights are shown in the tables below the network.</span><span class="lang-ru-inline">Чем толще и ярче линия, тем больше модуль веса. На широком экране число на линии показано при |вес| &gt; 0.25; на телефоне все веса находятся в таблицах под сетью.</span></span>
       </div>
 
       <div class="sim-stats">
@@ -382,7 +388,7 @@
   </p>
 </footer>
 
-<script src="js/data.js?v=11"></script>
+<script src="js/data.js?v=12"></script>
 <script src="js/app.js?v=11"></script>
 <script src="js/notes-render.js?v=11"></script>
 <script src="js/regression.js?v=11"></script>
@@ -390,7 +396,7 @@
 <script src="js/knn.js?v=11"></script>
 <script src="js/confusion.js?v=11"></script>
 <script src="js/bias.js?v=11"></script>
-<script src="js/neural-net.js?v=11"></script>
+<script src="js/neural-net.js?v=12"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     renderNotes('notes-41-content', 'a4_1');

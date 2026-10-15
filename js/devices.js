@@ -45,7 +45,7 @@
     { id: 'application', name: { en: 'Application', ru: 'Прикладной' }, desc: { en: 'HTTP, DNS, SMTP…', ru: 'HTTP, DNS, SMTP…' }, color: 'var(--violet)' },
     { id: 'transport', name: { en: 'Transport', ru: 'Транспортный' }, desc: { en: 'TCP / UDP — ports', ru: 'TCP / UDP — порты' }, color: 'var(--accent)' },
     { id: 'internet', name: { en: 'Internet / Network', ru: 'Межсетевой' }, desc: { en: 'IP — routing', ru: 'IP — маршрутизация' }, color: 'var(--primary)' },
-    { id: 'link', name: { en: 'Network access / Link', ru: 'Канальный (сетевой доступ)' }, desc: { en: 'MAC, Ethernet, Wi-Fi', ru: 'MAC, Ethernet, Wi-Fi' }, color: 'var(--green)' },
+    { id: 'link', name: { en: 'Network interface / Link', ru: 'Канальный (сетевой интерфейс)' }, desc: { en: 'MAC, Ethernet, Wi-Fi', ru: 'MAC, Ethernet, Wi-Fi' }, color: 'var(--green)' },
     { id: 'physical', name: { en: 'Physical (sub-layer)', ru: 'Физический (под-уровень)' }, desc: { en: 'Signals, cables, radio', ru: 'Сигналы, кабели, радио' }, color: 'var(--amber)' }
   ];
 

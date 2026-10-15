@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3.2 Проектирование баз данных · IB CS Theme A</title>
 <meta name="description" content="A3.2 Database design — подробный разбор на русском: схемы (концептуальная, логическая, физическая), ER-диаграммы, кардинальность, нотация «вороньей лапки», нормализация UNF → 1NF → 2NF → 3NF, аномалии вставки/удаления/обновления, разрешение M:N связей через таблицу-связку, индексы.">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -287,6 +287,12 @@
   }
   .sim-link:hover { transform: translateY(-2px); }
   .sim-link::before { content: '▶'; font-size: 0.85em; }
+
+/* R03: keep network and database diagrams at a legible scale inside their frame. */
+.r03-static-frame { max-width:100%; min-width:0; overflow-x:auto; border:1px solid var(--border,#dbe2eb); border-radius:8px; }
+.r03-static-frame svg { display:block; width:100%; max-width:none; height:auto; margin:0; }
+.r03-static-hint { display:block; position:sticky; left:0; padding:6px 10px; font-size:12px; color:var(--text-muted,#475569); }
+@media (min-width: 621px) { .r03-static-frame { border:0; } .r03-static-hint { display:none; } }
 </style>
 </head>
 <body>
@@ -525,7 +531,7 @@
   <h3>3.3. Пример ER-диаграммы (нотация Чена)</h3>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ER-диаграмма: Player, Team, Manager">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint">Прокрутите схему вправо ↔</span><svg style="min-width:566px" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ER-диаграмма: Player, Team, Manager">
       <!-- Player rectangle -->
       <rect x="20" y="140" width="140" height="70" rx="6" fill="#fde68a" stroke="#92400e" stroke-width="2"/>
       <text x="90" y="180" text-anchor="middle" font-family="Helvetica" font-size="18" font-weight="600" fill="#7c2d12">Player</text>
@@ -550,9 +556,10 @@
       <!-- Manager rectangle -->
       <rect x="500" y="20" width="140" height="60" rx="6" fill="#fde68a" stroke="#92400e" stroke-width="2"/>
       <text x="570" y="55" text-anchor="middle" font-family="Helvetica" font-size="18" font-weight="600" fill="#7c2d12">Manager</text>
-      <!-- This goes via separate diamond - simplified: directly to second instance below -->
-      <line x1="570" y1="335" x2="570" y2="350" stroke="#475569" stroke-width="0"/>
-    </svg>
+      <!-- Line Manages-Manager: routed around the right side of Team -->
+      <polyline points="630,295 665,295 665,50 640,50" fill="none" stroke="#475569" stroke-width="2"/>
+      <text x="645" y="44" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e293b">1</text>
+    </svg></div>
     <span class="caption">Концептуальная ER-диаграмма: Player N : 1 Team, Team 1 : 1 Manager. Ромбы — связи (Plays, Manages), прямоугольники — сущности.</span>
   </div>
 
@@ -600,7 +607,7 @@
   <h3>3.5. Crow's foot — кратко, как читать символы</h3>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Символы crow's foot нотации">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint">Прокрутите схему вправо ↔</span><svg style="min-width:566px" viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Символы crow's foot нотации">
       <!-- Mandatory one -->
       <line x1="40" y1="40" x2="180" y2="40" stroke="#1e293b" stroke-width="2"/>
       <line x1="165" y1="25" x2="165" y2="55" stroke="#1e293b" stroke-width="3"/>
@@ -628,7 +635,7 @@
       <line x1="180" y1="190" x2="160" y2="190" stroke="#1e293b" stroke-width="2"/>
       <line x1="180" y1="190" x2="160" y2="210" stroke="#1e293b" stroke-width="2"/>
       <text x="220" y="195" font-family="Helvetica" font-size="14" fill="#1e293b">Optional many — 0 или больше</text>
-    </svg>
+    </svg></div>
     <span class="caption">Четыре основных символа crow's foot. «Лапка» = много, двойная черта = ровно один, кружок = ноль (optional).</span>
   </div>
 
@@ -656,7 +663,7 @@
   </p>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Разрешение M:N через junction table">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint">Прокрутите схему вправо ↔</span><svg style="min-width:760px" viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Разрешение M:N через junction table">
       <!-- Student -->
       <rect x="20" y="60" width="160" height="90" rx="6" fill="#dbeafe" stroke="#1e40af" stroke-width="2"/>
       <text x="100" y="85" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e40af">STUDENT</text>
@@ -689,7 +696,7 @@
       <text x="560" y="98" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">1</text>
 
       <text x="380" y="200" text-anchor="middle" font-family="Helvetica" font-size="12" font-style="italic" fill="#475569">M:N (Student — Course) превращается в две связи 1:N через таблицу-связку Enrollment</text>
-    </svg>
+    </svg></div>
     <span class="caption">Связь «многие-ко-многим» между Student и Course разрешена через таблицу-связку Enrollment.</span>
   </div>
 
@@ -1289,7 +1296,7 @@
   </p>
 
   <!-- ============ SECTION 9: SCHEMA DIAGRAM ============ -->
-  <h2>9. Схема-диаграмма: логическая модель vs физическая</h2>
+  <h2>9. Схема-диаграмма физической модели</h2>
 
   <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
     <b>EN summary — Schema diagrams.</b> Once a database is normalised, a schema diagram offers a compact picture: each entity is drawn as a rectangle that lists its attributes, with relationships shown as lines between primary keys and foreign keys. The logical schema diagram lists the attributes alongside their key roles but omits data types. The physical schema diagram extends it by adding concrete types such as VARCHAR(25) and CHAR(6), plus storage hints like indexes. Both share the same entities and links — the physical version just makes the implementation choices explicit.
@@ -1300,7 +1307,7 @@
   </p>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema diagram логического уровня">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint">Прокрутите схему вправо ↔</span><svg style="min-width:760px" viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema diagram физического уровня">
       <!-- STUDENT -->
       <rect x="20" y="20" width="200" height="180" rx="6" fill="#f0f9ff" stroke="#0369a1" stroke-width="2"/>
       <rect x="20" y="20" width="200" height="28" rx="6" fill="#0369a1"/>
@@ -1329,8 +1336,8 @@
       <text x="460" y="166" font-family="ui-monospace" font-size="11" fill="#1e293b">Flight: char(1)</text>
       <text x="460" y="184" font-family="ui-monospace" font-size="11" fill="#1e293b">Description: text</text>
       <text x="460" y="202" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">TeacherID: varchar(6) FK</text>
-    </svg>
-    <span class="caption">Schema diagram: фрагмент логической схемы для системы школьных поездок. Видны типы данных, PK и FK.</span>
+    </svg></div>
+    <span class="caption">Фрагмент физической схемы для системы школьных поездок (таблицы STUDENT и TRIP). Видны типы данных, PK и FK. Поле TeacherID ссылается на таблицу TEACHER, которой во фрагменте нет.</span>
   </div>
 
   <h3>9.1. Логический vs физический — в чём разница</h3>

@@ -43,6 +43,29 @@
     const binary = gate().binary;
     const onColor = T.green, offColor = T.textFaint;
 
+    const mobile = window.matchMedia('(max-width: 620px)').matches;
+    if (mobile) {
+      svg.dataset.mobileLayout = 'vertical';
+      svg.setAttribute('viewBox', '0 0 280 380');
+      const text = (x, y, value) => '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="14" fill="' + T.text + '">' + value + '</text>';
+      let m = text(binary ? 90 : 140, 30, 'A=' + a);
+      m += line(binary ? 90 : 140, 40, binary ? 90 : 140, 120, a ? onColor : offColor, a);
+      if (binary) {
+        m += text(190, 30, 'B=' + b);
+        m += line(190, 40, 190, 120, b ? onColor : offColor, b);
+      }
+      // Rotate the standard gate outline, keeping its label upright.
+      m += '<g transform="rotate(90 140 170)">' + gateShape(gateSel.value, 90, 170, binary, T).replace(/<text[^>]*>[^<]*<\/text>/g, '') + '</g>';
+      m += text(140, 175, gateSel.value);
+      const outputStart = ['NOT', 'NAND', 'NOR'].includes(gateSel.value) ? 236 : gateSel.value === 'XOR' ? 225 : 220;
+      m += line(140, outputStart, 140, 330, out ? onColor : offColor, out);
+      m += '<circle cx="140" cy="330" r="16" fill="' + (out ? onColor : T.surface2) + '" stroke="' + T.border + '"/>';
+      m += text(140, 335, out);
+      m += text(140, 365, L() === 'ru' ? 'Выход' : 'Output');
+      svg.innerHTML = m;
+      return;
+    }
+    delete svg.dataset.mobileLayout;
     const W = 500, H = 220;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     let s = '';
@@ -161,6 +184,7 @@
   gateSel.addEventListener('change', update);
   inAEl.addEventListener('change', update);
   inBEl.addEventListener('change', update);
+  window.addEventListener('resize', update);
   document.addEventListener('themechange', update);
   document.addEventListener('langchange', update);
 

@@ -53,6 +53,37 @@
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
 
+    const mobile = window.innerWidth <= 620;
+    if (mobile) {
+      svg.dataset.mobileLayout = 'vertical';
+      svg.setAttribute('viewBox', '0 0 280 ' + (resolved ? 580 : 420));
+      const student = [{ text: 'StudentID', pk: true }, { text: 'Name' }, { text: 'Email' }];
+      const course = [{ text: 'CourseID', pk: true }, { text: 'Title' }, { text: 'Credits' }];
+      svg.appendChild(entityBox(40, 20, lang === 'ru' ? 'STUDENT (Студент)' : 'STUDENT', student));
+      if (resolved) {
+        svg.appendChild(entityBox(40, 200, lang === 'ru' ? 'ENROLMENT (Запись)' : 'ENROLMENT',
+          [{ text: 'StudentID', fk: true }, { text: 'CourseID', fk: true }, { text: 'EnrolDate' }], '#fef3c7'));
+        svg.appendChild(entityBox(40, 380, lang === 'ru' ? 'COURSE (Курс)' : 'COURSE', course));
+        [[126, 200, '1', 'M'], [306, 380, 'M', '1']].forEach(([top, bottom, a, b]) => {
+          svg.appendChild(line(140, top, 140, bottom, '#10b981', 3));
+          svg.appendChild(text(156, top + 18, a, { fill: '#10b981', weight: 700 }));
+          svg.appendChild(text(156, bottom - 8, b, { fill: '#10b981', weight: 700 }));
+        });
+        (lang === 'ru' ? ['M:N → связующая таблица', 'Две связи 1:M'] : ['M:N → junction table', 'Two 1:M relationships']).forEach((t, i) =>
+          svg.appendChild(text(140, 530 + i * 20, t, { fill: '#10b981', weight: 600 })));
+      } else {
+        svg.appendChild(entityBox(40, 220, lang === 'ru' ? 'COURSE (Курс)' : 'COURSE', course));
+        svg.appendChild(line(140, 126, 140, 220, '#ef4444', 3));
+        svg.appendChild(text(156, 146, 'M', { fill: '#ef4444', weight: 700 }));
+        svg.appendChild(text(156, 210, 'N', { fill: '#ef4444', weight: 700 }));
+        svg.appendChild(text(152, 178, 'enrols in', { anchor: 'start', fill: '#ef4444' }));
+        (lang === 'ru' ? ['M:N нельзя реализовать', 'напрямую в реляционной БД'] : ['M:N cannot be implemented', 'directly in a relational DB']).forEach((t, i) =>
+          svg.appendChild(text(140, 365 + i * 20, t, { fill: '#ef4444', weight: 600 })));
+      }
+      return;
+    }
+    delete svg.dataset.mobileLayout;
+    svg.setAttribute('viewBox', '0 0 800 280');
     if (!resolved) {
       // M:N: Student ↔ Course
       svg.appendChild(entityBox(80, 60,
@@ -117,6 +148,8 @@
     resetBtn.disabled = true;
   });
   document.addEventListener('langchange', render);
+  document.addEventListener('themechange', render);
+  window.addEventListener('resize', render);
   resetBtn.disabled = true;
   render();
 })();

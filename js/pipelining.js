@@ -113,7 +113,7 @@
     }
     // ellipsis hint when sequential overflows
     if (mode === 'seq' && total > nCols) {
-      s += '<text x="' + (W - rightPad) + '" y="' + (topPad - 8) +
+      s += '<text x="' + (W - rightPad) + '" y="48' +
            '" fill="' + T.textFaint + '" font-size="11" text-anchor="end">… ' + total + ' ' + tr('total', 'всего') + '</text>';
     }
 
