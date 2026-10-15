@@ -167,7 +167,7 @@ window.QUIZ_DATA = [
     model: {
       en: [
         '<b>Router</b> → operates at the <b>Internet/Network layer</b> (1), using <b>IP addresses</b> (1).',
-        '<b>Switch</b> → operates at the <b>Network Access/Data-Link layer</b> (1), using <b>MAC addresses</b> (1).'
+        '<b>Switch</b> → operates at the <b>Network interface/Data-Link layer</b> (1), using <b>MAC addresses</b> (1).'
       ],
       ru: ['Четыре балла = уровень + тип адреса для каждого устройства.']
     }
@@ -1722,7 +1722,7 @@ window.NOTES_DATA = {
       ],
       'Switches': [
         '<b>Function:</b> connect devices <b>within the same LAN</b>, forwarding a frame only to the port of the destination <b>MAC address</b>.',
-        '<b>Layer:</b> Network Access/Data-Link (TCP/IP layer 2).',
+        '<b>Layer:</b> Network interface/Data-Link (TCP/IP layer 2).',
         '<b>Versus a hub:</b> a hub broadcasts every frame to every port → collisions and shared bandwidth. A switch learns MAC→port and sends only where needed.'
       ],
       'Modems': [
@@ -1831,7 +1831,7 @@ window.NOTES_DATA = {
         '<b>Application layer</b> — user-facing protocols (HTTP, FTP, SMTP, DNS). Generates the data.',
         '<b>Transport layer</b> — TCP or UDP. Adds <b>port numbers</b>, segments the data, handles reliability if TCP.',
         '<b>Internet (Network) layer</b> — IP. Adds <b>IP addresses</b>, decides routing between networks. Routers operate here.',
-        '<b>Network Access (Link/Data-Link) layer</b> — Ethernet, Wi-Fi. Adds the <b>MAC address</b> and turns frames into electrical/optical/radio signals. Switches operate here.'
+        '<b>Network interface (Link/Data-Link) layer</b> — Ethernet, Wi-Fi. Adds the <b>MAC address</b> and turns frames into electrical/optical/radio signals. Switches operate here.'
       ],
       'Encapsulation': [
         '<b>Sender:</b> each layer wraps the data with its own <b>header</b> as it goes down — Application → Transport (adds port) → Internet (adds IP) → Link (adds MAC). The result is a <b>frame</b> on the wire.',
@@ -1849,7 +1849,7 @@ window.NOTES_DATA = {
         '<b>Прикладной</b> — пользовательские протоколы (HTTP, FTP, SMTP, DNS). Создаёт данные.',
         '<b>Транспортный</b> — TCP или UDP. Добавляет <b>порты</b>, делит данные на сегменты, надёжность (если TCP).',
         '<b>Межсетевой</b> — IP. Добавляет <b>IP-адреса</b>, решает маршрутизацию между сетями. Здесь работают маршрутизаторы.',
-        '<b>Сетевого доступа (канальный)</b> — Ethernet, Wi-Fi. Добавляет <b>MAC</b> и превращает кадры в электрические/оптические/радио-сигналы. Здесь работают коммутаторы.'
+        '<b>Сетевого интерфейса (канальный)</b> — Ethernet, Wi-Fi. Добавляет <b>MAC</b> и превращает кадры в электрические/оптические/радио-сигналы. Здесь работают коммутаторы.'
       ],
       'Инкапсуляция': [
         '<b>Отправитель:</b> каждый уровень оборачивает данные своим <b>заголовком</b> сверху вниз — прикладной → транспортный (порт) → межсетевой (IP) → канальный (MAC). На проводе это уже <b>кадр</b>.',

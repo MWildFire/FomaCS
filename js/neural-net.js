@@ -136,7 +136,8 @@
         x: layerX[l], y: 40, 'text-anchor': 'middle',
         'font-size': 11, fill: T.textMuted
       });
-      sub.textContent = l === 1 ? (actSel.options[actSel.selectedIndex].text) : '';
+      // Hidden layer shows the chosen activation; output layer always uses softmax (see forward()).
+      sub.textContent = l === 1 ? (actSel.options[actSel.selectedIndex].text) : l === 2 ? 'softmax' : '';
       svg.appendChild(sub);
     }
 

@@ -142,10 +142,12 @@
     // ---- Cache box (middle) ----
     const cacheX = 270, cacheW = 280;
     s += panel(cacheX, 20, cacheW, H - 40, T, tr('L1 Cache', 'Кэш L1') + ' · ' + cache.length + ' ' + tr('slots', 'ячеек'));
-    const slotH = Math.min(38, (H - 90) / cache.length);
+    // Slots must stay inside the panel (bottom edge at y=340) for 4, 8 and 16 slots.
+    const slotGap = 3;
+    const slotH = Math.min(38, (H - 90 - slotGap * (cache.length - 1)) / cache.length);
     const slotY0 = 60;
     for (let i = 0; i < cache.length; i++) {
-      const y = slotY0 + i * (slotH + 4);
+      const y = slotY0 + i * (slotH + slotGap);
       const slot = cache[i];
       const isHit  = lastEvent && lastEvent.kind === 'hit'  && lastEvent.slot === i;
       const isMiss = lastEvent && lastEvent.kind === 'miss' && lastEvent.slot === i;
@@ -202,7 +204,7 @@
     }
 
     // ---- Footer: sequence ticker + legend ----
-    const footY = H - 18;
+    const footY = H - 6;  // below the panels, whose bottom edge is at y=340
     const remaining = sequence.length - cursor;
     s += '<text x="20" y="' + footY + '" fill="' + T.textFaint + '" font-size="11">' +
          tr('Progress', 'Прогресс') + ': ' + cursor + ' / ' + sequence.length +

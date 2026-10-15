@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A3.2 Проектирование баз данных · IB CS Theme A</title>
+<meta name="description" content="A3.2 Database design — подробный разбор на русском: схемы (концептуальная, логическая, физическая), ER-диаграммы, кардинальность, нотация «вороньей лапки», нормализация UNF → 1NF → 2NF → 3NF, аномалии вставки/удаления/обновления, разрешение M:N связей через таблицу-связку, индексы.">
+<link rel="stylesheet" href="styles.css?v=11">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card .label-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 16px;
+    margin: 14px 0;
+  }
+  .device-card .label-row .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .device-card .layer-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .device-card .layer-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .task-card {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .task-card { background: rgba(16,185,129,0.10); }
+  .task-card h3 {
+    margin-top: 0;
+    color: var(--green);
+  }
+  .task-card ol, .task-card ul { padding-left: 22px; line-height: 1.7; }
+  .task-card li { margin-bottom: 6px; }
+  .analogy-list {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    margin: 10px 0;
+  }
+  .analogy-list ul { margin: 4px 0; }
+  .scenario {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .nf-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 28px;
+    font-size: 0.92rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .nf-table th {
+    background: var(--violet);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .nf-table td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+  .nf-table .pk { color: var(--accent); font-weight: 700; }
+  .nf-table .fk { color: var(--green); font-weight: 700; }
+  .nf-table .entity-name { font-weight: 700; color: var(--primary); font-family: inherit; font-size: 0.95rem; }
+  .nf-table .indent { padding-left: 18px; display: inline-block; }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 24px;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    display: block;
+  }
+  .data-table th {
+    background: var(--surface-2);
+    color: var(--primary);
+    padding: 8px 10px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .data-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+  }
+  .erd-svg-wrap {
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0 24px;
+    overflow-x: auto;
+    text-align: center;
+  }
+  .erd-svg-wrap svg { max-width: 100%; height: auto; }
+  .erd-svg-wrap .caption {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .sim-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-weight: 600;
+    margin: 6px 6px 6px 0;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s;
+  }
+  .sim-link:hover { transform: translateY(-2px); }
+  .sim-link::before { content: '▶'; font-size: 0.85em; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">A</span>
+      <span class="lang-ru-inline">IB CS · Тема A</span><span class="lang-en-inline">IB CS · Topic A</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"><span class="lang-ru-inline">Обзор</span><span class="lang-en-inline">Overview</span></a>
+      <a href="fundamentals.html"><span class="lang-ru-inline">A1 Основы</span><span class="lang-en-inline">A1 Fundamentals</span></a>
+      <a href="networks.html"><span class="lang-ru-inline">A2 Сети</span><span class="lang-en-inline">A2 Networks</span></a>
+      <a href="setevye-ustroistva.html"><span class="lang-ru-inline">A2.1.3 Устройства</span><span class="lang-en-inline">A2.1.3 Network devices</span></a>
+      <a href="databases.html"><span class="lang-ru-inline">A3 Базы данных</span><span class="lang-en-inline">A3 Databases</span></a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html"><span class="lang-ru-inline">Квиз</span><span class="lang-en-inline">Quiz</span></a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="databases.html" class="back-link"><span class="lang-ru-inline">← Назад к A3 Базы данных</span><span class="lang-en-inline">← Back to A3 Databases</span></a>
+
+  <span class="hero-eyebrow" style="background:rgba(139,92,246,0.14); color:#6d28d9">
+    A3.2 · Database Design
+  </span>
+
+  <h1><span class="lang-ru-inline">Проектирование баз данных</span><span class="lang-en-inline">Database design</span></h1>
+
+  <p class="lede"><span class="lang-ru-inline">
+    Эта тема (<b>A3.2</b>) — про то, как <b>спроектировать</b> базу данных до того, как ты впишешь в неё хоть один байт. Здесь ты учишься: рисовать <b>ER-диаграммы</b> (Entity-Relationship), показывать связи между таблицами, понимать <b>кардинальность</b> (1:1, 1:N, M:N), <b>нормализовывать</b> базу до 3NF (третьей нормальной формы), убирать <b>аномалии</b> вставки, удаления и обновления, и выбирать правильные типы данных. Цель — база, в которой данные не дублируются, не теряются и легко обновляются.
+  </span><span class="lang-en-inline">This topic (<b>A3.2</b>) is about how to <b>design</b> a database before you write even a single byte into it. Here you learn to draw <b>ER diagrams</b> (Entity-Relationship), show the links between tables, understand <b>cardinality</b> (1:1, 1:N, M:N), <b>normalize</b> a database to 3NF (third normal form), remove <b>anomalies</b> of insertion, deletion and update, and choose the right data types. The goal is a database in which data is not duplicated, is not lost and is easy to update.</span></p>
+
+  <div style="margin: 20px 0 28px"><span class="lang-ru-inline">
+    <a class="sim-link" href="databases.html?v=11#norm-sim">Симулятор: нормализация 1NF → 2NF → 3NF</a>
+    <a class="sim-link" href="databases.html?v=11#erd-sim">Симулятор: M:N через таблицу-связку</a>
+  </span><span class="lang-en-inline"><a class="sim-link" href="databases.html?v=11#norm-sim">Simulator: normalization 1NF → 2NF → 3NF</a>
+    <a class="sim-link" href="databases.html?v=11#erd-sim">Simulator: M:N through a junction table</a></span></div>
+
+  
+
+  
+
+  <!-- ============ SECTION 1: SUMMARY ============ -->
+  <h2><span class="lang-ru-inline">1. Кратко: чему посвящён раздел A3.2</span><span class="lang-en-inline">1. In brief: what section A3.2 covers</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Scope of A3.2.</b> The IB syllabus splits database design into seven sub-topics: schema levels (conceptual, logical, physical), ER diagram construction, data type selection, table construction with primary and foreign keys, the rationale for normalization, applying normalization through 3NF on realistic scenarios, and evaluating denormalization. The golden rule of normalization is that every non-key attribute must depend on the key, the whole key, and nothing but the key — any deviation signals a table that must be split.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    A3.2 в учебнике IB поделён на <b>семь под-тем</b>. Запомни их структуру — на экзамене любые вопросы про дизайн БД ложатся в одну из этих ячеек:
+  </span><span class="lang-en-inline">In the IB textbook, A3.2 is divided into <b>seven subtopics</b>. Remember their structure: in the exam, any question on database design falls into one of these rows:</span></p>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Под-тема</span><span class="lang-en-inline">Subtopic</span></th>
+        <th><span class="lang-ru-inline">Что нужно уметь</span><span class="lang-en-inline">What you need to be able to do</span></th>
+        <th><span class="lang-ru-inline">Ключевые слова</span><span class="lang-en-inline">Key words</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A3.2.1</td>
+        <td><span class="lang-ru-inline">Описать <b>схему БД</b>: концептуальная, логическая, физическая.</span><span class="lang-en-inline">Describe the <b>database schema</b>: conceptual, logical, physical.</span></td>
+        <td>Schema, conceptual, logical, physical</td>
+      </tr>
+      <tr>
+        <td>A3.2.2</td>
+        <td><span class="lang-ru-inline">Построить <b>ER-диаграмму</b> (entities, attributes, relationships).</span><span class="lang-en-inline">Construct an <b>ER diagram</b> (entities, attributes, relationships).</span></td>
+        <td>ERD, Chen, crow's foot, Barker</td>
+      </tr>
+      <tr>
+        <td>A3.2.3</td>
+        <td><span class="lang-ru-inline">Выбрать правильный <b>тип данных</b> (string, numeric, date/time).</span><span class="lang-en-inline">Choose the correct <b>data type</b> (string, numeric, date/time).</span></td>
+        <td>CHAR, VARCHAR, INT, DATE, ENUM</td>
+      </tr>
+      <tr>
+        <td>A3.2.4</td>
+        <td><span class="lang-ru-inline">Построить <b>таблицы</b> с ключами (PK, FK) и cascading.</span><span class="lang-en-inline">Construct <b>tables</b> with keys (PK, FK) and cascades.</span></td>
+        <td>Primary key, foreign key, cascade</td>
+      </tr>
+      <tr>
+        <td>A3.2.5</td>
+        <td><span class="lang-ru-inline">Объяснить разницу между <b>нормальными формами</b> и аномалии.</span><span class="lang-en-inline">Explain the difference between <b>normal forms</b> and anomalies.</span></td>
+        <td>UNF, 1NF, 2NF, 3NF, anomalies</td>
+      </tr>
+      <tr>
+        <td>A3.2.6</td>
+        <td><span class="lang-ru-inline"><b>Нормализовать</b> базу до 3NF на реальных сценариях.</span><span class="lang-en-inline"><b>Normalize</b> a database to 3NF in real-life scenarios.</span></td>
+        <td>e-commerce, library, hospital</td>
+      </tr>
+      <tr>
+        <td>A3.2.7</td>
+        <td><span class="lang-ru-inline">Оценить <b>денормализацию</b> — когда и зачем она нужна.</span><span class="lang-en-inline">Evaluate <b>denormalization</b>: when and why it is needed.</span></td>
+        <td>Performance, read-heavy, redundancy</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Главное правило нормализации:</b> «Данные должны зависеть от ключа, от всего ключа, и ни от чего, кроме ключа» (<i>«The data should rely on the key, the whole key and nothing but the key»</i>). Если что-то в таблице зависит от <b>части</b> ключа или от <b>другого не-ключевого</b> поля — это надо вынести в отдельную таблицу.
+  </span><span class="lang-en-inline">💡 <b>Main rule of normalization:</b> <i>“The data should rely on the key, the whole key and nothing but the key”</i>. If something in a table depends on <b>part</b> of a key or on <b>another non-key</b> field, move it to a separate table.</span></div>
+
+  <!-- ============ SECTION 2: SCHEMA ============ -->
+  <h2><span class="lang-ru-inline">2. Схема базы данных (A3.2.1)</span><span class="lang-en-inline">2. Database schema (A3.2.1)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Database schemas.</b> A schema is the blueprint of a database — entities, attributes, and relationships, but no actual rows. The IB recognises three levels of zoom. The conceptual schema lists entities and their relationships only, aimed at users and stakeholders. The logical schema adds attributes plus primary and foreign keys, suitable for developers. The physical schema layers on data types, storage structures, indexes, and file layout — the level the DBA actually deploys. Each level extends the previous one rather than replacing it.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    <b>Схема (schema)</b> — это «чертёж» базы данных. Это <b>план</b>, который описывает <b>сущности</b> (таблицы), <b>атрибуты</b> (поля) и <b>связи</b> между ними — но <b>не содержит самих данных</b>. Схема показывает, как база <i>устроена</i>, а не что в ней лежит.
+  </span><span class="lang-en-inline"><b>Schema</b> is a blueprint of a database. It is a <b>plan</b> that describes <b>entities</b> (tables), <b>attributes</b> (fields) and <b>relationships</b> between them, but it <b>does not contain the data itself</b>. The schema shows how the database is <i>structured</i>, not what is stored in it.</span></p>
+
+  <p><span class="lang-ru-inline">
+    В курсе IB надо знать <b>три уровня схемы</b>. Они идут от <b>наименее детального</b> к <b>наиболее детальному</b> — как зум-ин на карту:
+  </span><span class="lang-en-inline">In the IB course you need to know <b>three levels of schema</b>. They go from the <b>least detailed</b> to the <b>most detailed</b>, like zooming in on a map:</span></p>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🗺️</span> A. Концептуальная схема (Conceptual schema)</span><span class="lang-en-inline"><span class="device-emoji">🗺️</span> A. Conceptual schema</span></h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Что показывает</span><span class="lang-en-inline">What it shows</span></div>
+      <div><span class="lang-ru-inline">Только <b>сущности</b> (таблицы) и <b>связи</b> между ними. <b>Без атрибутов</b>, без типов данных, без ограничений.</span><span class="lang-en-inline">Only <b>entities</b> (tables) and the <b>relationships</b> between them. <b>No attributes</b>, no data types, no constraints.</span></div>
+      <div class="label"><span class="lang-ru-inline">Для кого</span><span class="lang-en-inline">Who it is for</span></div>
+      <div><span class="lang-ru-inline">Для <b>пользователей</b> и <b>администраторов / разработчиков</b> — даёт высокоуровневую картину.</span><span class="lang-en-inline">For <b>users</b> and <b>administrators / developers</b>. It gives a high-level picture.</span></div>
+      <div class="label"><span class="lang-ru-inline">Инструмент</span><span class="lang-en-inline">Tool</span></div>
+      <div><span class="lang-ru-inline"><b>ER-диаграмма</b> (Entity-Relationship Diagram) — рисуется в нотации Чена (Chen), «вороньей лапки» (crow's foot) или Баркера (Barker).</span><span class="lang-en-inline">An <b>ER diagram</b> (Entity-Relationship Diagram) is drawn in Chen, crow's foot or Barker notation.</span></div>
+      <div class="label"><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></div>
+      <div><span class="lang-ru-inline">«Один игрок играет за одну команду. У одной команды много игроков. У одной команды один менеджер.»</span><span class="lang-en-inline">One player plays for one team. One team has many players. One team has one manager.</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">📐</span> B. Логическая схема (Logical schema)</span><span class="lang-en-inline"><span class="device-emoji">📐</span> B. Logical schema</span></h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Что показывает</span><span class="lang-en-inline">What it shows</span></div>
+      <div><span class="lang-ru-inline">Сущности <b>+ их атрибуты</b>, плюс <b>первичные (PK)</b> и <b>внешние (FK)</b> ключи. <b>Без типов данных</b>.</span><span class="lang-en-inline">Entities <b>+ their attributes</b>, plus <b>primary (PK)</b> and <b>foreign (FK)</b> keys. <b>No data types</b>.</span></div>
+      <div class="label"><span class="lang-ru-inline">Для кого</span><span class="lang-en-inline">Who it is for</span></div>
+      <div><span class="lang-ru-inline">Для <b>программиста и администратора</b>. Пользователь её не видит.</span><span class="lang-en-inline">For the <b>programmer and administrator</b>. The user does not see it.</span></div>
+      <div class="label"><span class="lang-ru-inline">Обозначения</span><span class="lang-en-inline">Notation</span></div>
+      <div><span class="lang-ru-inline">Первичный ключ обычно <b>жирным</b>, внешний — со <b>звёздочкой (*)</b>.</span><span class="lang-en-inline">The primary key is usually shown in <b>bold</b>, the foreign key with an <b>asterisk (*)</b>.</span></div>
+      <div class="label"><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></div>
+      <div><code>Player(<b>Player_ID</b>, Name, Squad_Number, Position, Nationality, Team_ID*)</code></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">⚙️</span> C. Физическая схема (Physical schema)</span><span class="lang-en-inline"><span class="device-emoji">⚙️</span> C. Physical schema</span></h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Что показывает</span><span class="lang-en-inline">What it shows</span></div>
+      <div><span class="lang-ru-inline">Логическую схему <b>+ типы данных</b> (VARCHAR(20), INT, DATE…), плюс пометки PK / FK. Также — как данные <b>физически хранятся</b> на диске: файлы, индексы, структуры хранения.</span><span class="lang-en-inline">The logical schema <b>+ data types</b> (VARCHAR(20), INT, DATE…), plus the PK / FK marks. It also shows how the data is <b>physically stored</b> on disk: files, indexes, storage structures.</span></div>
+      <div class="label"><span class="lang-ru-inline">Для кого</span><span class="lang-en-inline">Who it is for</span></div>
+      <div><span class="lang-ru-inline">Только для <b>программиста</b> — именно по этой схеме создаются таблицы в СУБД (например, через SQL <code>CREATE TABLE</code>).</span><span class="lang-en-inline">Only for the <b>programmer</b>: the tables in the DBMS are created from this schema (for example, with the SQL <code>CREATE TABLE</code>).</span></div>
+      <div class="label"><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></div>
+      <div><code>Player_ID: CHAR(6) PK</code><br><code>Name: VARCHAR(20)</code><br><code>Squad_Number: INT</code><br><code>Team_ID: CHAR(6) FK</code></div>
+    </div>
+  </div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Как запомнить:</b> Концептуальная = <b>«что и с чем связано»</b>. Логическая = добавили <b>«какие поля и какие ключи»</b>. Физическая = добавили <b>«какого типа эти поля и как они хранятся»</b>.
+  </span><span class="lang-en-inline">💡 <b>How to remember:</b> Conceptual = <b>“what is linked to what”</b>. Logical = add <b>“which fields and which keys”</b>. Physical = add <b>“what type these fields are and how they are stored”</b>.</span></div>
+
+  <!-- ============ SECTION 3: ERD ============ -->
+  <h2><span class="lang-ru-inline">3. ER-диаграммы (A3.2.2)</span><span class="lang-en-inline">3. ER diagrams (A3.2.2)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Entity-Relationship diagrams.</b> An ERD captures three building blocks: entities (the nouns we store data about), attributes (their characteristics), and relationships (how entities interact). Each relationship carries a cardinality — one-to-one, one-to-many, or many-to-many — and a modality flagging whether participation is mandatory or optional. Three notations are common in IB papers: Chen uses rectangles, ovals, and diamonds with labels; crow's foot uses line endings to encode counts; Barker prefers solid and dashed lines. All three express identical structure, just with different glyphs.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    <b>ER-диаграмма (Entity-Relationship Diagram, ERD)</b> — это универсальная схема, понятная разработчикам в любой стране. Она показывает три вещи: <b>сущности</b>, <b>связи</b> между ними и (на детальных уровнях) <b>атрибуты</b>.
+  </span><span class="lang-en-inline"><b>ER diagram (Entity-Relationship Diagram, ERD)</b> is a standard diagram that developers understand in any country. It shows three things: <b>entities</b>, <b>relationships</b> between them and (at the more detailed levels) <b>attributes</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">3.1. Из чего состоит ER-диаграмма</span><span class="lang-en-inline">3.1. What an ER diagram consists of</span></h3>
+
+  <div class="device-card">
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Сущность (Entity)</span><span class="lang-en-inline">Entity</span></div>
+      <div><span class="lang-ru-inline"><b>Объект</b>, о котором мы храним данные. Обычно <b>существительное</b>. Рисуется <b>прямоугольником</b>. Примеры: Student, Car, Player, Course, Product.</span><span class="lang-en-inline">An <b>object</b> that we store data about. Usually a <b>noun</b>. Drawn as a <b>rectangle</b>. Examples: Student, Car, Player, Course, Product.</span></div>
+      <div class="label"><span class="lang-ru-inline">Атрибут (Attribute)</span><span class="lang-en-inline">Attribute</span></div>
+      <div><span class="lang-ru-inline"><b>Характеристика</b> сущности (поле в таблице). В нотации Чена рисуется <b>овалом</b>. Примеры: у Car — make, model, engine size, fuel type, registration number.</span><span class="lang-en-inline">A <b>characteristic</b> of an entity (a field in a table). In Chen notation it is drawn as an <b>oval</b>. Examples: Car has make, model, engine size, fuel type, registration number.</span></div>
+      <div class="label"><span class="lang-ru-inline">Связь (Relationship)</span><span class="lang-en-inline">Relationship</span></div>
+      <div><span class="lang-ru-inline"><b>Как сущности взаимодействуют</b>. Обычно <b>глагол</b>. Рисуется <b>ромбом</b> (нотация Чена) или линией (crow's foot). Примеры: Student studies Course, Teacher teaches Course, Menu contains Menu items.</span><span class="lang-en-inline"><b>How entities interact</b>. Usually a <b>verb</b>. Drawn as a <b>diamond</b> (Chen notation) or as a line (crow's foot). Examples: Student studies Course, Teacher teaches Course, Menu contains Menu items.</span></div>
+      <div class="label"><span class="lang-ru-inline">Ключ (Key)</span><span class="lang-en-inline">Key</span></div>
+      <div><span class="lang-ru-inline">У каждой сущности должен быть хотя бы один <b>ключ</b> — поле, по которому строки уникально идентифицируются.</span><span class="lang-en-inline">Every entity must have at least one <b>key</b>: a field by which rows are uniquely identified.</span></div>
+      <div class="label"><span class="lang-ru-inline">Кардинальность</span><span class="lang-en-inline">Cardinality</span></div>
+      <div><span class="lang-ru-inline"><b>Сколько</b> экземпляров одной сущности связано со <b>сколькими</b> экземплярами другой: 1:1, 1:N, M:N.</span><span class="lang-en-inline"><b>How many</b> instances of one entity are linked to <b>how many</b> instances of another: 1:1, 1:N, M:N.</span></div>
+      <div class="label"><span class="lang-ru-inline">Модальность</span><span class="lang-en-inline">Modality</span></div>
+      <div><span class="lang-ru-inline"><b>Обязательна</b> ли связь. Mandatory — обязательно (квитанция обязана содержать хотя бы одну позицию). Optional — необязательно (актёр может быть, а может и не быть в шоу).</span><span class="lang-en-inline">Whether the relationship is <b>mandatory</b>. Mandatory: it must exist (a receipt must contain at least one item). Optional: it may or may not exist (an actor may or may not appear in a show).</span></div>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">3.2. Кардинальность: 1:1, 1:N, M:N</span><span class="lang-en-inline">3.2. Cardinality: 1:1, 1:N, M:N</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Тип</span><span class="lang-en-inline">Type</span></th>
+        <th><span class="lang-ru-inline">Что значит</span><span class="lang-en-inline">Meaning</span></th>
+        <th><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1:1 (one-to-one)</td>
+        <td><span class="lang-ru-inline">Один экземпляр сущности A связан <b>ровно с одним</b> экземпляром сущности B.</span><span class="lang-en-inline">One instance of entity A is linked to <b>exactly one</b> instance of entity B.</span></td>
+        <td><span class="lang-ru-inline">Один пациент имеет одного владельца (питомец → хозяин). Один человек — один паспорт.</span><span class="lang-en-inline">One patient has one owner (pet → owner). One person has one passport.</span></td>
+      </tr>
+      <tr>
+        <td>1:N (one-to-many)</td>
+        <td><span class="lang-ru-inline">Один экземпляр сущности A связан <b>со многими</b> экземплярами сущности B.</span><span class="lang-en-inline">One instance of entity A is linked to <b>many</b> instances of entity B.</span></td>
+        <td><span class="lang-ru-inline">Один ветеринар выполняет <b>много</b> процедур. Один класс ведёт <b>один</b> учитель, но учитель ведёт <b>много</b> классов.</span><span class="lang-en-inline">One vet performs <b>many</b> treatments. One class is taught by <b>one</b> teacher, but a teacher teaches <b>many</b> classes.</span></td>
+      </tr>
+      <tr>
+        <td>M:N (many-to-many)</td>
+        <td><span class="lang-ru-inline">Многие экземпляры A связаны со многими экземплярами B.</span><span class="lang-en-inline">Many instances of A are linked to many instances of B.</span></td>
+        <td><span class="lang-ru-inline">Один <b>ученик</b> записан на <b>много курсов</b>; один <b>курс</b> посещают <b>много учеников</b>.</span><span class="lang-en-inline">One <b>student</b> is enrolled on <b>many courses</b>; one <b>course</b> is attended by <b>many students</b>.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">3.3. Пример ER-диаграммы (нотация Чена)</span><span class="lang-en-inline">3.3. Example of an ER diagram (Chen notation)</span></h3>
+
+  <div class="erd-svg-wrap">
+    <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ER-диаграмма: Player, Team, Manager">
+      <!-- Player rectangle -->
+      <rect x="20" y="140" width="140" height="70" rx="6" fill="#fde68a" stroke="#92400e" stroke-width="2"/>
+      <text x="90" y="180" text-anchor="middle" font-family="Helvetica" font-size="18" font-weight="600" fill="#7c2d12">Player</text>
+      <!-- Plays diamond -->
+      <polygon points="270,175 330,135 390,175 330,215" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/>
+      <text x="330" y="180" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="600" fill="#7c2d12">Plays</text>
+      <!-- Line Player-Plays -->
+      <line x1="160" y1="175" x2="270" y2="175" stroke="#475569" stroke-width="2"/>
+      <text x="180" y="167" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e293b">N</text>
+      <!-- Team rectangle -->
+      <rect x="500" y="140" width="140" height="70" rx="6" fill="#fde68a" stroke="#92400e" stroke-width="2"/>
+      <text x="570" y="180" text-anchor="middle" font-family="Helvetica" font-size="18" font-weight="600" fill="#7c2d12">Team</text>
+      <!-- Line Plays-Team -->
+      <line x1="390" y1="175" x2="500" y2="175" stroke="#475569" stroke-width="2"/>
+      <text x="475" y="167" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e293b">1</text>
+      <!-- Manages diamond below -->
+      <polygon points="510,295 570,255 630,295 570,335" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/>
+      <text x="570" y="300" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="600" fill="#7c2d12">Manages</text>
+      <!-- Line Team-Manages -->
+      <line x1="570" y1="210" x2="570" y2="255" stroke="#475569" stroke-width="2"/>
+      <text x="578" y="235" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e293b">1</text>
+      <!-- Manager rectangle -->
+      <rect x="500" y="20" width="140" height="60" rx="6" fill="#fde68a" stroke="#92400e" stroke-width="2"/>
+      <text x="570" y="55" text-anchor="middle" font-family="Helvetica" font-size="18" font-weight="600" fill="#7c2d12">Manager</text>
+      <!-- Line Manages-Manager: routed around the right side of Team -->
+      <polyline points="630,295 665,295 665,50 640,50" fill="none" stroke="#475569" stroke-width="2"/>
+      <text x="645" y="44" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e293b">1</text>
+    </svg>
+    <span class="caption"><span class="lang-ru-inline">Концептуальная ER-диаграмма: Player N : 1 Team, Team 1 : 1 Manager. Ромбы — связи (Plays, Manages), прямоугольники — сущности.</span><span class="lang-en-inline">Conceptual ER diagram: Player N : 1 Team, Team 1 : 1 Manager. Diamonds are relationships (Plays, Manages), rectangles are entities.</span></span>
+  </div>
+
+  <h3><span class="lang-ru-inline">3.4. Нотации ER-диаграмм</span><span class="lang-en-inline">3.4. ER diagram notations</span></h3>
+
+  <p><span class="lang-ru-inline">
+    На экзамене ты можешь встретить любую из трёх стандартных нотаций. Все они показывают <b>то же самое</b>, просто другими символами.
+  </span><span class="lang-en-inline">In the exam you may meet any of the three standard notations. They all show <b>the same thing</b>, just with different symbols.</span></p>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Нотация</span><span class="lang-en-inline">Notation</span></th>
+        <th><span class="lang-ru-inline">Сущность</span><span class="lang-en-inline">Entity</span></th>
+        <th><span class="lang-ru-inline">Связь</span><span class="lang-en-inline">Relationship</span></th>
+        <th><span class="lang-ru-inline">Кардинальность</span><span class="lang-en-inline">Cardinality</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Chen</td>
+        <td><span class="lang-ru-inline">Прямоугольник</span><span class="lang-en-inline">Rectangle</span></td>
+        <td><span class="lang-ru-inline">Ромб</span><span class="lang-en-inline">Diamond</span></td>
+        <td><span class="lang-ru-inline">Метки «1» / «N» / «M» на линиях</span><span class="lang-en-inline">Labels “1” / “N” / “M” on the lines</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Crow's foot («воронья лапка»)</span><span class="lang-en-inline">Crow's foot</span></td>
+        <td><span class="lang-ru-inline">Прямоугольник (с атрибутами внутри)</span><span class="lang-en-inline">Rectangle (with attributes inside)</span></td>
+        <td><span class="lang-ru-inline">Просто линия</span><span class="lang-en-inline">Just a line</span></td>
+        <td><span class="lang-ru-inline">Символы на концах: вертикальная черта «‖» = один, «воронья лапка» = много, кружок «○» = optional</span><span class="lang-en-inline">Symbols at the ends: a vertical bar “‖” = one, “crow's foot” = many, circle “○” = optional</span></td>
+      </tr>
+      <tr>
+        <td>Barker</td>
+        <td><span class="lang-ru-inline">Прямоугольник со скруглёнными углами</span><span class="lang-en-inline">Rectangle with rounded corners</span></td>
+        <td><span class="lang-ru-inline">Линия</span><span class="lang-en-inline">Line</span></td>
+        <td><span class="lang-ru-inline">Сплошная линия = mandatory; пунктир = optional; «лапка» = many</span><span class="lang-en-inline">Solid line = mandatory; dashed line = optional; “foot” = many</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Связи читаются в одну сторону!</b> «Меню → пункт меню» обязательно (mandatory): у меню должны быть пункты. Но «пункт меню → меню» — не всегда: пункт меню сам по себе уже еда, без обязательной привязки к меню (если ты не указал иначе).
+  </span><span class="lang-en-inline">💡 <b>Relationships are read in one direction only!</b> “Menu → menu item” is mandatory: a menu must have items. But “menu item → menu” is not always: a menu item is already food in its own right, with no compulsory link to a menu (unless you specify otherwise).</span></div>
+
+  <h3><span class="lang-ru-inline">3.5. Crow's foot — кратко, как читать символы</span><span class="lang-en-inline">3.5. Crow's foot: a brief guide to reading the symbols</span></h3>
+
+  <div class="erd-svg-wrap">
+    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Символы crow's foot нотации">
+      <!-- Mandatory one -->
+      <line x1="40" y1="40" x2="180" y2="40" stroke="#1e293b" stroke-width="2"/>
+      <line x1="165" y1="25" x2="165" y2="55" stroke="#1e293b" stroke-width="3"/>
+      <line x1="175" y1="25" x2="175" y2="55" stroke="#1e293b" stroke-width="3"/>
+      <text x="220" y="45" font-family="Helvetica" font-size="14" fill="#1e293b"<tspan class="lang-ru-inline">Mandatory one — ровно 1 (обязательно)</tspan><tspan class="lang-en-inline">Mandatory one — exactly 1</tspan></text>
+
+      <!-- Optional one -->
+      <line x1="40" y1="90" x2="180" y2="90" stroke="#1e293b" stroke-width="2"/>
+      <circle cx="155" cy="90" r="8" fill="none" stroke="#1e293b" stroke-width="2"/>
+      <line x1="175" y1="75" x2="175" y2="105" stroke="#1e293b" stroke-width="3"/>
+      <text x="220" y="95" font-family="Helvetica" font-size="14" fill="#1e293b"<tspan class="lang-ru-inline">Optional one — 0 или 1</tspan><tspan class="lang-en-inline">Optional one — 0 or 1</tspan></text>
+
+      <!-- Mandatory many -->
+      <line x1="40" y1="140" x2="180" y2="140" stroke="#1e293b" stroke-width="2"/>
+      <line x1="160" y1="125" x2="160" y2="155" stroke="#1e293b" stroke-width="3"/>
+      <line x1="180" y1="140" x2="160" y2="120" stroke="#1e293b" stroke-width="2"/>
+      <line x1="180" y1="140" x2="160" y2="140" stroke="#1e293b" stroke-width="2"/>
+      <line x1="180" y1="140" x2="160" y2="160" stroke="#1e293b" stroke-width="2"/>
+      <text x="220" y="145" font-family="Helvetica" font-size="14" fill="#1e293b"<tspan class="lang-ru-inline">Mandatory many — 1 или больше</tspan><tspan class="lang-en-inline">Mandatory many — 1 or more</tspan></text>
+
+      <!-- Optional many -->
+      <line x1="40" y1="190" x2="180" y2="190" stroke="#1e293b" stroke-width="2"/>
+      <circle cx="150" cy="190" r="8" fill="none" stroke="#1e293b" stroke-width="2"/>
+      <line x1="180" y1="190" x2="160" y2="170" stroke="#1e293b" stroke-width="2"/>
+      <line x1="180" y1="190" x2="160" y2="190" stroke="#1e293b" stroke-width="2"/>
+      <line x1="180" y1="190" x2="160" y2="210" stroke="#1e293b" stroke-width="2"/>
+      <text x="220" y="195" font-family="Helvetica" font-size="14" fill="#1e293b"<tspan class="lang-ru-inline">Optional many — 0 или больше</tspan><tspan class="lang-en-inline">Optional many — 0 or more</tspan></text>
+    </svg>
+    <span class="caption"><span class="lang-ru-inline">Четыре основных символа crow's foot. «Лапка» = много, двойная черта = ровно один, кружок = ноль (optional).</span><span class="lang-en-inline">The four main crow's foot symbols. “Foot” = many, double bar = exactly one, circle = zero (optional).</span></span>
+  </div>
+
+  <!-- ============ SECTION 4: M:N -> JUNCTION TABLE ============ -->
+  <h2><span class="lang-ru-inline">4. Разрешение M:N через таблицу-связку</span><span class="lang-en-inline">4. Resolving M:N through a junction table</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Resolving M:N with a junction table.</b> Relational databases cannot store many-to-many relationships directly without massive duplication. The fix is a third table, often called a junction or link table, that holds pairs of foreign keys pointing back to the two parent entities. Together those foreign keys form a composite primary key, and the original M:N relationship is decomposed into two clean one-to-many links. The junction table is also the natural home for any attribute that describes the relationship itself, such as enrolment date or grade.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Реляционные базы данных <b>не умеют</b> напрямую хранить связь «многие-ко-многим». Если у тебя в ERD появляется M:N — её <b>обязательно</b> надо разбить через <b>третью таблицу (junction / link table)</b>, иначе ты не сможешь корректно сохранить данные без дублирования.
+  </span><span class="lang-en-inline">Relational databases <b>cannot</b> store a many-to-many relationship directly. If an M:N relationship appears in your ERD, it <b>must</b> be split through a <b>third table (junction / link table)</b>, otherwise you cannot store the data correctly without duplicating it.</span></p>
+
+  <h3><span class="lang-ru-inline">4.1. Почему M:N — это проблема</span><span class="lang-en-inline">4.1. Why M:N is a problem</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Представь: в школе есть таблица <code>Student</code> и таблица <code>Course</code>. Один ученик ходит на много курсов, и на каждый курс ходит много учеников. Если попробовать положить связь в саму таблицу — придётся либо <b>дублировать ученика</b> в каждой строке курса, либо <b>дублировать курс</b> в каждой строке ученика. И то и другое — кошмар: данные расползутся, появятся аномалии вставки и обновления.
+  </span><span class="lang-en-inline">Imagine a school with a <code>Student</code> table and a <code>Course</code> table. One student takes many courses, and each course has many students. If you try to store the link inside one of the tables, you have to either <b>duplicate the student</b> in every course row, or <b>duplicate the course</b> in every student row. Both options are a nightmare: the data spreads out of control and insert and update anomalies appear.</span></p>
+
+  <h3><span class="lang-ru-inline">4.2. Решение: таблица-связка (junction table)</span><span class="lang-en-inline">4.2. The solution: a junction table</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Создаётся <b>третья таблица</b>, в которой хранятся <b>только пары идентификаторов</b>: первичный ключ A + первичный ключ B. Эти два поля становятся <b>составным первичным ключом</b>, а каждый из них по отдельности — <b>внешним ключом</b>. Связь M:N <b>разбивается на две связи 1:N</b> — каждая из которых уже легко представима в реляционной БД.
+  </span><span class="lang-en-inline">A <b>third table</b> is created that stores <b>only pairs of identifiers</b>: the primary key of A + the primary key of B. These two fields become a <b>composite primary key</b>, and each of them on its own is a <b>foreign key</b>. The M:N relationship is <b>split into two 1:N relationships</b>, each of which can easily be represented in a relational database.</span></p>
+
+  <div class="erd-svg-wrap">
+    <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Разрешение M:N через junction table">
+      <!-- Student -->
+      <rect x="20" y="60" width="160" height="90" rx="6" fill="#dbeafe" stroke="#1e40af" stroke-width="2"/>
+      <text x="100" y="85" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e40af">STUDENT</text>
+      <text x="30" y="110" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">Student_ID (PK)</text>
+      <text x="30" y="128" font-family="ui-monospace" font-size="11" fill="#1e293b">Name</text>
+      <text x="30" y="145" font-family="ui-monospace" font-size="11" fill="#1e293b">Grade</text>
+
+      <!-- Enrollment (junction) -->
+      <rect x="290" y="60" width="180" height="110" rx="6" fill="#fef3c7" stroke="#92400e" stroke-width="2"/>
+      <text x="380" y="85" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#92400e">ENROLLMENT</text>
+      <text x="300" y="110" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">Student_ID (PK, FK)</text>
+      <text x="300" y="128" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">Course_ID  (PK, FK)</text>
+      <text x="300" y="146" font-family="ui-monospace" font-size="11" fill="#1e293b">Date_Enrolled</text>
+      <text x="300" y="163" font-family="ui-monospace" font-size="11" fill="#1e293b">Grade</text>
+
+      <!-- Course -->
+      <rect x="580" y="60" width="160" height="90" rx="6" fill="#dbeafe" stroke="#1e40af" stroke-width="2"/>
+      <text x="660" y="85" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e40af">COURSE</text>
+      <text x="590" y="110" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">Course_ID (PK)</text>
+      <text x="590" y="128" font-family="ui-monospace" font-size="11" fill="#1e293b">Title</text>
+      <text x="590" y="145" font-family="ui-monospace" font-size="11" fill="#1e293b">Credits</text>
+
+      <!-- Lines -->
+      <line x1="180" y1="105" x2="290" y2="105" stroke="#475569" stroke-width="2"/>
+      <text x="200" y="98" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">1</text>
+      <text x="270" y="98" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">N</text>
+
+      <line x1="470" y1="105" x2="580" y2="105" stroke="#475569" stroke-width="2"/>
+      <text x="490" y="98" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">N</text>
+      <text x="560" y="98" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">1</text>
+
+      <text x="380" y="200" text-anchor="middle" font-family="Helvetica" font-size="12" font-style="italic" fill="#475569"<tspan class="lang-ru-inline">M:N (Student — Course) превращается в две связи 1:N через таблицу-связку Enrollment</tspan><tspan class="lang-en-inline">M:N (Student — Course) becomes two 1:N relationships through the junction table Enrollment</tspan></text>
+    </svg>
+    <span class="caption"><span class="lang-ru-inline">Связь «многие-ко-многим» между Student и Course разрешена через таблицу-связку Enrollment.</span><span class="lang-en-inline">The many-to-many relationship between Student and Course is resolved through the junction table Enrollment.</span></span>
+  </div>
+
+  <h3><span class="lang-ru-inline">4.3. Пример: онлайн-магазин</span><span class="lang-en-inline">4.3. Example: an online shop</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Один <b>покупатель (Customer)</b> покупает много <b>товаров (Product)</b>. Один товар покупают многие покупатели — это M:N. Решение — таблица <code>Order_Line</code> со связкой <code>Customer_ID + Product_ID</code>, плюс полезные поля <code>Quantity</code>, <code>Price_at_purchase</code>, <code>Date</code>.
+  </span><span class="lang-en-inline">One <b>customer</b> buys many <b>products</b>. One product is bought by many customers, which is M:N. The solution is the table <code>Order_Line</code> that links <code>Customer_ID + Product_ID</code>, plus useful fields <code>Quantity</code>, <code>Price_at_purchase</code>, <code>Date</code>.</span></p>
+
+  <h3><span class="lang-ru-inline">4.4. Плюс таблицы-связки</span><span class="lang-en-inline">4.4. Advantages of a junction table</span></h3>
+  <ul style="line-height: 1.7;">
+    <li><span class="lang-ru-inline"><b>В неё можно положить «атрибуты связи»</b>. Например: оценка ученика по курсу (это про <i>факт записи на курс</i>, а не про самого ученика и не про сам курс).</span><span class="lang-en-inline">You can put <b>“attributes of the relationship”</b> into it. For example: a student's grade for a course (this is about the <i>fact of enrolment on a course</i>, not about the student or the course itself).</span></li>
+    <li><span class="lang-ru-inline"><b>Никаких дубликатов</b>: каждая пара хранится один раз.</span><span class="lang-en-inline"><b>No duplicates</b>: each pair is stored once.</span></li>
+    <li><span class="lang-ru-inline"><b>Целостность данных</b>: внешние ключи гарантируют, что нельзя записать ученика на несуществующий курс.</span><span class="lang-en-inline"><b>Data integrity</b>: foreign keys guarantee that a student cannot be enrolled on a course that does not exist.</span></li>
+  </ul>
+
+  <!-- ============ SECTION 5: DATA TYPES ============ -->
+  <h2><span class="lang-ru-inline">5. Типы данных (A3.2.3)</span><span class="lang-en-inline">5. Data types (A3.2.3)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Data types.</b> The syllabus uses MySQL types as a reference. String options include fixed-length CHAR, variable VARCHAR, longer TEXT variants, and constrained ENUM or SET lists. Numeric options span BIT, BOOL, INT, and FLOAT. Date and time options cover DATE, DATETIME, TIMESTAMP, TIME, and YEAR. Choosing the right type matters because storing numbers as strings breaks arithmetic, storing dates as strings breaks ordering, and ENUM enforces a closed value set. Type selection directly affects validation, sort order, and storage efficiency.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    В курсе IB опирается на типы <b>MySQL</b> — это популярная СУБД. Главные категории — <b>строки</b>, <b>числа</b>, <b>дата/время</b>. Правильный тип данных важен, чтобы база могла корректно сравнивать, сортировать и вычислять.
+  </span><span class="lang-en-inline">The IB course relies on the <b>MySQL</b> types. MySQL is a popular DBMS. The main categories are <b>strings</b>, <b>numbers</b> and <b>date/time</b>. The right data type matters so that the database can compare, sort and calculate correctly.</span></p>
+
+  <h3><span class="lang-ru-inline">5.1. Строковые (string)</span><span class="lang-en-inline">5.1. String types</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Тип</span><span class="lang-en-inline">Type</span></th>
+        <th><span class="lang-ru-inline">Описание</span><span class="lang-en-inline">Description</span></th>
+        <th><span class="lang-ru-inline">Когда использовать</span><span class="lang-en-inline">When to use</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>CHAR(n)</td>
+        <td><span class="lang-ru-inline">Строка <b>фиксированной</b> длины (от 0 до 255 символов).</span><span class="lang-en-inline">A string of <b>fixed</b> length (0 to 255 characters).</span></td>
+        <td><span class="lang-ru-inline">Когда длина точно известна: код страны (2 символа), почтовый индекс, ID длиной 6.</span><span class="lang-en-inline">When the length is known exactly: a country code (2 characters), a postcode, a 6-character ID.</span></td>
+      </tr>
+      <tr>
+        <td>VARCHAR(n)</td>
+        <td><span class="lang-ru-inline">Строка <b>переменной</b> длины, до 65 535 символов.</span><span class="lang-en-inline">A string of <b>variable</b> length, up to 65,535 characters.</span></td>
+        <td><span class="lang-ru-inline">Имена, адреса, e-mail — длина заранее не известна.</span><span class="lang-en-inline">Names, addresses, e-mail: the length is not known in advance.</span></td>
+      </tr>
+      <tr>
+        <td>TEXT(n)</td>
+        <td><span class="lang-ru-inline">Длинный текст до 65 535 символов (~ 64 КБ).</span><span class="lang-en-inline">Long text up to 65,535 characters (about 64 KB).</span></td>
+        <td><span class="lang-ru-inline">Комментарии, описания, статьи.</span><span class="lang-en-inline">Comments, descriptions, articles.</span></td>
+      </tr>
+      <tr>
+        <td>MEDIUMTEXT / LONGTEXT</td>
+        <td><span class="lang-ru-inline">До 16 МБ / 4 ГБ.</span><span class="lang-en-inline">Up to 16 MB / 4 GB.</span></td>
+        <td><span class="lang-ru-inline">Резервные копии книг, кода приложений.</span><span class="lang-en-inline">Backup copies of books, application code.</span></td>
+      </tr>
+      <tr>
+        <td>ENUM(v1, v2, ...)</td>
+        <td><span class="lang-ru-inline">Значение <b>ровно из списка</b>.</span><span class="lang-en-inline">A value <b>taken exactly from a list</b>.</span></td>
+        <td><span class="lang-ru-inline">Обращение: Mr, Mrs, Ms, Dr. Статус: active/blocked.</span><span class="lang-en-inline">Form of address: Mr, Mrs, Ms, Dr. Status: active/blocked.</span></td>
+      </tr>
+      <tr>
+        <td>SET(v1, v2, ...)</td>
+        <td><span class="lang-ru-inline">0 или больше значений из списка.</span><span class="lang-en-inline">Zero or more values from a list.</span></td>
+        <td><span class="lang-ru-inline">Интересы пользователя: спорт, искусство.</span><span class="lang-en-inline">User interests: <span lang="ru">спорт, искусство</span>.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">5.2. Числовые (numeric)</span><span class="lang-en-inline">5.2. Numeric types</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Тип</span><span class="lang-en-inline">Type</span></th>
+        <th><span class="lang-ru-inline">Описание</span><span class="lang-en-inline">Description</span></th>
+        <th><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>BIT(n)</td>
+        <td><span class="lang-ru-inline">Битовое значение длиной 1–64.</span><span class="lang-en-inline">A bit value of length 1–64.</span></td>
+        <td><span class="lang-ru-inline">Флаги, маски разрешений.</span><span class="lang-en-inline">Flags, permission masks.</span></td>
+      </tr>
+      <tr>
+        <td>BOOL</td>
+        <td><span class="lang-ru-inline">0 = false, любое не-ноль = true.</span><span class="lang-en-inline">0 = false, any non-zero value = true.</span></td>
+        <td>is_active, is_vegan.</td>
+      </tr>
+      <tr>
+        <td>INT(n)</td>
+        <td><span class="lang-ru-inline">Целое число (до 255 знаков отображения).</span><span class="lang-en-inline">Integer (up to 255 display digits).</span></td>
+        <td><span class="lang-ru-inline">Возраст, количество, ID.</span><span class="lang-en-inline">Age, quantity, ID.</span></td>
+      </tr>
+      <tr>
+        <td>FLOAT(p)</td>
+        <td><span class="lang-ru-inline">Число с плавающей точкой.</span><span class="lang-en-inline">Floating-point number.</span></td>
+        <td><span class="lang-ru-inline">Рост (1.92 м), цена (5.333).</span><span class="lang-en-inline">Height (1.92 m), price (5.333).</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">5.3. Дата / время</span><span class="lang-en-inline">5.3. Date / time types</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Тип</span><span class="lang-en-inline">Type</span></th>
+        <th><span class="lang-ru-inline">Формат</span><span class="lang-en-inline">Format</span></th>
+        <th><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DATE</td>
+        <td>YYYY-MM-DD</td>
+        <td>2010-10-29</td>
+      </tr>
+      <tr>
+        <td>DATETIME(fsp)</td>
+        <td>YYYY-MM-DD hh:mm:ss</td>
+        <td>2010-10-29 21:03:45</td>
+      </tr>
+      <tr>
+        <td>TIMESTAMP(fsp)</td>
+        <td><span class="lang-ru-inline">Авто-текущая дата+время</span><span class="lang-en-inline">Automatic current date + time</span></td>
+        <td>2025-05-28 14:22:10</td>
+      </tr>
+      <tr>
+        <td>TIME(fsp)</td>
+        <td>hh:mm:ss</td>
+        <td>13:04:39</td>
+      </tr>
+      <tr>
+        <td>YEAR</td>
+        <td>YYYY</td>
+        <td>2015</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>fsp (fractional seconds precision)</b> — точность долей секунды (до 6 знаков). Нужна, когда важна <b>сверхточность времени</b>: финиш забега на 100 м, очередь за билетами на концерт (чтобы все были честно по времени), синхронизация транзакций в распределённой БД.
+  </span><span class="lang-en-inline">💡 <b>fsp (fractional seconds precision)</b> is the precision of fractions of a second (up to 6 digits). It is needed when <b>very precise time</b> matters: the finish of a 100 m race, a queue for concert tickets (so that everyone is treated fairly by time), synchronization of transactions in a distributed database.</span></div>
+
+  <p><span class="lang-ru-inline">
+    <b>Зачем правильный тип критичен:</b>
+  </span><span class="lang-en-inline"><b>Why the right type is critical:</b></span></p>
+  <ul style="line-height: 1.7;">
+    <li><span class="lang-ru-inline">Если число хранится как <code>VARCHAR</code> — на нём <b>нельзя считать</b> (нельзя сложить «5» + «3» как числа).</span><span class="lang-en-inline">If a number is stored as <code>VARCHAR</code>, you <b>cannot calculate with it</b> (you cannot add “5” + “3” as numbers).</span></li>
+    <li><span class="lang-ru-inline">Если дата хранится как строка — <b>нельзя сортировать</b> «8/2/25» правильно (получишь алфавитный порядок, а не временной).</span><span class="lang-en-inline">If a date is stored as a string, you <b>cannot sort</b> “8/2/25” correctly (you get alphabetical order instead of time order).</span></li>
+    <li><span class="lang-ru-inline">Если задал <code>ENUM</code> — пользователь не сможет добавить новое значение, которого нет в списке.</span><span class="lang-en-inline">If you define an <code>ENUM</code>, the user cannot add a new value that is not in the list.</span></li>
+  </ul>
+
+  <!-- ============ SECTION 6: KEYS & CASCADE ============ -->
+  <h2><span class="lang-ru-inline">6. Ключи и каскад (A3.2.4)</span><span class="lang-en-inline">6. Keys and cascades (A3.2.4)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Keys and cascading actions.</b> Keys are what bind separate tables into a relational schema. A primary key uniquely identifies each row; a foreign key references the primary key of another table to establish links. A composite key combines several fields when no single attribute is unique, and a concatenated key joins substrings into a synthetic identifier. Cascade rules automate referential integrity: delete cascade removes dependent rows when the parent row is removed, and update cascade propagates a primary key change to every foreign key that pointed at it. Both must be applied with care.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Ключи — это то, что <b>склеивает</b> таблицы между собой. Если без них — у тебя просто набор отдельных таблиц, между которыми компьютер не видит связи.
+  </span><span class="lang-en-inline">Keys are what <b>glue</b> tables together. Without them, you simply have a set of separate tables between which the computer sees no relationships.</span></p>
+
+  <h3><span class="lang-ru-inline">6.1. Виды ключей</span><span class="lang-en-inline">6.1. Types of keys</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Ключ</span><span class="lang-en-inline">Key</span></th>
+        <th><span class="lang-ru-inline">Что это</span><span class="lang-en-inline">What it is</span></th>
+        <th><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Primary key (PK)</td>
+        <td><span class="lang-ru-inline"><b>Уникальный идентификатор</b> строки. В одной таблице — один PK.</span><span class="lang-en-inline">A <b>unique identifier</b> of a row. One PK per table.</span></td>
+        <td>Student_ID, Patient_ID, Owner_ID.</td>
+      </tr>
+      <tr>
+        <td>Foreign key (FK)</td>
+        <td><span class="lang-ru-inline">Поле, которое <b>ссылается</b> на PK <b>другой таблицы</b>. Так создаётся связь.</span><span class="lang-en-inline">A field that <b>refers</b> to the PK of <b>another table</b>. This is how a relationship is created.</span></td>
+        <td><span class="lang-ru-inline">В таблице <code>Pet</code> поле <code>Owner_ID</code> ссылается на PK таблицы <code>Owner</code>.</span><span class="lang-en-inline">In the table <code>Pet</code>, the field <code>Owner_ID</code> refers to the PK of the table <code>Owner</code>.</span></td>
+      </tr>
+      <tr>
+        <td>Composite key</td>
+        <td><span class="lang-ru-inline">PK, составленный <b>из нескольких полей</b>, когда одного не хватает.</span><span class="lang-en-inline">A PK made up of <b>several fields</b> when one field is not enough.</span></td>
+        <td><span class="lang-ru-inline">В таблице Treatment: <code>Patient_ID + Date</code> уникально идентифицирует процедуру (пациент не лечится дважды в день).</span><span class="lang-en-inline">In the table Treatment, <code>Patient_ID + Date</code> uniquely identifies a treatment (a patient is not treated twice a day).</span></td>
+      </tr>
+      <tr>
+        <td>Concatenated key</td>
+        <td><span class="lang-ru-inline">PK из <b>склеенных подстрок</b> разных полей.</span><span class="lang-en-inline">A PK built from <b>concatenated substrings</b> of different fields.</span></td>
+        <td><span class="lang-ru-inline">Первая буква имени + фамилия + дата рождения = почти всегда уникально.</span><span class="lang-en-inline">The first letter of the first name + surname + date of birth = almost always unique.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">6.2. Cascade — удаление и обновление «по цепочке»</span><span class="lang-en-inline">6.2. Cascade: deleting and updating “along the chain”</span></h3>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔗</span> Delete cascade</h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Что делает</span><span class="lang-en-inline">What it does</span></div>
+      <div><span class="lang-ru-inline">Когда удаляется строка с первичным ключом, <b>автоматически удаляются все связанные</b> строки в других таблицах, у которых это поле было foreign key.</span><span class="lang-en-inline">When a row with a primary key is deleted, <b>all related rows are deleted automatically</b> in other tables where this field was a foreign key.</span></div>
+      <div class="label"><span class="lang-ru-inline">Зачем</span><span class="lang-en-inline">Why</span></div>
+      <div><span class="lang-ru-inline">Нет «бесхозных» записей — нельзя удалить ученика и оставить его в журнале посещаемости.</span><span class="lang-en-inline">No orphaned records: you cannot delete a student and leave them in the attendance register.</span></div>
+      <div class="label"><span class="lang-ru-inline">Осторожность</span><span class="lang-en-inline">Caution</span></div>
+      <div><span class="lang-ru-inline">Можно случайно стереть много данных. Используется аккуратно.</span><span class="lang-en-inline">You can delete a lot of data by accident. Use it carefully.</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="device-emoji">🔄</span> Update cascade</h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Что делает</span><span class="lang-en-inline">What it does</span></div>
+      <div><span class="lang-ru-inline">Если обновляется первичный ключ в одной таблице — все связанные FK <b>автоматически обновляются</b>.</span><span class="lang-en-inline">If a primary key is updated in one table, all related FKs are <b>updated automatically</b>.</span></div>
+      <div class="label"><span class="lang-ru-inline">Зачем</span><span class="lang-en-inline">Why</span></div>
+      <div><span class="lang-ru-inline">Сохранение целостности: ссылки не «протухнут», если PK поменяется.</span><span class="lang-en-inline">It keeps data integrity: the references do not go stale when the PK changes.</span></div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 7: ANOMALIES ============ -->
+  <h2><span class="lang-ru-inline">7. Аномалии и зачем нужна нормализация (A3.2.5)</span><span class="lang-en-inline">7. Anomalies and why normalization is needed (A3.2.5)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Anomalies and the case for normalization.</b> A flat, unnormalized table suffers three structural problems. An insert anomaly blocks new data because unrelated fields are required at the same time, such as not being able to add a vet who has no patients yet. A delete anomaly destroys information you wanted to keep when the only row carrying it is removed. An update anomaly forces the same fact to be edited in many rows, and missing one leaves the database inconsistent. Normalization fixes these by separating each fact into its own table.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Плохо спроектированная база (например, <b>плоский файл</b> — flat file, когда всё в одной таблице) страдает от трёх типов <b>аномалий</b>. Это не «ошибки кода», а структурные проблемы: данные плохо хранятся, и любое изменение ломает картинку.
+  </span><span class="lang-en-inline">A badly designed database (for example, a <b>flat file</b>, where everything is in one table) suffers from three types of <b>anomalies</b>. These are not “code errors” but structural problems: the data is stored badly, and any change breaks the picture.</span></p>
+
+  <h3><span class="lang-ru-inline">7.1. Три аномалии — на примере ветклиники</span><span class="lang-en-inline">7.1. Three anomalies: an example from a vet clinic</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Представь одну гигантскую таблицу <code>Vet_Visit</code> со столбцами: <code>Owner_ID, Owner_Name, Owner_Address, Patient_ID, Patient_Name, Type, Vet_ID, Vet_Name, Vet_Address, Date, Treatment, Cost</code>. Что пойдёт не так:
+  </span><span class="lang-en-inline">Imagine one huge table <code>Vet_Visit</code> with the columns: <code>Owner_ID, Owner_Name, Owner_Address, Patient_ID, Patient_Name, Type, Vet_ID, Vet_Name, Vet_Address, Date, Treatment, Cost</code>. Here is what goes wrong:</span></p>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">➕</span> A. Insert anomaly (аномалия вставки)</span><span class="lang-en-inline"><span class="device-emoji">➕</span> A. Insert anomaly</span></h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Симптом</span><span class="lang-en-inline">Symptom</span></div>
+      <div><span class="lang-ru-inline">Ты <b>не можешь добавить</b> данные, потому что они зависят от других данных, которых пока нет.</span><span class="lang-en-inline">You <b>cannot add</b> data because it depends on other data that does not exist yet.</span></div>
+      <div class="label"><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></div>
+      <div><span class="lang-ru-inline">Нельзя завести нового ветеринара в базу, <b>пока он не вылечит пациента</b>. Ведь строка таблицы требует обязательно Owner, Patient, Treatment — а если ветеринар только что нанят, у него ещё нет пациентов.</span><span class="lang-en-inline">You cannot add a new vet to the database <b>until they treat a patient</b>. A row of the table must have an Owner, a Patient and a Treatment, and if the vet has just been hired, they have no patients yet.</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🗑️</span> B. Delete anomaly (аномалия удаления)</span><span class="lang-en-inline"><span class="device-emoji">🗑️</span> B. Deletion anomaly</span></h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Симптом</span><span class="lang-en-inline">Symptom</span></div>
+      <div><span class="lang-ru-inline">Удаление одного факта <b>уничтожает связанные данные</b>, которые ты не хотел терять.</span><span class="lang-en-inline">Deleting one fact <b>destroys related data</b> that you did not want to lose.</span></div>
+      <div class="label"><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></div>
+      <div><span class="lang-ru-inline">Удаляешь единственную запись о ветеринаре — и <b>теряешь данные о пациенте и его владельце</b>. Их больше нет ни в одной строке.</span><span class="lang-en-inline">You delete the only record about a vet, and <b>you lose the data about the patient and their owner</b>. They no longer exist in any row.</span></div>
+    </div>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">✏️</span> C. Update anomaly (аномалия обновления)</span><span class="lang-en-inline"><span class="device-emoji">✏️</span> C. Update anomaly</span></h3>
+    <div class="label-row">
+      <div class="label"><span class="lang-ru-inline">Симптом</span><span class="lang-en-inline">Symptom</span></div>
+      <div><span class="lang-ru-inline">Чтобы обновить одно значение, надо <b>пройтись по всей базе</b>. Если забыл хоть одну строку — в БД появятся <b>две разные версии</b> «истины».</span><span class="lang-en-inline">To update one value, you must <b>go through the whole database</b>. If you miss even one row, the database will have <b>two different versions</b> of the “truth”.</span></div>
+      <div class="label"><span class="lang-ru-inline">Пример</span><span class="lang-en-inline">Example</span></div>
+      <div><span class="lang-ru-inline">Ветеринар переехал. Его адрес встречается в 47 строках. Обновил 46 — а в 47-й остался старый адрес. Теперь непонятно, какой адрес правильный.</span><span class="lang-en-inline">A vet has moved. Their address appears in 47 rows. You updated 46 of them, but the 47th still has the old address. Now it is unclear which address is correct.</span></div>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">7.2. Как нормализация лечит аномалии</span><span class="lang-en-inline">7.2. How normalization cures the anomalies</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <b>Нормализация</b> — это процесс <b>разбиения большой плоской таблицы</b> на несколько маленьких, связанных через PK/FK. После нормализации:
+  </span><span class="lang-en-inline"><b>Normalization</b> is the process of <b>splitting a large flat table</b> into several smaller tables linked through PK/FK. After normalization:</span></p>
+  <ul style="line-height: 1.7;">
+    <li><span class="lang-ru-inline">Каждый <b>факт хранится ровно один раз</b> → нет update anomaly.</span><span class="lang-en-inline">Each <b>fact is stored exactly once</b> → there is no update anomaly.</span></li>
+    <li><span class="lang-ru-inline">Сущности <b>отделены друг от друга</b> → ветеринар существует независимо от пациентов; insert anomaly уходит.</span><span class="lang-en-inline">Entities are <b>separated from each other</b> → a vet exists independently of patients, so the insert anomaly goes away.</span></li>
+    <li><span class="lang-ru-inline">Удаление одной сущности <b>не цепляет другие</b> → delete anomaly уходит.</span><span class="lang-en-inline">Deleting one entity <b>does not affect the others</b> → the deletion anomaly goes away.</span></li>
+  </ul>
+
+  <!-- ============ SECTION 8: NORMALIZATION ============ -->
+  <h2><span class="lang-ru-inline">8. Нормализация: UNF → 1NF → 2NF → 3NF (A3.2.5–A3.2.6)</span><span class="lang-en-inline">8. Normalization: UNF → 1NF → 2NF → 3NF (A3.2.5–A3.2.6)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Normalization through 3NF.</b> Normalization is a stepwise refactor that walks an unnormalized flat table toward a clean relational schema. From UNF to 1NF: enforce atomic values in every cell and pull repeating groups into a separate entity with its own primary key. From 1NF to 2NF: remove partial dependencies so that no non-key attribute relies on only part of a composite key. From 2NF to 3NF: remove transitive dependencies so that every non-key attribute depends solely on the primary key, not on another non-key attribute. Each step eliminates a category of anomaly.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Главное правило (повторю): <b>«Данные зависят от ключа, от всего ключа, и ни от чего, кроме ключа.»</b> Каждая стадия нормализации делает шаг к этому идеалу.
+  </span><span class="lang-en-inline">The main rule, once more: <b>«Data depends on the key, the whole key, and nothing but the key.»</b> Each stage of normalization takes one step towards this ideal.</span></p>
+
+  <h3><span class="lang-ru-inline">8.1. Пример: база зубной клиники</span><span class="lang-en-inline">8.1. Example: a dental clinic database</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Возьмём плоскую таблицу записей зубной клиники. У одного <b>дантиста</b> (Dentist) есть много <b>пациентов</b> (Patient), а у каждого пациента — много <b>процедур</b> (Treatment).
+  </span><span class="lang-en-inline">Take a flat table of records from a dental clinic. One <b>dentist</b> (Dentist) has many <b>patients</b> (Patient), and each patient has many <b>treatments</b> (Treatment).</span></p>
+
+  <div class="table-scroll"><table class="data-table">
+    <thead>
+      <tr>
+        <th>Dentist_ID</th>
+        <th>Dentist_Name</th>
+        <th>Practice</th>
+        <th>Patient_ID</th>
+        <th>Patient_Name</th>
+        <th>Patient_Address</th>
+        <th>Treatment</th>
+        <th>Treatment_Detail</th>
+        <th>Date</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>192</td><td>Luis Reorder</td><td>Heaton</td><td>190</td><td>Wesley Kyle</td><td>12 Sunny Close</td><td>Filling</td><td>Filling with technical assistance</td><td>22/06/25</td><td>150</td></tr>
+      <tr><td>192</td><td>Luis Reorder</td><td>Heaton</td><td>138</td><td>Ana Torres</td><td>87 Lake Lane</td><td>Check Up</td><td>Check up with hygienist</td><td>22/06/25</td><td>80</td></tr>
+      <tr><td>193</td><td>Henry Stewart</td><td>Gosfield</td><td>190</td><td>Wesley Kyle</td><td>12 Sunny Close</td><td>Filling</td><td>Filling with technical assistance</td><td>25/06/25</td><td>150</td></tr>
+      <tr><td>193</td><td>Henry Stewart</td><td>Gosfield</td><td>148</td><td>Camille Manon</td><td>98 Alma Grove</td><td>Crown</td><td>Crown including X-ray</td><td>25/06/25</td><td>300</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">8.2. Шаг 0 → UNF (Unnormalized form)</span><span class="lang-en-inline">8.2. Step 0 → UNF (Unnormalized form)</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Сначала убедись, что в каждой ячейке <b>ровно одно значение</b> (атомарность — <i>atomicity</i>). Затем выбери <b>кандидат на первичный ключ</b> и <b>отступом</b> покажи «повторяющиеся группы» — это данные, которые будут добавляться при каждой новой записи (по сути, информация о пациенте и его процедуре).
+  </span><span class="lang-en-inline">First, make sure that each cell holds <b>exactly one value</b> (<i>atomicity</i>). Then choose a <b>candidate key</b> and, <b>with an indent</b>, show the “repeating groups”: the data that will be added with each new record (in essence, information about the patient and their treatment).</span></p>
+
+  <div class="table-scroll"><table class="nf-table">
+    <thead><tr><th>UNF (Unnormalized form)</th></tr></thead>
+    <tbody>
+      <tr><td>
+        <span class="entity-name">(</span><span class="pk">Dentist_ID</span><br>
+        Dentist_Name<br>
+        Dentist_Practice<br>
+        <span class="indent">Patient_ID</span><br>
+        <span class="indent">Patient_Name</span><br>
+        <span class="indent">Patient_Address</span><br>
+        <span class="indent">Treatment</span><br>
+        <span class="indent">Treatment_Detail</span><br>
+        <span class="indent">Date</span><br>
+        <span class="indent">Price)</span>
+      </td></tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">8.3. Шаг 1: UNF → 1NF (убираем повторяющиеся группы)</span><span class="lang-en-inline">8.3. Step 1: UNF → 1NF (remove the repeating groups)</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <b>Что делаем:</b> повторяющиеся данные выносим в <b>отдельную сущность</b> и находим для неё свой ключ. Не-повторяющиеся данные остаются в исходной таблице, ей даём имя и первичный ключ. Первичный ключ из «родителя» становится <b>foreign key</b> в новой таблице.
+  </span><span class="lang-en-inline"><b>What we do:</b> move the repeating data into a <b>separate entity</b> and find a key for it. The non-repeating data stays in the original table, which gets a name and a primary key. The primary key of the “parent” becomes a <b>foreign key</b> in the new table.</span></p>
+
+  <div class="table-scroll"><table class="nf-table">
+    <thead>
+      <tr>
+        <th style="width: 30%">UNF</th>
+        <th style="width: 40%">1NF (First normal form)</th>
+        <th style="width: 30%"><span class="lang-ru-inline">Действия</span><span class="lang-en-inline">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          (<span class="pk">Dentist_ID</span><br>
+          Dentist_Name<br>
+          Dentist_Practice<br>
+          <span class="indent">Patient_ID</span><br>
+          <span class="indent">Patient_Name</span><br>
+          <span class="indent">Patient_Address</span><br>
+          <span class="indent">Treatment</span><br>
+          <span class="indent">Treatment_Detail</span><br>
+          <span class="indent">Date</span><br>
+          <span class="indent">Price)</span>
+        </td>
+        <td>
+          <span class="entity-name">DENTIST</span> (<span class="pk">Dentist_ID</span><br>
+          <span class="indent">Dentist_Name</span><br>
+          <span class="indent">Dentist_Practice)</span><br><br>
+          <span class="entity-name">TREATMENT</span> (<span class="pk">Patient_ID</span><br>
+          <span class="indent">Patient_Name</span><br>
+          <span class="indent">Patient_Address</span><br>
+          <span class="indent">Treatment</span><br>
+          <span class="indent">Treatment_Detail</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent">Price</span><br>
+          <span class="indent"><span class="fk">Dentist_ID*</span>)</span>
+        </td>
+        <td style="font-family: inherit; font-size: 0.92rem;"><span class="lang-ru-inline">
+          Не-повторяющиеся данные → в свою таблицу DENTIST с первичным ключом.<br><br>
+          Повторяющиеся данные → в новую таблицу TREATMENT, у которой <b>составной ключ</b> Patient_ID + Date.<br><br>
+          Первичный ключ родителя становится <b>foreign key</b> (Dentist_ID*).
+        </span><span class="lang-en-inline">Non-repeating data → into its own DENTIST table, with a primary key.<br><br>
+          Repeating data → into a new TREATMENT table, whose <b>composite key</b> is Patient_ID + Date.<br><br>
+          The primary key of the parent becomes a <b>foreign key</b> (Dentist_ID*).</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <p><span class="lang-ru-inline">
+    <b>Проблема 1NF:</b> в TREATMENT остались атрибуты, которые зависят <b>только от части</b> составного ключа. Например, <code>Patient_Name</code> и <code>Patient_Address</code> зависят <b>только от Patient_ID</b>, а не от Date. Это называется <b>частичной зависимостью (partial dependency)</b>.
+  </span><span class="lang-en-inline"><b>Problem with 1NF:</b> the TREATMENT table still has attributes that depend <b>only on part</b> of the composite key. For example, <code>Patient_Name</code> and <code>Patient_Address</code> depend <b>only on Patient_ID</b>, not on Date. This is called a <b>partial dependency</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">8.4. Шаг 2: 1NF → 2NF (убираем частичные зависимости)</span><span class="lang-en-inline">8.4. Step 2: 1NF → 2NF (remove the partial dependencies)</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <b>Что делаем:</b> атрибуты, которые зависят только от <b>части</b> составного ключа, выносим в свою таблицу. Это часть ключа становится <b>PK</b> в новой таблице и <b>FK</b> в старой.
+  </span><span class="lang-en-inline"><b>What we do:</b> move the attributes that depend only on <b>part</b> of the composite key into their own table. That part of the key becomes the <b>PK</b> in the new table and the <b>FK</b> in the old one.</span></p>
+
+  <div class="table-scroll"><table class="nf-table">
+    <thead>
+      <tr>
+        <th style="width: 33%">1NF</th>
+        <th style="width: 37%">2NF (Second normal form)</th>
+        <th style="width: 30%"><span class="lang-ru-inline">Действия</span><span class="lang-en-inline">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span class="entity-name">DENTIST</span> (<span class="pk">Dentist_ID</span><br>
+          <span class="indent">Dentist_Name</span><br>
+          <span class="indent">Dentist_Practice)</span><br><br>
+          <span class="entity-name">TREATMENT</span> (<span class="pk">Patient_ID</span><br>
+          <span class="indent">Patient_Name</span><br>
+          <span class="indent">Patient_Address</span><br>
+          <span class="indent">Treatment</span><br>
+          <span class="indent">Treatment_Detail</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent">Price</span><br>
+          <span class="indent"><span class="fk">Dentist_ID*</span>)</span>
+        </td>
+        <td>
+          <span class="entity-name">DENTIST</span> (<span class="pk">Dentist_ID</span><br>
+          <span class="indent">Dentist_Name</span><br>
+          <span class="indent">Dentist_Practice)</span><br><br>
+          <span class="entity-name">TREATMENT</span> (<span class="fk pk">Patient_ID*</span><br>
+          <span class="indent">Treatment</span><br>
+          <span class="indent">Treatment_Detail</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent">Price</span><br>
+          <span class="indent"><span class="fk">Dentist_ID*</span>)</span><br><br>
+          <span class="entity-name">PATIENT</span> (<span class="pk">Patient_ID</span><br>
+          <span class="indent">Patient_Name</span><br>
+          <span class="indent">Patient_Address)</span>
+        </td>
+        <td style="font-family: inherit; font-size: 0.92rem;"><span class="lang-ru-inline">
+          DENTIST не трогаем — у него нет составного ключа.<br><br>
+          Patient_Name и Patient_Address зависят только от Patient_ID — выносим в новую таблицу <b>PATIENT</b>.<br><br>
+          В TREATMENT Patient_ID становится <b>foreign key</b>, но остаётся частью составного PK.
+        </span><span class="lang-en-inline">DENTIST stays as it is: it has no composite key.<br><br>
+          Patient_Name and Patient_Address depend only on Patient_ID, so we move them into a new <b>PATIENT</b> table.<br><br>
+          In TREATMENT, Patient_ID becomes a <b>foreign key</b>, but it stays part of the composite PK.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <p><span class="lang-ru-inline">
+    <b>Проблема 2NF:</b> внутри TREATMENT остались атрибуты, которые зависят <b>не от ключа</b>, а друг от друга. Например, <code>Treatment_Detail</code> и <code>Price</code> зависят только от типа процедуры (<code>Treatment</code>), а не от Patient_ID + Date. Это <b>транзитивная зависимость (transitive / non-key dependency)</b>.
+  </span><span class="lang-en-inline"><b>Problem with 2NF:</b> inside TREATMENT there are still attributes that depend <b>not on the key</b> but on each other. For example, <code>Treatment_Detail</code> and <code>Price</code> depend only on the type of treatment (<code>Treatment</code>), not on Patient_ID + Date. This is a <b>transitive dependency (transitive / non-key dependency)</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">8.5. Шаг 3: 2NF → 3NF (убираем транзитивные зависимости)</span><span class="lang-en-inline">8.5. Step 3: 2NF → 3NF (remove the transitive dependencies)</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <b>Что делаем:</b> атрибуты, зависящие от другого <b>не-ключевого</b> поля, выносим в свою таблицу. Это поле становится PK новой таблицы и FK в старой. Теперь <b>каждая запись</b> в каждой таблице <b>зависит только от ключа</b>.
+  </span><span class="lang-en-inline"><b>What we do:</b> move the attributes that depend on another <b>non-key</b> field into their own table. That field becomes the PK of the new table and an FK in the old one. Now <b>every record</b> in every table <b>depends only on the key</b>.</span></p>
+
+  <div class="table-scroll"><table class="nf-table">
+    <thead>
+      <tr>
+        <th style="width: 33%">2NF</th>
+        <th style="width: 37%">3NF (Third normal form)</th>
+        <th style="width: 30%"><span class="lang-ru-inline">Действия</span><span class="lang-en-inline">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span class="entity-name">DENTIST</span> (<span class="pk">Dentist_ID</span><br>
+          <span class="indent">Dentist_Name</span><br>
+          <span class="indent">Dentist_Practice)</span><br><br>
+          <span class="entity-name">TREATMENT</span> (<span class="fk pk">Patient_ID*</span><br>
+          <span class="indent">Treatment</span><br>
+          <span class="indent">Treatment_Detail</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent">Price</span><br>
+          <span class="indent"><span class="fk">Dentist_ID*</span>)</span><br><br>
+          <span class="entity-name">PATIENT</span> (<span class="pk">Patient_ID</span><br>
+          <span class="indent">Patient_Name</span><br>
+          <span class="indent">Patient_Address)</span>
+        </td>
+        <td>
+          <span class="entity-name">DENTIST</span> (<span class="pk">Dentist_ID</span><br>
+          <span class="indent">Dentist_Name</span><br>
+          <span class="indent">Dentist_Practice)</span><br><br>
+          <span class="entity-name">APPOINTMENT</span> (<span class="fk pk">Patient_ID*</span><br>
+          <span class="indent"><span class="fk">Treatment*</span></span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent"><span class="fk">Dentist_ID*</span>)</span><br><br>
+          <span class="entity-name">PATIENT</span> (<span class="pk">Patient_ID</span><br>
+          <span class="indent">Patient_Name</span><br>
+          <span class="indent">Patient_Address)</span><br><br>
+          <span class="entity-name">TREATMENT</span> (<span class="pk">Treatment</span><br>
+          <span class="indent">Treatment_Detail</span><br>
+          <span class="indent">Price)</span>
+        </td>
+        <td style="font-family: inherit; font-size: 0.92rem;"><span class="lang-ru-inline">
+          Treatment_Detail и Price зависят только от Treatment (не от пациента или даты) — выносим в новую таблицу TREATMENT.<br><br>
+          В старой таблице (теперь APPOINTMENT) Treatment становится FK.<br><br>
+          Все сущности теперь содержат данные, зависящие только от ключа.
+        </span><span class="lang-en-inline">Treatment_Detail and Price depend only on Treatment (not on the patient or the date), so we move them into a new TREATMENT table.<br><br>
+          In the old table (now APPOINTMENT), Treatment becomes an FK.<br><br>
+          Now all entities contain only data that depends on the key.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Краткая шпаргалка:</b><br>
+    <b>1NF</b> — убираем повторяющиеся группы (атомарность + новая таблица для повторяющихся данных).<br>
+    <b>2NF</b> — убираем <b>частичные</b> зависимости (когда атрибут зависит только от <b>части</b> составного ключа).<br>
+    <b>3NF</b> — убираем <b>транзитивные</b> зависимости (когда атрибут зависит от <b>другого не-ключевого</b> атрибута).
+  </span><span class="lang-en-inline">💡 <b>Quick cheat sheet:</b><br>
+    <b>1NF</b> — remove repeating groups (atomic values + a new table for repeating data).<br>
+    <b>2NF</b> — remove <b>partial</b> dependencies (when an attribute depends only on <b>part</b> of a composite key).<br>
+    <b>3NF</b> — remove <b>transitive</b> dependencies (when an attribute depends on <b>another non-key</b> attribute).</span></div>
+
+  <h3><span class="lang-ru-inline">8.6. Второй сценарий: онлайн-магазин Negozio (e-commerce)</span><span class="lang-en-inline">8.6. Second scenario: the online shop Negozio (e-commerce)</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Это маркетплейс хендмейда. Покупатели заказывают товары у художников. Изначально все данные о покупателях, товарах и художниках хранились в одной плоской таблице транзакций.
+  </span><span class="lang-en-inline">This is a marketplace for handmade goods. Customers order goods from artists. Originally, all the data about customers, goods and artists was stored in one flat table of transactions.</span></p>
+
+  <div class="table-scroll"><table class="nf-table">
+    <thead>
+      <tr>
+        <th style="width: 25%">UNF</th>
+        <th style="width: 25%">1NF</th>
+        <th style="width: 25%">2NF</th>
+        <th style="width: 25%">3NF</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          Customer_ID<br>
+          Customer_Email<br>
+          Customer_Address<br>
+          <span class="indent">Item_ID</span><br>
+          <span class="indent">Item_Description</span><br>
+          <span class="indent">Quantity</span><br>
+          <span class="indent">Cost</span><br>
+          <span class="indent">Date</span><br>
+          <span class="indent">Artist_ID</span><br>
+          <span class="indent">Artist_Name</span><br>
+          <span class="indent">Artist_Email</span>
+        </td>
+        <td>
+          <span class="entity-name">CUSTOMER</span>(<span class="pk">Customer_ID</span><br>
+          <span class="indent">Customer_Email</span><br>
+          <span class="indent">Customer_Address)</span><br><br>
+          <span class="entity-name">TRANSACTION</span>(<span class="pk">Item_ID</span><br>
+          <span class="indent">Item_Description</span><br>
+          <span class="indent">Quantity</span><br>
+          <span class="indent">Cost</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent">Artist_ID</span><br>
+          <span class="indent">Artist_Name</span><br>
+          <span class="indent">Artist_Email</span><br>
+          <span class="indent"><span class="fk">Customer_ID*</span>)</span>
+        </td>
+        <td>
+          <span class="entity-name">CUSTOMER</span>(<span class="pk">Customer_ID</span> ...)<br><br>
+          <span class="entity-name">TRANSACTION</span>(<span class="fk pk">Item_ID*</span><br>
+          <span class="indent">Quantity</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent"><span class="fk">Customer_ID*</span>)</span><br><br>
+          <span class="entity-name">ITEM</span>(<span class="pk">Item_ID</span><br>
+          <span class="indent">Item_Description</span><br>
+          <span class="indent">Cost</span><br>
+          <span class="indent">Artist_ID</span><br>
+          <span class="indent">Artist_Name</span><br>
+          <span class="indent">Artist_Email)</span>
+        </td>
+        <td>
+          <span class="entity-name">CUSTOMER</span>(<span class="pk">Customer_ID</span> ...)<br><br>
+          <span class="entity-name">TRANSACTION</span>(<span class="fk pk">Item_ID*</span><br>
+          <span class="indent">Quantity</span><br>
+          <span class="indent"><span class="pk">Date</span></span><br>
+          <span class="indent"><span class="fk">Customer_ID*</span>)</span><br><br>
+          <span class="entity-name">ITEM</span>(<span class="pk">Item_ID</span><br>
+          <span class="indent">Item_Description</span><br>
+          <span class="indent">Cost</span><br>
+          <span class="indent"><span class="fk">Artist_ID*</span>)</span><br><br>
+          <span class="entity-name">ARTIST</span>(<span class="pk">Artist_ID</span><br>
+          <span class="indent">Artist_Name</span><br>
+          <span class="indent">Artist_Email)</span>
+        </td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <p><span class="lang-ru-inline">
+    <b>Замечай:</b> в 3NF информация о художнике (Name, Email) <b>наконец</b> отделена от товара — потому что эти атрибуты зависят от <code>Artist_ID</code>, а не от <code>Item_ID</code>. Транзитивная зависимость убрана.
+  </span><span class="lang-en-inline"><b>Notice:</b> in 3NF the information about the artist (Name, Email) is <b>finally</b> separated from the item, because these attributes depend on <code>Artist_ID</code>, not on <code>Item_ID</code>. The transitive dependency has been removed.</span></p>
+
+  <!-- ============ SECTION 9: SCHEMA DIAGRAM ============ -->
+  <h2><span class="lang-ru-inline">9. Схема-диаграмма физической модели</span><span class="lang-en-inline">9. Schema diagram of the physical model</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Schema diagrams.</b> Once a database is normalised, a schema diagram offers a compact picture: each entity is drawn as a rectangle that lists its attributes, with relationships shown as lines between primary keys and foreign keys. The logical schema diagram lists the attributes alongside their key roles but omits data types. The physical schema diagram extends it by adding concrete types such as VARCHAR(25) and CHAR(6), plus storage hints like indexes. Both share the same entities and links — the physical version just makes the implementation choices explicit.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    После того как ты нормализовал базу, удобно нарисовать <b>схему-диаграмму</b> — это компактная картинка, где каждая сущность — прямоугольник с полями, а между ними нарисованы связи через PK/FK.
+  </span><span class="lang-en-inline">Once you have normalized the database, it is useful to draw a <b>schema diagram</b>: a compact picture in which each entity is a rectangle with its fields, and the links between them are drawn through PK/FK.</span></p>
+
+  <div class="erd-svg-wrap">
+    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema diagram физического уровня">
+      <!-- STUDENT -->
+      <rect x="20" y="20" width="200" height="180" rx="6" fill="#f0f9ff" stroke="#0369a1" stroke-width="2"/>
+      <rect x="20" y="20" width="200" height="28" rx="6" fill="#0369a1"/>
+      <text x="120" y="40" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#fff">STUDENT</text>
+      <text x="30" y="68" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">StudentID: varchar(6) PK</text>
+      <text x="30" y="86" font-family="ui-monospace" font-size="11" fill="#1e293b">SFirstName: varchar(15)</text>
+      <text x="30" y="104" font-family="ui-monospace" font-size="11" fill="#1e293b">SFamilyName: varchar(30)</text>
+      <text x="30" y="122" font-family="ui-monospace" font-size="11" fill="#1e293b">SGrade: int</text>
+      <text x="30" y="140" font-family="ui-monospace" font-size="11" fill="#1e293b">SAddress: varchar(255)</text>
+      <text x="30" y="158" font-family="ui-monospace" font-size="11" fill="#1e293b">SEmergencyTel: varchar(15)</text>
+      <text x="30" y="176" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">Destination: varchar(25) FK</text>
+
+      <!-- Relationship -->
+      <line x1="220" y1="180" x2="320" y2="220" stroke="#475569" stroke-width="2"/>
+      <text x="230" y="172" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">N</text>
+      <polygon points="320,200 380,220 320,240 280,220" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/>
+      <text x="330" y="225" text-anchor="middle" font-family="Helvetica" font-size="12" font-weight="600" fill="#7c2d12">Attends</text>
+      <line x1="380" y1="220" x2="450" y2="180" stroke="#475569" stroke-width="2"/>
+      <text x="430" y="172" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">1</text>
+
+      <!-- TRIP -->
+      <rect x="450" y="100" width="200" height="120" rx="6" fill="#f0f9ff" stroke="#0369a1" stroke-width="2"/>
+      <rect x="450" y="100" width="200" height="28" rx="6" fill="#0369a1"/>
+      <text x="550" y="120" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#fff">TRIP</text>
+      <text x="460" y="148" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">Destination: varchar(25) PK</text>
+      <text x="460" y="166" font-family="ui-monospace" font-size="11" fill="#1e293b">Flight: char(1)</text>
+      <text x="460" y="184" font-family="ui-monospace" font-size="11" fill="#1e293b">Description: text</text>
+      <text x="460" y="202" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">TeacherID: varchar(6) FK</text>
+    </svg>
+    <span class="caption"><span class="lang-ru-inline">Фрагмент физической схемы для системы школьных поездок (таблицы STUDENT и TRIP). Видны типы данных, PK и FK. Поле TeacherID ссылается на таблицу TEACHER, которой во фрагменте нет.</span><span class="lang-en-inline">Schema diagram: a fragment of the physical schema for a school trips system (tables STUDENT and TRIP). The data types, the PK and the FK are shown. TeacherID references the TEACHER table, which is not part of this fragment.</span></span>
+  </div>
+
+  <h3><span class="lang-ru-inline">9.1. Логический vs физический — в чём разница</span><span class="lang-en-inline">9.1. Logical vs physical: what is the difference</span></h3>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Аспект</span><span class="lang-en-inline">Aspect</span></th>
+        <th><span class="lang-ru-inline">Логическая</span><span class="lang-en-inline">Logical</span></th>
+        <th><span class="lang-ru-inline">Физическая</span><span class="lang-en-inline">Physical</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Атрибуты</span><span class="lang-en-inline">Attributes</span></td>
+        <td><span class="lang-ru-inline">Перечислены</span><span class="lang-en-inline">Listed</span></td>
+        <td><span class="lang-ru-inline">Перечислены</span><span class="lang-en-inline">Listed</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Типы данных</span><span class="lang-en-inline">Data types</span></td>
+        <td><span class="lang-ru-inline"><b>Нет</b></span><span class="lang-en-inline"><b>No</b></span></td>
+        <td><span class="lang-ru-inline"><b>Есть</b> (VARCHAR(20), INT...)</span><span class="lang-en-inline"><b>Yes</b> (VARCHAR(20), INT...)</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Файлы / индексы</span><span class="lang-en-inline">Files / indexes</span></td>
+        <td><span class="lang-ru-inline">Нет</span><span class="lang-en-inline">No</span></td>
+        <td><span class="lang-ru-inline">Указаны (как данные хранятся на диске)</span><span class="lang-en-inline">Shown (how the data is stored on disk)</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Для кого</span><span class="lang-en-inline">Who it is for</span></td>
+        <td><span class="lang-ru-inline">Программист + администратор</span><span class="lang-en-inline">Programmer + administrator</span></td>
+        <td><span class="lang-ru-inline">Только программист (DBA)</span><span class="lang-en-inline">Programmer only (DBA)</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <!-- ============ SECTION 10: INDEXING ============ -->
+  <h2><span class="lang-ru-inline">10. Индексы (basics)</span><span class="lang-en-inline">10. Indexes (basics)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Indexes.</b> An index is an auxiliary structure, usually a B-tree or hash, that lets the database locate rows by a field value without scanning the entire table. A clustered index physically orders the table itself on that key and is normally bound to the primary key; only one is allowed per table. Non-clustered indexes are separate structures holding row pointers and can be created on several fields. Indexes accelerate SELECT queries but slow down INSERT, UPDATE, and DELETE because the index must also be maintained — every index is a deliberate trade-off.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Индекс — это вспомогательная структура (обычно <b>B-tree</b> или hash), которая помогает СУБД <b>быстро найти строку</b> по значению поля без перебора всей таблицы. Похоже на <b>предметный указатель в книге</b>: вместо чтения всех страниц ты идёшь по алфавиту.
+  </span><span class="lang-en-inline">An index is a supporting structure (usually a <b>B-tree</b> or hash) that helps the DBMS <b>quickly find a row</b> by a field value without searching the whole table. It is like the <b>subject index at the back of a book</b>: instead of reading all the pages, you look things up alphabetically.</span></p>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Тип индекса</span><span class="lang-en-inline">Index type</span></th>
+        <th><span class="lang-ru-inline">Как устроен</span><span class="lang-en-inline">How it works</span></th>
+        <th><span class="lang-ru-inline">Когда использовать</span><span class="lang-en-inline">When to use</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Clustered (кластерный)</span><span class="lang-en-inline">Clustered</span></td>
+        <td><span class="lang-ru-inline"><b>Сами строки таблицы упорядочены</b> по этому ключу. В таблице может быть только один такой индекс.</span><span class="lang-en-inline">The <b>rows of the table are themselves ordered</b> by this key. A table can have only one such index.</span></td>
+        <td><span class="lang-ru-inline">На <b>первичный ключ</b> — почти всегда автоматически. Хорошо для запросов «по диапазону» (BETWEEN, ORDER BY).</span><span class="lang-en-inline">On the <b>primary key</b>, almost always automatically. Good for range queries (BETWEEN, ORDER BY).</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Non-clustered (некластерный)</span><span class="lang-en-inline">Non-clustered</span></td>
+        <td><span class="lang-ru-inline">Отдельная структура, которая хранит <b>ссылки на строки</b>. Можно создать <b>несколько</b> на одну таблицу.</span><span class="lang-en-inline">A separate structure that stores <b>references to rows</b>. You can create <b>several</b> on one table.</span></td>
+        <td><span class="lang-ru-inline">На поля, по которым часто ищут (e-mail, фамилия) — но не на PK.</span><span class="lang-en-inline">On fields that are often searched (e-mail, surname), but not on the PK.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Индексы — это компромисс.</b> Поиск (<code>SELECT</code>) ускоряется, но <b>вставка / обновление / удаление замедляются</b>: индекс надо поддерживать в актуальном состоянии. Не вешай индекс на каждое поле — только на те, по которым реально часто ищут.
+  </span><span class="lang-en-inline">💡 <b>Indexes are a trade-off.</b> Searching (<code>SELECT</code>) becomes faster, but <b>inserting / updating / deleting becomes slower</b>, because the index must be kept up to date. Do not put an index on every field, only on those that are really searched often.</span></div>
+
+  <h3><span class="lang-ru-inline">10.1. Когда индекс нужен</span><span class="lang-en-inline">10.1. When an index is needed</span></h3>
+  <ul style="line-height: 1.7;">
+    <li><span class="lang-ru-inline">Поле часто стоит в <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>.</span><span class="lang-en-inline">The field often appears in <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>.</span></li>
+    <li><span class="lang-ru-inline">Таблица большая (десятки тысяч строк и больше).</span><span class="lang-en-inline">The table is large (tens of thousands of rows or more).</span></li>
+    <li><span class="lang-ru-inline">Кардинальность значений высокая (много разных значений). Индексировать поле «пол» (M/F) — почти бесполезно.</span><span class="lang-en-inline">The cardinality of values is high (many different values). Indexing the gender field (M/F) is almost useless.</span></li>
+  </ul>
+
+  <h3><span class="lang-ru-inline">10.2. Когда индекс не нужен или вредит</span><span class="lang-en-inline">10.2. When an index is not needed or does harm</span></h3>
+  <ul style="line-height: 1.7;">
+    <li><span class="lang-ru-inline">Таблица маленькая — индексы не дают выигрыша.</span><span class="lang-en-inline">The table is small: indexes give no benefit.</span></li>
+    <li><span class="lang-ru-inline">Поле редко участвует в фильтрах.</span><span class="lang-en-inline">The field is rarely used in filters.</span></li>
+    <li><span class="lang-ru-inline">Поле часто обновляется — каждое обновление дополнительно «двигает» индекс.</span><span class="lang-en-inline">The field is updated often: each update also “moves” the index.</span></li>
+  </ul>
+
+  <!-- ============ SECTION 11: DENORMALIZATION ============ -->
+  <h2><span class="lang-ru-inline">11. Денормализация (A3.2.7)</span><span class="lang-en-inline">11. Denormalization (A3.2.7)</span></h2>
+
+  <div class="ru-tip en-summary" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>EN summary — Denormalization.</b> Denormalization is the deliberate reintroduction of redundancy into a normalised schema, traded for raw query speed. It is common in read-heavy workloads where multi-table joins become a bottleneck, in data warehouses tuned for analytical aggregation rather than transactional consistency, and when historical snapshots must persist even after the source value changes — for example, freezing the price recorded on a receipt. The cost is the return of update and consistency anomalies, so denormalization should be an intentional engineering trade-off, never a shortcut taken at design time.
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Парадокс: иногда нормализованную базу <b>намеренно «портят»</b> — добавляют дублирование данных. Это называется <b>денормализация (denormalization)</b>. Зачем?
+  </span><span class="lang-en-inline">A paradox: sometimes a normalized database is <b>deliberately “spoiled”</b>: duplicate data is added. This is called <b>denormalization</b>. Why?</span></p>
+
+  <ul style="line-height: 1.7;">
+    <li><span class="lang-ru-inline"><b>Производительность чтения.</b> Когда запросов на чтение в сотни раз больше, чем на запись (например, новостной сайт), <code>JOIN</code> между пятью таблицами тормозит. Дешевле хранить «материализованный» результат.</span><span class="lang-en-inline"><b>Read performance.</b> When read queries outnumber writes by hundreds of times (for example, on a news site), a <code>JOIN</code> between five tables slows things down. It is cheaper to store a “materialized” result.</span></li>
+    <li><span class="lang-ru-inline"><b>Отчёты и аналитика (OLAP).</b> Хранилища данных (data warehouses) часто денормализованы — там важна скорость агрегации, а не консистентность в реальном времени.</span><span class="lang-en-inline"><b>Reports and analytics (OLAP).</b> Data warehouses are often denormalized: there, the speed of aggregation matters more than real-time consistency.</span></li>
+    <li><span class="lang-ru-inline"><b>Кэширование цены / статуса.</b> Например, в строке заказа хранят <code>price_at_purchase</code>, даже если эта цена есть в товаре. Цена товара может поменяться, а исторический чек должен остаться прежним.</span><span class="lang-en-inline"><b>Caching of price / status.</b> For example, an order line stores <code>price_at_purchase</code>, even if this price is also in the product. The price of a product can change, but the historical receipt must stay the same.</span></li>
+  </ul>
+
+  <p><span class="lang-ru-inline">
+    <b>Цена денормализации:</b> возвращаются аномалии. Если ты продублировал имя художника в каждой строке транзакции — переименовать художника становится сложно. Поэтому денормализация — <b>осознанный компромисс</b>, а не лень при проектировании.
+  </span><span class="lang-en-inline"><b>The cost of denormalization:</b> anomalies come back. If you duplicated the artist's name in every transaction row, renaming the artist becomes hard. That is why denormalization is a <b>deliberate trade-off</b>, not laziness in design.</span></p>
+
+  <!-- ============ SECTION 12: EXAM QUESTIONS (OFFICIAL) ============ -->
+  <h2><span class="lang-ru-inline">13. Практические задания</span><span class="lang-en-inline">13. Practice tasks</span></h2>
+
+  <div class="task-card">
+    <h3><span class="lang-ru-inline">🔍 Индивидуальное задание: нормализуй базу больницы</span><span class="lang-en-inline">🔍 Individual task: normalize the hospital database</span></h3>
+    <p><span class="lang-ru-inline"><b>Цель:</b> построить базу для регистрации пациентов больницы до 3NF.</span><span class="lang-en-inline"><b>Goal:</b> build a database for registering hospital patients up to 3NF.</span></p>
+    <p><span class="lang-ru-inline"><b>Сценарий:</b> в больнице есть пациенты (Patient), врачи (Doctor), палаты (Ward), назначения (Prescription) и приёмы (Visit). Один пациент может приходить много раз; на одном приёме может быть несколько назначений лекарств; один врач принимает много пациентов.</span><span class="lang-en-inline"><b>Scenario:</b> the hospital has patients (Patient), doctors (Doctor), wards (Ward), prescriptions (Prescription) and visits (Visit). One patient can come many times; one visit can have several medicine prescriptions; one doctor sees many patients.</span></p>
+    <ol>
+      <li><span class="lang-ru-inline"><b>Нарисуй UNF</b>: одна плоская таблица со всеми полями.</span><span class="lang-en-inline"><b>Draw the UNF</b>: one flat table with all the fields.</span></li>
+      <li><span class="lang-ru-inline"><b>Приведи к 1NF</b>: выдели повторяющиеся группы, назначь PK каждой новой сущности.</span><span class="lang-en-inline"><b>Convert to 1NF</b>: identify the repeating groups and assign a PK to each new entity.</span></li>
+      <li><span class="lang-ru-inline"><b>Приведи к 2NF</b>: убери частичные зависимости от составных ключей.</span><span class="lang-en-inline"><b>Convert to 2NF</b>: remove the partial dependencies on composite keys.</span></li>
+      <li><span class="lang-ru-inline"><b>Приведи к 3NF</b>: убери транзитивные зависимости.</span><span class="lang-en-inline"><b>Convert to 3NF</b>: remove the transitive dependencies.</span></li>
+      <li><span class="lang-ru-inline">Нарисуй <b>финальную ER-диаграмму</b> с кардинальностями и модальностью.</span><span class="lang-en-inline">Draw the <b>final ER diagram</b> with cardinalities and modality.</span></li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="lang-ru-inline">👥 Групповое задание: M:N через таблицу-связку</span><span class="lang-en-inline">👥 Group task: M:N through a junction table</span></h3>
+    <p><span class="lang-ru-inline"><b>Цель:</b> в группах по 3 человека разработать схему для системы записи школьников на внеклассные кружки.</span><span class="lang-en-inline"><b>Goal:</b> in groups of 3, design a schema for a system that enrols pupils in after-school clubs.</span></p>
+    <div class="scenario"><span class="lang-ru-inline">
+      <b>Сценарий:</b> школа предлагает 12 кружков. Один школьник может записаться в любое количество кружков; в каждом кружке от 5 до 30 школьников. Нужно хранить дату записи и оценку участия (Excellent / Good / Needs improvement) за каждое посещение.
+    </span><span class="lang-en-inline"><b>Scenario:</b> the school offers 12 clubs. One pupil can enrol in any number of clubs; each club has from 5 to 30 pupils. You need to store the date of enrolment and the participation grade (Excellent / Good / Needs improvement) for each visit.</span></div>
+    <ol>
+      <li><span class="lang-ru-inline">Определи M:N связь между School_Student и Club.</span><span class="lang-en-inline">Identify the M:N relationship between School_Student and Club.</span></li>
+      <li><span class="lang-ru-inline">Сконструируй <b>junction table</b> с правильным составным PK и FK.</span><span class="lang-en-inline">Construct a <b>junction table</b> with the correct composite PK and FK.</span></li>
+      <li><span class="lang-ru-inline">Решите, где хранить «оценку участия» — в Student, в Club или в связке (и почему).</span><span class="lang-en-inline">Decide where to store the “participation grade”: in Student, in Club or in the junction table (and why).</span></li>
+      <li><span class="lang-ru-inline">Презентуйте ER-диаграмму другой группе. Получите обратную связь.</span><span class="lang-en-inline">Present your ER diagram to another group. Get feedback.</span></li>
+    </ol>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="lang-ru-inline">🏠 Домашнее задание: спроектируй базу онлайн-магазина</span><span class="lang-en-inline">🏠 Homework: design an online shop database</span></h3>
+    <p><span class="lang-ru-inline"><b>Цель:</b> применить нормализацию к реальному e-commerce сценарию.</span><span class="lang-en-inline"><b>Goal:</b> apply normalization to a real e-commerce scenario.</span></p>
+    <ol>
+      <li><span class="lang-ru-inline">Возьми <b>любой реальный интернет-магазин</b> (Wildberries, Ozon, Amazon, Shopify) и подумай, какие сущности он должен хранить: Customer, Product, Order, Order_Line, Category, Review, Address, Payment_Method.</span><span class="lang-en-inline">Take <b>any real online shop</b> (Wildberries, Ozon, Amazon, Shopify) and think about which entities it must store: Customer, Product, Order, Order_Line, Category, Review, Address, Payment_Method.</span></li>
+      <li><span class="lang-ru-inline">Нарисуй <b>ER-диаграмму</b> на уровне logical schema (с атрибутами и PK/FK).</span><span class="lang-en-inline">Draw an <b>ER diagram</b> at the logical schema level (with attributes and PK/FK).</span></li>
+      <li><span class="lang-ru-inline">Определи кардинальности всех связей.</span><span class="lang-en-inline">Identify the cardinalities of all relationships.</span></li>
+      <li><span class="lang-ru-inline">Найди хотя бы <b>две M:N связи</b> и разреши их через junction tables.</span><span class="lang-en-inline">Find at least <b>two M:N relationships</b> and resolve them through junction tables.</span></li>
+      <li><span class="lang-ru-inline">Объясни словами, почему ты выбрал именно такую структуру и какие <b>аномалии</b> она предотвращает.</span><span class="lang-en-inline">Explain in words why you chose this particular structure and which <b>anomalies</b> it prevents.</span></li>
+    </ol>
+  </div>
+
+  <!-- ============ SECTION 14: SIMS ============ -->
+  <h2><span class="lang-ru-inline">14. Связанные симуляторы</span><span class="lang-en-inline">14. Related simulators</span></h2>
+
+  <p><span class="lang-ru-inline">
+    На странице <a href="databases.html?v=11">A3 Базы данных</a> есть два интерактивных симулятора, которые помогут закрепить материал:
+  </span><span class="lang-en-inline">On the page <a href="databases.html?v=11">A3 Databases</a> there are two interactive simulators that will help you reinforce the material:</span></p>
+
+  <ul style="line-height: 1.8;">
+    <li><span class="lang-ru-inline"><b>Шаги нормализации</b> — <a href="databases.html?v=11#norm-sim">databases.html#norm-sim</a> — пошагово видишь, как плоская таблица превращается в 1NF, 2NF и 3NF.</span><span class="lang-en-inline"><b>Normalization steps</b> — <a href="databases.html#norm-sim">databases.html#norm-sim</a> — step by step, you see how a flat table turns into 1NF, 2NF and 3NF.</span></li>
+    <li><span class="lang-ru-inline"><b>M:N → junction table</b> — <a href="databases.html?v=11#erd-sim">databases.html#erd-sim</a> — анимация, показывающая, как связь «многие-ко-многим» разбивается на две 1:N через промежуточную таблицу.</span><span class="lang-en-inline"><b>M:N → junction table</b> — <a href="databases.html#erd-sim">databases.html#erd-sim</a> — an animation showing how the many-to-many relationship is split into two 1:N relationships through an intermediate table.</span></li>
+  </ul>
+
+  <div style="margin: 16px 0 32px"><span class="lang-ru-inline">
+    <a class="sim-link" href="databases.html?v=11#norm-sim">Открыть симулятор нормализации</a>
+    <a class="sim-link" href="databases.html?v=11#erd-sim">Открыть симулятор M:N</a>
+  </span><span class="lang-en-inline"><a class="sim-link" href="databases.html?v=11#norm-sim">Open the normalization simulator</a>
+    <a class="sim-link" href="databases.html?v=11#erd-sim">Open the M:N simulator</a></span></div>
+
+  <!-- ============ CLOSING ============ -->
+  <h2><span class="lang-ru-inline">Что важно запомнить</span><span class="lang-en-inline">What to remember</span></h2>
+  <ul style="line-height: 1.8; font-size: 1.02rem;">
+    <li><span class="lang-ru-inline"><b>Три уровня схемы:</b> концептуальная (сущности + связи), логическая (+ атрибуты + ключи), физическая (+ типы данных + хранение).</span><span class="lang-en-inline"><b>Three levels of schema:</b> conceptual (entities + relationships), logical (+ attributes + keys), physical (+ data types + storage).</span></li>
+    <li><span class="lang-ru-inline"><b>ER-диаграмма:</b> прямоугольники = сущности, ромбы = связи, овалы = атрибуты (в нотации Чена). Обязательно подписывай кардинальность (1:1, 1:N, M:N) и модальность (mandatory / optional).</span><span class="lang-en-inline"><b>ER diagram:</b> rectangles = entities, diamonds = relationships, ovals = attributes (in Chen notation). Always label the cardinality (1:1, 1:N, M:N) and the modality (mandatory / optional).</span></li>
+    <li><span class="lang-ru-inline"><b>M:N не реализуется напрямую</b> — всегда разрешай через junction table с составным PK из двух FK.</span><span class="lang-en-inline"><b>M:N is not implemented directly</b> — always resolve it through a junction table with a composite PK made of two FKs.</span></li>
+    <li><span class="lang-ru-inline"><b>Главное правило нормализации:</b> <i>«Данные зависят от ключа, от всего ключа и ни от чего, кроме ключа.»</i> 1NF убирает повторяющиеся группы; 2NF — частичные зависимости; 3NF — транзитивные.</span><span class="lang-en-inline"><b>Main rule of normalization:</b> <i>“Data depends on the key, the whole key and nothing but the key.”</i> 1NF removes repeating groups; 2NF — partial dependencies; 3NF — transitive dependencies.</span></li>
+    <li><span class="lang-ru-inline"><b>Три аномалии:</b> insert (не можешь добавить без других данных), delete (удаление одной строки уничтожает связанные), update (одно значение в десятках строк — забыл одну, и БД противоречит себе).</span><span class="lang-en-inline"><b>Three anomalies:</b> insert (you cannot add data without other data), deletion (deleting one row destroys related data), update (one value in dozens of rows: if you miss one, the database contradicts itself).</span></li>
+    <li><span class="lang-ru-inline"><b>Ключи:</b> PK уникальный, FK ссылается на чужой PK, composite — из нескольких полей, concatenated — из подстрок.</span><span class="lang-en-inline"><b>Keys:</b> the PK is unique, the FK refers to another table's PK, a composite key is made of several fields, a concatenated key is made of substrings.</span></li>
+    <li><span class="lang-ru-inline"><b>Cascade:</b> delete cascade удаляет связанные строки автоматически; update cascade обновляет связанные FK при изменении PK.</span><span class="lang-en-inline"><b>Cascade:</b> delete cascade removes related rows automatically; update cascade updates the related FKs when a PK changes.</span></li>
+    <li><span class="lang-ru-inline"><b>Индексы:</b> clustered (один на таблицу, обычно на PK) и non-clustered (можно много). Ускоряют SELECT, но замедляют INSERT/UPDATE/DELETE.</span><span class="lang-en-inline"><b>Indexes:</b> clustered (one per table, usually on the PK) and non-clustered (you can have many). They speed up SELECT but slow down INSERT/UPDATE/DELETE.</span></li>
+    <li><span class="lang-ru-inline"><b>Денормализация</b> — намеренное дублирование ради скорости чтения. Используется в OLAP, кэшах, исторических снимках.</span><span class="lang-en-inline"><b>Denormalization</b> is deliberate duplication for the sake of read speed. It is used in OLAP, caches and historical snapshots.</span></li>
+    <li><span class="lang-ru-inline"><b>На экзамене часто:</b> «нормализуй таблицу до 3NF» (нужно показать все три шага с действиями), «нарисуй ER» (укажи кардинальности!), «опиши аномалии» (insert/delete/update с примером).</span><span class="lang-en-inline"><b>In the exam, often:</b> “normalize the table to 3NF” (you need to show all three steps with their actions), “draw the ER diagram” (show the cardinalities!), “describe the anomalies” (insert / deletion / update, with an example).</span></li>
+  </ul>
+
+  <p style="margin-top:32px"><span class="lang-ru-inline">
+    <a href="databases.html" class="back-link">← Назад к A3 Базы данных</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A3.2" class="back-link">К квизу A3.2 →</a>
+  </span><span class="lang-en-inline"><a href="databases.html" class="back-link">← Back to A3 Databases</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A3.2" class="back-link">To the A3.2 quiz →</a></span></p>
+
+</main>
+
+<footer class="footer">
+  <p><span class="lang-ru-inline">
+    IB CS Тема A · A3.2 Проектирование баз данных · Адаптировано из IB DP 2025 Computer Science Oxford · <a href="index.html">На главную</a>
+  </span><span class="lang-en-inline">IB CS Theme A · A3.2 Database design · Adapted from IB DP 2025 Computer Science Oxford · <a href="index.html">Home</a></span></p>
+</footer>
+
+<script src="js/app.js?v=11"></script>
+</body>
+</html>

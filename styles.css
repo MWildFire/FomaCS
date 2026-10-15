@@ -914,6 +914,20 @@ pre.code, .code-block {
   .section-title { font-size: 1.3rem; margin: 32px 0 14px; }
   .sim-canvas-wrap canvas, .sim-canvas-wrap svg { min-width: 480px; }
 }
+/* Narrow screens: wide simulations scroll sideways (min-width above), so a hint sits above them */
+@media (max-width: 620px) {
+  .sim-canvas-wrap::before {
+    content: "Прокрутите схему вправо ↔";
+    display: block;
+    grid-column: 1 / -1;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  [data-lang="en"] .sim-canvas-wrap::before {
+    content: "Scroll the diagram sideways ↔";
+  }
+}
 
 /* sidebar TOC */
 .sidebar-layout {

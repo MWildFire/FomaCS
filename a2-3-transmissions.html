@@ -514,7 +514,7 @@
         <text x="80" y="214" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.4</text>
 
         <!-- NAT router -->
-        <rect x="240" y="90" width="160" height="60" rx="10" fill="#0ea5e9" />
+        <rect x="205" y="90" width="230" height="60" rx="10" fill="#0ea5e9" />
         <text x="320" y="115" fill="#fff" text-anchor="middle" font-weight="700">Роутер с NAT</text>
         <text x="320" y="135" fill="#e0f2fe" text-anchor="middle" font-size="11">внутр. 10.0.0.1 / внеш. 203.0.113.5</text>
 
@@ -525,10 +525,10 @@
         <text x="540" y="150" fill="#d1fae5" text-anchor="middle" font-size="11">203.0.113.5</text>
 
         <!-- arrows -->
-        <line x1="140" y1="40" x2="240" y2="100" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
-        <line x1="140" y1="120" x2="240" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
-        <line x1="140" y1="200" x2="240" y2="140" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
-        <line x1="400" y1="120" x2="480" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="40" x2="205" y2="100" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="120" x2="205" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="200" x2="205" y2="140" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="435" y1="120" x2="480" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
       </g>
     </svg>
     <div class="diagram-caption">NAT: три частных IP «маскируются» за единственным публичным адресом роутера.</div>
@@ -839,10 +839,10 @@
     <li><b>Справедливость.</b> Канал не «забивается» одним длинным сообщением — между его пакетами проходят чужие.</li>
   </ul>
 
-  <h3>🗺️ 5.2. Визуализация: один пакет — много путей</h3>
+  <h3>🗺️ 5.2. Визуализация: три пакета — три пути</h3>
 
   <div class="diagram-wrap">
-    <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Сеть из 6 роутеров. Три пакета идут разными путями от отправителя к получателю.">
+    <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Сеть из 5 роутеров. Три пакета идут разными путями от отправителя к получателю.">
       <defs>
         <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
           <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>

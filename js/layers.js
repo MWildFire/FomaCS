@@ -10,7 +10,7 @@
     { en: 'Application', ru: 'Прикладной', detail: { en: 'HTTP / DNS / SMTP', ru: 'HTTP / DNS / SMTP' }, header: 'DATA', color: '#0ea5e9' },
     { en: 'Transport', ru: 'Транспортный', detail: { en: 'TCP / UDP · ports', ru: 'TCP / UDP · порты' }, header: 'TCP', color: '#8b5cf6' },
     { en: 'Internet', ru: 'Межсетевой', detail: { en: 'IP · routing', ru: 'IP · маршрутизация' }, header: 'IP', color: '#f59e0b' },
-    { en: 'Network Access', ru: 'Сетевого доступа', detail: { en: 'MAC · physical', ru: 'MAC · физический' }, header: 'ETH', color: '#10b981' }
+    { en: 'Network interface', ru: 'Сетевого интерфейса', detail: { en: 'MAC · physical', ru: 'MAC · физический' }, header: 'ETH', color: '#10b981' }
   ];
 
   function render(stage = -1) {
@@ -122,7 +122,7 @@
     // Packet position: trace a clear L-shape — down the sender stack, across the wire, up the receiver stack.
     let packetX, packetY;
     if (stage <= 3) {
-      // Stages 0..3 visit Application, Transport, Internet, Network Access on the sender.
+      // Stages 0..3 visit Application, Transport, Internet, Network interface on the sender.
       packetX = senderRightX;
       packetY = startY + stage * rowH + 15;
     } else if (stage === 4) {
@@ -130,7 +130,7 @@
       packetX = 400;
       packetY = startY + 3 * rowH + 15;
     } else {
-      // Stages 5..8 climb the receiver stack: NetworkAccess→Internet→Transport→Application
+      // Stages 5..8 climb the receiver stack: Network interface→Internet→Transport→Application
       const recvRow = 3 - (stage - 5); // 3,2,1,0
       packetX = receiverLeftX;
       packetY = startY + recvRow * rowH + 15;
@@ -180,9 +180,9 @@
       { en: 'Application layer: data ready',                    ru: 'Прикладной: данные готовы' },
       { en: 'Transport layer: + TCP header (ports, ACK, seq)',  ru: 'Транспортный: + заголовок TCP (порты, ACK, seq)' },
       { en: 'Internet layer: + IP header (source/dest IP)',     ru: 'Межсетевой: + IP-заголовок (src/dst IP)' },
-      { en: 'Network Access: + Ethernet/MAC header',            ru: 'Сетевого доступа: + Ethernet/MAC' },
+      { en: 'Network interface: + Ethernet/MAC header',         ru: 'Сетевого интерфейса: + Ethernet/MAC' },
       { en: '→ travelling on the wire →',                       ru: '→ передача по проводу →' },
-      { en: 'Receiver Network Access: ETH header stripped',     ru: 'Получатель: сняли ETH' },
+      { en: 'Receiver Network interface: ETH header stripped',  ru: 'Получатель: сняли ETH' },
       { en: 'Receiver Internet: IP header stripped',            ru: 'Получатель: сняли IP' },
       { en: 'Receiver Transport: TCP header stripped',          ru: 'Получатель: сняли TCP' },
       { en: 'Receiver Application: original data delivered ✓',  ru: 'Получатель: исходные данные доставлены ✓' }

@@ -10,7 +10,7 @@
   const stageEl = root.querySelector('#fde-stage');
   const noteEl = root.querySelector('#fde-note');
 
-  // Mini program: load 5 → ACC, add 3, store in memory[2], halt.
+  // Mini program: load 5 → AC, add 3, store in memory[4], halt.
   // Each instruction is a fixed-format string for display.
   const PROGRAM_TEMPLATE = [
     { addr: 0, asm: 'LOAD 5',  desc: { en: 'Put 5 into the accumulator',         ru: 'Положить 5 в аккумулятор' } },
@@ -57,8 +57,8 @@
       state.highlight = 'fetch';
       stageEl.textContent = 'FETCH';
       note(tr(
-        '<b>Fetch:</b> PC = ' + state.pc + ', so MAR ← PC and we read memory[' + state.pc + '] = <code>' + state.cir + '</code> into CIR. PC is then incremented.',
-        '<b>Выборка:</b> PC = ' + state.pc + ', значит MAR ← PC и читаем память[' + state.pc + '] = <code>' + state.cir + '</code> в CIR. PC увеличивается.'
+        '<b>Fetch:</b> PC = ' + state.pc + ', so MAR ← PC and we read memory[' + state.pc + '] = <code>' + state.cir + '</code> into IR. PC is then incremented.',
+        '<b>Выборка:</b> PC = ' + state.pc + ', значит MAR ← PC и читаем память[' + state.pc + '] = <code>' + state.cir + '</code> в IR. PC увеличивается.'
       ));
       state.pc += 1;
       render();
@@ -99,22 +99,22 @@
       case 'LOAD':
         state.acc = operand;
         note(tr(
-          '<b>Execute:</b> the ALU loads the literal ' + operand + ' into ACC.',
+          '<b>Execute:</b> the ALU loads the literal ' + operand + ' into AC.',
           '<b>Исполнение:</b> АЛУ загружает значение ' + operand + ' в аккумулятор.'
         ));
         break;
       case 'ADD':
         state.acc += operand;
         note(tr(
-          '<b>Execute:</b> ALU computes ACC + ' + operand + ' = <b>' + state.acc + '</b>.',
-          '<b>Исполнение:</b> АЛУ считает ACC + ' + operand + ' = <b>' + state.acc + '</b>.'
+          '<b>Execute:</b> ALU computes AC + ' + operand + ' = <b>' + state.acc + '</b>.',
+          '<b>Исполнение:</b> АЛУ считает AC + ' + operand + ' = <b>' + state.acc + '</b>.'
         ));
         break;
       case 'STORE':
         state.memory[operand].value = state.acc;
         note(tr(
-          '<b>Execute:</b> ACC (' + state.acc + ') is written to memory[' + operand + '].',
-          '<b>Исполнение:</b> ACC (' + state.acc + ') записывается в память[' + operand + '].'
+          '<b>Execute:</b> AC (' + state.acc + ') is written to memory[' + operand + '].',
+          '<b>Исполнение:</b> AC (' + state.acc + ') записывается в память[' + operand + '].'
         ));
         break;
       case 'HALT':
@@ -141,8 +141,8 @@
 
     // Registers
     s += register(40, 70, 'PC', state.pc, state.highlight === 'fetch' || state.highlight === 'pc' ? T.accent : null, T);
-    s += register(40, 130, 'CIR', state.cir || '—', state.highlight === 'cir' ? T.accent : null, T);
-    s += register(40, 190, 'ACC', state.acc, state.highlight === 'acc' ? T.green : null, T);
+    s += register(40, 130, 'IR', state.cir || '—', state.highlight === 'cir' ? T.accent : null, T);
+    s += register(40, 190, 'AC', state.acc, state.highlight === 'acc' ? T.green : null, T);
     s += register(220, 70, 'MAR', state.mar, state.highlight === 'fetch' ? T.accent : null, T);
     s += register(220, 130, 'MDR', state.mdr || '—', state.highlight === 'fetch' ? T.accent : null, T);
     // CU + ALU label
@@ -158,9 +158,12 @@
       const isActive = state.highlight === 'fetch' && i === state.pc - 1;
       s += rect(460, y, 60, 40, isActive ? T.accent : T.surface, T.border);
       s += '<text x="490" y="' + (y + 25) + '" fill="' + (isActive ? '#fff' : T.text) + '" font-family="ui-monospace" font-size="13" text-anchor="middle">' + m.addr + '</text>';
-      s += rect(530, y, 140, 40, isActive ? T.accent : T.surface, T.border);
-      s += '<text x="600" y="' + (y + 25) + '" fill="' + (isActive ? '#fff' : T.text) + '" font-family="ui-monospace" font-size="13" text-anchor="middle">' + m.value + '</text>';
-      s += '<text x="685" y="' + (y + 25) + '" fill="' + T.textFaint + '" font-size="11">' + (m.desc[L()] || m.desc.en) + '</text>';
+      s += rect(530, y, 90, 40, isActive ? T.accent : T.surface, T.border);
+      s += '<text x="575" y="' + (y + 25) + '" fill="' + (isActive ? '#fff' : T.text) + '" font-family="ui-monospace" font-size="13" text-anchor="middle">' + m.value + '</text>';
+      // Descriptions wrap to at most two lines so they stay inside the memory box (x 632..776).
+      wrapLines(m.desc[L()] || m.desc.en, 22).forEach((line, k) => {
+        s += '<text x="632" y="' + (y + 16 + k * 14) + '" fill="' + T.textFaint + '" font-size="11">' + line + '</text>';
+      });
     });
 
     // Bus arrow (animated only on fetch)
@@ -169,6 +172,19 @@
     }
 
     svg.innerHTML = s;
+  }
+
+  // Greedy word wrap for memory-row descriptions.
+  function wrapLines(text, maxChars) {
+    const lines = [];
+    let line = '';
+    String(text).split(' ').forEach(word => {
+      const next = line ? line + ' ' + word : word;
+      if (line && next.length > maxChars) { lines.push(line); line = word; }
+      else { line = next; }
+    });
+    if (line) lines.push(line);
+    return lines;
   }
 
   function rect(x, y, w, h, fill, stroke, label) {

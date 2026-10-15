@@ -338,6 +338,12 @@
              role="img" aria-label="Neural network forward-pass visualization. Three input neurons connect to four hidden neurons, which connect to two output neurons. Click any weight line to tune it."></svg>
       </div>
 
+      <div class="sim-legend">
+        <span><span class="dot" style="background:#10b981; width:16px; height:4px; border-radius:2px"></span> <span class="lang-en-inline">Green line: positive weight (strengthens the signal)</span><span class="lang-ru-inline">Зелёная линия: положительный вес (усиливает сигнал)</span></span>
+        <span><span class="dot" style="background:#ef4444; width:16px; height:4px; border-radius:2px"></span> <span class="lang-en-inline">Red line: negative weight (weakens the signal)</span><span class="lang-ru-inline">Красная линия: отрицательный вес (ослабляет сигнал)</span></span>
+        <span><span class="lang-en-inline">Thicker, more vivid line = larger |weight|; the value is printed when |weight| &gt; 0.25</span><span class="lang-ru-inline">Чем толще и ярче линия, тем больше модуль веса; число на линии показано при |вес| &gt; 0.25</span></span>
+      </div>
+
       <div class="sim-stats">
         <div class="sim-stat"><div class="label">Class A</div><div class="value"><div id="nn-output-1" style="height:14px; background:var(--accent); border-radius:6px"></div></div></div>
         <div class="sim-stat"><div class="label">Class B</div><div class="value"><div id="nn-output-2" style="height:14px; background:var(--violet); border-radius:6px"></div></div></div>

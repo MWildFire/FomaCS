@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2.3 Передача данных · IB CS Theme A</title>
+<meta name="description" content="A2.3 Передача данных — детальный разбор на русском: IP-адресация (IPv4 vs IPv6, публичные/частные/статические/динамические IP, NAT), среды передачи (оптоволокно, витая пара, беспроводные), коммутация пакетов, маршрутизация (статическая/динамическая), пропускная способность и задержки, обнаружение ошибок.">
+<link rel="stylesheet" href="styles.css?v=11">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  /* Standalone page styling — single-language Russian, focused reading */
+  .device-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .device-page h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary);
+    margin: 16px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .device-page .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 760px;
+    margin: 8px 0 32px;
+    line-height: 1.6;
+  }
+  .device-page h2 {
+    font-size: 1.65rem;
+    color: var(--primary);
+    margin: 48px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .device-page h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 28px 0 8px;
+  }
+  .device-page h4 {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 18px 0 6px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 32px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-table th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .summary-table tr:last-child td { border-bottom: 0; }
+  .summary-table tr:nth-child(even) { background: var(--surface-2); }
+  .summary-table td:first-child { font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .summary-table.compact { font-size: 0.88rem; }
+  .summary-table.compact th, .summary-table.compact td { padding: 10px 12px; }
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 18px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .device-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .device-card .device-emoji {
+    font-size: 1.6rem;
+  }
+  .device-card p { margin: 8px 0; line-height: 1.65; }
+  .device-card ul {
+    margin: 8px 0;
+    padding-left: 22px;
+    line-height: 1.7;
+  }
+  .device-card li { margin-bottom: 6px; }
+  .label-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(14,165,233,0.12);
+    color: #0369a1;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  [data-theme="dark"] .label-pill {
+    background: rgba(56,189,248,0.18);
+    color: #7dd3fc;
+  }
+  .question-card {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--violet);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  [data-theme="dark"] .question-card { background: rgba(139,92,246,0.10); }
+  .question-card summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--violet);
+    list-style: none;
+    user-select: none;
+  }
+  .question-card summary::-webkit-details-marker { display: none; }
+  .question-card summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 4px;
+  }
+  .question-card[open] summary::before { transform: rotate(90deg); }
+  .question-card .answer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    color: var(--text);
+  }
+  .question-card .answer ul, .question-card .answer ol { padding-left: 22px; line-height: 1.7; }
+  .marks-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .ru-tip {
+    background: rgba(245,158,11,0.08);
+    border-left: 4px solid var(--amber);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+  }
+  [data-theme="dark"] .ru-tip { background: rgba(245,158,11,0.12); }
+  .key-term {
+    background: rgba(16,185,129,0.06);
+    border-left: 4px solid var(--green);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+  }
+  [data-theme="dark"] .key-term { background: rgba(16,185,129,0.10); }
+  .key-term b { color: var(--green); }
+  .real-world {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+  }
+  .real-world b { color: var(--primary); }
+  .back-link {
+    display: inline-block;
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .sim-cta {
+    display: inline-block;
+    margin: 6px 8px 6px 0;
+    padding: 8px 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 99px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .sim-cta:hover { background: var(--primary-2); }
+  .diagram-wrap {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0 24px;
+    text-align: center;
+  }
+  .diagram-wrap svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  .diagram-caption {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .compare-grid > div {
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .compare-grid h4 { margin-top: 0; color: var(--primary); }
+  .compare-grid ul { margin: 6px 0; padding-left: 20px; line-height: 1.6; }
+  @media (max-width: 720px) { .compare-grid { grid-template-columns: 1fr; } }
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  .takeaways {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 18px 0;
+  }
+  .takeaways ul { padding-left: 22px; line-height: 1.8; }
+  .takeaways li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="lang-ru-inline">
+      <span class="brand-mark">A</span>
+      IB CS · Тема A
+    </span><span class="lang-en-inline"><span class="brand-mark">A</span>
+      IB CS · Theme A</span></a>
+    <div class="nav-links"><span class="lang-ru-inline">
+      <a href="index.html">Обзор</a>
+      <a href="fundamentals.html">A1 Основы</a>
+      <a href="networks.html">A2 Сети</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Устройства</a>
+      <a href="databases.html">A3 Базы данных</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Квиз</a>
+    </span><span class="lang-en-inline"><a href="index.html">Overview</a>
+      <a href="fundamentals.html">A1 Fundamentals</a>
+      <a href="networks.html">A2 Networks</a>
+      <a href="setevye-ustroistva.html">A2.1.3 Network devices</a>
+      <a href="databases.html">A3 Databases</a>
+      <a href="ml.html">A4 ML</a>
+      <a href="quiz.html">Quiz</a></span></div>
+    <div class="nav-actions">
+      <button class="theme-toggle" data-theme-toggle>☽</button>
+      <button class="lang-toggle" data-lang-toggle>EN</button>
+    </div>
+  </nav>
+</header>
+
+<main class="device-page">
+
+  <a href="networks.html" class="back-link"><span class="lang-ru-inline">← Назад к A2 Сети</span><span class="lang-en-inline">← Back to A2 Networks</span></a>
+
+  <span class="hero-eyebrow" style="background:rgba(14,165,233,0.12); color:#0369a1">
+    A2.3 · Data transmissions
+  </span>
+
+  <h1><span class="lang-ru-inline">Передача данных</span><span class="lang-en-inline">Data transmission</span></h1>
+
+  <p class="lede"><span class="lang-ru-inline">
+    Тема <b>A2.3</b> отвечает на вопрос: «Как именно данные физически и логически добираются от одного устройства до другого?». Здесь четыре больших блока: <b>IP-адресация</b> (как устройства называются), <b>среды передачи</b> (по чему идут сигналы), <b>коммутация пакетов</b> (как сообщение режется на куски и доставляется), и <b>маршрутизация</b> (как роутеры выбирают путь). Плюс — характеристики канала (пропускная способность, задержка, джиттер) и <b>обнаружение ошибок</b>.
+  </span><span class="lang-en-inline">Topic <b>A2.3</b> answers the question “How exactly do data physically and logically travel from one device to another?” It has four main parts: <b>IP addressing</b> (how devices are named), <b>transmission media</b> (what the signals travel through), <b>packet switching</b> (how a message is cut into pieces and delivered), and <b>routing</b> (how routers choose the path). It also covers the characteristics of a channel (bandwidth, latency, jitter) and <b>error detection</b>.</span></p>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>Связь с симуляторами:</b>
+    <a class="sim-cta" href="networks.html#protocols-sim">📦 TCP vs UDP — поведение пакетов</a>
+    <a class="sim-cta" href="networks.html#topology-sim">🌐 Топологии — путь через узлы</a>
+  </span><span class="lang-en-inline">💡 <b>Links to simulators:</b>
+    <a class="sim-cta" href="networks.html#protocols-sim">📦 TCP vs UDP — how packets behave</a>
+    <a class="sim-cta" href="networks.html#topology-sim">🌐 Topologies — the path through nodes</a></span></div>
+
+  
+
+  
+
+  <!-- ============ SECTION 1: SYLLABUS MAP ============ -->
+  <h2><span class="lang-ru-inline">1. Что входит в A2.3 (карта подтем)</span><span class="lang-en-inline">1. What is in A2.3 (map of subtopics)</span></h2>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Подтема</span><span class="lang-en-inline">Subtopic</span></th>
+        <th><span class="lang-ru-inline">О чём</span><span class="lang-en-inline">What it covers</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A2.3.1</td>
+        <td><span class="lang-ru-inline">Типы IP-адресации: IPv4 vs IPv6, публичные/частные, статические/динамические, NAT, loopback.</span><span class="lang-en-inline">Types of IP addressing: IPv4 vs IPv6, public/private, static/dynamic, NAT, loopback.</span></td>
+      </tr>
+      <tr>
+        <td>A2.3.2</td>
+        <td><span class="lang-ru-inline">Сравнение сред передачи: оптоволокно, витая пара, беспроводные (плюс коаксиал в реальном мире).</span><span class="lang-en-inline">Comparison of transmission media: fibre-optic, twisted pair, wireless (plus coaxial in the real world).</span></td>
+      </tr>
+      <tr>
+        <td>A2.3.3</td>
+        <td><span class="lang-ru-inline">Коммутация пакетов: сегментация, инкапсуляция, заголовки, независимая маршрутизация, сборка.</span><span class="lang-en-inline">Packet switching: segmentation, encapsulation, headers, independent routing, reassembly.</span></td>
+      </tr>
+      <tr>
+        <td>A2.3.4 <span class="label-pill">AHL</span></td>
+        <td><span class="lang-ru-inline">Статическая и динамическая маршрутизация в LAN (протоколы RIP, OSPF, BGP; метрики; сходимость).</span><span class="lang-en-inline">Static and dynamic routing in a LAN (protocols RIP, OSPF, BGP; metrics; convergence).</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <!-- ============ SECTION 2: IP ADDRESSING ============ -->
+  <h2><span class="lang-ru-inline">2. IP-адресация (A2.3.1)</span><span class="lang-en-inline">2. IP addressing (A2.3.1)</span></h2>
+
+  <p><span class="lang-ru-inline">
+    <b>Internet Protocol (IP)</b> — это протокол, который отвечает за <b>маршрутизацию и доставку пакетов</b> между сетями. В центре IP — <b>IP-адрес</b>: уникальное числовое имя устройства в сети.
+  </span><span class="lang-en-inline"><b>Internet Protocol (IP)</b> is the protocol responsible for <b>routing and delivering packets</b> between networks. At the centre of IP is the <b>IP address</b>: a unique numerical name for a device on the network.</span></p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — IP addressing.</b>
+    An IP address is a unique numeric identifier assigned to a device on an IP network so that routers know where to deliver packets. <b>IPv4</b> uses 32 bits (about 4.3 billion addresses, written in dotted decimal such as <span class="mono">192.168.1.1</span>) and is essentially exhausted. <b>IPv6</b> uses 128 bits, written as eight hex groups, with mandatory IPsec support. <b>Public</b> addresses are globally unique and routable on the open internet; <b>private</b> ranges (RFC 1918: <span class="mono">10.x</span>, <span class="mono">172.16–31.x</span>, <span class="mono">192.168.x</span>) are reused inside local networks. <b>Static</b> IPs stay fixed (servers, printers); <b>dynamic</b> ones are leased by a DHCP server. <b>NAT</b> lets many private hosts share one public address by rewriting source IP and port. A <b>subnet mask</b> (or <b>CIDR</b> suffix like <span class="mono">/24</span>) splits an address into network and host parts. The loopback <span class="mono">127.0.0.1</span> always refers to the local machine.
+  </div>
+
+  <div class="key-term"><span class="lang-ru-inline">
+    <b>IP-адрес.</b> Уникальный числовой идентификатор устройства в IP-сети. По нему другие устройства понимают, «куда» отправлять пакет.
+  </span><span class="lang-en-inline"><b>IP address.</b> A unique numerical identifier for a device on an IP network. Other devices use it to work out “where” to send a packet.</span></div>
+
+  <h3>🔢 2.1. IPv4 vs IPv6</h3>
+
+  <p><span class="lang-ru-inline">
+    Двух версий IP-адресов хватит для экзамена: <b>IPv4</b> (старый, заканчивается) и <b>IPv6</b> (новый, огромное пространство).
+  </span><span class="lang-en-inline">Two versions of IP addresses are enough for the exam: <b>IPv4</b> (the old one, running out) and <b>IPv6</b> (the new one, with a huge address space).</span></p>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Характеристика</span><span class="lang-en-inline">Feature</span></th>
+        <th>IPv4</th>
+        <th>IPv6</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Размер адреса</span><span class="lang-en-inline">Address size</span></td>
+        <td><span class="lang-ru-inline">32 бита</span><span class="lang-en-inline">32 bits</span></td>
+        <td><span class="lang-ru-inline">128 бит</span><span class="lang-en-inline">128 bits</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Запись</span><span class="lang-en-inline">Notation</span></td>
+        <td><span class="lang-ru-inline">десятичная с точками <span class="mono">192.168.1.1</span> (4 октета по 0–255)</span><span class="lang-en-inline">dotted decimal <span class="mono">192.168.1.1</span> (4 octets, each 0–255)</span></td>
+        <td><span class="lang-ru-inline">8 групп по 4 шестнадцатеричные цифры через двоеточия <span class="mono">2001:0db8:85a3:0000:0000:8a2e:0370:7334</span></span><span class="lang-en-inline">8 groups of 4 hexadecimal digits separated by colons <span class="mono">2001:0db8:85a3:0000:0000:8a2e:0370:7334</span></span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Кол-во уникальных адресов</span><span class="lang-en-inline">Number of unique addresses</span></td>
+        <td><span class="lang-ru-inline">≈ 4,3 миллиарда (2³²)</span><span class="lang-en-inline">≈ 4.3 billion (2³²)</span></td>
+        <td><span class="lang-ru-inline">≈ 340 ундециллионов (3,4 × 10³⁸)</span><span class="lang-en-inline">≈ 340 undecillion (3.4 × 10³⁸)</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Заголовок пакета</span><span class="lang-en-inline">Packet header</span></td>
+        <td><span class="lang-ru-inline">относительно сложный, 14 полей</span><span class="lang-en-inline">relatively complex, 14 fields</span></td>
+        <td><span class="lang-ru-inline">упрощённый, 8 фиксированных полей</span><span class="lang-en-inline">simplified, 8 fixed fields</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Поддержка IPsec (шифрование, аутентификация)</span><span class="lang-en-inline">IPsec support (encryption, authentication)</span></td>
+        <td><span class="lang-ru-inline">опциональная</span><span class="lang-en-inline">optional</span></td>
+        <td><span class="lang-ru-inline">обязательная</span><span class="lang-en-inline">mandatory</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="real-world"><span class="lang-ru-inline">
+    <b>Реальный пример.</b> IPv4 кончился ещё в 2011 году (последние блоки розданы IANA). Поэтому интернет-провайдеры массово используют <b>NAT</b> (см. ниже) и постепенно переходят на IPv6. В Индии и США уже более половины мобильного трафика идёт по IPv6.
+  </span><span class="lang-en-inline"><b>Real example.</b> IPv4 ran out already in 2011 (the last blocks were handed out by IANA). That is why internet providers widely use <b>NAT</b> (see below) and are gradually moving to IPv6. In India and the USA, more than half of mobile traffic already goes over IPv6.</span></div>
+
+  <h3><span class="lang-ru-inline">🌍 2.2. Публичные и частные IP-адреса</span><span class="lang-en-inline">🌍 2.2. Public and private IP addresses</span></h3>
+
+  <div class="compare-grid">
+    <div>
+      <h4><span class="lang-ru-inline">Публичный IP (Public IP)</span><span class="lang-en-inline">Public IP</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Назначается устройству, которое <b>напрямую выходит в интернет</b>.</span><span class="lang-en-inline">Assigned to a device that <b>connects directly to the internet</b>.</span></li>
+        <li><span class="lang-ru-inline">Уникален в масштабах всего интернета — двух одинаковых одновременно быть не может.</span><span class="lang-en-inline">Unique across the whole internet: two identical addresses cannot exist at the same time.</span></li>
+        <li><span class="lang-ru-inline">Управляется <b>IANA</b> (Internet Assigned Numbers Authority) и региональными регистраторами.</span><span class="lang-en-inline">Managed by <b>IANA</b> (Internet Assigned Numbers Authority) and by regional registries.</span></li>
+        <li><span class="lang-ru-inline">Используют веб-серверы, почтовые серверы, любое устройство, к которому нужно «достучаться» извне.</span><span class="lang-en-inline">Used by web servers, mail servers, and any device that must be reached from outside.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h4><span class="lang-ru-inline">Частный IP (Private IP)</span><span class="lang-en-inline">Private IP</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Используется <b>внутри частной сети</b> (дом, офис) и не маршрутизируется в открытом интернете.</span><span class="lang-en-inline">Used <b>inside a private network</b> (home, office) and not routed on the open internet.</span></li>
+        <li><span class="lang-ru-inline">Определён в <b>RFC 1918</b> — несколько диапазонов, разрешённых для повторного использования.</span><span class="lang-en-inline">Defined in <b>RFC 1918</b>: several ranges that are allowed for reuse.</span></li>
+        <li><span class="lang-ru-inline">Чтобы выйти в интернет — нужен <b>NAT</b> на роутере.</span><span class="lang-en-inline">To go out to the internet, you need <b>NAT</b> on the router.</span></li>
+        <li><span class="lang-ru-inline">Примеры устройств: домашний компьютер, принтер, смартфон в Wi-Fi.</span><span class="lang-en-inline">Examples of devices: home computer, printer, smartphone on Wi-Fi.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="table-scroll"><table class="summary-table compact">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Диапазон частных адресов</span><span class="lang-en-inline">Private address range</span></th>
+        <th><span class="lang-ru-inline">Размер</span><span class="lang-en-inline">Size</span></th>
+        <th><span class="lang-ru-inline">Где встречается</span><span class="lang-en-inline">Where it is found</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="mono">10.0.0.0 – 10.255.255.255</span></td>
+        <td><span class="lang-ru-inline">≈ 16,7 млн (24-битный блок)</span><span class="lang-en-inline">≈ 16.7 million (24-bit block)</span></td>
+        <td><span class="lang-ru-inline">Крупные корпоративные сети, ЦОД</span><span class="lang-en-inline">Large corporate networks, data centres</span></td>
+      </tr>
+      <tr>
+        <td><span class="mono">172.16.0.0 – 172.31.255.255</span></td>
+        <td><span class="lang-ru-inline">≈ 1 млн (16 блоков по 20 бит)</span><span class="lang-en-inline">≈ 1 million (16 blocks of 20 bits)</span></td>
+        <td><span class="lang-ru-inline">Средние сети, VPN</span><span class="lang-en-inline">Medium-sized networks, VPNs</span></td>
+      </tr>
+      <tr>
+        <td><span class="mono">192.168.0.0 – 192.168.255.255</span></td>
+        <td><span class="lang-ru-inline">≈ 65 536 (256 блоков по 16 бит)</span><span class="lang-en-inline">≈ 65,536 (256 blocks of 16 bits)</span></td>
+        <td><span class="lang-ru-inline">Домашние и офисные Wi-Fi-сети; <span class="mono">192.168.1.1</span> — типовой адрес домашнего роутера</span><span class="lang-en-inline">Home and office Wi-Fi networks; <span class="mono">192.168.1.1</span> is a typical address of a home router</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="lang-ru-inline">🔁 2.3. Loopback-адрес 127.0.0.1</span><span class="lang-en-inline">🔁 2.3. Loopback address 127.0.0.1</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <span class="mono">127.0.0.1</span> — это специальный <b>loopback-адрес</b>: устройство отправляет пакет «само себе», не выходя в физическую сеть. Используется для тестирования сетевого стека и локальных серверов. В IPv6 такой же смысл имеет <span class="mono">::1</span> (двойное двоеточие <span class="mono">::</span> сокращает подряд идущие нули). Весь диапазон <span class="mono">127.0.0.0 – 127.255.255.255</span> зарезервирован для loopback, но на практике используют <span class="mono">127.0.0.1</span>.
+  </span><span class="lang-en-inline"><span class="mono">127.0.0.1</span> is a special <b>loopback address</b>: a device sends a packet “to itself”, without leaving the physical network. It is used to test the network stack and local servers. In IPv6, <span class="mono">::1</span> has the same meaning (the double colon <span class="mono">::</span> shortens consecutive zeros). The whole range <span class="mono">127.0.0.0 – 127.255.255.255</span> is reserved for loopback, but in practice <span class="mono">127.0.0.1</span> is used.</span></p>
+
+  <div class="real-world"><span class="lang-ru-inline">
+    <b>Реальный пример.</b> Веб-разработчик запускает локальный сервер и открывает в браузере <span class="mono">http://127.0.0.1:3000</span> или <span class="mono">http://localhost:3000</span> — браузер обращается к серверу, который работает на том же компьютере.
+  </span><span class="lang-en-inline"><b>Real example.</b> A web developer starts a local server and opens <span class="mono">http://127.0.0.1:3000</span> or <span class="mono">http://localhost:3000</span> in the browser. The browser connects to the server that runs on the same computer.</span></div>
+
+  <h3><span class="lang-ru-inline">📌 2.4. Статические и динамические IP</span><span class="lang-en-inline">📌 2.4. Static and dynamic IP</span></h3>
+
+  <div class="compare-grid">
+    <div>
+      <h4><span class="lang-ru-inline">Статический (Static)</span><span class="lang-en-inline">Static</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Адрес <b>постоянно закреплён</b> за устройством, не меняется.</span><span class="lang-en-inline">The address is <b>permanently assigned</b> to the device and does not change.</span></li>
+        <li><span class="lang-ru-inline">Настраивается вручную администратором.</span><span class="lang-en-inline">Set by hand by the administrator.</span></li>
+        <li><span class="lang-ru-inline">Нужен серверам (веб, почта, DNS, принтер в офисе), к которым обращаются по конкретному адресу.</span><span class="lang-en-inline">Needed by servers (web, mail, DNS, an office printer) that are reached at a specific address.</span></li>
+        <li><span class="lang-ru-inline">Минус: <b>трудоёмко</b> при тысячах устройств — нужно вести таблицу вручную.</span><span class="lang-en-inline">Drawback: <b>time-consuming</b> with thousands of devices, because the table has to be kept by hand.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h4><span class="lang-ru-inline">Динамический (Dynamic)</span><span class="lang-en-inline">Dynamic</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Адрес <b>назначается на время</b>, при подключении к сети.</span><span class="lang-en-inline">The address is <b>assigned for a limited time</b> when the device connects to the network.</span></li>
+        <li><span class="lang-ru-inline">Раздаёт <b>DHCP-сервер</b> из пула свободных адресов.</span><span class="lang-en-inline">Issued by a <b>DHCP server</b> from a pool of free addresses.</span></li>
+        <li><span class="lang-ru-inline">При повторном подключении устройство может получить уже другой IP.</span><span class="lang-en-inline">When the device reconnects, it may get a different IP.</span></li>
+        <li><span class="lang-ru-inline">Плюс: экономит ограниченный пул адресов; масштабируется.</span><span class="lang-en-inline">Advantage: saves a limited pool of addresses; scales well.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">🌉 2.5. NAT — сетевая трансляция адресов</span><span class="lang-en-inline">🌉 2.5. NAT — network address translation</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <b>NAT (Network Address Translation)</b> решает главную боль IPv4: адресов не хватает. NAT позволяет <b>сотням частных адресов прятаться за одним публичным</b>.
+  </span><span class="lang-en-inline"><b>NAT (Network Address Translation)</b> solves the main problem of IPv4: there are not enough addresses. NAT allows <b>hundreds of private addresses to hide behind one public address</b>.</span></p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" aria-label="Диаграмма NAT: три устройства с частными IP идут через роутер с NAT и одним публичным IP в интернет">
+      <defs>
+        <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="#0ea5e9"/>
+        </marker>
+      </defs>
+      <!-- Devices -->
+      <g font-family="Helvetica, Arial, sans-serif" font-size="13">
+        <rect x="20" y="20" width="120" height="40" rx="8" fill="#1a3a5e" />
+        <text class="lang-ru" x="80" y="38" fill="#fff" text-anchor="middle">ПК 1</text>
+        <text class="lang-en" x="80" y="38" fill="#fff" text-anchor="middle">PC 1</text>
+        <text x="80" y="54" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.2</text>
+
+        <rect x="20" y="100" width="120" height="40" rx="8" fill="#1a3a5e" />
+        <text class="lang-ru" x="80" y="118" fill="#fff" text-anchor="middle">ПК 2</text>
+        <text class="lang-en" x="80" y="118" fill="#fff" text-anchor="middle">PC 2</text>
+        <text x="80" y="134" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.3</text>
+
+        <rect x="20" y="180" width="120" height="40" rx="8" fill="#1a3a5e" />
+        <text class="lang-ru" x="80" y="198" fill="#fff" text-anchor="middle">Смартфон</text>
+        <text class="lang-en" x="80" y="198" fill="#fff" text-anchor="middle">Smartphone</text>
+        <text x="80" y="214" fill="#cbd5e1" text-anchor="middle" font-size="11">10.0.0.4</text>
+
+        <!-- NAT router -->
+        <rect x="205" y="90" width="230" height="60" rx="10" fill="#0ea5e9" />
+        <text class="lang-ru" x="320" y="115" fill="#fff" text-anchor="middle" font-weight="700">Роутер с NAT</text>
+        <text class="lang-en" x="320" y="115" fill="#fff" text-anchor="middle" font-weight="700">NAT router</text>
+        <text class="lang-ru" x="320" y="135" fill="#e0f2fe" text-anchor="middle" font-size="11">внутр. 10.0.0.1 / внеш. 203.0.113.5</text>
+        <text class="lang-en" x="320" y="135" fill="#e0f2fe" text-anchor="middle" font-size="11">inside 10.0.0.1 / outside 203.0.113.5</text>
+
+        <!-- Internet -->
+        <circle cx="540" cy="120" r="60" fill="#10b981" />
+        <text class="lang-ru" x="540" y="118" fill="#fff" text-anchor="middle" font-weight="700">Интернет</text>
+        <text class="lang-en" x="540" y="118" fill="#fff" text-anchor="middle" font-weight="700">Internet</text>
+        <text class="lang-ru" x="540" y="135" fill="#d1fae5" text-anchor="middle" font-size="11">видит только</text>
+        <text class="lang-en" x="540" y="135" fill="#d1fae5" text-anchor="middle" font-size="11">sees only</text>
+        <text x="540" y="150" fill="#d1fae5" text-anchor="middle" font-size="11">203.0.113.5</text>
+
+        <!-- arrows -->
+        <line x1="140" y1="40" x2="205" y2="100" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="120" x2="205" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="140" y1="200" x2="205" y2="140" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+        <line x1="435" y1="120" x2="480" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
+      </g>
+    </svg>
+    <div class="diagram-caption"><span class="lang-ru-inline">NAT: три частных IP «маскируются» за единственным публичным адресом роутера.</span><span class="lang-en-inline">NAT: three private IPs are “masked” behind the router’s single public address.</span></div>
+  </div>
+
+  <p><span class="lang-ru-inline">Как это работает по шагам:</span><span class="lang-en-inline">How it works, step by step:</span></p>
+  <ol>
+    <li><span class="lang-ru-inline">Устройство в частной сети отправляет пакет в интернет.</span><span class="lang-en-inline">A device on a private network sends a packet to the internet.</span></li>
+    <li><span class="lang-ru-inline">NAT-устройство (обычно роутер) <b>заменяет частный IP в заголовке</b> на свой публичный IP. Также меняется <b>порт-источник</b>, чтобы потом понять, кому вернуть ответ.</span><span class="lang-en-inline">The NAT device (usually the router) <b>replaces the private IP in the header</b> with its own public IP. The <b>source port</b> is also changed, so that it can later tell which device the reply goes back to.</span></li>
+    <li><span class="lang-ru-inline">Запись «частный IP + порт ↔ публичный IP + порт» сохраняется в <b>NAT-таблице</b>.</span><span class="lang-en-inline">The entry “private IP + port ↔ public IP + port” is saved in the <b>NAT table</b>.</span></li>
+    <li><span class="lang-ru-inline">Ответ из интернета приходит на публичный IP. NAT смотрит в таблицу и пересылает пакет «правильному» устройству внутри сети.</span><span class="lang-en-inline">The reply from the internet arrives at the public IP. NAT checks the table and forwards the packet to the correct device inside the network.</span></li>
+  </ol>
+
+  <div class="real-world"><span class="lang-ru-inline">
+    <b>Реальный пример.</b> У вас дома подключены ноутбук, телефон, телевизор, два умных динамика и игровая консоль — всем шести устройствам провайдер выдал один публичный IP. Каждое получает свой частный IP <span class="mono">192.168.0.x</span>, а роутер с NAT обрабатывает их совместный выход в сеть.
+  </span><span class="lang-en-inline"><b>Real example.</b> At home you have a laptop, a phone, a TV, two smart speakers and a games console connected. The provider gave all six devices one public IP. Each one gets its own private IP <span class="mono">192.168.0.x</span>, and the router with NAT handles their shared connection to the internet.</span></div>
+
+  <h3><span class="lang-ru-inline">🧮 2.6. Подсеть и маска подсети (intro)</span><span class="lang-en-inline">🧮 2.6. Subnet and subnet mask (intro)</span></h3>
+
+  <p><span class="lang-ru-inline">
+    <b>Маска подсети (subnet mask)</b> — это битовый «фильтр», который делит IP-адрес на две части: <b>сетевая часть</b> (она же — номер подсети) и <b>хост-часть</b> (номер конкретного устройства). Устройства с одинаковой сетевой частью находятся «в одной подсети» и могут общаться напрямую — без роутера.
+  </span><span class="lang-en-inline"><b>Subnet mask</b> is a bit “filter” that divides an IP address into two parts: the <b>network part</b> (also called the subnet number) and the <b>host part</b> (the number of the particular device). Devices with the same network part are “in the same subnet” and can communicate directly, without a router.</span></p>
+
+  <p><span class="lang-ru-inline">Чтобы узнать сетевую часть, делается <b>побитовая операция AND</b> между IP и маской.</span><span class="lang-en-inline">To find the network part, a <b>bitwise AND</b> operation is carried out between the IP address and the mask.</span></p>
+
+  <div class="key-term"><span class="lang-ru-inline">
+    <b>Пример.</b> IP <span class="mono">192.168.1.10</span> + маска <span class="mono">255.255.255.0</span> → сетевой адрес <span class="mono">192.168.1.0</span>, хост <span class="mono">.10</span>. Все устройства <span class="mono">192.168.1.1</span> – <span class="mono">192.168.1.254</span> находятся в одной локальной сети.
+  </span><span class="lang-en-inline"><b>Example.</b> IP <span class="mono">192.168.1.10</span> + mask <span class="mono">255.255.255.0</span> → network address <span class="mono">192.168.1.0</span>, host <span class="mono">.10</span>. All devices <span class="mono">192.168.1.1</span> – <span class="mono">192.168.1.254</span> are in the same local network.</span></div>
+
+  <p><span class="lang-ru-inline">
+    В <b>CIDR-нотации</b> то же самое записывают как <span class="mono">192.168.1.0/24</span> — «24» означает, что первые 24 бита из 32 заняты под сетевую часть, а оставшиеся 8 — под хосты (256 адресов, из которых 254 могут быть назначены устройствам; первый — адрес сети, последний — широковещательный).
+  </span><span class="lang-en-inline">In <b>CIDR notation</b> the same thing is written as <span class="mono">192.168.1.0/24</span>: “24” means that the first 24 of the 32 bits are used for the network part, and the remaining 8 for hosts (256 addresses, of which 254 can be assigned to devices; the first is the network address and the last is the broadcast address).</span></p>
+
+  <!-- ============ SECTION 3: TRANSMISSION MEDIA ============ -->
+  <h2><span class="lang-ru-inline">3. Среды передачи данных (A2.3.2)</span><span class="lang-en-inline">3. Transmission media (A2.3.2)</span></h2>
+
+  <p><span class="lang-ru-inline">
+    Сигнал должен по чему-то передаваться. Есть три большие категории: <b>оптоволокно</b>, <b>витая пара</b> (медь) и <b>беспроводные</b> технологии. Для каждой среды важны 7 факторов: пропускная способность, сложность установки, цена, дальность, помехоустойчивость, затухание, надёжность и безопасность.
+  </span><span class="lang-en-inline">A signal must be carried through something. There are three large categories: <b>fibre-optic</b>, <b>twisted pair</b> (copper) and <b>wireless</b> technologies. For each medium, 7 factors matter: bandwidth, installation complexity, cost, range, interference resistance, attenuation, reliability and security.</span></p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — transmission media.</b>
+    Three main families carry network signals. <b>Twisted-pair</b> copper cable (UTP or shielded STP) is cheap and easy to install, but suffers from electromagnetic interference and is usually limited to roughly 100 metres before a repeater is needed. <b>Coaxial</b> cable, with a central core inside braided shielding, was common in early Ethernet and is still used for cable TV and last-mile broadband. <b>Fibre-optic</b> sends pulses of light through glass strands, giving very high bandwidth, very long reach, low attenuation and immunity to EMI, but cabling and termination are expensive and require trained technicians. <b>Wireless</b> media — Wi-Fi, Bluetooth, cellular, satellite — use radio or microwave signals, offering mobility but suffering from interference, obstacles and weaker security. Exam answers should always compare at least three factors such as speed, range and reliability.
+  </div>
+
+  <h3><span class="lang-ru-inline">📊 3.1. Сравнительная таблица сред</span><span class="lang-en-inline">📊 3.1. Comparison table of media</span></h3>
+
+  <div class="table-scroll"><table class="summary-table compact">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Фактор</span><span class="lang-en-inline">Factor</span></th>
+        <th><span class="lang-ru-inline">Оптоволокно (Fibre-optic)</span><span class="lang-en-inline">Fibre-optic</span></th>
+        <th><span class="lang-ru-inline">Витая пара (Twisted pair)</span><span class="lang-en-inline">Twisted pair</span></th>
+        <th><span class="lang-ru-inline">Беспроводное (Wireless)</span><span class="lang-en-inline">Wireless</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Принцип</span><span class="lang-en-inline">Principle</span></td>
+        <td><span class="lang-ru-inline">Импульсы света по стеклянным или пластиковым волокнам</span><span class="lang-en-inline">Pulses of light along glass or plastic fibres</span></td>
+        <td><span class="lang-ru-inline">Импульсы электричества по парам скрученных медных проводов (UTP / STP)</span><span class="lang-en-inline">Electrical pulses along pairs of twisted copper wires (UTP / STP)</span></td>
+        <td><span class="lang-ru-inline">Электромагнитные волны: радио, инфракрасное, микроволны</span><span class="lang-en-inline">Electromagnetic waves: radio, infrared, microwaves</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Пропускная способность</span><span class="lang-en-inline">Bandwidth</span></td>
+        <td><span class="lang-ru-inline"><b>Очень высокая</b> — до десятков Гбит/с</span><span class="lang-en-inline"><b>Very high</b> — up to tens of Gbit/s</span></td>
+        <td><span class="lang-ru-inline">Средняя — зависит от категории; Cat 6+ даёт до 10 Гбит/с на коротких дистанциях</span><span class="lang-en-inline">Medium — depends on the category; Cat 6+ gives up to 10 Gbit/s over short distances</span></td>
+        <td><span class="lang-ru-inline">Ограниченная; зависит от стандарта Wi-Fi, числа клиентов, помех</span><span class="lang-en-inline">Limited; depends on the Wi-Fi standard, the number of clients and interference</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Сложность установки</span><span class="lang-en-inline">Installation complexity</span></td>
+        <td><span class="lang-ru-inline">Сложно — нужны спецификации, сварочные аппараты для сварки волокон</span><span class="lang-en-inline">Difficult — needs skilled work and fusion-splicing machines to join the fibres</span></td>
+        <td><span class="lang-ru-inline">Просто — известно десятки лет, любой техник справится</span><span class="lang-en-inline">Easy — known for decades, any technician can do it</span></td>
+        <td><span class="lang-ru-inline">Средне — нужно правильно расставить точки доступа</span><span class="lang-en-inline">Medium — access points have to be placed correctly</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Стоимость</span><span class="lang-en-inline">Cost</span></td>
+        <td><span class="lang-ru-inline">Дорого — и кабель, и оборудование</span><span class="lang-en-inline">Expensive — both the cable and the equipment</span></td>
+        <td><span class="lang-ru-inline">Дёшево, особенно UTP — массово доступен</span><span class="lang-en-inline">Cheap, especially UTP — widely available</span></td>
+        <td><span class="lang-ru-inline">Цена оборудования средняя, но <b>нет затрат на физический кабель</b></span><span class="lang-en-inline">The equipment costs a medium amount, but <b>there is no cost for physical cable</b></span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Дальность</span><span class="lang-en-inline">Range</span></td>
+        <td><span class="lang-ru-inline"><b>Большая</b> — десятки и сотни км без усиления</span><span class="lang-en-inline"><b>Long</b> — tens and hundreds of km without amplification</span></td>
+        <td><span class="lang-ru-inline">Маленькая — обычно до 100 м без репитера</span><span class="lang-en-inline">Short — usually up to 100 m without a repeater</span></td>
+        <td><span class="lang-ru-inline">Ограниченная зоной покрытия — можно расширить доп. оборудованием</span><span class="lang-en-inline">Limited to the coverage area — can be extended with extra equipment</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Помехоустойчивость (EMI)</span><span class="lang-en-inline">Interference resistance (EMI)</span></td>
+        <td><span class="lang-ru-inline"><b>Полная — не подвержена электромагнитным помехам</b></span><span class="lang-en-inline"><b>Complete — not affected by electromagnetic interference</b></span></td>
+        <td><span class="lang-ru-inline">Подвержена помехам, особенно на длинных дистанциях; STP лучше UTP</span><span class="lang-en-inline">Affected by interference, especially over long distances; STP is better than UTP</span></td>
+        <td><span class="lang-ru-inline">Уязвимо — другие беспроводные устройства, стены, погода</span><span class="lang-en-inline">Vulnerable — other wireless devices, walls, weather</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Затухание (attenuation)</span><span class="lang-en-inline">Attenuation</span></td>
+        <td><span class="lang-ru-inline">Очень низкое — сигнал почти не теряется на больших расстояниях</span><span class="lang-en-inline">Very low — the signal hardly weakens over long distances</span></td>
+        <td><span class="lang-ru-inline">Высокое — нужны усилители для длинных линий</span><span class="lang-en-inline">High — amplifiers are needed on long lines</span></td>
+        <td><span class="lang-ru-inline">Среднее — снижается с расстоянием и через препятствия</span><span class="lang-en-inline">Medium — decreases with distance and through obstacles</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Надёжность</span><span class="lang-en-inline">Reliability</span></td>
+        <td><span class="lang-ru-inline">Очень высокая, не зависит от погоды</span><span class="lang-en-inline">Very high, not affected by weather</span></td>
+        <td><span class="lang-ru-inline">Высокая в пределах нормы, но падает от EMI</span><span class="lang-en-inline">High within normal limits, but falls because of EMI</span></td>
+        <td><span class="lang-ru-inline">Переменная — зависит от помех, нагрузки, силы сигнала</span><span class="lang-en-inline">Variable — depends on interference, load and signal strength</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Безопасность</span><span class="lang-en-inline">Security</span></td>
+        <td><span class="lang-ru-inline">Перехват очень сложен</span><span class="lang-en-inline">Interception is very difficult</span></td>
+        <td><span class="lang-ru-inline">Перехват сложен, но проще, чем у оптики</span><span class="lang-en-inline">Interception is difficult, but easier than with fibre</span></td>
+        <td><span class="lang-ru-inline">Самая уязвимая — нужно шифрование (WPA2/WPA3)</span><span class="lang-en-inline">The most vulnerable — encryption (WPA2/WPA3) is needed</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 <b>На экзамене</b> часто спрашивают «сравни X и Y» или «обоснуй выбор среды для ...». Всегда отвечай через <b>три фактора минимум</b>: скорость / дальность / помехоустойчивость или цена / простота установки / надёжность.
+  </span><span class="lang-en-inline">💡 <b>In the exam</b> you are often asked “compare X and Y” or “justify the choice of medium for …”. Always answer with <b>at least three factors</b>: speed / range / interference resistance, or cost / ease of installation / reliability.</span></div>
+
+  <h3><span class="lang-ru-inline">📡 3.2. Кратко по каждой среде</span><span class="lang-en-inline">📡 3.2. Summary of each medium</span></h3>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">💡</span> Оптоволокно (Fibre-optic)</span><span class="lang-en-inline"><span class="device-emoji">💡</span> Fibre-optic</span></h3>
+    <p><span class="lang-ru-inline"><b>Как работает:</b> данные передаются как импульсы света по тонким стеклянным или пластиковым волокнам. Используется два режима — одномодовый (на дальние дистанции) и многомодовый (короткие, внутри ЦОД).</span><span class="lang-en-inline"><b>How it works:</b> data is sent as pulses of light along thin glass or plastic fibres. Two modes are used: single-mode (for long distances) and multi-mode (short runs, inside data centres).</span></p>
+    <p><span class="lang-ru-inline"><b>Где применяется в жизни:</b></span><span class="lang-en-inline"><b>Where it is used in real life:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline">Магистральные каналы между ЦОД и трансатлантические подводные кабели — весь интернет «висит» на оптике.</span><span class="lang-en-inline">Backbone links between data centres and transatlantic undersea cables — the whole internet relies on fibre.</span></li>
+      <li><span class="lang-ru-inline">FTTH (Fiber-to-the-Home) — оптика к квартире, скорости 1 Гбит/с и выше.</span><span class="lang-en-inline">FTTH (Fiber-to-the-Home) — fibre to the flat, with speeds of 1 Gbit/s and above.</span></li>
+      <li><span class="lang-ru-inline">Внутри современных дата-центров между серверными стойками.</span><span class="lang-en-inline">Inside modern data centres, between server racks.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">🧵</span> Витая пара (Twisted pair)</span><span class="lang-en-inline"><span class="device-emoji">🧵</span> Twisted pair</span></h3>
+    <p><span class="lang-ru-inline"><b>Как работает:</b> пары медных проводов скручены попарно — это снижает взаимные помехи. Две разновидности:</span><span class="lang-en-inline"><b>How it works:</b> pairs of copper wires are twisted together, which reduces mutual interference. There are two types:</span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>UTP (Unshielded)</b> — без экрана; дёшево, повсеместно. Категории Cat 5e, Cat 6, Cat 6a, Cat 7.</span><span class="lang-en-inline"><b>UTP (Unshielded)</b> — without a shield; cheap and found everywhere. Categories Cat 5e, Cat 6, Cat 6a, Cat 7.</span></li>
+      <li><span class="lang-ru-inline"><b>STP (Shielded)</b> — с дополнительным экраном из фольги или оплётки; защищает от EMI; применяется на заводах, в больницах рядом с электромагнитным оборудованием.</span><span class="lang-en-inline"><b>STP (Shielded)</b> — with an extra shield of foil or braid; protects against EMI; used in factories and in hospitals near electromagnetic equipment.</span></li>
+    </ul>
+    <p><span class="lang-ru-inline"><b>Где применяется:</b></span><span class="lang-en-inline"><b>Where it is used:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline">Кабельная разводка офисов (от коммутатора к каждому рабочему месту через RJ-45 розетку).</span><span class="lang-en-inline">Cabling in offices (from the switch to each workstation through an RJ-45 socket).</span></li>
+      <li><span class="lang-ru-inline">Соединение домашнего компьютера с роутером, когда нужна стабильность лучше Wi-Fi.</span><span class="lang-en-inline">Connecting a home computer to the router when more stability is needed than Wi-Fi gives.</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">📡</span> Беспроводные технологии (Wireless)</span><span class="lang-en-inline"><span class="device-emoji">📡</span> Wireless technologies</span></h3>
+    <p><span class="lang-ru-inline"><b>Как работает:</b> данные передаются электромагнитными волнами разных частот — радио (Wi-Fi 2,4/5/6 ГГц), инфракрасное (пульты), микроволны (Bluetooth, мобильная связь, спутник).</span><span class="lang-en-inline"><b>How it works:</b> data is sent by electromagnetic waves of different frequencies — radio (Wi-Fi 2.4/5/6 GHz), infrared (remote controls), microwaves (Bluetooth, mobile networks, satellite).</span></p>
+    <p><span class="lang-ru-inline"><b>Где применяется:</b></span><span class="lang-en-inline"><b>Where it is used:</b></span></p>
+    <ul>
+      <li><span class="lang-ru-inline"><b>Wi-Fi</b> — школьная и домашняя сеть.</span><span class="lang-en-inline"><b>Wi-Fi</b> — school and home networks.</span></li>
+      <li><span class="lang-ru-inline"><b>Bluetooth</b> — наушники, мышь, клавиатура (короткая дистанция, низкое энергопотребление).</span><span class="lang-en-inline"><b>Bluetooth</b> — headphones, mouse, keyboard (short range, low power consumption).</span></li>
+      <li><span class="lang-ru-inline"><b>Сотовая связь (4G / 5G)</b> — мобильный интернет.</span><span class="lang-en-inline"><b>Cellular (4G / 5G)</b> — mobile internet.</span></li>
+      <li><span class="lang-ru-inline"><b>Спутниковая связь</b> — труднодоступные регионы, корабли, самолёты (Starlink).</span><span class="lang-en-inline"><b>Satellite communication</b> — hard-to-reach regions, ships, aircraft (Starlink).</span></li>
+    </ul>
+  </div>
+
+  <div class="device-card">
+    <h3><span class="lang-ru-inline"><span class="device-emoji">📞</span> Коаксиальный кабель (Coaxial) — бонус для контекста</span><span class="lang-en-inline"><span class="device-emoji">📞</span> Coaxial cable — bonus for context</span></h3>
+    <p><span class="lang-ru-inline"><b>Это не входит в основной список Oxford-учебника</b>, но упоминается в реальном мире: центральная медная жила в изоляции и оплётке. Раньше использовался в кабельном ТВ и Ethernet 10Base2; сейчас — в основном для кабельного интернета (DOCSIS) «последней мили».</span><span class="lang-en-inline"><b>This is not in the main list of the Oxford textbook</b>, but it is mentioned in the real world: a central copper core in insulation and braid. It was used earlier for cable TV and Ethernet 10Base2; now it is mainly used for cable internet (DOCSIS) in the “last mile”.</span></p>
+  </div>
+
+  <div class="real-world"><span class="lang-ru-inline">
+    <b>Реальные кейсы выбора среды:</b><br>
+    • <b>Между ЦОД</b> — оптоволокно (нужна сверхвысокая скорость и дальность).<br>
+    • <b>В аудитории школы</b> — Wi-Fi (нет смысла тянуть кабель к каждому ученику).<br>
+    • <b>На заводе с тяжёлой электрикой</b> — оптоволокно или STP (нет помех от моторов).<br>
+    • <b>Из соседнего города</b> на дачу без оптики — спутник или сотовая связь.<br>
+    • <b>Игровой ПК, где важна задержка</b> — витая пара (стабильнее Wi-Fi).
+  </span><span class="lang-en-inline"><b>Real cases of choosing a medium:</b><br>
+    • <b>Between data centres</b> — fibre-optic (very high speed and range are needed).<br>
+    • <b>In a school classroom</b> — Wi-Fi (there is no point in running a cable to every pupil).<br>
+    • <b>In a factory with heavy electrical equipment</b> — fibre-optic or STP (no interference from motors).<br>
+    • <b>From a neighbouring town to a dacha (country house) with no fibre</b> — satellite or cellular.<br>
+    • <b>A gaming PC where latency matters</b> — twisted pair (more stable than Wi-Fi).</span></div>
+
+  <h2><span class="lang-ru-inline">4. Характеристики канала: пропускная способность, задержка, джиттер</span><span class="lang-en-inline">4. Channel characteristics: bandwidth, latency, jitter</span></h2>
+
+  <p><span class="lang-ru-inline">
+    На экзамене легко путают эти термины. Каждый описывает <b>свой аспект</b> качества связи.
+  </span><span class="lang-en-inline">In the exam these terms are easy to confuse. Each one describes <b>its own aspect</b> of the quality of communication.</span></p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — bandwidth, throughput, latency, jitter.</b>
+    These four metrics describe link quality and are often confused. <b>Bandwidth</b> is the theoretical maximum data rate of a channel, measured in bits per second (Mbps, Gbps) — the "pipe diameter". <b>Throughput</b> is the actual rate of useful data delivered; it is always less than bandwidth because of overhead, congestion and protocol limits. <b>Latency</b> is the time, in milliseconds, taken for a single packet to travel from sender to receiver — what gamers call ping. <b>Jitter</b> measures the variation in latency between consecutive packets; high jitter causes audio and video to stutter even when average latency is low. Bulk file downloads care most about bandwidth and throughput, while real-time video calls and online games depend on low latency and low jitter.
+  </div>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Термин</span><span class="lang-en-inline">Term</span></th>
+        <th><span class="lang-ru-inline">Что означает</span><span class="lang-en-inline">What it means</span></th>
+        <th><span class="lang-ru-inline">Единицы</span><span class="lang-en-inline">Units</span></th>
+        <th><span class="lang-ru-inline">Бытовая аналогия (труба + вода)</span><span class="lang-en-inline">Everyday analogy (pipe + water)</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Пропускная способность (Bandwidth)</span><span class="lang-en-inline">Bandwidth</span></td>
+        <td><span class="lang-ru-inline">Теоретический максимум данных, который канал может пропустить за единицу времени.</span><span class="lang-en-inline">The theoretical maximum of data that a channel can carry in a unit of time.</span></td>
+        <td><span class="lang-ru-inline">бит/с, Мбит/с, Гбит/с</span><span class="lang-en-inline">bit/s, Mbit/s, Gbit/s</span></td>
+        <td><span class="lang-ru-inline">Диаметр трубы.</span><span class="lang-en-inline">The diameter of the pipe.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Реальная скорость (Throughput)</span><span class="lang-en-inline">Throughput</span></td>
+        <td><span class="lang-ru-inline">Фактическое количество данных, переданное за единицу времени. Всегда ≤ пропускной способности.</span><span class="lang-en-inline">The actual amount of data transferred in a unit of time. Always ≤ bandwidth.</span></td>
+        <td><span class="lang-ru-inline">бит/с</span><span class="lang-en-inline">bit/s</span></td>
+        <td><span class="lang-ru-inline">Сколько воды реально течёт — обычно меньше, чем «влезает» в трубу.</span><span class="lang-en-inline">How much water actually flows — usually less than “fits” into the pipe.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Задержка (Latency)</span><span class="lang-en-inline">Latency</span></td>
+        <td><span class="lang-ru-inline">Время, за которое один пакет добирается от отправителя до получателя.</span><span class="lang-en-inline">The time it takes one packet to travel from the sender to the receiver.</span></td>
+        <td><span class="lang-ru-inline">мс</span><span class="lang-en-inline">ms</span></td>
+        <td><span class="lang-ru-inline">Сколько секунд проходит, пока вода доберётся от насоса до крана.</span><span class="lang-en-inline">How many seconds pass before the water gets from the pump to the tap.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Джиттер (Jitter)</span><span class="lang-en-inline">Jitter</span></td>
+        <td><span class="lang-ru-inline">Вариация задержки от пакета к пакету (одни приходят быстрее, другие медленнее).</span><span class="lang-en-inline">Variation in latency from packet to packet (some arrive faster, others slower).</span></td>
+        <td><span class="lang-ru-inline">мс</span><span class="lang-en-inline">ms</span></td>
+        <td><span class="lang-ru-inline">Когда вода идёт «толчками», а не равномерно.</span><span class="lang-en-inline">When water flows in “bursts” instead of evenly.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="real-world"><span class="lang-ru-inline">
+    <b>Почему это важно на практике:</b><br>
+    • Для <b>видеозвонка</b> критичны <b>низкая задержка и низкий джиттер</b> — иначе «лагает» и пропадают слова.<br>
+    • Для <b>скачивания большого файла</b> важнее всего <b>пропускная способность</b> — пусть начнётся медленно, но льётся быстро.<br>
+    • Для <b>онлайн-игр</b> критична <b>задержка (ping)</b> — даже 50 мс между нажатием кнопки и реакцией могут стоить проигрыша.
+  </span><span class="lang-en-inline"><b>Why this matters in practice:</b><br>
+    • For a <b>video call</b>, <b>low latency and low jitter</b> are critical — otherwise it “lags” and words drop out.<br>
+    • For <b>downloading a large file</b> the most important thing is <b>bandwidth</b> — it may start slowly, but then it flows fast.<br>
+    • For <b>online games</b>, <b>latency (ping)</b> is critical — even 50 ms between pressing a button and reacting can cost you the game.</span></div>
+
+  <!-- ============ SECTION 5: PACKET SWITCHING ============ -->
+  <h2><span class="lang-ru-inline">5. Коммутация пакетов (A2.3.3)</span><span class="lang-en-inline">5. Packet switching (A2.3.3)</span></h2>
+
+  <p><span class="lang-ru-inline">
+    Когда вы отправляете данные в сеть, они <b>не идут одним куском</b>. Они режутся на маленькие порции — <b>пакеты</b> — и каждый пакет отправляется независимо. Этот метод называется <b>packet switching</b> (коммутация пакетов) и лежит в основе всего интернета.
+  </span><span class="lang-en-inline">When you send data over a network, it does <b>not travel in one piece</b>. It is cut into small portions — <b>packets</b> — and each packet is sent independently. This method is called <b>packet switching</b> and it underlies the whole internet.</span></p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — packet switching.</b>
+    In <b>packet switching</b>, a message is divided into small units called <b>packets</b>. Each packet has a <b>header</b> (source and destination IP, sequence number, error-check code) plus a <b>payload</b> of data. Wrapping data with headers is called <b>encapsulation</b>; unwrapping at the destination is <b>decapsulation</b>. Packets travel independently through the network and can take different routes; the receiver reorders them using the sequence numbers and asks for any missing ones to be resent. This makes the network resilient (failed links are routed around), efficient (one channel carries many users' packets) and scalable. By contrast, <b>circuit switching</b> (used in the old telephone network) reserves a dedicated path for the whole conversation, giving guaranteed bandwidth but wasting capacity when idle. Within a LAN, a <b>switch</b> forwards frames by MAC address; between networks a <b>router</b> consults a routing table and forwards each packet to the next <b>hop</b>.
+  </div>
+
+  <div class="key-term"><span class="lang-ru-inline">
+    <b>Пакет (Packet).</b> Структурная единица данных в сети: <b>payload</b> (полезная нагрузка — кусок исходных данных) + <b>header</b> (заголовок с метаданными: адрес отправителя и получателя, номер в последовательности, контрольная сумма).
+  </span><span class="lang-en-inline"><b>Packet.</b> A structural unit of data on a network: the <b>payload</b> (the useful load — a piece of the original data) + a <b>header</b> (metadata: the sender’s and receiver’s addresses, the sequence number, a checksum).</span></div>
+
+  <h3><span class="lang-ru-inline">🧩 5.1. Зачем делить данные на пакеты</span><span class="lang-en-inline">🧩 5.1. Why split data into packets</span></h3>
+
+  <ul>
+    <li><span class="lang-ru-inline"><b>Параллельность.</b> Разные пакеты могут идти разными путями — сеть используется эффективнее.</span><span class="lang-en-inline"><b>Parallelism.</b> Different packets can take different routes — the network is used more efficiently.</span></li>
+    <li><span class="lang-ru-inline"><b>Надёжность.</b> Если один пакет потерян или повреждён, перепосылается только он, а не всё сообщение.</span><span class="lang-en-inline"><b>Reliability.</b> If one packet is lost or damaged, only that packet is sent again, not the whole message.</span></li>
+    <li><span class="lang-ru-inline"><b>Адаптивность.</b> Если один канал перегружен, роутеры могут отправить следующий пакет в обход.</span><span class="lang-en-inline"><b>Adaptability.</b> If one link is overloaded, routers can send the next packet around it.</span></li>
+    <li><span class="lang-ru-inline"><b>Справедливость.</b> Канал не «забивается» одним длинным сообщением — между его пакетами проходят чужие.</span><span class="lang-en-inline"><b>Fairness.</b> One long message does not “clog” the channel — packets from other messages pass between its packets.</span></li>
+  </ul>
+
+  <h3><span class="lang-ru-inline">🗺️ 5.2. Визуализация: три пакета — три пути</span><span class="lang-en-inline">🗺️ 5.2. Visualisation: three packets — three paths</span></h3>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Сеть из 5 роутеров. Три пакета идут разными путями от отправителя к получателю.">
+      <defs>
+        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+        </marker>
+        <marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#10b981"/>
+        </marker>
+        <marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#f59e0b"/>
+        </marker>
+      </defs>
+      <g font-family="Helvetica, Arial, sans-serif" font-size="12">
+        <!-- sender -->
+        <rect x="20" y="140" width="100" height="40" rx="8" fill="#1a3a5e"/>
+        <text class="lang-ru" x="70" y="165" fill="#fff" text-anchor="middle" font-weight="700">Отправитель</text>
+        <text class="lang-en" x="70" y="165" fill="#fff" text-anchor="middle" font-weight="700">Sender</text>
+        <!-- routers -->
+        <circle cx="230" cy="60" r="28" fill="#cbd5e1"/>
+        <text x="230" y="65" text-anchor="middle" font-weight="700">R1</text>
+        <circle cx="230" cy="160" r="28" fill="#cbd5e1"/>
+        <text x="230" y="165" text-anchor="middle" font-weight="700">R2</text>
+        <circle cx="230" cy="260" r="28" fill="#cbd5e1"/>
+        <text x="230" y="265" text-anchor="middle" font-weight="700">R3</text>
+        <circle cx="430" cy="100" r="28" fill="#cbd5e1"/>
+        <text x="430" y="105" text-anchor="middle" font-weight="700">R4</text>
+        <circle cx="430" cy="220" r="28" fill="#cbd5e1"/>
+        <text x="430" y="225" text-anchor="middle" font-weight="700">R5</text>
+        <!-- receiver -->
+        <rect x="580" y="140" width="100" height="40" rx="8" fill="#1a3a5e"/>
+        <text class="lang-ru" x="630" y="165" fill="#fff" text-anchor="middle" font-weight="700">Получатель</text>
+        <text class="lang-en" x="630" y="165" fill="#fff" text-anchor="middle" font-weight="700">Receiver</text>
+
+        <!-- Packet 1 path: sender -> R1 -> R4 -> receiver  (violet) -->
+        <path d="M120,150 L202,75" stroke="#8b5cf6" stroke-width="2.5" fill="none" marker-end="url(#arrow2)"/>
+        <path d="M258,60 L405,90" stroke="#8b5cf6" stroke-width="2.5" fill="none" marker-end="url(#arrow2)"/>
+        <path d="M455,110 L580,150" stroke="#8b5cf6" stroke-width="2.5" fill="none" marker-end="url(#arrow2)"/>
+        <text class="lang-ru" x="350" y="35" fill="#8b5cf6" font-weight="700">Пакет 1</text>
+        <text class="lang-en" x="350" y="35" fill="#8b5cf6" font-weight="700">Packet 1</text>
+
+        <!-- Packet 2 path: sender -> R2 -> R4 -> receiver  (green) -->
+        <path d="M120,165 L202,160" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow3)"/>
+        <path d="M258,150 L405,115" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow3)"/>
+        <path d="M455,125 L580,160" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow3)"/>
+        <text class="lang-ru" x="350" y="160" fill="#10b981" font-weight="700">Пакет 2</text>
+        <text class="lang-en" x="350" y="160" fill="#10b981" font-weight="700">Packet 2</text>
+
+        <!-- Packet 3 path: sender -> R3 -> R5 -> receiver  (amber) -->
+        <path d="M120,180 L202,250" stroke="#f59e0b" stroke-width="2.5" fill="none" marker-end="url(#arrow4)"/>
+        <path d="M258,260 L405,225" stroke="#f59e0b" stroke-width="2.5" fill="none" marker-end="url(#arrow4)"/>
+        <path d="M455,210 L580,175" stroke="#f59e0b" stroke-width="2.5" fill="none" marker-end="url(#arrow4)"/>
+        <text class="lang-ru" x="350" y="295" fill="#f59e0b" font-weight="700">Пакет 3</text>
+        <text class="lang-en" x="350" y="295" fill="#f59e0b" font-weight="700">Packet 3</text>
+      </g>
+    </svg>
+    <div class="diagram-caption"><span class="lang-ru-inline">Три пакета одного сообщения идут <b>разными маршрутами</b> через сеть — каждый роутер выбирает путь динамически. Получатель потом собирает их по порядку.</span><span class="lang-en-inline">The three packets of one message take <b>different routes</b> through the network — each router chooses the path dynamically. The receiver then puts them back in order.</span></div>
+  </div>
+
+  <h3><span class="lang-ru-inline">🔄 5.3. Жизненный цикл пакета (10 шагов по учебнику)</span><span class="lang-en-inline">🔄 5.3. Packet life cycle (10 steps from the textbook)</span></h3>
+
+  <ol>
+    <li><span class="lang-ru-inline"><b>Инициация действия.</b> Например, в Minecraft вы кликаете «поставить блок» — данные должны уйти на игровой сервер.</span><span class="lang-en-inline"><b>Initiating an action.</b> For example, in Minecraft you click “place block” — the data must be sent to the game server.</span></li>
+    <li><span class="lang-ru-inline"><b>Сегментация данных.</b> Действие превращается в данные (координаты блока, тип, кто его поставил). Данные разрезаются на маленькие куски.</span><span class="lang-en-inline"><b>Data segmentation.</b> The action becomes data (the block’s coordinates, its type, who placed it). The data is cut into small pieces.</span></li>
+    <li><span class="lang-ru-inline"><b>Создание пакета (инкапсуляция).</b> Каждый кусок упаковывается в пакет. Добавляется <b>заголовок</b> с адресами «откуда / куда».</span><span class="lang-en-inline"><b>Creating the packet (encapsulation).</b> Each piece is packed into a packet. A <b>header</b> with the “from / to” addresses is added.</span></li>
+    <li><span class="lang-ru-inline"><b>Добавление контрольной информации.</b> В заголовок включают <b>номер последовательности (sequence number)</b> и <b>код для проверки на ошибки</b>.</span><span class="lang-en-inline"><b>Adding control information.</b> The header includes a <b>sequence number</b> and an <b>error-checking code</b>.</span></li>
+    <li><span class="lang-ru-inline"><b>Независимая передача.</b> Пакеты отправляются по сети независимо друг от друга.</span><span class="lang-en-inline"><b>Independent transmission.</b> The packets are sent across the network independently of each other.</span></li>
+    <li><span class="lang-ru-inline"><b>Маршрутизация.</b> На каждом узле <b>роутер</b> решает, по какому пути отправить пакет дальше — на основании трафика и доступности. Один пакет может пойти через Нью-Йорк, другой — через Чикаго.</span><span class="lang-en-inline"><b>Routing.</b> At each node a <b>router</b> decides which path to send the packet along next, based on traffic and availability. One packet may go through New York, another through Chicago.</span></li>
+    <li><span class="lang-ru-inline"><b>Прибытие на сервер.</b> Пакеты приходят, возможно не по порядку и с разной задержкой.</span><span class="lang-en-inline"><b>Arrival at the server.</b> The packets arrive, possibly out of order and with different delays.</span></li>
+    <li><span class="lang-ru-inline"><b>Сборка (декапсуляция).</b> Сервер использует <b>sequence numbers</b>, чтобы восстановить исходный порядок. Если каких-то пакетов не хватает — запрашивает их повторно.</span><span class="lang-en-inline"><b>Reassembly (decapsulation).</b> The server uses the <b>sequence numbers</b> to restore the original order. If some packets are missing, it asks for them again.</span></li>
+    <li><span class="lang-ru-inline"><b>Обновление состояния.</b> Игровой сервер ставит блок в игре и рассылает обновление другим игрокам.</span><span class="lang-en-inline"><b>Updating the state.</b> The game server places the block in the game and sends the update to the other players.</span></li>
+    <li><span class="lang-ru-inline"><b>Финальный показ.</b> Друг видит у себя в Minecraft новый блок ровно там, где вы его поставили.</span><span class="lang-en-inline"><b>Final display.</b> Your friend sees the new block in their Minecraft exactly where you placed it.</span></li>
+  </ol>
+
+  <div class="key-term"><span class="lang-ru-inline">
+    <b>Инкапсуляция / декапсуляция.</b> <b>Encapsulation</b> = «обернуть» полезные данные служебной информацией (заголовки, контрольные коды). <b>Decapsulation</b> = «снять обёртку» на стороне получателя, чтобы достать исходные данные.
+  </span><span class="lang-en-inline"><b>Encapsulation / decapsulation.</b> <b>Encapsulation</b> = “wrapping” the useful data in control information (headers, error-checking codes). <b>Decapsulation</b> = “removing the wrapper” on the receiver’s side, to get the original data out.</span></div>
+
+  <h3>🔀 5.4. Packet switching vs Circuit switching</h3>
+
+  <div class="compare-grid">
+    <div>
+      <h4><span class="lang-ru-inline">Packet switching (коммутация пакетов)</span><span class="lang-en-inline">Packet switching</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Данные режутся на <b>пакеты</b>, каждый идёт своим путём.</span><span class="lang-en-inline">Data is cut into <b>packets</b>, each taking its own route.</span></li>
+        <li><span class="lang-ru-inline">Канал общий: между моими пакетами идут чужие.</span><span class="lang-en-inline">The channel is shared: packets from others pass between mine.</span></li>
+        <li><span class="lang-ru-inline">Хорошо переносит отказы — пакет находит обход.</span><span class="lang-en-inline">Copes well with failures — the packet finds a way around.</span></li>
+        <li><span class="lang-ru-inline">Эффективно для коротких сообщений и веба.</span><span class="lang-en-inline">Efficient for short messages and the web.</span></li>
+        <li><span class="lang-ru-inline">Используется в <b>интернете</b> (IP/TCP/UDP).</span><span class="lang-en-inline">Used on the <b>internet</b> (IP/TCP/UDP).</span></li>
+      </ul>
+    </div>
+    <div>
+      <h4><span class="lang-ru-inline">Circuit switching (коммутация каналов)</span><span class="lang-en-inline">Circuit switching</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Сначала прокладывается <b>постоянный канал</b> от A к B.</span><span class="lang-en-inline">First, a <b>dedicated channel</b> is set up from A to B.</span></li>
+        <li><span class="lang-ru-inline">Канал занят только для этой пары, пока разговор не закончится.</span><span class="lang-en-inline">The channel is used only by this pair until the conversation ends.</span></li>
+        <li><span class="lang-ru-inline">Гарантированная пропускная способность, низкий джиттер.</span><span class="lang-en-inline">Guaranteed bandwidth, low jitter.</span></li>
+        <li><span class="lang-ru-inline">Неэффективно: канал может простаивать, когда никто не говорит.</span><span class="lang-en-inline">Inefficient: the channel may sit idle when nobody is speaking.</span></li>
+        <li><span class="lang-ru-inline">Классика — <b>аналоговая телефонная сеть (PSTN)</b>.</span><span class="lang-en-inline">The classic example is the <b>analogue telephone network (PSTN)</b>.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3><span class="lang-ru-inline">🚦 5.5. Роль коммутаторов и маршрутизаторов</span><span class="lang-en-inline">🚦 5.5. The role of switches and routers</span></h3>
+
+  <ul>
+    <li><span class="lang-ru-inline"><b>Коммутатор (Switch)</b> работает <b>внутри локальной сети</b>. Пересылает пакеты на основании <b>MAC-адресов</b>, ведёт MAC-таблицу. Снижает «шум» в сети.</span><span class="lang-en-inline"><b>Switch</b> works <b>inside a local network</b>. It forwards packets based on <b>MAC addresses</b> and keeps a MAC table. It reduces “noise” on the network.</span></li>
+    <li><span class="lang-ru-inline"><b>Маршрутизатор (Router)</b> работает <b>между сетями</b>. Пересылает пакеты на основании <b>IP-адресов</b>. Смотрит в <b>таблицу маршрутизации</b>, выбирает <b>следующий hop</b> (узел, которому передать пакет).</span><span class="lang-en-inline"><b>Router</b> works <b>between networks</b>. It forwards packets based on <b>IP addresses</b>. It looks in the <b>routing table</b> and chooses the <b>next hop</b> (the node to which the packet is passed).</span></li>
+  </ul>
+
+  <div class="key-term"><span class="lang-ru-inline">
+    <b>Хоп (Hop).</b> Один «прыжок» пакета от одного узла к следующему (например, от роутера R1 к R4). Число хопов до получателя — одна из метрик качества маршрута.
+  </span><span class="lang-en-inline"><b>Hop.</b> One “jump” of a packet from one node to the next (for example, from router R1 to R4). The number of hops to the receiver is one of the metrics of route quality.</span></div>
+
+  <!-- ============ SECTION 6: ERROR DETECTION ============ -->
+  <h2><span class="lang-ru-inline">6. Обнаружение ошибок: parity, checksum, CRC</span><span class="lang-en-inline">6. Error detection: parity, checksum, CRC</span></h2>
+
+  <p><span class="lang-ru-inline">
+    Любая передача — это риск, что один или несколько бит «перевернутся» из-за помех. Поэтому в каждый пакет встраивают <b>код для проверки на ошибки</b>. Учебник Oxford упоминает <b>error-checking codes</b> в составе заголовка; конкретные методы — это классика курса.
+  </span><span class="lang-en-inline">Every transmission carries the risk that one or more bits will “flip” because of interference. That is why an <b>error-checking code</b> is built into every packet. The Oxford textbook mentions <b>error-checking codes</b> as part of the header; the specific methods are classic topics of the course.</span></p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — error detection.</b>
+    Every transmission risks bit flips due to electrical noise or interference, so packets carry extra bits used to detect errors. A <b>parity</b> bit appends a single 1 or 0 so the total number of ones is even or odd; it catches any odd number of flipped bits but misses even-numbered errors. A <b>checksum</b> sums the bytes of the message into a small fixed-size value that the receiver recomputes and compares; it catches most random corruption but can miss errors that cancel out. A <b>Cyclic Redundancy Check (CRC)</b> treats the data as a polynomial and stores the remainder when divided by a fixed generator, catching nearly all single-bit and burst errors typical of real channels. CRC is used in Ethernet frames, Wi-Fi, USB and archive formats. These methods only <b>detect</b> errors; correction needs Hamming or Reed-Solomon codes, or simple retransmission as TCP does.
+  </div>
+
+  <div class="table-scroll"><table class="summary-table">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Метод</span><span class="lang-en-inline">Method</span></th>
+        <th><span class="lang-ru-inline">Идея</span><span class="lang-en-inline">Idea</span></th>
+        <th><span class="lang-ru-inline">Что ловит / не ловит</span><span class="lang-en-inline">What it catches / misses</span></th>
+        <th><span class="lang-ru-inline">Где используется</span><span class="lang-en-inline">Where it is used</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Бит чётности (Parity bit)</span><span class="lang-en-inline">Parity bit</span></td>
+        <td><span class="lang-ru-inline">К группе бит добавляется <b>один дополнительный бит</b>, чтобы общее число единиц было чётным (even parity) или нечётным (odd parity).</span><span class="lang-en-inline">An <b>extra bit</b> is added to a group of bits so that the total number of 1s is even (even parity) or odd (odd parity).</span></td>
+        <td><span class="lang-ru-inline">Ловит <b>любое нечётное число ошибок</b> (1, 3, 5 …); <b>не ловит чётное</b> число (2, 4 — перевернулись, но чётность сохранилась).</span><span class="lang-en-inline">Catches <b>any odd number of errors</b> (1, 3, 5 …); <b>does not catch an even number</b> (2, 4 — bits flipped, but the parity is unchanged).</span></td>
+        <td><span class="lang-ru-inline">RAM с поддержкой ECC (расширенные варианты), старые UART, простые передачи.</span><span class="lang-en-inline">RAM with ECC support (more advanced variants), older UARTs, simple transmissions.</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Контрольная сумма (Checksum)</span><span class="lang-en-inline">Checksum</span></td>
+        <td><span class="lang-ru-inline">Складываются все байты данных, результат сжимается до фиксированного размера и отправляется. Получатель пересчитывает и сравнивает.</span><span class="lang-en-inline">All the data bytes are added together, the result is reduced to a fixed size and sent. The receiver recalculates it and compares.</span></td>
+        <td><span class="lang-ru-inline">Ловит большинство случайных ошибок; <b>не ловит</b> ошибки, которые «компенсируют» друг друга в сумме.</span><span class="lang-en-inline">Catches most random errors; <b>does not catch</b> errors that “cancel out” each other in the sum.</span></td>
+        <td><span class="lang-ru-inline">Заголовки TCP и UDP, IP-заголовок (старая версия), контрольная сумма файлов.</span><span class="lang-en-inline">TCP and UDP headers, the IP header (old version), file checksums.</span></td>
+      </tr>
+      <tr>
+        <td>CRC (Cyclic Redundancy Check)</td>
+        <td><span class="lang-ru-inline">Данные «делят» на специальный <b>полином</b>, остаток от деления (CRC-код) добавляют к пакету. Получатель повторяет деление и проверяет.</span><span class="lang-en-inline">The data is “divided” by a special <b>polynomial</b>, and the remainder (the CRC code) is added to the packet. The receiver repeats the division and checks it.</span></td>
+        <td><span class="lang-ru-inline">Очень мощный: ловит почти все одиночные и групповые ошибки, типичные для реальных каналов.</span><span class="lang-en-inline">Very powerful: catches almost all single and burst errors typical of real channels.</span></td>
+        <td><span class="lang-ru-inline"><b>Ethernet-кадр</b>, Wi-Fi, ZIP/RAR-архивы, оптические диски, USB.</span><span class="lang-en-inline"><b>Ethernet frame</b>, Wi-Fi, ZIP/RAR archives, optical discs, USB.</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="ru-tip"><span class="lang-ru-inline">
+    💡 Все эти методы только <b>обнаруживают</b> ошибку — для <b>исправления</b> нужны более сложные коды (Hamming, Reed-Solomon), либо повторная отправка пакета (это и делает TCP).
+  </span><span class="lang-en-inline">💡 All these methods only <b>detect</b> an error — to <b>correct</b> it, more complex codes are needed (Hamming, Reed-Solomon), or the packet is sent again (this is what TCP does).</span></div>
+
+  <!-- ============ SECTION 7: ENCODING / MODULATION ============ -->
+  <h2><span class="lang-ru-inline">7. Кодирование и модуляция (basics)</span><span class="lang-en-inline">7. Encoding and modulation (basics)</span></h2>
+
+  <p><span class="lang-ru-inline">
+    Чтобы биты «уехали» по физическому каналу, их надо превратить в сигнал. Это две связанные задачи:
+  </span><span class="lang-en-inline">For bits to be sent across a physical channel, they must be turned into a signal. There are two related tasks:</span></p>
+
+  <div class="compare-grid">
+    <div>
+      <h4><span class="lang-ru-inline">Кодирование (Encoding)</span><span class="lang-en-inline">Encoding</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Преобразование <b>битов 0/1 в форму</b>, пригодную для канала (электрический импульс, световой импульс, радиоволна).</span><span class="lang-en-inline">Converting <b>0/1 bits into a form</b> suitable for the channel (an electrical pulse, a light pulse, a radio wave).</span></li>
+        <li><span class="lang-ru-inline">Примеры схем: <b>NRZ</b> (1 = высокий уровень, 0 = низкий), <b>Manchester</b> (переход в середине бита), <b>8b/10b</b> для оптики.</span><span class="lang-en-inline">Examples of schemes: <b>NRZ</b> (1 = high level, 0 = low level), <b>Manchester</b> (a transition in the middle of the bit), <b>8b/10b</b> for optical links.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h4><span class="lang-ru-inline">Модуляция (Modulation)</span><span class="lang-en-inline">Modulation</span></h4>
+      <ul>
+        <li><span class="lang-ru-inline">Превращение цифрового сигнала в <b>аналоговый</b> (волну) для передачи по аналоговому каналу.</span><span class="lang-en-inline">Converting a digital signal into an <b>analogue</b> (wave) signal for transmission over an analogue channel.</span></li>
+        <li><span class="lang-ru-inline"><b>AM</b> — амплитудная (меняется громкость), <b>FM</b> — частотная (меняется частота), <b>PSK / QAM</b> — фазовая / квадратурная (используются в Wi-Fi и 4G).</span><span class="lang-en-inline"><b>AM</b> — amplitude (the loudness changes), <b>FM</b> — frequency (the frequency changes), <b>PSK / QAM</b> — phase / quadrature (used in Wi-Fi and 4G).</span></li>
+        <li><span class="lang-ru-inline"><b>Демодуляция</b> — обратное преобразование, аналог → цифра, на стороне получателя.</span><span class="lang-en-inline"><b>Demodulation</b> — the reverse conversion, analogue → digital, on the receiver’s side.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <p><span class="lang-ru-inline">
+    Эти процессы выполняет <b>модем</b> (см. <a href="setevye-ustroistva.html">A2.1.3 Сетевые устройства</a>) и сетевые карты при выходе сигнала в кабель или эфир.
+  </span><span class="lang-en-inline">These processes are carried out by a <b>modem</b> (see <a href="setevye-ustroistva.html">A2.1.3 Network devices</a>) and by network cards when the signal goes out onto a cable or into the air.</span></p>
+
+  <!-- ============ SECTION 8: ROUTING ============ -->
+  <h2><span class="lang-ru-inline">8. Маршрутизация: статическая vs динамическая <span class="label-pill">AHL</span></span><span class="lang-en-inline">8. Routing: static vs dynamic <span class="label-pill">AHL</span></span></h2>
+
+  <p><span class="lang-ru-inline">
+    Это тема <b>A2.3.4</b> — её формально проходят только в <b>HL</b>, но для глубокого понимания сетей полезно знать всем.
+  </span><span class="lang-en-inline">This is topic <b>A2.3.4</b> — formally it is studied only at <b>HL</b>, but it is useful for everyone to know, for a deep understanding of networks.</span></p>
+
+  <div class="ru-tip" style="border-left-color:var(--accent); background:rgba(14,165,233,0.08);">
+    <b>🇬🇧 English summary — routing (AHL).</b>
+    A <b>router</b> moves packets between networks by consulting its <b>routing table</b>: rules that map a destination network to the next <b>hop</b> (the neighbouring router or output interface). With <b>static routing</b>, an administrator manually enters every route. This is simple, predictable and uses few resources, but does not scale and must be edited by hand whenever the topology changes — suitable for small offices or home networks. With <b>dynamic routing</b>, routers exchange reachability information using protocols such as <b>RIP</b> (uses hop count), <b>OSPF</b> (uses link cost, common inside an organisation) and <b>BGP</b> (between large internet providers). Routes are recalculated automatically when a link fails; the time for all routers to agree on the new topology is called <b>convergence</b>. Dynamic routing scales to thousands of routers but consumes more CPU, memory and bandwidth, and is harder to configure and secure.
+  </div>
+
+  <h3><span class="lang-ru-inline">📋 8.1. Что такое routing</span><span class="lang-en-inline">📋 8.1. What is routing</span></h3>
+
+  <p><span class="lang-ru-inline">
+    Каждый роутер хранит <b>routing table</b> (таблицу маршрутизации) — это набор правил «если адрес назначения такой-то, отправь пакет в такой-то порт / на такой-то соседний роутер». Когда приходит пакет, роутер берёт IP-адрес получателя из заголовка, ищет совпадение в таблице и пересылает на <b>следующий хоп (next hop)</b>.
+  </span><span class="lang-en-inline">Each router stores a <b>routing table</b> — a set of rules such as “if the destination address is this one, send the packet to this port / to this neighbouring router”. When a packet arrives, the router takes the receiver’s IP address from the header, looks for a match in the table and forwards the packet to the <b>next hop</b>.</span></p>
+
+  <h3><span class="lang-ru-inline">🛠️ 8.2. Статическая маршрутизация</span><span class="lang-en-inline">🛠️ 8.2. Static routing</span></h3>
+
+  <ul>
+    <li><span class="lang-ru-inline">Администратор <b>вручную</b> прописывает в роутере: «для сети X next hop — Y».</span><span class="lang-en-inline">The administrator <b>manually</b> enters into the router: “for network X the next hop is Y”.</span></li>
+    <li><span class="lang-ru-inline">Хранятся: адрес сети назначения, маска подсети, следующий hop или выходной интерфейс.</span><span class="lang-en-inline">Stored: the destination network address, the subnet mask, the next hop or the exit interface.</span></li>
+    <li><span class="lang-ru-inline"><b>Плюсы:</b> просто, предсказуемо, мало нагружает CPU/память; нет лишнего трафика обмена маршрутами; можно жёстко контролировать пути ради безопасности.</span><span class="lang-en-inline"><b>Advantages:</b> simple, predictable, puts little load on the CPU and memory; no extra traffic from exchanging routes; paths can be tightly controlled for security.</span></li>
+    <li><span class="lang-ru-inline"><b>Минусы:</b> при изменении топологии (упал линк, добавилась сеть) нужно <b>править вручную</b>; не масштабируется на сотни роутеров; в случае сбоя пакеты могут «стучаться в стену».</span><span class="lang-en-inline"><b>Disadvantages:</b> when the topology changes (a link goes down, a network is added) it must be <b>edited by hand</b>; it does not scale to hundreds of routers; when a failure occurs, packets may “bang against a wall”.</span></li>
+    <li><span class="lang-ru-inline"><b>Где подходит:</b> маленькие стабильные сети — небольшой офис, домашний роутер.</span><span class="lang-en-inline"><b>Where it suits:</b> small stable networks — a small office, a home router.</span></li>
+  </ul>
+
+  <h3><span class="lang-ru-inline">🤖 8.3. Динамическая маршрутизация</span><span class="lang-en-inline">🤖 8.3. Dynamic routing</span></h3>
+
+  <ul>
+    <li><span class="lang-ru-inline">Роутеры <b>сами обмениваются информацией</b> о доступных сетях по специальным <b>routing-протоколам</b>.</span><span class="lang-en-inline">Routers <b>exchange information themselves</b> about the networks they can reach, using special <b>routing protocols</b>.</span></li>
+    <li><span class="lang-ru-inline">Известные протоколы: <b>RIP</b> (Routing Information Protocol — старый, использует hop count), <b>OSPF</b> (Open Shortest Path First — внутренний протокол, считает «стоимость» канала), <b>BGP</b> (Border Gateway Protocol — между крупными провайдерами в интернете).</span><span class="lang-en-inline">Known protocols: <b>RIP</b> (Routing Information Protocol — old, uses hop count), <b>OSPF</b> (Open Shortest Path First — an internal protocol that calculates the “cost” of a link), <b>BGP</b> (Border Gateway Protocol — between large providers on the internet).</span></li>
+    <li><span class="lang-ru-inline">Метрики выбора маршрута: <b>число хопов, пропускная способность, задержка, надёжность</b>.</span><span class="lang-en-inline">Route selection metrics: <b>number of hops, bandwidth, latency, reliability</b>.</span></li>
+    <li><span class="lang-ru-inline">При изменении топологии (упал кабель) протокол <b>пересчитывает маршруты автоматически</b>. Время, нужное на согласованное понимание новой топологии всеми роутерами, называется <b>convergence (сходимость)</b>.</span><span class="lang-en-inline">When the topology changes (a cable goes down), the protocol <b>recalculates the routes automatically</b>. The time needed for all routers to agree on the new topology is called <b>convergence</b>.</span></li>
+    <li><span class="lang-ru-inline"><b>Плюсы:</b> сам адаптируется к изменениям, масштабируется на большие сети.</span><span class="lang-en-inline"><b>Advantages:</b> adapts to changes by itself, scales to large networks.</span></li>
+    <li><span class="lang-ru-inline"><b>Минусы:</b> сложнее настроить и понять; нагружает CPU/память роутера; обмен маршрутами потребляет полосу; есть риски безопасности, если протокол не защищён.</span><span class="lang-en-inline"><b>Disadvantages:</b> harder to configure and understand; loads the router’s CPU and memory; exchanging routes uses bandwidth; there are security risks if the protocol is not protected.</span></li>
+  </ul>
+
+  <h3><span class="lang-ru-inline">📊 8.4. Сравнительная таблица</span><span class="lang-en-inline">📊 8.4. Comparison table</span></h3>
+
+  <div class="table-scroll"><table class="summary-table compact">
+    <thead>
+      <tr>
+        <th><span class="lang-ru-inline">Фактор</span><span class="lang-en-inline">Factor</span></th>
+        <th><span class="lang-ru-inline">Статическая</span><span class="lang-en-inline">Static</span></th>
+        <th><span class="lang-ru-inline">Динамическая</span><span class="lang-en-inline">Dynamic</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="lang-ru-inline">Конфигурация</span><span class="lang-en-inline">Configuration</span></td>
+        <td><span class="lang-ru-inline">Вручную, явные маршруты</span><span class="lang-en-inline">By hand, explicit routes</span></td>
+        <td><span class="lang-ru-inline">Автоматически через routing-протоколы</span><span class="lang-en-inline">Automatically, through routing protocols</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Сопровождение</span><span class="lang-en-inline">Maintenance</span></td>
+        <td><span class="lang-ru-inline">Ручные правки при любом изменении</span><span class="lang-en-inline">Manual edits for any change</span></td>
+        <td><span class="lang-ru-inline">Автоматически адаптируется</span><span class="lang-en-inline">Adapts automatically</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Сложность</span><span class="lang-en-inline">Complexity</span></td>
+        <td><span class="lang-ru-inline">Просто на маленьких сетях, тяжело при росте</span><span class="lang-en-inline">Simple on small networks, hard as the network grows</span></td>
+        <td><span class="lang-ru-inline">Сложна в настройке, но управляет ростом сама</span><span class="lang-en-inline">Complex to configure, but it handles growth by itself</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Расход ресурсов</span><span class="lang-en-inline">Resource use</span></td>
+        <td><span class="lang-ru-inline">Минимальный — нет обмена маршрутами</span><span class="lang-en-inline">Minimal — no exchange of routes</span></td>
+        <td><span class="lang-ru-inline">Выше — нужен CPU/память на расчёт и обмен</span><span class="lang-en-inline">Higher — needs CPU and memory for calculation and exchange</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Сходимость (convergence)</span><span class="lang-en-inline">Convergence</span></td>
+        <td><span class="lang-ru-inline">Не применима — маршруты статичны</span><span class="lang-en-inline">Not applicable — routes are static</span></td>
+        <td><span class="lang-ru-inline">Есть; скорость зависит от протокола</span><span class="lang-en-inline">Yes; the speed depends on the protocol</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Масштабируемость</span><span class="lang-en-inline">Scalability</span></td>
+        <td><span class="lang-ru-inline">Плохо масштабируется</span><span class="lang-en-inline">Scales poorly</span></td>
+        <td><span class="lang-ru-inline">Хорошо масштабируется</span><span class="lang-en-inline">Scales well</span></td>
+      </tr>
+      <tr>
+        <td><span class="lang-ru-inline">Когда выбирать</span><span class="lang-en-inline">When to choose</span></td>
+        <td><span class="lang-ru-inline">Маленькие, редко меняющиеся сети</span><span class="lang-en-inline">Small networks that rarely change</span></td>
+        <td><span class="lang-ru-inline">Средние / большие сети, где нужна гибкость</span><span class="lang-en-inline">Medium or large networks, where flexibility is needed</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="real-world"><span class="lang-ru-inline">
+    <b>Реальный пример.</b> В сети одной школы (10–20 коммутаторов) обычно настраивают <b>статическую</b> маршрутизацию — топология стабильна. А в сети крупного оператора связи (тысячи маршрутизаторов в разных странах) работают <b>OSPF</b> внутри и <b>BGP</b> на границах — иначе администраторы не успели бы вручную поддерживать таблицы.
+  </span><span class="lang-en-inline"><b>Real example.</b> In the network of one school (10–20 switches) <b>static</b> routing is usually configured — the topology is stable. In the network of a large telecom operator (thousands of routers in different countries), <b>OSPF</b> runs inside and <b>BGP</b> runs at the borders — otherwise administrators would not have time to keep the tables up to date by hand.</span></div>
+
+  <!-- ============ CLOSING ============ -->
+  <h2><span class="lang-ru-inline">Что важно запомнить</span><span class="lang-en-inline">What to remember</span></h2>
+
+  <div class="takeaways">
+    <ul>
+      <li><span class="lang-ru-inline"><b>IPv4 vs IPv6:</b> 32 бита (≈ 4,3 млрд) против 128 бит (≈ 3,4 × 10³⁸). IPv6 — будущее, IPv4 — настоящее за счёт NAT.</span><span class="lang-en-inline"><b>IPv4 vs IPv6:</b> 32 bits (≈ 4.3 billion) against 128 bits (≈ 3.4 × 10³⁸). IPv6 is the future; IPv4 is the present, thanks to NAT.</span></li>
+      <li><span class="lang-ru-inline"><b>Публичный IP</b> — глобально уникален и маршрутизируется в интернете. <b>Частный IP</b> — только внутри LAN, диапазоны RFC 1918 (<span class="mono">10.x</span>, <span class="mono">172.16–31.x</span>, <span class="mono">192.168.x</span>).</span><span class="lang-en-inline"><b>Public IP</b> — globally unique and routed on the internet. <b>Private IP</b> — only inside a LAN; the ranges of RFC 1918 (<span class="mono">10.x</span>, <span class="mono">172.16–31.x</span>, <span class="mono">192.168.x</span>).</span></li>
+      <li><span class="lang-ru-inline"><b>NAT</b> — массовая трансляция «много частных в один публичный», экономит IPv4.</span><span class="lang-en-inline"><b>NAT</b> — large-scale translation of “many private into one public”, saves IPv4 addresses.</span></li>
+      <li><span class="lang-ru-inline"><b>Маска подсети</b> делит IP на сетевую и хост-часть; в <b>CIDR</b> записывается как <span class="mono">/24</span>.</span><span class="lang-en-inline"><b>Subnet mask</b> divides the IP address into a network part and a host part; in <b>CIDR</b> it is written as <span class="mono">/24</span>.</span></li>
+      <li><span class="lang-ru-inline"><b>Среды передачи:</b> оптоволокно — быстро, далеко, дорого, без помех; витая пара — дёшево, до 100 м, чувствительна к EMI; беспроводные — мобильно, но уязвимо к помехам и перехвату.</span><span class="lang-en-inline"><b>Transmission media:</b> fibre-optic — fast, long range, expensive, immune to interference; twisted pair — cheap, up to 100 m, sensitive to EMI; wireless — mobile, but vulnerable to interference and interception.</span></li>
+      <li><span class="lang-ru-inline"><b>Bandwidth ≠ throughput ≠ latency ≠ jitter</b> — все четыре про разное; типичная экзаменационная ловушка.</span><span class="lang-en-inline"><b>Bandwidth ≠ throughput ≠ latency ≠ jitter</b> — all four are about different things; a typical exam trap.</span></li>
+      <li><span class="lang-ru-inline"><b>Packet switching</b>: данные → сегментация → пакеты с заголовками → независимая маршрутизация → сборка по sequence numbers. Этим живёт весь интернет.</span><span class="lang-en-inline"><b>Packet switching</b>: data → segmentation → packets with headers → independent routing → reassembly using sequence numbers. The whole internet runs on this.</span></li>
+      <li><span class="lang-ru-inline"><b>Заголовок</b> пакета содержит IP-адреса источника и приёмника, sequence number, контрольные коды (parity / checksum / CRC).</span><span class="lang-en-inline">The packet <b>header</b> contains the IP addresses of the source and the receiver, the sequence number and error-checking codes (parity / checksum / CRC).</span></li>
+      <li><span class="lang-ru-inline"><b>Switch</b> работает по MAC-адресам внутри LAN; <b>router</b> — по IP-адресам между сетями, использует <b>routing table</b> и выбирает <b>next hop</b>.</span><span class="lang-en-inline">A <b>switch</b> works by MAC addresses inside a LAN; a <b>router</b> works by IP addresses between networks, uses a <b>routing table</b> and chooses the <b>next hop</b>.</span></li>
+      <li><span class="lang-ru-inline"><b>Static vs dynamic routing</b> (AHL): статика — вручную, для маленьких сетей; динамика (RIP, OSPF, BGP) — автоматически, адаптивно, для больших сетей. Ключевое понятие — <b>convergence</b>.</span><span class="lang-en-inline"><b>Static vs dynamic routing</b> (AHL): static — by hand, for small networks; dynamic (RIP, OSPF, BGP) — automatic, adaptive, for large networks. The key concept is <b>convergence</b>.</span></li>
+      <li><span class="lang-ru-inline"><b>На экзамене</b>: вопросы «compare» и «contrast» отвечай минимум через 3 фактора; обязательно используй термины <span class="mono">encapsulation</span>, <span class="mono">routing table</span>, <span class="mono">next hop</span>, <span class="mono">subnet mask</span>, <span class="mono">NAT</span>.</span><span class="lang-en-inline"><b>In the exam</b>: for “compare” and “contrast” questions answer through at least 3 factors; be sure to use the terms <span class="mono">encapsulation</span>, <span class="mono">routing table</span>, <span class="mono">next hop</span>, <span class="mono">subnet mask</span>, <span class="mono">NAT</span>.</span></li>
+    </ul>
+  </div>
+
+  <p style="margin-top:32px"><span class="lang-ru-inline">
+    <a href="networks.html" class="back-link">← Назад к A2 Сети</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html#protocols-sim" class="back-link">📦 К симулятору TCP vs UDP</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html#topology-sim" class="back-link">🌐 К симулятору топологий</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A2.3" class="back-link">К квизу A2.3 →</a>
+  </span><span class="lang-en-inline"><a href="networks.html" class="back-link">← Back to A2 Networks</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html#protocols-sim" class="back-link">📦 To the TCP vs UDP simulator</a>
+    &nbsp; · &nbsp;
+    <a href="networks.html#topology-sim" class="back-link">🌐 To the topology simulator</a>
+    &nbsp; · &nbsp;
+    <a href="quiz.html?topic=A2.3" class="back-link">To the A2.3 quiz →</a></span></p>
+
+</main>
+
+<footer class="footer">
+  <p><span class="lang-ru-inline">
+    IB CS Тема A · A2.3 Передача данных · Источник: IB DP 2025 Computer Science (Oxford), стр. 144–153 · <a href="index.html">На главную</a>
+  </span><span class="lang-en-inline">IB CS Theme A · A2.3 Data transmission · Source: IB DP 2025 Computer Science (Oxford), pp. 144–153 · <a href="index.html">Home page</a></span></p>
+</footer>
+
+<script src="js/app.js?v=11"></script>
+</body>
+</html>
