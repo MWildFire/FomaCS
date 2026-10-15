@@ -298,8 +298,8 @@
             <span class="lang-ru-inline">Нейронная сеть — прямой проход (HL)</span>
           </h3>
           <p>
-            <span class="lang-en-inline">A 3-input → 4-hidden → 2-output network. Adjust inputs and weights, watch the forward pass animate, see which class wins. Click any weight line to tune it.</span>
-            <span class="lang-ru-inline">Сеть 3-вход → 4-скрытых → 2-выход. Меняйте входы и веса, смотрите анимацию прямого прохода, видите какой класс победит. Кликните на любую линию веса, чтобы настроить.</span>
+            <span class="lang-en-inline">A 3-input → 4-hidden → 2-output network. Adjust inputs and weights, watch the forward pass animate, see which class wins. Click a weight line to tune it; on a phone, you can also tap a value in the weight tables below the network.</span>
+            <span class="lang-ru-inline">Сеть 3-вход → 4-скрытых → 2-выход. Меняйте входы и веса, смотрите анимацию прямого прохода, видите какой класс победит. Нажмите на линию веса, чтобы изменить его; на телефоне можно также нажать на число в таблицах весов под сетью.</span>
           </p>
         </div>
       </div>
@@ -335,13 +335,13 @@
 
       <div class="sim-canvas-wrap">
         <svg id="nn-svg" viewBox="0 0 1000 480" preserveAspectRatio="xMidYMid meet"
-             role="img" aria-label="Neural network forward-pass visualization. Three input neurons connect to four hidden neurons, which connect to two output neurons. Click any weight line to tune it."></svg>
+             role="img" aria-label="Neural network forward-pass visualization. Three input neurons connect to four hidden neurons, which connect to two output neurons. Click a weight line to tune it; on a phone, you can also tap a value in the weight tables below the network."></svg>
       </div>
 
       <div class="sim-legend">
         <span><span class="dot" style="background:#10b981; width:16px; height:4px; border-radius:2px"></span> <span class="lang-en-inline">Green line: positive weight (strengthens the signal)</span><span class="lang-ru-inline">Зелёная линия: положительный вес (усиливает сигнал)</span></span>
         <span><span class="dot" style="background:#ef4444; width:16px; height:4px; border-radius:2px"></span> <span class="lang-en-inline">Red line: negative weight (weakens the signal)</span><span class="lang-ru-inline">Красная линия: отрицательный вес (ослабляет сигнал)</span></span>
-        <span><span class="lang-en-inline">Thicker, more vivid line = larger |weight|; the value is printed when |weight| &gt; 0.25</span><span class="lang-ru-inline">Чем толще и ярче линия, тем больше модуль веса; число на линии показано при |вес| &gt; 0.25</span></span>
+        <span><span class="lang-en-inline">Thicker, more vivid line = larger |weight|. On wide screens, values appear on lines when |weight| &gt; 0.25; on phones, all weights are shown in the tables below the network.</span><span class="lang-ru-inline">Чем толще и ярче линия, тем больше модуль веса. На широком экране число на линии показано при |вес| &gt; 0.25; на телефоне все веса находятся в таблицах под сетью.</span></span>
       </div>
 
       <div class="sim-stats">
