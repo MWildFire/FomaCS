@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A1.3 Операционные и управляющие системы · IB CS Theme A</title>
 <meta name="description" content="A1.3 Operating systems and control systems — подробный разбор на русском: роль ОС, функции, планирование (FCFS, round robin, multilevel, priority), polling vs interrupts, многозадачность (HL), компоненты управляющих систем (HL), реальные применения (HL).">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -285,6 +285,11 @@
   }
   .term-list .term b {
     color: var(--primary);
+  }
+  .loop-diagram .loop-mobile { display: none; }
+  @media (max-width: 620px) {
+    .loop-diagram .loop-desktop { display: none; }
+    .loop-diagram .loop-mobile { display: block; min-width: 0; width: 100%; max-width: 360px; }
   }
 </style>
 </head>
@@ -1153,7 +1158,7 @@
   <h3>6.2 Open-loop vs Closed-loop</h3>
 
   <div class="loop-diagram">
-    <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Открытая и закрытая петли управления">
+    <svg class="loop-desktop" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Открытая и закрытая петли управления">
       <defs>
         <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0,0 L10,5 L0,10 z" fill="#1a3a5e"/>
@@ -1192,6 +1197,38 @@
       <!-- Feedback arrow -->
       <path d="M510 170 L510 200 L210 200 L210 170" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow2)"/>
       <text x="360" y="216" text-anchor="middle" font-family="Helvetica" font-size="11" font-style="italic" fill="#10b981">Feedback (датчик мерит выход)</text>
+    </svg>
+    <svg class="loop-mobile" data-mobile-layout="vertical" viewBox="0 0 280 710" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open-loop and closed-loop control">
+    <defs><marker id="loop-mobile-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#10b981"/></marker></defs>
+    <text x="12" y="20" font-size="14" font-family="Helvetica" fill="var(--text, #0f172a)">Open-loop</text>
+    <text x="12" y="38" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">Без обратной связи</text>
+    <rect x="40" y="50" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="75" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Вход</text>
+    <path d="M120 90 V120" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="120" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="145" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Контроллер</text>
+    <path d="M120 160 V190" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="190" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="215" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Актуатор</text>
+    <path d="M120 230 V260" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="260" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="285" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Выход</text>
+    <text x="12" y="350" font-size="14" font-family="Helvetica" fill="var(--text, #0f172a)">Closed-loop</text>
+    <text x="12" y="368" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">С обратной связью</text>
+    <rect x="40" y="380" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="405" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Вход</text>
+    <path d="M120 420 V450" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="450" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="475" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Контроллер</text>
+    <path d="M120 490 V520" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="520" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="545" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Актуатор</text>
+    <path d="M120 560 V590" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#loop-mobile-arrow)"/>
+    <rect x="40" y="590" width="160" height="40" rx="6" fill="var(--surface-2, #f1f3f8)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="120" y="615" font-size="13" font-family="Helvetica" fill="var(--text, #0f172a)" text-anchor="middle">Выход</text>
+    <path d="M200 610 H258 V470 H200" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#loop-mobile-arrow)"/>
+    <text x="12" y="660" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">Обратная связь: датчик измеряет</text>
+    <text x="12" y="678" font-size="12" font-family="Helvetica" fill="var(--text, #0f172a)">выход → сигнал контроллеру.</text>
     </svg>
     <div class="diagram-caption">Сверху: open-loop. Снизу: closed-loop с обратной связью от датчика к контроллеру.</div>
   </div>

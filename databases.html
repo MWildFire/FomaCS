@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3 Databases · IB CS Theme A</title>
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -251,7 +251,7 @@ WHERE APPOINTMENT.DoctorName = 'Dr. Smith';</textarea>
         </button>
       </div>
 
-      <div class="sim-canvas-wrap" style="display:grid; grid-template-columns: 1fr 1fr; gap:14px">
+      <div class="sim-canvas-wrap joins-layout" style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap:14px">
         <div id="joins-table-a"></div>
         <div id="joins-table-b"></div>
         <svg id="joins-venn" viewBox="0 0 500 300" style="grid-column: 1 / -1" preserveAspectRatio="xMidYMid meet"
@@ -298,14 +298,14 @@ WHERE APPOINTMENT.DoctorName = 'Dr. Smith';</textarea>
   </p>
 </footer>
 
-<script src="js/data.js?v=11"></script>
+<script src="js/data.js?v=12"></script>
 <script src="js/app.js?v=11"></script>
 <script src="js/notes-render.js?v=11"></script>
 <!-- sql.js from CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
 <script src="js/sql-playground.js?v=11"></script>
 <script src="js/normalization.js?v=11"></script>
-<script src="js/erd.js?v=11"></script>
+<script src="js/erd.js?v=12"></script>
 <script src="js/acid.js?v=11"></script>
 <script src="js/joins.js?v=11"></script>
 <script>

@@ -25,7 +25,8 @@
   const W = 1000, H = 480;
   const layers = [3, 4, 2];
   const layerX = [180, 500, 820];
-  const nodeR = 28;
+  let nodeR = 28;
+  let mobile = false;
 
   // Pre-set "XOR-like" demo weights: input 1 ≈ XOR(in1, in2), input 3 as bias signal.
   // Hidden layer learns OR & AND-like features, output combines them.
@@ -87,6 +88,15 @@
   }
 
   function buildPositions() {
+    mobile = window.innerWidth <= 620;
+    nodeR = mobile ? 24 : 28;
+    if (mobile) {
+      const row = (count, y) => Array.from({ length: count }, (_, i) => ({ x: 280 * (i + 0.5) / count, y }));
+      inPos = row(3, 100);
+      hidPos = row(4, 330);
+      outPos = row(2, 550);
+      return;
+    }
     inPos = [];
     for (let i = 0; i < layers[0]; i++) {
       const gap = H / (layers[0] + 1);
@@ -117,28 +127,32 @@
   function drawNetwork(activations) {
     const T = window.Theme;
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
+    buildPositions();
     clearSvg();
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    if (mobile) svg.setAttribute('data-mobile-layout', 'vertical');
+    else svg.removeAttribute('data-mobile-layout');
+    svg.setAttribute('viewBox', mobile ? '0 0 280 960' : `0 0 ${W} ${H}`);
     edgeRefs = []; nodeRefs = { in: [], hid: [], out: [] };
 
     // Layer titles
+    const titleNodes = [];
     const titles = lang === 'ru'
       ? ['Входной слой', 'Скрытый слой', 'Выходной слой']
       : ['Input layer', 'Hidden layer', 'Output layer'];
     for (let l = 0; l < 3; l++) {
       const t = svgEl('text', {
-        x: layerX[l], y: 22, 'text-anchor': 'middle',
+        x: mobile ? 140 : layerX[l], y: mobile ? [24, 254, 474][l] : 22, 'text-anchor': 'middle',
         'font-size': 14, 'font-weight': 700, fill: T.primary
       });
       t.textContent = titles[l];
-      svg.appendChild(t);
+      titleNodes.push(t);
       const sub = svgEl('text', {
-        x: layerX[l], y: 40, 'text-anchor': 'middle',
-        'font-size': 11, fill: T.textMuted
+        x: mobile ? 140 : layerX[l], y: mobile ? [44, 274, 494][l] : 40, 'text-anchor': 'middle',
+        'font-size': mobile ? 12 : 11, fill: T.textMuted
       });
       // Hidden layer shows the chosen activation; output layer always uses softmax (see forward()).
       sub.textContent = l === 1 ? (actSel.options[actSel.selectedIndex].text) : l === 2 ? 'softmax' : '';
-      svg.appendChild(sub);
+      titleNodes.push(sub);
     }
 
     // Edges: input -> hidden
@@ -146,8 +160,8 @@
       for (let i = 0; i < layers[0]; i++) {
         const w = net.W1[h][i];
         const line = svgEl('line', {
-          x1: inPos[i].x + nodeR, y1: inPos[i].y,
-          x2: hidPos[h].x - nodeR, y2: hidPos[h].y,
+          x1: inPos[i].x + (mobile ? 0 : nodeR), y1: inPos[i].y + (mobile ? nodeR : 0),
+          x2: hidPos[h].x - (mobile ? 0 : nodeR), y2: hidPos[h].y - (mobile ? nodeR : 0),
           stroke: colorForWeight(w),
           'stroke-width': widthForWeight(w),
           'stroke-linecap': 'round',
@@ -158,12 +172,12 @@
         edgeRefs.push({ el: line, layer: 1, h, i });
 
         // Weight label at midpoint, only show when |w| big enough to read
-        if (Math.abs(w) > 0.25) {
+        if (!mobile && Math.abs(w) > 0.25) {
           const mx = (inPos[i].x + hidPos[h].x) / 2 + (i - 1) * 6;
           const my = (inPos[i].y + hidPos[h].y) / 2 - 4;
           const t = svgEl('text', {
             x: mx, y: my, 'text-anchor': 'middle',
-            'font-size': 10, 'font-family': 'ui-monospace, monospace',
+            'font-size': mobile ? 12 : 10, 'font-family': 'ui-monospace, monospace',
             fill: T.textMuted, 'pointer-events': 'none'
           });
           t.textContent = w.toFixed(2);
@@ -177,8 +191,8 @@
       for (let h = 0; h < layers[1]; h++) {
         const w = net.W2[o][h];
         const line = svgEl('line', {
-          x1: hidPos[h].x + nodeR, y1: hidPos[h].y,
-          x2: outPos[o].x - nodeR, y2: outPos[o].y,
+          x1: hidPos[h].x + (mobile ? 0 : nodeR), y1: hidPos[h].y + (mobile ? nodeR : 0),
+          x2: outPos[o].x - (mobile ? 0 : nodeR), y2: outPos[o].y - (mobile ? nodeR : 0),
           stroke: colorForWeight(w),
           'stroke-width': widthForWeight(w),
           'stroke-linecap': 'round',
@@ -188,12 +202,12 @@
         svg.appendChild(line);
         edgeRefs.push({ el: line, layer: 2, o, h });
 
-        if (Math.abs(w) > 0.25) {
+        if (!mobile && Math.abs(w) > 0.25) {
           const mx = (hidPos[h].x + outPos[o].x) / 2 + (h - 1.5) * 4;
           const my = (hidPos[h].y + outPos[o].y) / 2 - 4;
           const t = svgEl('text', {
             x: mx, y: my, 'text-anchor': 'middle',
-            'font-size': 10, 'font-family': 'ui-monospace, monospace',
+            'font-size': mobile ? 12 : 10, 'font-family': 'ui-monospace, monospace',
             fill: T.textMuted, 'pointer-events': 'none'
           });
           t.textContent = w.toFixed(2);
@@ -201,6 +215,43 @@
         }
       }
     }
+
+    if (mobile) {
+      // Weight values in aligned tables avoid overlapping labels at edge crossings.
+      // Each value opens the same editor as its corresponding edge.
+      function tableText(x, y, text, color = T.textMuted) {
+        const t = svgEl('text', { x, y, 'font-size': 12, 'text-anchor': 'middle', fill: color, 'font-family': 'ui-monospace, monospace' });
+        t.textContent = text;
+        svg.appendChild(t);
+        return t;
+      }
+      tableText(140, 644, lang === 'ru' ? 'Веса: нажмите для правки' : 'Weights: tap to edit', T.primary);
+      tableText(140, 672, 'W1: input → hidden', T.primary);
+      [0, 1, 2].forEach(i => tableText(100 + i * 64, 696, 'x' + (i + 1)));
+      net.W1.forEach((row, h) => {
+        tableText(28, 722 + h * 26, 'h' + (h + 1));
+        row.forEach((w, i) => {
+          const t = tableText(100 + i * 64, 722 + h * 26, w.toFixed(2), T.text);
+          t.setAttribute('cursor', 'pointer');
+          t.addEventListener('click', () => openWeightEditor(1, h, i, t));
+        });
+      });
+      tableText(140, 842, 'W2: hidden → output', T.primary);
+      [0, 1, 2, 3].forEach(h => tableText(80 + h * 52, 866, 'h' + (h + 1)));
+      net.W2.forEach((row, o) => {
+        tableText(25, 892 + o * 26, 'o' + (o + 1));
+        row.forEach((w, h) => {
+          const t = tableText(80 + h * 52, 892 + o * 26, w.toFixed(2), T.text);
+          t.setAttribute('cursor', 'pointer');
+          t.addEventListener('click', () => openWeightEditor(2, o, h, t));
+        });
+      });
+    }
+
+    if (mobile) {
+      [8, 238, 458].forEach(y => svg.appendChild(svgEl('rect', { x: 4, y, width: 272, height: 45, rx: 4, fill: T.surface })));
+    }
+    titleNodes.forEach(t => svg.appendChild(t));
 
     // Nodes
     function drawNode(pos, value, label, sub, bucket) {
@@ -224,7 +275,7 @@
       if (label) {
         const lbl = svgEl('text', {
           x: pos.x, y: pos.y - nodeR - 8, 'text-anchor': 'middle',
-          'font-size': 11, 'font-weight': 600, fill: T.text
+          'font-size': mobile ? 12 : 11, 'font-weight': 600, fill: T.text
         });
         lbl.textContent = label;
         g.appendChild(lbl);
@@ -232,7 +283,7 @@
       if (sub) {
         const s = svgEl('text', {
           x: pos.x, y: pos.y + nodeR + 16, 'text-anchor': 'middle',
-          'font-size': 10, fill: T.textMuted
+          'font-size': mobile ? 12 : 10, fill: T.textMuted
         });
         s.textContent = sub;
         g.appendChild(s);
@@ -316,11 +367,12 @@
     editor = null;
   }
   document.addEventListener('click', e => {
-    if (editor && !editor.contains(e.target) && e.target.tagName !== 'line') closeEditor();
+    if (editor && !editor.contains(e.target) && e.target.tagName !== 'line' && e.target.getAttribute('data-weight-editor') !== 'true') closeEditor();
   });
 
   function openWeightEditor(layer, a, b, lineEl) {
     closeEditor();
+    lineEl.setAttribute('data-weight-editor', 'true');
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
     const rect = lineEl.getBoundingClientRect();
     const w = layer === 1 ? net.W1[a][b] : net.W2[a][b];
@@ -334,6 +386,9 @@
       <input type="range" id="nn-edit-slider" min="-3" max="3" step="0.05" value="${w}" style="width:180px">
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px">${lang === 'ru' ? 'Кликните вне окна, чтобы закрыть' : 'Click outside to close'}</div>`;
     document.body.appendChild(editor);
+    const popup = editor.getBoundingClientRect();
+    editor.style.left = Math.max(8, Math.min(rect.left + rect.width / 2 - popup.width / 2, window.innerWidth - popup.width - 8)) + 'px';
+    editor.style.top = Math.max(8, Math.min(rect.top + rect.height / 2 - 30, window.innerHeight - popup.height - 8)) + 'px';
     const slider = editor.querySelector('#nn-edit-slider');
     const valEl = editor.querySelector('#nn-edit-val');
     slider.addEventListener('input', () => {
@@ -382,6 +437,7 @@
   // Re-purpose any 'reset' button if exposed via data attr; demo reset is double-click on stepBtn
   stepBtn.addEventListener('dblclick', reset);
 
+  window.addEventListener('resize', () => { closeEditor(); render(); });
   document.addEventListener('langchange', render);
   document.addEventListener('themechange', render);
 

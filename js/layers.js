@@ -14,6 +14,9 @@
   ];
 
   function render(stage = -1) {
+    if (window.innerWidth <= 620) { renderMobile(stage); return; }
+    svg.removeAttribute('data-mobile-layout');
+    svg.setAttribute('viewBox', '0 0 800 360');
     const T = window.Theme;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
 
@@ -93,6 +96,58 @@
 
     // Packet builder visual in the middle
     drawPacket(stage);
+  }
+
+  function renderMobile(stage) {
+    const T = window.Theme;
+    const lang = document.documentElement.getAttribute('data-lang') || 'en';
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.setAttribute('data-mobile-layout', 'vertical');
+    svg.setAttribute('viewBox', '0 0 280 850');
+    function el(tag, attrs, text) {
+      const node = document.createElementNS(NS, tag);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      if (text) node.textContent = text;
+      svg.appendChild(node);
+      return node;
+    }
+    function label(x, y, text, color = T.text, size = 12) {
+      return el('text', { x, y, fill: color, 'font-size': size }, text);
+    }
+    label(12, 20, lang === 'ru' ? 'ОТПРАВИТЕЛЬ ↓' : 'SENDER ↓', T.primary, 14);
+    label(12, 38, lang === 'ru' ? 'Энкапсуляция' : 'Encapsulation', T.textMuted);
+    label(12, 448, lang === 'ru' ? 'ПОЛУЧАТЕЛЬ ↓' : 'RECEIVER ↓', T.primary, 14);
+    label(12, 466, lang === 'ru' ? 'Де-энкапсуляция' : 'De-encapsulation', T.textMuted);
+    LAYERS.forEach((layer, i) => {
+      const senderY = 50 + i * 68;
+      const receiverIndex = 3 - i;
+      const receiverY = 478 + receiverIndex * 68;
+      [[senderY, stage >= i && stage <= 3], [receiverY, stage >= 5 + receiverIndex]].forEach(([y, active]) => {
+        el('rect', { x: 12, y, width: 256, height: 58, rx: 6, fill: active ? layer.color : T.surface2, stroke: T.border });
+        label(24, y + 22, layer[lang], active ? '#fff' : T.text, 13);
+        label(24, y + 43, layer.detail[lang], active ? '#fff' : T.textMuted);
+      });
+    });
+    el('path', { d: 'M140 317 V337 m-5 -7 l5 7 5 -7 M140 409 V429 m-5 -7 l5 7 5 -7', stroke: T.textMuted, fill: 'none', 'stroke-width': 2 });
+    label(12, 355, lang === 'ru' ? 'Пакет / передача по сети' : 'Packet / network transfer', T.primary);
+    const headers = [];
+    if (stage >= 3 && stage <= 4) headers.push(['ETH', '#10b981']);
+    if (stage >= 2 && stage <= 5) headers.push(['IP', '#f59e0b']);
+    if (stage >= 1 && stage <= 6) headers.push(['TCP', '#8b5cf6']);
+    if (stage >= 0) headers.push(['DATA', '#0ea5e9']);
+    headers.forEach(([text, color], i) => {
+      const x = 12 + i * 64;
+      el('rect', { x, y: 368, width: 60, height: 28, fill: color, rx: 4 });
+      label(x + 12, 387, text, '#fff');
+    });
+    const statuses = lang === 'ru' ? [
+      'Данные готовы', 'Добавлен TCP: порты, ACK, seq', 'Добавлен IP: адреса src/dst', 'Добавлен Ethernet/MAC',
+      'Передача по сети', 'Получатель: сняли ETH', 'Получатель: сняли IP', 'Получатель: сняли TCP', 'Исходные данные доставлены ✓'
+    ] : [
+      'Application: data ready', 'Add TCP: ports, ACK, sequence', 'Add IP: source/destination', 'Add Ethernet/MAC header',
+      'Travelling on the wire', 'Receiver: strip ETH header', 'Receiver: strip IP header', 'Receiver: strip TCP header', 'Original data delivered ✓'
+    ];
+    label(12, 790, stage < 0 ? (lang === 'ru' ? 'Нажмите «Отправить»' : 'Press “Send packet”') : statuses[Math.min(stage, 8)], T.textMuted);
   }
 
   function drawPacket(stage) {
@@ -214,6 +269,7 @@
     stage = -1;
     render(-1);
   });
+  window.addEventListener('resize', () => render(stage));
   document.addEventListener('langchange', () => render(stage));
   document.addEventListener('themechange', () => render(stage));
 

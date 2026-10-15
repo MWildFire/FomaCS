@@ -204,8 +204,9 @@
   function drawSvg(g, cells, cubes, T) {
     const cell = 70, padL = 70, padT = 60;
     const W = padL + g.colCount * cell + 30;
-    const H = padT + g.rowCount * cell + 30;
+    const H = padT + g.rowCount * cell + 30 + Math.max(0, cubes.length - 1) * 22;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.style.setProperty('--diagram-width', W + 'px');
 
     let s = '';
 
@@ -235,7 +236,7 @@
         const fill = on ? 'rgba(16,185,129,0.22)' : (T.surface || '#fff');
         s += '<rect class="kmap-cell" data-minterm="' + m + '" x="' + x + '" y="' + y + '" width="' + cell + '" height="' + cell + '" fill="' + fill + '" stroke="' + T.borderStrong + '" stroke-width="1.5" style="cursor:pointer"/>';
         // Minterm number, top-left small
-        s += text(x + 7, y + 14, 'm' + m, T.textFaint, 10, 'start', 500);
+        s += text(x + 7, y + 14, 'm' + m, T.textFaint, 11, 'start', 500);
         // Value, big centered
         const valColor = on ? T.green : T.textFaint;
         s += text(x + cell / 2, y + cell / 2 + 9, String(outputs[m]), valColor, 26, 'middle', 800);
@@ -265,7 +266,7 @@
         const term = cubeToTerm(cube, nVars);
         s += '<rect x="' + (padL) + '" y="' + (ly - 10) + '" width="14" height="14" fill="none" stroke="' + color + '" stroke-width="3" rx="7"/>';
         s += text(padL + 22, ly + 1, term, T.text, 13, 'start', 700);
-        ly += 0; // single line; if many groups overflow, do nothing — legend below grid
+        ly += 22; // Keep each group and Boolean term on its own readable line.
       });
     }
 

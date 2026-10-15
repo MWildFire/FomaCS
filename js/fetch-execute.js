@@ -131,6 +131,8 @@
   }
 
   function render() {
+    if (window.innerWidth <= 620) { renderMobile(); return; }
+    svg.removeAttribute('data-mobile-layout');
     const T = window.Theme;
     const W = 800, H = 380;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -174,6 +176,37 @@
     svg.innerHTML = s;
   }
 
+  // Narrow layout keeps the CPU, bus and memory in reading order.
+  function renderMobile() {
+    const T = window.Theme;
+    svg.setAttribute('data-mobile-layout', 'vertical');
+    svg.setAttribute('viewBox', '0 0 280 760');
+    let s = rect(4, 24, 272, 250, T.surface2, T.border, 'CPU');
+    const regs = [
+      ['PC', state.pc, state.highlight === 'fetch'], ['MAR', state.mar, state.highlight === 'fetch'],
+      ['IR', state.cir || '—', state.highlight === 'cir'], ['MDR', state.mdr || '—', state.highlight === 'fetch'],
+      ['AC', state.acc, state.highlight === 'acc']
+    ];
+    regs.forEach(([name, value, active], i) => {
+      s += register(14 + (i % 2) * 136, 54 + Math.floor(i / 2) * 70, name, value, active ? T.accent : null, T, 116);
+    });
+    s += rect(150, 194, 116, 40, T.surface, T.border);
+    s += '<text x="208" y="219" text-anchor="middle" font-size="13" fill="' + T.textMuted + '">CU + ALU</text>';
+    s += '<path d="M140 280 V318 m-5 -7 l5 7 5 -7" fill="none" stroke="' + (state.highlight === 'fetch' ? T.accent : T.border) + '" stroke-width="2"/>';
+    s += rect(4, 344, 272, 406, T.surface2, T.border, tr('Memory', 'Память'));
+    state.memory.forEach((m, i) => {
+      const y = 358 + i * 77;
+      const active = state.highlight === 'fetch' && i === state.pc - 1;
+      s += rect(14, y, 252, 68, active ? T.accent : T.surface, T.border);
+      const color = active ? '#fff' : T.text;
+      s += '<text x="24" y="' + (y + 20) + '" font-size="13" font-family="ui-monospace" fill="' + color + '">[' + m.addr + ']  ' + m.value + '</text>';
+      wrapLines(m.desc[L()] || m.desc.en, 31).forEach((line, k) => {
+        s += '<text x="24" y="' + (y + 40 + k * 16) + '" font-size="12" fill="' + color + '">' + line + '</text>';
+      });
+    });
+    svg.innerHTML = s.replace(/font-size="11"/g, 'font-size="12"');
+  }
+
   // Greedy word wrap for memory-row descriptions.
   function wrapLines(text, maxChars) {
     const lines = [];
@@ -192,12 +225,12 @@
     if (label) r += '<text x="' + (x + 8) + '" y="' + (y - 6) + '" fill="' + window.Theme.textMuted + '" font-size="11" font-weight="600">' + label + '</text>';
     return r;
   }
-  function register(x, y, name, value, highlightColor, T) {
+  function register(x, y, name, value, highlightColor, T, width = 160) {
     const stroke = highlightColor || T.border;
     const labelColor = highlightColor || T.textFaint;
-    return '<rect x="' + x + '" y="' + y + '" width="160" height="40" fill="' + T.surface + '" stroke="' + stroke + '" rx="6" stroke-width="' + (highlightColor ? 2.5 : 1.5) + '" />' +
+    return '<rect x="' + x + '" y="' + y + '" width="' + width + '" height="40" fill="' + T.surface + '" stroke="' + stroke + '" rx="6" stroke-width="' + (highlightColor ? 2.5 : 1.5) + '" />' +
            '<text x="' + (x + 8) + '" y="' + (y - 6) + '" fill="' + labelColor + '" font-size="11" font-weight="600">' + name + '</text>' +
-           '<text x="' + (x + 80) + '" y="' + (y + 25) + '" fill="' + T.text + '" font-family="ui-monospace" font-size="14" text-anchor="middle">' + value + '</text>';
+           '<text x="' + (x + width / 2) + '" y="' + (y + 25) + '" fill="' + T.text + '" font-family="ui-monospace" font-size="14" text-anchor="middle">' + value + '</text>';
   }
 
   stepBtn.addEventListener('click', step);
@@ -215,6 +248,7 @@
     autoTimer = setInterval(step, 700);
     runBtn.textContent = tr('⏸ Pause', '⏸ Пауза');
   });
+  window.addEventListener('resize', render);
   document.addEventListener('themechange', render);
   document.addEventListener('langchange', () => { render(); });
 

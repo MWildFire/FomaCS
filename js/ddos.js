@@ -49,7 +49,7 @@
       // Scatter on the left half (well clear of the server + meter)
       const x = 40 + Math.random() * 200;
       const y = 50 + Math.random() * 260;
-      legits.push({ x, y });
+      legits.push({ x, y, mx: 35 + (i % 4) * 70, my: 44 + Math.floor(i / 4) * 28 });
     }
     const n = parseInt(attackersInput.value, 10) || 0;
     attackers = [];
@@ -60,7 +60,7 @@
       const r = Math.floor(i / cols);
       const x = 40 + c * Math.max(18, (760 - 40) / Math.max(cols - 1, 1));
       const y = 360 + r * 30;
-      attackers.push({ x, y });
+      attackers.push({ x, y, mx: 23 + (i % 10) * 26, my: 120 + Math.floor(i / 10) * 24 });
     }
   }
 
@@ -85,13 +85,13 @@
       // Rate-limit false-positive ~8%, WAF false-positive ~3%
       const fp = mode === 'rate' ? 0.08 : mode === 'waf' ? 0.03 : 0;
       const outcome = Math.random() < fp ? 'dropped' : 'served';
-      packets.push({ sx: src.x, sy: src.y, t: 0, kind: 'legit', outcome });
+      packets.push({ sx: src.x, sy: src.y, mx: src.mx, my: src.my, t: 0, kind: 'legit', outcome });
     });
     attackers.filter(() => Math.random() < 0.14).forEach(src => {
       // Rate-limit catches ~75% (same-IP repeats), WAF catches ~95%
       const catchP = mode === 'rate' ? 0.75 : mode === 'waf' ? 0.95 : 0;
       const outcome = Math.random() < catchP ? 'blocked' : 'served';
-      packets.push({ sx: src.x, sy: src.y, t: 0, kind: 'atk', outcome });
+      packets.push({ sx: src.x, sy: src.y, mx: src.mx, my: src.my, t: 0, kind: 'atk', outcome });
     });
   }
 
@@ -317,8 +317,59 @@
     else uptimeEl.style.color = 'var(--green)';
   }
 
+  function renderMobile() {
+    svg.dataset.mobileLayout = 'vertical';
+    const t = T(), mode = defenseSel.value;
+    const filterY = 145 + Math.ceil(attackers.length / 10) * 24;
+    const serverY = filterY + 80, meterY = serverY + 180;
+    svg.setAttribute('viewBox', '0 0 280 ' + (meterY + 105));
+    const label = (x, y, value, color = t.text, size = 12, anchor = 'middle') => {
+      svg.appendChild(el('text', { x, y, fill: color, 'font-size': size, 'text-anchor': anchor })).textContent = value;
+    };
+    label(140, 20, tr('Legitimate users', 'Обычные пользователи'), t.green);
+    legits.forEach(s => svg.appendChild(el('circle', { cx: s.mx, cy: s.my, r: 7, fill: t.green })));
+    label(140, 101, tr('Botnet (' + attackers.length + ')', 'Ботнет (' + attackers.length + ')'), t.red);
+    attackers.forEach(s => {
+      svg.appendChild(el('circle', { cx: s.mx, cy: s.my, r: 9, fill: t.red }));
+      label(s.mx, s.my + 4, '☠', '#fff');
+    });
+    const defenseColor = mode === 'waf' ? t.violet : mode === 'rate' ? t.amber : t.textMuted;
+    svg.appendChild(el('line', { x1: 16, x2: 264, y1: filterY, y2: filterY, stroke: defenseColor, 'stroke-width': 2, 'stroke-dasharray': '6 4' }));
+    label(140, filterY + 20, mode === 'waf' ? 'WAF + Blackhole' : mode === 'rate' ? tr('Rate limiter', 'Ограничитель') : tr('No defense', 'Без защиты'), defenseColor);
+    // Use the same packet lifetime and outcomes as the desktop simulation.
+    // Blocked traffic reaches the horizontal defense line, never the server.
+    packets.forEach(p => {
+      const endY = p.outcome === 'blocked' ? filterY : serverY;
+      const endX = p.outcome === 'blocked' ? p.mx + (140 - p.mx) * ((filterY - p.my) / (serverY - p.my)) : 140;
+      const tt = p.outcome === 'blocked' ? Math.min(1, p.t / 0.7) : p.outcome === 'dropped' ? Math.min(1, p.t / 0.85) : p.t;
+      let opacity = 1;
+      if (p.outcome === 'blocked' && p.t > 0.55) opacity = (0.7 - p.t) / 0.15;
+      if (p.outcome === 'dropped' && p.t > 0.7) opacity = (0.85 - p.t) / 0.15;
+      svg.appendChild(el('circle', { cx: p.mx + (endX - p.mx) * tt, cy: p.my + (endY - p.my) * tt, r: p.kind === 'atk' ? 2.5 : 3, fill: p.kind === 'atk' ? t.red : t.green, opacity: Math.max(0, Math.min(1, opacity)) }));
+    });
+    label(140, serverY - 12, tr('Server', 'Сервер'), t.text, 14);
+    const fill = load > 95 ? t.red : load > 80 ? t.amber : t.primary;
+    svg.appendChild(el('rect', { x: 85, y: serverY, width: 110, height: 110, rx: 10, fill }));
+    for (let i = 0; i < 4; i++) {
+      svg.appendChild(el('line', { x1: 95, x2: 185, y1: serverY + 22 + i * 22, y2: serverY + 22 + i * 22, stroke: '#ffffff88', 'stroke-width': 2 }));
+      svg.appendChild(el('circle', { cx: 179, cy: serverY + 22 + i * 22, r: 3, fill: '#86efac' }));
+    }
+    if (load > 95) label(140, serverY + 135, tr('OVERLOADED', 'ПЕРЕГРУЗКА'), t.red);
+    label(140, meterY - 12, tr('Server load', 'Нагрузка сервера') + ': ' + Math.round(load) + '%');
+    svg.appendChild(el('rect', { x: 20, y: meterY, width: 240, height: 24, rx: 5, fill: t.surface2, stroke: t.borderStrong }));
+    svg.appendChild(el('rect', { x: 20, y: meterY, width: 240 * Math.max(0, Math.min(100, load)) / 100, height: 24, rx: 5, fill: load > 95 ? t.red : load > 80 ? t.amber : t.green }));
+    [50, 80, 95].forEach((v, i) => {
+      const x = 20 + 240 * v / 100;
+      svg.appendChild(el('line', { x1: x, x2: x, y1: meterY, y2: meterY + 30 + i * 16, stroke: v === 95 ? t.red : t.textMuted }));
+      label(x, meterY + 44 + i * 16, v + '%', t.textMuted);
+    });
+  }
+
   function render() {
     clear();
+    if (window.innerWidth <= 620) { renderMobile(); updateStatsPanel(); return; }
+    delete svg.dataset.mobileLayout;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     drawDefenseLine();
     drawPackets();
     drawAttackers();
@@ -356,6 +407,7 @@
   });
 
   document.addEventListener('themechange', render);
+  window.addEventListener('resize', render);
   document.addEventListener('langchange', () => {
     playBtn.textContent = running ? tr('Pause', 'Пауза') : tr('Play', 'Запуск');
     render();

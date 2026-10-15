@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2.3 Передача данных · IB CS Theme A</title>
 <meta name="description" content="A2.3 Передача данных — детальный разбор на русском: IP-адресация (IPv4 vs IPv6, публичные/частные/статические/динамические IP, NAT), среды передачи (оптоволокно, витая пара, беспроводные), коммутация пакетов, маршрутизация (статическая/динамическая), пропускная способность и задержки, обнаружение ошибок.">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -254,6 +254,12 @@
   }
   .takeaways ul { padding-left: 22px; line-height: 1.8; }
   .takeaways li { margin-bottom: 6px; }
+
+/* R03: keep network and database diagrams at a legible scale inside their frame. */
+.r03-static-frame { max-width:100%; min-width:0; overflow-x:auto; border:1px solid var(--border,#dbe2eb); border-radius:8px; }
+.r03-static-frame svg { display:block; width:100%; max-width:none; height:auto; margin:0; }
+.r03-static-hint { display:block; position:sticky; left:0; padding:6px 10px; font-size:12px; color:var(--text-muted,#475569); }
+@media (min-width: 621px) { .r03-static-frame { border:0; } .r03-static-hint { display:none; } }
 </style>
 </head>
 <body>
@@ -496,7 +502,7 @@
   </span><span class="lang-en-inline"><b>NAT (Network Address Translation)</b> solves the main problem of IPv4: there are not enough addresses. NAT allows <b>hundreds of private addresses to hide behind one public address</b>.</span></p>
 
   <div class="diagram-wrap">
-    <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" aria-label="Диаграмма NAT: три устройства с частными IP идут через роутер с NAT и одним публичным IP в интернет">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:640px" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" aria-label="Диаграмма NAT: три устройства с частными IP идут через роутер с NAT и одним публичным IP в интернет">
       <defs>
         <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
           <path d="M0,0 L0,6 L9,3 z" fill="#0ea5e9"/>
@@ -540,7 +546,7 @@
         <line x1="140" y1="200" x2="205" y2="140" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
         <line x1="435" y1="120" x2="480" y2="120" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow1)"/>
       </g>
-    </svg>
+    </svg></div>
     <div class="diagram-caption"><span class="lang-ru-inline">NAT: три частных IP «маскируются» за единственным публичным адресом роутера.</span><span class="lang-en-inline">NAT: three private IPs are “masked” behind the router’s single public address.</span></div>
   </div>
 
@@ -801,7 +807,7 @@
   <h3><span class="lang-ru-inline">🗺️ 5.2. Визуализация: три пакета — три пути</span><span class="lang-en-inline">🗺️ 5.2. Visualisation: three packets — three paths</span></h3>
 
   <div class="diagram-wrap">
-    <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Сеть из 5 роутеров. Три пакета идут разными путями от отправителя к получателю.">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:642px" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" aria-label="Сеть из 5 роутеров. Три пакета идут разными путями от отправителя к получателю.">
       <defs>
         <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
           <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
@@ -855,7 +861,7 @@
         <text class="lang-ru" x="350" y="295" fill="#f59e0b" font-weight="700">Пакет 3</text>
         <text class="lang-en" x="350" y="295" fill="#f59e0b" font-weight="700">Packet 3</text>
       </g>
-    </svg>
+    </svg></div>
     <div class="diagram-caption"><span class="lang-ru-inline">Три пакета одного сообщения идут <b>разными маршрутами</b> через сеть — каждый роутер выбирает путь динамически. Получатель потом собирает их по порядку.</span><span class="lang-en-inline">The three packets of one message take <b>different routes</b> through the network — each router chooses the path dynamically. The receiver then puts them back in order.</span></div>
   </div>
 

@@ -122,6 +122,8 @@
   // ---- Rendering ----
   function render() {
     const T = window.Theme;
+    if (window.innerWidth <= 620) { renderMobile(T); return; }
+    delete svg.dataset.mobileLayout;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
 
     let s = '';
@@ -238,6 +240,51 @@
     });
   }
 
+  function renderMobile(T) {
+    svg.dataset.mobileLayout = 'vertical';
+    const cacheY = 180, slotH = 28, cacheH = cache.length * 32 + 24;
+    const ramY = cacheY + cacheH + 52, ramH = 304, footY = ramY + ramH + 26;
+    svg.setAttribute('viewBox', '0 0 280 ' + (footY + 130));
+    let s = '';
+    const label = (x, y, value, color = T.text, anchor = 'middle', size = 12) =>
+      '<text x="' + x + '" y="' + y + '" fill="' + color + '" font-size="' + size + '" text-anchor="' + anchor + '">' + value + '</text>';
+    s += panel(16, 24, 248, 114, T, tr('CPU', 'ЦП'));
+    s += label(140, 54, tr('Requesting…', 'Запрос…'), T.textMuted, 'middle', 14);
+    if (lastEvent) {
+      s += label(140, 80, (lastEvent.kind === 'hit' ? tr('CACHE HIT', 'ПОПАДАНИЕ') : tr('CACHE MISS', 'ПРОМАХ')) + ' · ' + hex(lastEvent.addr), lastEvent.kind === 'hit' ? T.green : T.red);
+      s += label(140, 108, tr('latency', 'задержка') + ': ' + (lastEvent.kind === 'hit' ? HIT_NS : MISS_NS) + ' ns', T.textMuted);
+    }
+    s += '<path d="M140 140 V160 l-5 -6 m5 6 l5 -6" fill="none" stroke="' + T.primary + '" stroke-width="2" />';
+    s += panel(16, cacheY, 248, cacheH, T, tr('L1 Cache', 'Кэш L1') + ' · ' + cache.length + ' ' + tr('slots', 'ячеек'));
+    cache.forEach((slot, i) => {
+      const y = cacheY + 12 + i * 32, active = lastEvent && lastEvent.slot === i;
+      const fill = active ? (lastEvent.kind === 'hit' ? T.green : T.amber) : T.surface;
+      const color = active ? '#fff' : T.text;
+      s += '<rect x="26" y="' + y + '" width="228" height="' + slotH + '" rx="4" fill="' + fill + '" stroke="' + T.border + '" />';
+      s += label(34, y + 19, '[' + i + ']', color, 'start');
+      s += label(135, y + 19, slot ? hex(slot.addr) : tr('(empty)', '(пусто)'), color);
+      if (slot) s += label(246, y + 19, policyEl.value === 'fifo' ? 'f=' + slot.loadedAt : 'u=' + slot.lastUsed, color, 'end');
+    });
+    s += '<path d="M140 ' + (cacheY + cacheH + 3) + ' v20 l-5 -6 m5 6 l5 -6" fill="none" stroke="' + (lastEvent && lastEvent.kind === 'miss' ? T.red : T.primary) + '" stroke-width="2" />';
+    s += panel(16, ramY, 248, ramH, T, tr('Main memory (RAM)', 'Основная память (RAM)'));
+    for (let i = 0; i < RAM_SIZE; i++) {
+      const x = 24 + (i % 4) * 58, y = ramY + 12 + Math.floor(i / 4) * 35;
+      const active = lastEvent && lastEvent.addr === i;
+      const fill = active ? (lastEvent.kind === 'hit' ? T.green : T.red) : (cache.some(sl => sl && sl.addr === i) ? T.surface : T.surface2);
+      s += '<rect x="' + x + '" y="' + y + '" width="54" height="31" rx="3" fill="' + fill + '" stroke="' + T.border + '" />';
+      s += label(x + 27, y + 20, hex(i), active ? '#fff' : T.text);
+      s += '<rect class="cache-ram-hit" data-addr="' + i + '" x="' + x + '" y="' + y + '" width="54" height="31" fill="transparent" style="cursor:pointer" />';
+    }
+    s += label(20, footY, tr('Progress', 'Прогресс') + ': ' + cursor + ' / ' + sequence.length, T.textMuted, 'start');
+    s += label(20, footY + 22, tr('next', 'след.') + ': ' + (sequence.slice(cursor, cursor + 3).map(hex).join(' ') || tr('done', 'готово')), T.textMuted, 'start');
+    [[T.green, tr('hit', 'попадание')], [T.amber, tr('loaded into cache', 'загружено в кэш')], [T.red, tr('miss → RAM', 'промах → RAM')]].forEach(([color, txt], i) => {
+      s += '<circle cx="26" cy="' + (footY + 46 + i * 24) + '" r="5" fill="' + color + '" />';
+      s += label(38, footY + 50 + i * 24, txt, T.textMuted, 'start');
+    });
+    svg.innerHTML = s;
+    svg.querySelectorAll('.cache-ram-hit').forEach(el => el.addEventListener('click', () => access(parseInt(el.getAttribute('data-addr'), 10))));
+  }
+
   function panel(x, y, w, h, T, label) {
     let r = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" fill="' + T.surface2 + '" stroke="' + T.border + '" stroke-width="1.5" />';
     if (label) r += '<text x="' + (x + 12) + '" y="' + (y - 6) + '" fill="' + T.textMuted + '" font-size="12" font-weight="600">' + label + '</text>';
@@ -258,6 +305,7 @@
   sizeEl.addEventListener('change', () => { stopAuto(); resetCache(); });
 
   document.addEventListener('themechange', render);
+  window.addEventListener('resize', render);
   document.addEventListener('langchange', () => {
     runBtn.textContent = autoTimer ? tr('⏸ Pause', '⏸ Пауза') : tr('⏩ Run sequence', '⏩ Запустить');
     render();

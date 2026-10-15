@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A3.2 Проектирование баз данных · IB CS Theme A</title>
 <meta name="description" content="A3.2 Database design — подробный разбор на русском: схемы (концептуальная, логическая, физическая), ER-диаграммы, кардинальность, нотация «вороньей лапки», нормализация UNF → 1NF → 2NF → 3NF, аномалии вставки/удаления/обновления, разрешение M:N связей через таблицу-связку, индексы.">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -287,6 +287,12 @@
   }
   .sim-link:hover { transform: translateY(-2px); }
   .sim-link::before { content: '▶'; font-size: 0.85em; }
+
+/* R03: keep network and database diagrams at a legible scale inside their frame. */
+.r03-static-frame { max-width:100%; min-width:0; overflow-x:auto; border:1px solid var(--border,#dbe2eb); border-radius:8px; }
+.r03-static-frame svg { display:block; width:100%; max-width:none; height:auto; margin:0; }
+.r03-static-hint { display:block; position:sticky; left:0; padding:6px 10px; font-size:12px; color:var(--text-muted,#475569); }
+@media (min-width: 621px) { .r03-static-frame { border:0; } .r03-static-hint { display:none; } }
 </style>
 </head>
 <body>
@@ -520,7 +526,7 @@
   <h3><span class="lang-ru-inline">3.3. Пример ER-диаграммы (нотация Чена)</span><span class="lang-en-inline">3.3. Example of an ER diagram (Chen notation)</span></h3>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ER-диаграмма: Player, Team, Manager">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:566px" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ER-диаграмма: Player, Team, Manager">
       <!-- Player rectangle -->
       <rect x="20" y="140" width="140" height="70" rx="6" fill="#fde68a" stroke="#92400e" stroke-width="2"/>
       <text x="90" y="180" text-anchor="middle" font-family="Helvetica" font-size="18" font-weight="600" fill="#7c2d12">Player</text>
@@ -548,7 +554,7 @@
       <!-- Line Manages-Manager: routed around the right side of Team -->
       <polyline points="630,295 665,295 665,50 640,50" fill="none" stroke="#475569" stroke-width="2"/>
       <text x="645" y="44" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e293b">1</text>
-    </svg>
+    </svg></div>
     <span class="caption"><span class="lang-ru-inline">Концептуальная ER-диаграмма: Player N : 1 Team, Team 1 : 1 Manager. Ромбы — связи (Plays, Manages), прямоугольники — сущности.</span><span class="lang-en-inline">Conceptual ER diagram: Player N : 1 Team, Team 1 : 1 Manager. Diamonds are relationships (Plays, Manages), rectangles are entities.</span></span>
   </div>
 
@@ -596,7 +602,7 @@
   <h3><span class="lang-ru-inline">3.5. Crow's foot — кратко, как читать символы</span><span class="lang-en-inline">3.5. Crow's foot: a brief guide to reading the symbols</span></h3>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Символы crow's foot нотации">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:566px" viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Символы crow's foot нотации">
       <!-- Mandatory one -->
       <line x1="40" y1="40" x2="180" y2="40" stroke="#1e293b" stroke-width="2"/>
       <line x1="165" y1="25" x2="165" y2="55" stroke="#1e293b" stroke-width="3"/>
@@ -624,7 +630,7 @@
       <line x1="180" y1="190" x2="160" y2="190" stroke="#1e293b" stroke-width="2"/>
       <line x1="180" y1="190" x2="160" y2="210" stroke="#1e293b" stroke-width="2"/>
       <text x="220" y="195" font-family="Helvetica" font-size="14" fill="#1e293b"<tspan class="lang-ru-inline">Optional many — 0 или больше</tspan><tspan class="lang-en-inline">Optional many — 0 or more</tspan></text>
-    </svg>
+    </svg></div>
     <span class="caption"><span class="lang-ru-inline">Четыре основных символа crow's foot. «Лапка» = много, двойная черта = ровно один, кружок = ноль (optional).</span><span class="lang-en-inline">The four main crow's foot symbols. “Foot” = many, double bar = exactly one, circle = zero (optional).</span></span>
   </div>
 
@@ -652,7 +658,7 @@
   </span><span class="lang-en-inline">A <b>third table</b> is created that stores <b>only pairs of identifiers</b>: the primary key of A + the primary key of B. These two fields become a <b>composite primary key</b>, and each of them on its own is a <b>foreign key</b>. The M:N relationship is <b>split into two 1:N relationships</b>, each of which can easily be represented in a relational database.</span></p>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Разрешение M:N через junction table">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:760px" viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Разрешение M:N через junction table">
       <!-- Student -->
       <rect x="20" y="60" width="160" height="90" rx="6" fill="#dbeafe" stroke="#1e40af" stroke-width="2"/>
       <text x="100" y="85" text-anchor="middle" font-family="Helvetica" font-size="14" font-weight="700" fill="#1e40af">STUDENT</text>
@@ -685,7 +691,7 @@
       <text x="560" y="98" font-family="Helvetica" font-size="13" font-weight="700" fill="#1e293b">1</text>
 
       <text x="380" y="200" text-anchor="middle" font-family="Helvetica" font-size="12" font-style="italic" fill="#475569"<tspan class="lang-ru-inline">M:N (Student — Course) превращается в две связи 1:N через таблицу-связку Enrollment</tspan><tspan class="lang-en-inline">M:N (Student — Course) becomes two 1:N relationships through the junction table Enrollment</tspan></text>
-    </svg>
+    </svg></div>
     <span class="caption"><span class="lang-ru-inline">Связь «многие-ко-многим» между Student и Course разрешена через таблицу-связку Enrollment.</span><span class="lang-en-inline">The many-to-many relationship between Student and Course is resolved through the junction table Enrollment.</span></span>
   </div>
 
@@ -1305,7 +1311,7 @@
   </span><span class="lang-en-inline">Once you have normalized the database, it is useful to draw a <b>schema diagram</b>: a compact picture in which each entity is a rectangle with its fields, and the links between them are drawn through PK/FK.</span></p>
 
   <div class="erd-svg-wrap">
-    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema diagram физического уровня">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:760px" viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema diagram физического уровня">
       <!-- STUDENT -->
       <rect x="20" y="20" width="200" height="180" rx="6" fill="#f0f9ff" stroke="#0369a1" stroke-width="2"/>
       <rect x="20" y="20" width="200" height="28" rx="6" fill="#0369a1"/>
@@ -1334,7 +1340,7 @@
       <text x="460" y="166" font-family="ui-monospace" font-size="11" fill="#1e293b">Flight: char(1)</text>
       <text x="460" y="184" font-family="ui-monospace" font-size="11" fill="#1e293b">Description: text</text>
       <text x="460" y="202" font-family="ui-monospace" font-size="11" fill="#1e293b" font-weight="700">TeacherID: varchar(6) FK</text>
-    </svg>
+    </svg></div>
     <span class="caption"><span class="lang-ru-inline">Фрагмент физической схемы для системы школьных поездок (таблицы STUDENT и TRIP). Видны типы данных, PK и FK. Поле TeacherID ссылается на таблицу TEACHER, которой во фрагменте нет.</span><span class="lang-en-inline">Schema diagram: a fragment of the physical schema for a school trips system (tables STUDENT and TRIP). The data types, the PK and the FK are shown. TeacherID references the TEACHER table, which is not part of this fragment.</span></span>
   </div>
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A2.2 Архитектура сетей · IB CS Theme A</title>
 <meta name="description" content="A2.2 Архитектура сетей — глубокий разбор на русском: топологии (звезда, шина, кольцо, mesh, дерево, гибрид), функции серверов (HL), клиент-сервер vs P2P, сегментация (VLAN, подсети). Тренировочные вопросы с разбором.">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231a3a5e'/%3E%3Ctext x='50' y='62' font-family='Helvetica' font-size='42' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <style>
   /* Standalone page styling — single-language Russian, focused reading */
@@ -280,6 +280,12 @@
     text-decoration: none;
   }
   .sim-callout a:hover { text-decoration: underline; }
+
+/* R03: keep network and database diagrams at a legible scale inside their frame. */
+.r03-static-frame { max-width:100%; min-width:0; overflow-x:auto; border:1px solid var(--border,#dbe2eb); border-radius:8px; }
+.r03-static-frame svg { display:block; width:100%; max-width:none; height:auto; margin:0; }
+.r03-static-hint { display:block; position:sticky; left:0; padding:6px 10px; font-size:12px; color:var(--text-muted,#475569); }
+@media (min-width: 621px) { .r03-static-frame { border:0; } .r03-static-hint { display:none; } }
 </style>
 </head>
 <body>
@@ -377,7 +383,7 @@
     <p><span class="lang-ru-inline">Каждое устройство соединено <b>напрямую</b> с центральным устройством (обычно с <b>коммутатором</b> или <b>маршрутизатором</b>). Получается «звёздочка» с центром.</span><span class="lang-en-inline">Each device is <b>directly</b> connected to a central device (usually a <b>switch</b> or a <b>router</b>). This forms a little star with a centre.</span></p>
 
     <figure class="topo-diagram">
-      <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" aria-label="Звёздная топология">
+      <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:352px" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" aria-label="Звёздная топология">
         <!-- Lines from centre to nodes -->
         <line x1="160" y1="110" x2="60"  y2="40"  stroke="var(--text-muted)" stroke-width="2"/>
         <line x1="160" y1="110" x2="160" y2="30"  stroke="var(--text-muted)" stroke-width="2"/>
@@ -395,7 +401,7 @@
         <circle cx="60"  cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
         <circle cx="160" cy="190" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
         <circle cx="260" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
-      </svg>
+      </svg></div>
       <figcaption><span class="lang-ru-inline">Звезда: 6 устройств подключены к центральному коммутатору (SW).</span><span class="lang-en-inline">Star: 6 devices are connected to the central switch (SW).</span></figcaption>
     </figure>
 
@@ -571,7 +577,7 @@
     <p><span class="lang-ru-inline">Иерархическая топология: один корневой узел (<i>root</i>) разветвляется на под-узлы, те — на свои под-узлы. Сочетает <b>шину</b> (магистраль вверху) и <b>звёзды</b> (ветки внизу). По сути — расширенная звезда с уровнями.</span><span class="lang-en-inline">A hierarchical topology: one root node (<i>root</i>) branches into sub-nodes, which in turn branch into their own sub-nodes. It combines a <b>bus</b> (the trunk at the top) and <b>stars</b> (the branches at the bottom). In essence, it is an extended star with levels.</span></p>
 
     <figure class="topo-diagram">
-      <svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" aria-label="Древовидная топология">
+      <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:374px" viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" aria-label="Древовидная топология">
         <!-- Edges -->
         <g stroke="var(--text-muted)" stroke-width="2">
           <line x1="170" y1="30" x2="80"  y2="100"/>
@@ -594,7 +600,7 @@
         <circle cx="120" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
         <circle cx="220" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
         <circle cx="300" cy="180" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
-      </svg>
+      </svg></div>
       <figcaption><span class="lang-ru-inline">Дерево: корневой узел → под-коммутаторы → конечные устройства.</span><span class="lang-en-inline">Tree: root node → sub-switches → end devices.</span></figcaption>
     </figure>
 
@@ -626,7 +632,7 @@
     <p><span class="lang-ru-inline">Сочетание <b>двух и более</b> топологий ради того, чтобы взять у каждой её лучшие свойства и обойти слабые места. Например: <b>звезда</b> для ядра (главные серверы и роутеры) + <b>mesh</b> для периферии (для устойчивости).</span><span class="lang-en-inline">A combination of <b>two or more</b> topologies, taking the best features of each and avoiding its weak points. For example: a <b>star</b> for the core (main servers and routers) + a <b>mesh</b> for the edge (for resilience).</span></p>
 
     <figure class="topo-diagram">
-      <svg viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg" aria-label="Гибридная топология">
+      <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:396px" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg" aria-label="Гибридная топология">
         <!-- Top: star -->
         <g stroke="var(--text-muted)" stroke-width="2">
           <line x1="180" y1="80" x2="80"  y2="40"/>
@@ -658,7 +664,7 @@
         <text class="lang-en-inline" x="350" y="215" text-anchor="end" font-size="10" fill="var(--text-muted)" font-style="italic">mesh segment</text>
         <text class="lang-ru-inline" x="60" y="20" font-size="10" fill="var(--text-muted)" font-style="italic">звезда-ядро</text>
         <text class="lang-en-inline" x="60" y="20" font-size="10" fill="var(--text-muted)" font-style="italic">star core</text>
-      </svg>
+      </svg></div>
       <figcaption><span class="lang-ru-inline">Гибрид: звёздное ядро для центральных устройств + mesh-сегмент для надёжности на периферии.</span><span class="lang-en-inline">Hybrid: a star core for the central devices + a mesh segment for reliability at the edge.</span></figcaption>
     </figure>
 
@@ -1003,7 +1009,7 @@
   </div>
 
   <figure class="topo-diagram">
-    <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" aria-label="Сегментация сети">
+    <div class="r03-static-frame" tabindex="0" role="region" aria-label="Diagram: horizontal scroll"><span class="r03-static-hint"><span class="lang-en-inline">Scroll the diagram sideways ↔</span><span class="lang-ru-inline">Прокрутите схему вправо ↔</span></span><svg style="min-width:563px" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" aria-label="Сегментация сети">
       <!-- Cloud -->
       <ellipse cx="230" cy="30" rx="50" ry="18" fill="var(--surface-2)" stroke="var(--text-muted)" stroke-width="1.5"/>
       <text x="230" y="34" font-size="11" fill="var(--text)" text-anchor="middle" font-style="italic">Internet</text>
@@ -1035,7 +1041,7 @@
       <text x="170" y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 20</text>
       <text x="290" y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 30</text>
       <text x="400" y="195" font-size="9"  fill="var(--text-muted)" text-anchor="middle">VLAN 40</text>
-    </svg>
+    </svg></div>
     <figcaption><span class="lang-ru-inline">Сегментация: один маршрутизатор + 4 разных сегмента (VLAN) с изолированным трафиком.</span><span class="lang-en-inline">Segmentation: one router + 4 separate segments (VLANs) with isolated traffic.</span></figcaption>
   </figure>
 

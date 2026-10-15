@@ -1423,3 +1423,21 @@ pre.code, .code-block {
 }
 /* Compiler success panel — light green tint is invisible on dark surface */
 [data-theme="dark"] .ci-output.ci-success { background: rgba(16,185,129,0.18); }
+
+/* R03: each flow owns its narrow geometry; wide grids stay inside a labelled frame. */
+@media (max-width: 620px) {
+  .sim, .sim-canvas-wrap, .sidebar-layout > *, .joins-layout > * { min-width: 0; max-width: 100%; }
+  .sim-canvas-wrap:has(svg[data-mobile-layout="vertical"]) { overflow: hidden; }
+  .sim-canvas-wrap:has(svg[data-mobile-layout="vertical"])::before { display: none; }
+  .sim-canvas-wrap svg[data-mobile-layout="vertical"] { min-width: 0; width: 100%; }
+  #pipe-svg { width: 1000px; min-width: 1000px; }
+  #topo-svg { width: 800px; min-width: 800px; }
+  #cm-svg { width: 700px; min-width: 700px; }
+  #kmap-svg { width: var(--diagram-width, 380px); min-width: var(--diagram-width, 380px); }
+  #joins-venn { width: 360px; min-width: 360px; max-width: none; }
+  .joins-layout { grid-template-columns: minmax(0, 1fr) !important; }
+  #joins-table-a, #joins-table-b, #joins-result, #joins-sql { overflow-x: auto; min-width: 0; }
+}
+
+/* Cell labels and group outlines must not intercept Karnaugh-map taps. */
+#kmap-svg text, #kmap-svg rect:not(.kmap-cell) { pointer-events: none; }
